@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 14:14:25 CST
+更新时间：2026-06-02 14:20:18 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -96,6 +96,14 @@ Offboard 悬停验证：
 ```bash
 scripts/verify_px4_offboard_hover.sh
 ```
+
+Gazebo Classic GUI 截图：
+
+```bash
+scripts/capture_px4_gazebo_classic_gui.sh
+```
+
+截图脚本要求当前 shell 存在可用 `DISPLAY`。截图和运行日志分别写入 `data/screenshots/`、`data/logs/`，这两个目录只作本地证据保存，不提交进 git。
 
 ## 下一步执行顺序
 

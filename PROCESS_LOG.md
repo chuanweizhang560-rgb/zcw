@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 14:14:25 CST
+更新时间：2026-06-02 14:20:18 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -258,4 +258,30 @@
   - 在 `zcw_bringup` 建立单机 launch 入口
 - 阻塞项：
   - 尚未截取 GUI/RViz 截图
+  - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 14:20:18 CST
+
+- 节点：Offboard baseline 提交推送与 Gazebo GUI 截图审核
+- 执行动作：
+  - 提交 `d368bf8`：`Add PX4 offboard hover baseline`
+  - 推送到 `origin/codex/initial-workflow`
+  - 新建 `scripts/capture_px4_gazebo_classic_gui.sh`
+  - 在 `DISPLAY=:1` 上启动 PX4 SITL + Gazebo Classic GUI
+  - 截取真实 GUI 截图到 `data/screenshots/px4_gazebo_classic_gui_20260602_141822.png`
+  - 裁剪 Gazebo 区域到 `data/screenshots/px4_gazebo_classic_gui_20260602_141822_gazebo_only.png`
+  - 检查 GUI 运行日志 `data/logs/px4_gazebo_classic_gui_20260602_141822.log`
+  - 检查退出后是否存在 `gzserver`、`gzclient`、`px4`、`gazebo` 残留进程
+- 结果：
+  - GUI 截图脚本退出码为 0
+  - GUI 日志包含 `Simulator connected on TCP port 4560` 与 `Startup script returned successfully`
+  - 截图显示 Gazebo Classic 窗口、地面纹理、PX4 `iris` 机体和状态栏
+  - 退出后未发现仿真残留进程
+  - 截图文件位于 `data/screenshots/`，按仓库规则不提交进 git
+- 下一步：
+  - 提交并推送 GUI 截图脚本与日志记录
+  - 在 `zcw_bringup` 建立单机 launch 入口
+  - 继续推进单机 waypoint baseline
+- 阻塞项：
+  - RViz 截图尚未进行
   - 项目自身 LICENSE 尚未确定
