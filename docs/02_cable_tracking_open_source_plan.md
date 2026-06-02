@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 16:55:16 CST
+更新时间：2026-06-02 17:13:43 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -23,8 +23,17 @@
    - 类型：`sensor_msgs/msg/PointCloud2`
    - 成功样本：`data/logs/foggy_lidar_sample_20260602_165359.log`
    - 频率：约 `5.43 Hz`
+6. PCL RANSAC 线模型 smoke test：
+   - 包：`ros2_ws/src/zcw_cable_perception`
+   - 节点：`pointcloud_line_ransac_smoke`
+   - 验证：`scripts/verify_foggy_lidar_ransac.sh`
+   - 输入 topic：`/zcw/foggy_lidar/points`
+   - 成功日志：`data/logs/foggy_lidar_ransac_node_20260602_171303.log`
+   - 结果文件：`data/results/foggy_lidar_ransac_20260602_171303/foggy_lidar_line_ransac_20260602_171309.txt`
+   - 本次结果：`raw_points=169`，`finite_points=169`，`ransac_inliers=66`，`ransac_inlier_ratio=0.390533`
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
+当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
 
 ## 2. 采用的成熟开源组件
 
@@ -93,6 +102,14 @@ scripts/verify_foggy_lidar_pointcloud.sh
 
 当前脚本已支持 `PX4_MODEL` 透传，并默认保持 clean env，不继承宿主旧项目的 Gazebo/LD 路径。
 
+已新增单帧 PCL RANSAC 烟测入口：
+
+```bash
+scripts/verify_foggy_lidar_ransac.sh
+```
+
+该入口只调用 PCL `SACSegmentation` 的 `SACMODEL_LINE`，并输出 raw PCD、RANSAC inlier PCD 和文本结果；后续仍需补 ROI、多帧稳定性和导线方向一致性判据。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -131,7 +148,7 @@ scripts/verify_foggy_lidar_pointcloud.sh
 验收：
 
 1. bag 中有点云 topic。
-2. PCL RANSAC 至少能提取一组与导线方向一致的线候选。
+2. PCL RANSAC 至少能提取一组线候选；后续必须继续验证该线候选与真实导线方向一致，而不是地面或传感器扫描线。
 3. 输出调试文件：
    - 原始点云数量
    - ROI 后点数
@@ -198,7 +215,7 @@ scripts/verify_foggy_lidar_pointcloud.sh
 
 ## 10. 下一个执行节点
 
-1. 录制或导出 `/zcw/foggy_lidar/points` 的短时样本。
-2. 建立离线 PCL RANSAC 分割验证入口。
-3. 输出 ROI 后点数、RANSAC 内点数和线候选参数。
+1. 给 `zcw_cable_perception` 增加配置化 ROI crop 和体素/离群点过滤，仍然只调用 PCL。
+2. 录制或导出 `/zcw/foggy_lidar/points` 的短时多帧样本，统计每帧 RANSAC 内点数和方向稳定性。
+3. 用 GUI/RViz 或 PCD 可视化确认线候选是否对应真实导线，而不是地面线或 2D 雷达扫描线。
 4. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。

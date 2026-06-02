@@ -61,6 +61,7 @@ codex_zcw/
 - `zcw_bringup`：launch/config 入口，只做编排。
 - `zcw_sim_assets`：Gazebo world/model 引用入口，只整理资产引用。
 - `zcw_px4_baseline`：基于 PX4 官方 `px4_ros_com` 示例派生的 Offboard baseline，只用于仿真控制链路验证，不放风机/电缆巡检核心算法。
+- `zcw_cable_perception`：电缆点云感知薄封装，只调用 PCL 等成熟库，不自研 LiDAR 分割核心算法。
 
 ## 3. 约束
 

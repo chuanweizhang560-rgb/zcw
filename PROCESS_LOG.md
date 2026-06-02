@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 17:02:49 CST
+更新时间：2026-06-02 17:13:43 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -594,3 +594,34 @@
   - 提交并推送本 push 记录
   - 进入 `/zcw/foggy_lidar/points` 的短时 bag/PCD 采集与离线 PCL RANSAC 分割验证
 - 阻塞项：无
+
+### 2026-06-02 17:13:43 CST
+
+- 节点：真实仿真 PointCloud2 到 PCL RANSAC 线模型 smoke test
+- 执行动作：
+  - 新增 ROS 2 包 `ros2_ws/src/zcw_cable_perception`
+  - 新增节点 `pointcloud_line_ransac_smoke`，只负责订阅 `sensor_msgs/msg/PointCloud2`、调用 PCL `SACSegmentation` 的 `SACMODEL_LINE`、保存 raw/inlier PCD 和结果文本
+  - 新增 `scripts/verify_foggy_lidar_ransac.sh`
+  - 构建 `zcw_cable_perception`
+  - 运行 `scripts/verify_foggy_lidar_ransac.sh`
+  - 检查结果文件、节点日志和仿真残留进程
+- 结果：
+  - `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception` 成功
+  - PX4/Gazebo target：`gazebo-classic_iris_foggy_lidar`
+  - Gazebo world：AerialCore `power_towers_danube_wires_rescaled_autospawn.world`
+  - 输入 topic：`/zcw/foggy_lidar/points`
+  - PCL RANSAC 结果：`raw_points=169`、`finite_points=169`、`ransac_inliers=66`、`ransac_inlier_ratio=0.390533`
+  - 结果文件：
+    - `data/results/foggy_lidar_ransac_20260602_171303/foggy_lidar_line_ransac_20260602_171309.txt`
+    - `data/results/foggy_lidar_ransac_20260602_171303/foggy_lidar_raw_20260602_171309.pcd`
+    - `data/results/foggy_lidar_ransac_20260602_171303/foggy_lidar_line_inliers_20260602_171309.pcd`
+  - 成功日志：
+    - `data/logs/foggy_lidar_ransac_px4_20260602_171303.log`
+    - `data/logs/foggy_lidar_ransac_topics_20260602_171303.log`
+    - `data/logs/foggy_lidar_ransac_node_20260602_171303.log`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 下一步：
+  - 提交并推送本节点代码、脚本和文档记录
+  - 给 `zcw_cable_perception` 增加 ROI crop 和多帧离线评估，确认 RANSAC 线候选是否对应真实导线
+- 阻塞项：
+  - 当前只是单帧线模型 smoke test，尚未证明线候选是导线而非地面线或 2D ray 扫描线
