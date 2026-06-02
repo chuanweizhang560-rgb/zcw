@@ -6,5 +6,13 @@ log/
 *.db3
 *.ulg
 *.log
+data/logs/*
+!data/logs/.gitkeep
+data/results/*
+!data/results/.gitkeep
+data/training/*
+!data/training/.gitkeep
+data/screenshots/*
+!data/screenshots/.gitkeep
 .DS_Store
 .vscode/

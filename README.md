@@ -9,5 +9,6 @@
 - 采用开源成熟方案优先，低层飞控不自研。
 - 第一版默认围绕 `PX4 SITL + ROS 2 Humble + Gazebo 11` 组织。
 - 过程日志见 [PROCESS_LOG.md](PROCESS_LOG.md)。
+- 第一阶段开源审计见 [OPEN_SOURCE_AUDIT.md](OPEN_SOURCE_AUDIT.md)。
 
 详细工作流见 [docs/00_workflow.md](docs/00_workflow.md)。
