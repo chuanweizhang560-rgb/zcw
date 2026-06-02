@@ -870,3 +870,16 @@
   - 如果 depth camera 视角或 range 不足，再评估官方 Gazebo ROS2 GPU ray overlay
 - 阻塞项：
   - 无阻塞；但导线可见性尚未完成审核
+
+### 2026-06-02 19:18:12 CST
+
+- 节点：depth camera PointCloud2 验证节点提交
+- 执行动作：
+  - 提交 `a49d147`：`Add depth camera pointcloud verification`
+  - 提交内容包括：
+    - `scripts/verify_depth_camera_pointcloud.sh`
+    - `scripts/run_px4_gazebo_classic_headless.sh` 的 direct model、ROS2/Gazebo runtime path、GUI/headless 和清理逻辑
+    - 执行手册、电缆专项工作流、开源审计、资产 YAML、脚本说明和过程记录
+- 结果：本地 commit 已生成
+- 下一步：提交本记录更新并推送远端分支
+- 阻塞项：无
