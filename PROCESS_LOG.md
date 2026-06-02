@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 13:54:15 CST
+更新时间：2026-06-02 13:55:19 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -217,3 +217,18 @@
   - 输出 `MicroXRCEAgent ready`
 - 下一步：提交并推送 ROS 2 bridge 阶段脚本和记录
 - 阻塞项：无
+
+### 2026-06-02 13:55:19 CST
+
+- 节点：ROS 2 bridge 阶段提交与远端同步
+- 执行动作：
+  - 提交 `a7be949`：`Verify PX4 ROS2 bridge`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含 PX4 ROS 2 bridge 验证脚本、Agent 构建脚本、审计记录和执行手册更新
+- 下一步：
+  - 在 `zcw_bringup` 建立单机 PX4 Offboard launch 入口
+  - 建立单机规则 baseline：先悬停，再 waypoint
+- 阻塞项：
+  - 项目自身 LICENSE 尚未确定
+  - 尚未截取 GUI/RViz 截图
