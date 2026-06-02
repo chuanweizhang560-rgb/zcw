@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 15:44:48 CST
+更新时间：2026-06-02 16:55:16 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -26,6 +26,7 @@ PX4 release/1.14 + `px4_msgs release/1.14` + `px4_ros_com release/v1.14` + Micro
 基于同一官方 Offboard setpoint 链路派生的 `zcw_px4_baseline/offboard_waypoint_sequence` 已完成单机 waypoint baseline 验证。
 AerialCore 风机 world 上的最小风机巡检几何 waypoint baseline 已完成 headless 验证和 GUI 截图审核。
 AerialCore 两塔导线 world 上的最小电缆巡检几何 waypoint baseline 已完成 headless 验证和 GUI 截图审核。
+PX4 Classic `iris_foggy_lidar` + ROS2 `gazebo_ros_ray_sensor` overlay 已完成 PointCloud2 topic 验证。
 
 实测成功标志：
 
@@ -135,6 +136,12 @@ scripts/verify_wind_turbine_waypoints.sh
 scripts/verify_cable_waypoints.sh
 ```
 
+电缆传感器 PointCloud2 验证：
+
+```bash
+scripts/verify_foggy_lidar_pointcloud.sh
+```
+
 最小风机巡检 GUI 截图审核：
 
 ```bash
@@ -175,6 +182,7 @@ scripts/verify_aerialcore_worlds.sh
 1. 将电缆巡检从固定 corridor waypoint 升级到 PCL RANSAC + catenary/spline + Frenet/pure pursuit 的开源复用链路。
 2. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 3. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。
+4. 电缆下一步先录制/导出 `/zcw/foggy_lidar/points`，离线验证 PCL RANSAC 导线候选分割。
 
 ## 不允许事项
 

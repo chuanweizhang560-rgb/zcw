@@ -7,6 +7,7 @@ AERIALCORE_WORLD="${AERIALCORE_WORLD:-wind_turbine}"
 LOG_DIR="${LOG_DIR:-${ROOT_DIR}/data/logs}"
 SCREENSHOT_DIR="${SCREENSHOT_DIR:-${ROOT_DIR}/data/screenshots}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
+ZCW_MODEL_PATH="${ZCW_MODEL_PATH:-${ROOT_DIR}/assets/gazebo/models}"
 
 case "${AERIALCORE_WORLD}" in
   wind_turbine)
@@ -22,8 +23,16 @@ case "${AERIALCORE_WORLD}" in
     ;;
 esac
 
+MODEL_PATH="${AERIALCORE_DIR}/models"
+if [[ -d "${ZCW_MODEL_PATH}" ]]; then
+  MODEL_PATH="${ZCW_MODEL_PATH}:${MODEL_PATH}"
+fi
+if [[ -n "${EXTRA_GAZEBO_MODEL_PATH:-}" ]]; then
+  MODEL_PATH="${MODEL_PATH}:${EXTRA_GAZEBO_MODEL_PATH}"
+fi
+
 PX4_SITL_WORLD="${WORLD_PATH}" \
-GAZEBO_MODEL_PATH="${AERIALCORE_DIR}/models" \
+GAZEBO_MODEL_PATH="${MODEL_PATH}" \
 GAZEBO_RESOURCE_PATH="/usr/share/gazebo-11:${AERIALCORE_DIR}" \
 VERBOSE_SIM="${VERBOSE_SIM:-1}" \
 LOG_FILE="${LOG_DIR}/px4_aerialcore_${AERIALCORE_WORLD}_gui_${STAMP}.log" \

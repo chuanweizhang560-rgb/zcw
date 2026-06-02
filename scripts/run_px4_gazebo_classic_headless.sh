@@ -9,8 +9,23 @@ LOG_DIR="${LOG_DIR:-${ROOT_DIR}/data/logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/px4_gazebo_classic_headless_$(date +%Y%m%d_%H%M%S).log}"
 PX4_SITL_WORLD_VALUE="${PX4_SITL_WORLD:-}"
 GAZEBO_MODEL_PATH_VALUE="${GAZEBO_MODEL_PATH:-}"
+GAZEBO_PLUGIN_PATH_VALUE="${PX4_EXTRA_GAZEBO_PLUGIN_PATH:-}"
 GAZEBO_RESOURCE_PATH_VALUE="${GAZEBO_RESOURCE_PATH:-/usr/share/gazebo-11}"
+LD_LIBRARY_PATH_VALUE="${PX4_EXTRA_LD_LIBRARY_PATH:-}"
 VERBOSE_SIM_VALUE="${VERBOSE_SIM:-}"
+ROS_VERSION_VALUE="${ROS_VERSION:-}"
+NO_PXH_VALUE="${NO_PXH:-1}"
+PX4_MODEL_VALUE="${PX4_MODEL:-}"
+GAZEBO_MAKE_TARGET="${PX4_GAZEBO_TARGET:-gazebo-classic}"
+
+if [[ -n "${PX4_MODEL_VALUE}" ]]; then
+  GAZEBO_MAKE_TARGET="gazebo-classic_${PX4_MODEL_VALUE}"
+fi
+
+if [[ "${ROS_VERSION_VALUE}" == "2" ]]; then
+  GAZEBO_PLUGIN_PATH_VALUE="/opt/ros/humble/lib${GAZEBO_PLUGIN_PATH_VALUE:+:${GAZEBO_PLUGIN_PATH_VALUE}}"
+  LD_LIBRARY_PATH_VALUE="/opt/ros/humble/lib${LD_LIBRARY_PATH_VALUE:+:${LD_LIBRARY_PATH_VALUE}}"
+fi
 
 if [[ ! -d "${PX4_DIR}" ]]; then
   echo "PX4 directory not found: ${PX4_DIR}" >&2
@@ -26,6 +41,7 @@ fi
 mkdir -p "${LOG_DIR}"
 
 cd "${PX4_DIR}"
+echo "PX4/Gazebo Classic make target: ${GAZEBO_MAKE_TARGET}" >"${LOG_FILE}"
 
 set +e
 timeout "${TIMEOUT_SEC}s" env -i \
@@ -34,11 +50,15 @@ timeout "${TIMEOUT_SEC}s" env -i \
   PATH="${VENV_DIR}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
   PYTHON_EXECUTABLE="${VENV_DIR}/bin/python" \
   PX4_SITL_WORLD="${PX4_SITL_WORLD_VALUE}" \
+  GAZEBO_PLUGIN_PATH="${GAZEBO_PLUGIN_PATH_VALUE}" \
   GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH_VALUE}" \
   GAZEBO_RESOURCE_PATH="${GAZEBO_RESOURCE_PATH_VALUE}" \
+  LD_LIBRARY_PATH="${LD_LIBRARY_PATH_VALUE}" \
   VERBOSE_SIM="${VERBOSE_SIM_VALUE}" \
+  ROS_VERSION="${ROS_VERSION_VALUE}" \
+  NO_PXH="${NO_PXH_VALUE}" \
   HEADLESS=1 \
-  make px4_sitl gazebo-classic >"${LOG_FILE}" 2>&1
+  make px4_sitl "${GAZEBO_MAKE_TARGET}" >>"${LOG_FILE}" 2>&1
 status=$?
 set -e
 

@@ -81,3 +81,16 @@ known_warnings:
   - AerialCore autospawn worlds reference MRS RViz camera synchronizer plugins that are not installed on this machine.
   - The missing MRS camera synchronizer plugin is not required for static model visibility in Gazebo headless smoke tests.
   - Do not copy or remodel these assets into this repository unless licensing and attribution are reviewed again.
+
+sensor_overlays:
+  foggy_lidar_ros2_pointcloud:
+    path: assets/gazebo/models/foggy_lidar
+    upstream_basis: third_party/PX4-Autopilot-release-1.14/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/foggy_lidar/foggy_lidar.sdf
+    changed_component: gazebo_plugin_only
+    ros2_plugin: /opt/ros/humble/lib/libgazebo_ros_ray_sensor.so
+    output_topic: /zcw/foggy_lidar/points
+    output_type: sensor_msgs/msg/PointCloud2
+    verification: scripts/verify_foggy_lidar_pointcloud.sh
+    latest_sample_log: data/logs/foggy_lidar_sample_20260602_165359.log
+    latest_hz_log: data/logs/foggy_lidar_hz_20260602_165359.log
+    status: pointcloud2_topic_verified

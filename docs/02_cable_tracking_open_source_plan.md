@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 16:03:00 CST
+更新时间：2026-06-02 16:55:16 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -16,6 +16,13 @@
    - 验证：`scripts/verify_cable_waypoints.sh`
    - 成功日志：`data/logs/waypoints_control_20260602_153812.log`
    - GUI 截图：`data/screenshots/px4_aerialcore_danube_wires_gui_20260602_154308_gazebo_left.png`
+5. 传感器 smoke test：
+   - overlay：`assets/gazebo/models/foggy_lidar`
+   - 验证：`scripts/verify_foggy_lidar_pointcloud.sh`
+   - topic：`/zcw/foggy_lidar/points`
+   - 类型：`sensor_msgs/msg/PointCloud2`
+   - 成功样本：`data/logs/foggy_lidar_sample_20260602_165359.log`
+   - 频率：约 `5.43 Hz`
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 
@@ -23,7 +30,7 @@
 
 | 层 | 组件 | 来源/版本 | 许可证 | 采用方式 |
 |---|---|---|---|---|
-| 仿真机体/传感器 | PX4 Gazebo Classic `iris_rplidar` / `iris_depth_camera` / `iris_foggy_lidar` | PX4 release/1.14 自带模型 | BSD-3-Clause 体系 | 优先复用现成带 LiDAR/Depth 的 iris 变体 |
+| 仿真机体/传感器 | PX4 Gazebo Classic `iris_foggy_lidar` + ROS2 ray sensor overlay | PX4 release/1.14 自带模型 + `ros-humble-gazebo-plugins 3.9.0` | BSD-3-Clause / Apache-2.0 体系 | 已验证 PointCloud2 topic；不重做机体和传感器几何 |
 | 点云接口 | `sensor_msgs/PointCloud2` + `pcl_conversions` + `pcl_ros` | `ros-humble-pcl-ros 2.4.5`，`ros-humble-pcl-conversions 2.4.5` | BSD | ROS2 点云消息与 PCL 互转 |
 | 几何分割 | PCL `SampleConsensusModelLine` / `SACSegmentation` | `libpcl-dev 1.12.1` | BSD-3-Clause | RANSAC 线模型分割导线候选点 |
 | 曲线拟合 | Ceres Solver + Eigen Splines | `libceres-dev 2.0.0`，`libeigen3-dev 3.4.0` | BSD-3-Clause / MPL2 | 用成熟优化和样条库拟合 catenary/spline，不写自研优化器 |
@@ -73,20 +80,18 @@ Gazebo/PX4 iris_rplidar or iris_depth_camera
 
 优先顺序：
 
-1. 复用 PX4 Classic 自带 `iris_rplidar`，验证 Gazebo topic 是否存在有效 scan/point cloud。
-2. 若 `iris_rplidar` 只提供 2D scan 且不足以识别导线高度，改用 `iris_depth_camera` 或 `iris_foggy_lidar`。
-3. 如果需要 ROS2 点云桥接，优先使用 `gazebo_ros_pkgs` 的成熟 plugin/bridge，不手写 Gazebo 传感器插件。
+1. 复用 PX4 Classic 自带 `iris_foggy_lidar` airframe。
+2. 通过 `assets/gazebo/models/foggy_lidar` overlay 保持 PX4 ray sensor 参数，只替换为 ROS2 Humble `gazebo_ros_ray_sensor`。
+3. 如果后续发现 2D ray 点云不足以分割导线，再评估 depth/GPU ray 方案；不得直接自研 Gazebo 传感器插件。
 4. 不修改 AerialCore 电塔/导线 mesh；只允许通过 launch/env 选择 PX4 模型和 world。
 
 下一步先做传感器 smoke test：
 
 ```bash
-PX4_MODEL=iris_rplidar AERIALCORE_WORLD=danube_wires scripts/run_px4_aerialcore_world_headless.sh
-ros2 topic list
-ros2 topic echo --once <lidar_or_pointcloud_topic>
+scripts/verify_foggy_lidar_pointcloud.sh
 ```
 
-如果当前脚本还不支持 `PX4_MODEL`，只允许修改脚本做模型参数透传，不允许复制或重做机体模型。
+当前脚本已支持 `PX4_MODEL` 透传，并默认保持 clean env，不继承宿主旧项目的 Gazebo/LD 路径。
 
 ## 6. 处理参数初值
 
@@ -193,8 +198,7 @@ ros2 topic echo --once <lidar_or_pointcloud_topic>
 
 ## 10. 下一个执行节点
 
-1. 修改 PX4/AerialCore 启动脚本，使其支持 `PX4_MODEL` 透传。
-2. 运行 `iris_rplidar` + `danube_wires` headless smoke test。
-3. 检查 Gazebo/ROS topic 中是否有 LiDAR/Depth 数据。
-4. 截取 GUI 图，确认传感器机体仍在电塔导线场景中。
-5. 将传感器选择、topic 和失败原因写入 `PROCESS_LOG.md`。
+1. 录制或导出 `/zcw/foggy_lidar/points` 的短时样本。
+2. 建立离线 PCL RANSAC 分割验证入口。
+3. 输出 ROI 后点数、RANSAC 内点数和线候选参数。
+4. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。

@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 16:06:28 CST
+更新时间：2026-06-02 16:55:16 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -534,3 +534,38 @@
 - 结果：本地 commit 已生成
 - 下一步：提交本记录更新并推送远端分支
 - 阻塞项：无
+
+### 2026-06-02 16:55:16 CST
+
+- 节点：PX4 Classic foggy lidar ROS2 PointCloud2 传感器 smoke test
+- 执行动作：
+  - 给 `scripts/run_px4_gazebo_classic_headless.sh` 和 `scripts/capture_px4_gazebo_classic_gui.sh` 增加 `PX4_MODEL` 透传
+  - 增加 `ROS_VERSION=2` 时的 Gazebo ROS2 plugin path / LD path 透传
+  - 修复 clean env：默认不继承宿主 `GAZEBO_MODEL_PATH`、`GAZEBO_PLUGIN_PATH`、`LD_LIBRARY_PATH`，只使用本仓库路径和显式 `EXTRA_*` 变量
+  - 新增 `assets/gazebo/models/foggy_lidar` overlay，基于 PX4 release/1.14 `foggy_lidar`，只把插件替换为 ROS2 Humble `libgazebo_ros_ray_sensor.so`
+  - 新增 `scripts/verify_foggy_lidar_pointcloud.sh`
+  - 运行 `scripts/verify_foggy_lidar_pointcloud.sh`
+  - 检查 topic 类型、topic info、一帧样本、发布频率和退出后残留进程
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_sim_assets`
+- 结果：
+  - PX4/Gazebo target：`gazebo-classic_iris_foggy_lidar`
+  - Gazebo world：AerialCore `power_towers_danube_wires_rescaled_autospawn.world`
+  - ROS2 topic：`/zcw/foggy_lidar/points`
+  - topic 类型：`sensor_msgs/msg/PointCloud2`
+  - 样本字段包含 `width: 180`、`point_step: 16`、`data`
+  - 发布频率约 `5.43 Hz`
+  - 成功日志：
+    - `data/logs/foggy_lidar_px4_20260602_165359.log`
+    - `data/logs/foggy_lidar_topics_20260602_165359.log`
+    - `data/logs/foggy_lidar_type_20260602_165359.log`
+    - `data/logs/foggy_lidar_info_20260602_165359.log`
+    - `data/logs/foggy_lidar_sample_20260602_165359.log`
+    - `data/logs/foggy_lidar_hz_20260602_165359.log`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+  - `zcw_sim_assets` 构建成功，更新后的资产 YAML 可安装
+- 下一步：
+  - 提交并推送传感器 overlay、脚本和记录
+  - 建立离线点云 bag/PCD 采集入口，开始 PCL RANSAC 导线候选分割验证
+- 阻塞项：
+  - AerialCore world 仍有缺少 `libMRSGazeboRvizCameraSynchronizer.so` 的非核心警告
+  - 该 foggy lidar 是 2D ray -> PointCloud2 输出，不是多线 3D LiDAR；第一版可用于 corridor 点云 smoke test，后续若导线分割点数不足，需要再评估 depth/GPU ray 方案

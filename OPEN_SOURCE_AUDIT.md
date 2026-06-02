@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 16:03:00 CST
+更新时间：2026-06-02 16:55:16 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -64,6 +64,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | ROS `pcl_ros` / `pcl_conversions` | https://github.com/ros-perception/perception_pcl | BSD | ROS 2 点云消息和 PCL 互转 | 必选接口；本机已安装 Humble `2.4.5` |
 | Ceres Solver | https://github.com/ceres-solver/ceres-solver | BSD-3-Clause | catenary 曲线参数拟合 | 采用系统包 `libceres-dev 2.0.0`，不自研优化器 |
 | Eigen Splines | https://eigen.tuxfamily.org/ | MPL2 | spline 曲线和平滑中心线 | 采用系统包 `libeigen3-dev 3.4.0` |
+| ROS2 Gazebo Ray Sensor plugin | `/opt/ros/humble/lib/libgazebo_ros_ray_sensor.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | Gazebo ray -> ROS2 PointCloud2 | 已用于 `foggy_lidar` overlay，输出 `/zcw/foggy_lidar/points` |
 | `Tury05/PowerLine-LiDAR-Detector` | https://github.com/Tury05/PowerLine-LiDAR-Detector | MIT | 导线点云检测参考 | 可复用/参考，需评估实时性和依赖 |
 | PL2DM 论文方法 | https://pmc.ncbi.nlm.nih.gov/articles/PMC6515251/ | 论文方法 | LiDAR 导线检测与悬链线建模依据 | 作为算法路线依据，不直接照抄实现 |
 
@@ -293,6 +294,12 @@ uxrce_dds_client synchronized
 2. 两个 world 均在 Gazebo 11 headless 下连接 master 并加载 world 文件。
 3. `scripts/run_px4_aerialcore_world_headless.sh` 已验证 PX4 `iris` 可在风机 world 和两塔导线 world 中启动。
 4. 退出后未发现 Gazebo/PX4 残留进程。
+
+传感器 overlay：
+
+1. `assets/gazebo/models/foggy_lidar` 基于 PX4 release/1.14 `foggy_lidar`，保留 ray sensor 几何、range、scan pattern 和 noise。
+2. 仅将插件从 PX4 MAVLink lidar plugin 替换为 ROS2 Humble `libgazebo_ros_ray_sensor.so`。
+3. `scripts/verify_foggy_lidar_pointcloud.sh` 已验证 `/zcw/foggy_lidar/points` 为 `sensor_msgs/msg/PointCloud2`，样本 `width: 180`，发布频率约 `5.43 Hz`。
 
 已知警告：
 
