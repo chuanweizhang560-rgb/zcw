@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 14:41:12 CST
+更新时间：2026-06-02 14:51:15 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -23,6 +23,7 @@ Gazebo Classic 11.10.2
 PX4 release/1.14 + Gazebo Classic 11 已完成 headless 最小链路验证。
 PX4 release/1.14 + `px4_msgs release/1.14` + `px4_ros_com release/v1.14` + Micro XRCE-DDS Agent v2.2.1 已完成 ROS 2 bridge 验证。
 基于 `px4_ros_com` 官方 Offboard 示例派生的 `zcw_px4_baseline/offboard_hover_retry` 已完成单机 armed Offboard 悬停验证。
+基于同一官方 Offboard setpoint 链路派生的 `zcw_px4_baseline/offboard_waypoint_sequence` 已完成单机 waypoint baseline 验证。
 
 实测成功标志：
 
@@ -32,6 +33,7 @@ Startup script returned successfully
 /fmu/out/vehicle_status
 arming_state: 2
 nav_state: 14
+Advancing to waypoint
 ```
 
 注意事项：
@@ -106,6 +108,12 @@ source install/setup.bash
 ros2 launch zcw_bringup single_vehicle_offboard_hover.launch.py
 ```
 
+Offboard waypoint baseline 验证：
+
+```bash
+scripts/verify_px4_offboard_waypoints.sh
+```
+
 Gazebo Classic GUI 截图：
 
 ```bash
@@ -124,8 +132,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 进入单机 waypoint baseline。
-2. 将 PX4 `iris` 与 AerialCore 风机/两塔导线 world 组合进可运行任务 smoke test。
+1. 将 PX4 `iris` 与 AerialCore 风机/两塔导线 world 组合进可运行任务 smoke test。
+2. 在单机任务 smoke test 上叠加最小风机巡检几何 waypoint。
 
 ## 不允许事项
 

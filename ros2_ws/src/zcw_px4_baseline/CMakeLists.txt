@@ -15,6 +15,14 @@ find_package(rclcpp REQUIRED)
 
 add_executable(offboard_hover_retry src/offboard_hover_retry.cpp)
 ament_target_dependencies(offboard_hover_retry rclcpp px4_msgs)
-install(TARGETS offboard_hover_retry DESTINATION lib/${PROJECT_NAME})
+
+add_executable(offboard_waypoint_sequence src/offboard_waypoint_sequence.cpp)
+ament_target_dependencies(offboard_waypoint_sequence rclcpp px4_msgs)
+
+install(TARGETS
+  offboard_hover_retry
+  offboard_waypoint_sequence
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()

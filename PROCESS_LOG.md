@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 14:41:12 CST
+更新时间：2026-06-02 14:51:15 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -337,6 +337,37 @@
   - 进入单机 waypoint baseline
   - 将 PX4 `iris` 与 AerialCore 风机/两塔导线 world 做组合 smoke test
 - 阻塞项：
+  - 未安装 MRS Gazebo camera synchronizer plugin
+  - RViz 截图尚未进行
+  - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 14:51:15 CST
+
+- 节点：单机 Offboard waypoint baseline
+- 执行动作：
+  - 推送提交 `dba19f8`：`Record AerialCore Gazebo assets`
+  - 新增 `zcw_px4_baseline/offboard_waypoint_sequence`
+  - 新增 `zcw_bringup/single_vehicle_waypoint_sequence.launch.py`
+  - 新增 `scripts/verify_px4_offboard_waypoints.sh`
+  - clean env 构建 `zcw_px4_baseline` 和 `zcw_bringup`
+  - 运行 `scripts/verify_px4_offboard_waypoints.sh`
+  - 检查 waypoint 日志、最终 `vehicle_status`、最终 `vehicle_local_position` 和仿真残留进程
+- 结果：
+  - waypoint baseline 构建成功
+  - PX4 保持 `arming_state: 2`、`nav_state: 14`
+  - waypoint 日志显示从 waypoint 1 推进到 waypoint 4，并保持最终航点
+  - 成功日志：
+    - `data/logs/waypoints_control_20260602_144955.log`
+    - `data/logs/waypoints_vehicle_status_20260602_144955.log`
+    - `data/logs/waypoints_vehicle_local_position_20260602_144955.log`
+  - 最终局部位置约为 `x=0.026`、`y=0.063`、`z=-5.047`，符合回到最终航点附近的预期
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent`、`offboard_waypoint_sequence` 残留进程
+- 下一步：
+  - 提交并推送 waypoint baseline
+  - 将 PX4 `iris` 与 AerialCore 风机/两塔导线 world 组合进可运行任务 smoke test
+  - 进入单机最小风机巡检几何 waypoint
+- 阻塞项：
+  - 尚未把 AerialCore world 接入 PX4 SITL 启动脚本
   - 未安装 MRS Gazebo camera synchronizer plugin
   - RViz 截图尚未进行
   - 项目自身 LICENSE 尚未确定

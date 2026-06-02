@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 14:38:26 CST
+更新时间：2026-06-02 14:51:15 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -229,12 +229,13 @@ uxrce_dds_client synchronized
 | 上游 commit | `e18248d` |
 | 许可证 | BSD-3-Clause |
 | 本仓库派生包 | `ros2_ws/src/zcw_px4_baseline` |
+| 已派生节点 | `offboard_hover_retry`、`offboard_waypoint_sequence` |
 
 适配边界：
 
 1. 保留 PX4 官方 BSD 许可头。
 2. 不改 PX4 飞控内环，不写风机/电缆巡检算法。
-3. 只增加 `vehicle_status` 订阅、Offboard/arm 命令重试和 PX4 官方 Python 示例同款 QoS。
+3. 只增加状态订阅、Offboard/arm 命令重试、PX4 官方 Python 示例同款 QoS 和固定 waypoint setpoint 序列。
 
 实测范围：
 
@@ -246,7 +247,7 @@ uxrce_dds_client synchronized
 
 1. `px4_ros_com` 官方 C++ 示例只发一次 arm 命令；本机实测可进入 Offboard，但可能保持 `arming_state: 1`。
 2. `vehicle_status` 订阅必须使用 best-effort QoS，否则 ROS 2 会报告 `RELIABILITY_QOS_POLICY` 不兼容。
-3. Offboard setpoint 当前只用于悬停验证，不代表风机巡检或电缆巡检策略。
+3. Offboard setpoint 当前只用于悬停/waypoint baseline 验证，不代表风机巡检或电缆巡检策略。
 
 ## 10. AerialCore Gazebo Asset 实测记录
 
