@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 13:55:19 CST
+更新时间：2026-06-02 14:14:25 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -232,3 +232,30 @@
 - 阻塞项：
   - 项目自身 LICENSE 尚未确定
   - 尚未截取 GUI/RViz 截图
+
+### 2026-06-02 14:14:25 CST
+
+- 节点：单机 PX4 Offboard 悬停 baseline
+- 执行动作：
+  - 新建 `scripts/verify_px4_offboard_hover.sh`
+  - 首次运行官方 `px4_ros_com/offboard_control`，发现工作空间曾继承 conda Python 3.13，导致 `px4_msgs` Python type support 缺模块
+  - 用系统 Python 3.10 clean env 重新构建 `px4_msgs`、`px4_ros_com`、`zcw_bringup`、`zcw_sim_assets`
+  - 复测官方 `offboard_control`，PX4 进入 `nav_state: 14`，但 `arming_state` 保持 `1`
+  - 基于 PX4 官方 BSD-3-Clause Offboard 示例派生 `ros2_ws/src/zcw_px4_baseline/offboard_hover_retry`
+  - 保留官方许可头，只增加状态订阅、Offboard/arm 命令重试和 PX4 官方 Python 示例同款 QoS
+  - 修复 `vehicle_status` QoS 不兼容问题：使用 best-effort/transient-local
+  - 运行 `scripts/verify_px4_offboard_hover.sh`
+  - 检查仿真退出后是否存在 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent`、`offboard_hover_retry` 残留进程
+- 结果：
+  - `zcw_px4_baseline` 构建成功
+  - Offboard 悬停验证通过
+  - 成功证据：`data/logs/offboard_vehicle_status_20260602_141339.log` 中 `arming_state: 2`、`nav_state: 14`
+  - Offboard 节点日志显示 `Holding armed Offboard hover`
+  - 退出后未发现仿真残留进程
+- 下一步：
+  - 提交并推送本阶段 baseline 包、验证脚本和文档
+  - 做 GUI/Gazebo 截图审核，确认可视化仿真状态
+  - 在 `zcw_bringup` 建立单机 launch 入口
+- 阻塞项：
+  - 尚未截取 GUI/RViz 截图
+  - 项目自身 LICENSE 尚未确定

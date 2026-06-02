@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 13:52:19 CST
+更新时间：2026-06-02 14:14:25 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -216,3 +216,33 @@ uxrce_dds_client synchronized
 1. Agent v2.2.1 使用系统 `fmt`/`spdlog` 构建；不能让 conda 的 `fmt` 头文件进入 include path。
 2. `px4_msgs main` 不用于当前链路，当前固定 `release/1.14`。
 3. `px4_ros_com main` 不用于当前链路，当前固定 `release/v1.14`。
+
+## 9. PX4 Offboard Baseline 实测记录
+
+采用来源：
+
+| 项 | 结果 |
+|---|---|
+| 上游代码来源 | `third_party/px4_ros_com/src/examples/offboard/offboard_control.cpp` |
+| 上游分支 | `release/v1.14` |
+| 上游 commit | `e18248d` |
+| 许可证 | BSD-3-Clause |
+| 本仓库派生包 | `ros2_ws/src/zcw_px4_baseline` |
+
+适配边界：
+
+1. 保留 PX4 官方 BSD 许可头。
+2. 不改 PX4 飞控内环，不写风机/电缆巡检算法。
+3. 只增加 `vehicle_status` 订阅、Offboard/arm 命令重试和 PX4 官方 Python 示例同款 QoS。
+
+实测范围：
+
+1. `zcw_px4_baseline/offboard_hover_retry` 构建成功。
+2. `scripts/verify_px4_offboard_hover.sh` 启动 Micro XRCE-DDS Agent、PX4 SITL、Gazebo Classic headless 和 Offboard 节点。
+3. 验证通过，最终 `/fmu/out/vehicle_status` 显示 `arming_state: 2`、`nav_state: 14`。
+
+注意：
+
+1. `px4_ros_com` 官方 C++ 示例只发一次 arm 命令；本机实测可进入 Offboard，但可能保持 `arming_state: 1`。
+2. `vehicle_status` 订阅必须使用 best-effort QoS，否则 ROS 2 会报告 `RELIABILITY_QOS_POLICY` 不兼容。
+3. Offboard setpoint 当前只用于悬停验证，不代表风机巡检或电缆巡检策略。

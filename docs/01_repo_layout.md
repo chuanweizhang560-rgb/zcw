@@ -56,6 +56,12 @@ codex_zcw/
 
 放 ROS 2 工作空间本体。
 
+当前包：
+
+- `zcw_bringup`：launch/config 入口，只做编排。
+- `zcw_sim_assets`：Gazebo world/model 引用入口，只整理资产引用。
+- `zcw_px4_baseline`：基于 PX4 官方 `px4_ros_com` 示例派生的 Offboard baseline，只用于仿真控制链路验证，不放风机/电缆巡检核心算法。
+
 ## 3. 约束
 
 1. 不把实现代码直接堆在仓库根目录。

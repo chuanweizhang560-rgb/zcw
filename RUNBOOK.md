@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 13:52:19 CST
+更新时间：2026-06-02 14:14:25 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -22,6 +22,7 @@ Gazebo Classic 11.10.2
 
 PX4 release/1.14 + Gazebo Classic 11 已完成 headless 最小链路验证。
 PX4 release/1.14 + `px4_msgs release/1.14` + `px4_ros_com release/v1.14` + Micro XRCE-DDS Agent v2.2.1 已完成 ROS 2 bridge 验证。
+基于 `px4_ros_com` 官方 Offboard 示例派生的 `zcw_px4_baseline/offboard_hover_retry` 已完成单机 armed Offboard 悬停验证。
 
 实测成功标志：
 
@@ -29,6 +30,8 @@ PX4 release/1.14 + `px4_msgs release/1.14` + `px4_ros_com release/v1.14` + Micro
 Simulator connected on TCP port 4560.
 Startup script returned successfully
 /fmu/out/vehicle_status
+arming_state: 2
+nav_state: 14
 ```
 
 注意事项：
@@ -38,6 +41,9 @@ Startup script returned successfully
 3. Ubuntu 22.04 上构建 Classic 插件需要 `ninja-build`、`python3.10-venv`、`libgstreamer-plugins-base1.0-dev`。
 4. headless 验证脚本使用 timeout 退出；只要日志中出现上述成功标志，timeout 退出不是失败。
 5. Micro XRCE-DDS Agent v2.2.1 必须使用 clean build 目录和系统 `fmt`/`spdlog`，避免 conda include 路径导致 ABI/模板错误。
+6. ROS 2 工作空间必须在系统 Python 3.10 环境中构建；不能继承 conda Python 3.13，否则 `px4_msgs` Python type support 会缺模块。
+7. PX4 `/fmu/out/*` topic 使用 best-effort QoS；订阅 `vehicle_status` 时必须按 PX4 官方 Python 示例使用 best-effort/transient-local。
+8. PX4 主日志会持续输出 `pxh>` 提示符，日志文件可能达到数百 MB；排障时只用限长 `head -c`/`tail -c` 过滤，不直接 `strings` 或全文 grep。
 
 ## 本地第三方仓库
 
@@ -85,12 +91,18 @@ ROS 2 bridge 验证：
 scripts/verify_px4_ros2_bridge_headless.sh
 ```
 
+Offboard 悬停验证：
+
+```bash
+scripts/verify_px4_offboard_hover.sh
+```
+
 ## 下一步执行顺序
 
 1. 在 `ros2_ws/src/zcw_bringup` 中建立 PX4 Offboard launch 入口。
 2. 在 `ros2_ws/src/zcw_sim_assets` 中建立 Gazebo 11 world/model 引用入口。
-3. 建立单机 Offboard 悬停 baseline，不接任务、不接学习。
-4. 只在单机 Offboard 悬停闭环稳定后，再进入风机/电缆任务。
+3. 对单机 Offboard 悬停做 GUI/Gazebo 截图审核。
+4. 进入单机 waypoint baseline，再接风机/电缆任务。
 
 ## 不允许事项
 
