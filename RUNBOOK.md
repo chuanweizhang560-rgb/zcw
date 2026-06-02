@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 15:32:05 CST
+更新时间：2026-06-02 15:44:48 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -24,6 +24,8 @@ PX4 release/1.14 + Gazebo Classic 11 已完成 headless 最小链路验证。
 PX4 release/1.14 + `px4_msgs release/1.14` + `px4_ros_com release/v1.14` + Micro XRCE-DDS Agent v2.2.1 已完成 ROS 2 bridge 验证。
 基于 `px4_ros_com` 官方 Offboard 示例派生的 `zcw_px4_baseline/offboard_hover_retry` 已完成单机 armed Offboard 悬停验证。
 基于同一官方 Offboard setpoint 链路派生的 `zcw_px4_baseline/offboard_waypoint_sequence` 已完成单机 waypoint baseline 验证。
+AerialCore 风机 world 上的最小风机巡检几何 waypoint baseline 已完成 headless 验证和 GUI 截图审核。
+AerialCore 两塔导线 world 上的最小电缆巡检几何 waypoint baseline 已完成 headless 验证和 GUI 截图审核。
 
 实测成功标志：
 
@@ -127,10 +129,22 @@ scripts/verify_px4_offboard_waypoints.sh
 scripts/verify_wind_turbine_waypoints.sh
 ```
 
+最小电缆巡检几何 waypoint 验证：
+
+```bash
+scripts/verify_cable_waypoints.sh
+```
+
 最小风机巡检 GUI 截图审核：
 
 ```bash
 AERIALCORE_WORLD=wind_turbine GUI_SETTLE_SEC=12 scripts/capture_px4_aerialcore_world_gui.sh
+```
+
+最小电缆巡检 GUI 截图审核：
+
+```bash
+AERIALCORE_WORLD=danube_wires GUI_SETTLE_SEC=12 VERIFY_TIMEOUT_SEC=120 scripts/capture_px4_aerialcore_world_gui.sh
 ```
 
 Gazebo Classic GUI 截图：
@@ -158,8 +172,9 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 规划电缆巡检最小 waypoint 入口。
+1. 将电缆巡检从固定 corridor waypoint 升级到 PCL RANSAC + catenary/spline + Frenet/pure pursuit 的开源复用链路。
 2. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
+3. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。
 
 ## 不允许事项
 

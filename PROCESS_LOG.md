@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 15:32:05 CST
+更新时间：2026-06-02 15:44:48 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -434,6 +434,43 @@
   - 提交并推送风机 waypoint + GUI 截图脚本
   - 规划并实现电缆巡检最小 waypoint 入口
   - 之后再把风机巡检 waypoint 从方位点改成圆周/螺旋几何配置
+- 阻塞项：
+  - 未安装 MRS Gazebo camera synchronizer plugin
+  - RViz 截图尚未进行
+  - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 15:44:48 CST
+
+- 节点：AerialCore 两塔导线 world 上的最小电缆巡检 waypoint 与 GUI 截图审核
+- 执行动作：
+  - 新增 `zcw_bringup/single_vehicle_cable_inspection.launch.py`
+  - 新增 `scripts/verify_cable_waypoints.sh`
+  - clean env 构建 `zcw_bringup` 和 `zcw_sim_assets`
+  - 运行 `scripts/verify_cable_waypoints.sh`
+  - 检查电缆 waypoint 日志、最终状态、最终局部位置、PX4 world 路径和仿真残留进程
+  - 首次运行 `AERIALCORE_WORLD=danube_wires GUI_SETTLE_SEC=12 scripts/capture_px4_aerialcore_world_gui.sh` 时遇到 Gazebo/PX4 端口短时占用，日志出现 `Address already in use` 和 `PX4 server already running for instance 0`
+  - 用宿主进程表确认无 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留后，使用 `VERIFY_TIMEOUT_SEC=120` 重跑 GUI 截图
+  - 截取完整双屏图后，裁剪左半屏 Gazebo 区域用于视觉审核
+- 结果：
+  - 电缆巡检 waypoint 验证通过
+  - PX4 日志确认加载 `power_towers_danube_wires_rescaled_autospawn.world`，并使用 PX4 `iris.sdf`
+  - waypoint 日志显示推进到 `[-50, -35, -22]`、`[-5, -25, -22]`、`[-50, -15, -22]`、`[-5, -5, -22]`、`[-50, -35, -22]`
+  - PX4 保持 `arming_state: 2`、`nav_state: 14`
+  - 最终局部位置约为 `x=-49.993`、`y=-34.986`、`z=-22.051`
+  - 成功日志：
+    - `data/logs/waypoints_px4_20260602_153812.log`
+    - `data/logs/waypoints_control_20260602_153812.log`
+    - `data/logs/waypoints_vehicle_status_20260602_153812.log`
+    - `data/logs/waypoints_vehicle_local_position_20260602_153812.log`
+  - GUI 截图：
+    - 原始：`data/screenshots/px4_aerialcore_danube_wires_gui_20260602_154308.png`
+    - 有效裁剪：`data/screenshots/px4_aerialcore_danube_wires_gui_20260602_154308_gazebo_left.png`
+  - 截图显示 Gazebo Classic 中的 AerialCore 电塔、导线和 PX4 `iris` 机体
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent`、`offboard_waypoint_sequence` 残留进程
+- 下一步：
+  - 提交并推送电缆 waypoint + GUI 截图记录
+  - 将电缆巡检从固定 corridor waypoint 升级到 PCL RANSAC + catenary/spline + Frenet/pure pursuit 的开源复用链路
+  - 将风机巡检 waypoint 从方位点改成圆周/螺旋几何配置
 - 阻塞项：
   - 未安装 MRS Gazebo camera synchronizer plugin
   - RViz 截图尚未进行

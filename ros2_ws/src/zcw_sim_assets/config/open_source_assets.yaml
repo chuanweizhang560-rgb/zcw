@@ -52,6 +52,13 @@ inspection_smoke_tests:
     latest_waypoint_log: data/logs/waypoints_control_20260602_152511.log
     latest_gui_screenshot: data/screenshots/px4_aerialcore_wind_turbine_gui_20260602_153006_gazebo_only.png
     status: minimal_geometric_waypoint_baseline_verified
+  cable_waypoints:
+    script: scripts/verify_cable_waypoints.sh
+    launch: zcw_bringup/single_vehicle_cable_inspection.launch.py
+    latest_px4_log: data/logs/waypoints_px4_20260602_153812.log
+    latest_waypoint_log: data/logs/waypoints_control_20260602_153812.log
+    latest_gui_screenshot: data/screenshots/px4_aerialcore_danube_wires_gui_20260602_154308_gazebo_left.png
+    status: minimal_geometric_waypoint_baseline_verified
 
 selected_models:
   wind_turbine_mesh:
