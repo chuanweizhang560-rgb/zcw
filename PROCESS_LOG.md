@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 13:04:23 CST
+更新时间：2026-06-02 13:10:56 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -87,3 +87,30 @@
 - 结果：阶段 1 的第一版候选清单和最小目录骨架已经形成
 - 下一步：克隆第一批轻量候选仓库到 `third_party/`，复核许可证、commit 和 Gazebo 11 兼容性
 - 阻塞项：PX4 官方 Gazebo Classic 链路对 Ubuntu 22.04/Gazebo 11 的兼容性需要实测确认
+
+### 2026-06-02 13:07:50 CST
+
+- 节点：第一批外部开源仓库克隆与许可证复核
+- 执行动作：
+  - 克隆 `PX4/px4_msgs`、`PX4/px4_ros_com`、`PX4/PX4-SITL_gazebo-classic`
+  - 克隆 `ethz-asl/mav_trajectory_generation`、`Tury05/PowerLine-LiDAR-Detector`、`marlbenchmark/on-policy`
+  - 读取各仓库分支、commit 和 LICENSE
+  - 将复核结果写入 `OPEN_SOURCE_AUDIT.md`
+  - 保持上游源码只存在于本地 `third_party/`，不提交进主仓库
+- 结果：第一批轻量候选已经具备可追踪版本记录；ROS 2/PX4 接口候选可进入下一步骨架验证
+- 下一步：建立最小 ROS 2 工作空间包骨架，优先验证 `px4_msgs` / `px4_ros_com` 接口链路
+- 阻塞项：
+  - `PX4-SITL_gazebo-classic` 未找到根目录 LICENSE，仅 `package.xml` 标注 BSD，需继续复核
+  - PX4 Classic 在 Ubuntu 22.04 + Gazebo 11 上仍需实测
+
+### 2026-06-02 13:10:56 CST
+
+- 节点：最小 ROS 2 工作空间骨架与构建验证
+- 执行动作：
+  - 新建 `RUNBOOK.md` 作为当前执行入口
+  - 新建 `ros2_ws/src/zcw_bringup` 空包，用于后续 launch/config 入口
+  - 新建 `ros2_ws/src/zcw_sim_assets` 空包，用于后续 Gazebo world/model 资产组织
+  - 运行 `colcon build --symlink-install --packages-select zcw_bringup zcw_sim_assets`
+- 结果：两个空包均构建成功，ROS 2 工作空间结构有效
+- 下一步：验证 PX4 Classic / Gazebo 11 最小仿真链路，再决定 `px4_msgs` 分支和 Offboard bringup 入口
+- 阻塞项：项目自身许可证尚未确定，ROS 2 包暂用 `TODO` 许可证字段

@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 12:58:07 CST
+更新时间：2026-06-02 13:07:25 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -130,3 +130,23 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 2. 克隆第一批轻量候选仓库。
 3. 为每个克隆仓库补充版本、commit、许可证复核结果。
 4. 开始建立 `ros2_ws` 最小骨架，不写核心算法。
+
+## 6. 本地克隆复核结果
+
+第一批轻量候选已经克隆到 `third_party/`。这些上游源码被 `third_party/.gitignore` 忽略，不提交进本仓库；本仓库只提交来源、commit 和判断结果。
+
+| 仓库 | 分支 | commit | LICENSE 复核 | 初步集成结论 |
+|---|---|---|---|---|
+| `third_party/px4_msgs` | `main` | `18405d6` | BSD-3-Clause | 可进入 ROS 2 Humble 工作空间，但后续应按 PX4 版本切到 `release/1.14` 或 `release/1.15` |
+| `third_party/px4_ros_com` | `main` | `86e9aeb` | BSD-3-Clause | 可作为 ROS 2 Offboard 示例和接口参考 |
+| `third_party/PX4-SITL_gazebo-classic` | `main` | `00ac441` | `package.xml` 标注 BSD，未找到根目录 LICENSE | Gazebo 11 主候选，但许可证文件和 Ubuntu 22.04 兼容性都需继续实测 |
+| `third_party/mav_trajectory_generation` | `master` | `7aeebd9` | Apache-2.0 | ROS1/catkin 生态，不能直接作为 ROS 2 Humble 主依赖；可做算法参考或离线轨迹层候选 |
+| `third_party/PowerLine-LiDAR-Detector` | `main` | `1f3d7b7` | MIT | 适合做电力线点云检测参考/离线验证；依赖 Conda、PDAL、Rust，不直接进入实时链路 |
+| `third_party/on-policy` | `main` | `de66d7a` | MIT | MAPPO 官方实现参考；默认 Python 3.6 环境，需要隔离或现代化适配 |
+
+立即可用结论：
+
+1. ROS 2/PX4 消息和 Offboard 示例链路可以作为第一版主接口。
+2. PX4 Classic 插件库已克隆，但必须先做 Gazebo 11 实测，不能假设已稳定。
+3. `mav_trajectory_generation` 不适合直接进 ROS 2 Humble 主链路，第一版轨迹层应先保留为可选候选。
+4. MAPPO 和电力线检测仓库都不应直接嵌入实时仿真主链路，应先作为离线参考和实验基线。
