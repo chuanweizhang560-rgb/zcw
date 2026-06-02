@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 17:32:53 CST
+更新时间：2026-06-02 17:41:43 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -43,16 +43,30 @@
    - 输入：`data/results/foggy_lidar_ransac_batch_20260602_172404/frame_0_filtered.pcd` 和 `frame_0_line_inliers.pcd`
    - 截图：`data/screenshots/pcd_ransac_frame0_20260602_173227_pcl_viewer_left.png`
    - 结论：截图显示真实 PCD 中存在稳定线状候选；但缺少世界坐标、导线模型或 RViz 叠加，因此不能确认该候选就是导线。
+9. foggy lidar pose / frame 验证：
+   - overlay：`assets/gazebo/models/foggy_lidar`
+   - 新增成熟插件：`libgazebo_ros_p3d.so`
+   - 验证：`scripts/verify_foggy_lidar_pose.sh`
+   - PointCloud2 frame：`foggy_lidar_link`
+   - pose topic：`/zcw/foggy_lidar/pose`
+   - pose 类型：`nav_msgs/msg/Odometry`
+   - pose frame：`world`
+   - 成功样本：
+     - `data/logs/foggy_lidar_pose_points_sample_20260602_174037.log`
+     - `data/logs/foggy_lidar_pose_pose_sample_20260602_174037.log`
+   - 新 pose overlay 后重跑 batch：`data/results/foggy_lidar_ransac_batch_20260602_174118/foggy_lidar_line_ransac_batch_20260602_174125.txt`
+   - 新 batch 结果：5 帧全部通过，`min_ransac_inliers=38`，`max_ransac_inliers=67`，`mean_ransac_inliers=57.6`，`mean_ransac_inlier_ratio=0.352688`，`failed_frames=0`
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑，但仍未证明该线候选就是导线，下一步必须做带世界坐标/导线模型叠加的 RViz 验证或更换更适合的 3D 传感器。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证为后续世界坐标叠加补齐了基础。但仍未证明该线候选就是导线，下一步必须把 RANSAC inlier 转到 world 坐标并做 RViz/导线模型叠加。
 
 ## 2. 采用的成熟开源组件
 
 | 层 | 组件 | 来源/版本 | 许可证 | 采用方式 |
 |---|---|---|---|---|
 | 仿真机体/传感器 | PX4 Gazebo Classic `iris_foggy_lidar` + ROS2 ray sensor overlay | PX4 release/1.14 自带模型 + `ros-humble-gazebo-plugins 3.9.0` | BSD-3-Clause / Apache-2.0 体系 | 已验证 PointCloud2 topic；不重做机体和传感器几何 |
+| 传感器位姿 | Gazebo ROS `p3d` plugin | `/opt/ros/humble/lib/libgazebo_ros_p3d.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | 输出 `/zcw/foggy_lidar/pose`，用于后续点云 world 坐标叠加 |
 | 点云接口 | `sensor_msgs/PointCloud2` + `pcl_conversions` + `pcl_ros` | `ros-humble-pcl-ros 2.4.5`，`ros-humble-pcl-conversions 2.4.5` | BSD | ROS2 点云消息与 PCL 互转 |
 | 几何分割 | PCL `SampleConsensusModelLine` / `SACSegmentation` | `libpcl-dev 1.12.1` | BSD-3-Clause | RANSAC 线模型分割导线候选点 |
 | 曲线拟合 | Ceres Solver + Eigen Splines | `libceres-dev 2.0.0`，`libeigen3-dev 3.4.0` | BSD-3-Clause / MPL2 | 用成熟优化和样条库拟合 catenary/spline，不写自研优化器 |
@@ -138,6 +152,14 @@ RESULT_DIR=data/results/foggy_lidar_ransac_batch_20260602_172404 FRAME_INDEX=0 s
 ```
 
 该入口只用于证据截图，不参与算法闭环。当前截图提示 2D foggy lidar 点云存在扫描线误判风险。
+
+已新增传感器 pose 验证入口：
+
+```bash
+scripts/verify_foggy_lidar_pose.sh
+```
+
+该入口验证 PointCloud2 `frame_id=foggy_lidar_link`，并验证 `/zcw/foggy_lidar/pose` 为 `nav_msgs/msg/Odometry`、`frame_id=world`。
 
 ## 6. 处理参数初值
 
@@ -244,7 +266,8 @@ RESULT_DIR=data/results/foggy_lidar_ransac_batch_20260602_172404 FRAME_INDEX=0 s
 
 ## 10. 下一个执行节点
 
-1. 做带 TF/世界坐标的 RViz 叠加，显示原始点云、RANSAC inlier 和 AerialCore 导线/电塔相对位置。
-2. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
-3. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。
-4. 确认导线候选可靠后，再进入 Ceres/Eigen catenary/spline 拟合节点。
+1. 用 `/zcw/foggy_lidar/pose` 将 batch PCD / RANSAC inlier 转到 world 坐标。
+2. 做 RViz 叠加截图，显示原始点云、RANSAC inlier 和 AerialCore 导线/电塔相对位置。
+3. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
+4. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。
+5. 确认导线候选可靠后，再进入 Ceres/Eigen catenary/spline 拟合节点。

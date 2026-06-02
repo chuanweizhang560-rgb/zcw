@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 17:24:36 CST
+更新时间：2026-06-02 17:41:43 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -65,6 +65,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | Ceres Solver | https://github.com/ceres-solver/ceres-solver | BSD-3-Clause | catenary 曲线参数拟合 | 采用系统包 `libceres-dev 2.0.0`，不自研优化器 |
 | Eigen Splines | https://eigen.tuxfamily.org/ | MPL2 | spline 曲线和平滑中心线 | 采用系统包 `libeigen3-dev 3.4.0` |
 | ROS2 Gazebo Ray Sensor plugin | `/opt/ros/humble/lib/libgazebo_ros_ray_sensor.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | Gazebo ray -> ROS2 PointCloud2 | 已用于 `foggy_lidar` overlay，输出 `/zcw/foggy_lidar/points` |
+| ROS2 Gazebo P3D plugin | `/opt/ros/humble/lib/libgazebo_ros_p3d.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | Gazebo link pose -> ROS2 Odometry | 已用于 `foggy_lidar` overlay，输出 `/zcw/foggy_lidar/pose` |
 | 本仓库 `zcw_cable_perception` 薄封装 | `ros2_ws/src/zcw_cable_perception` | BSD-3-Clause | 订阅 PointCloud2、调用 PCL CropBox/VoxelGrid/SOR/RANSAC、保存 PCD/结果 | 已完成单帧和 5 帧 batch smoke test；不得扩展为自研 LiDAR 分割核心 |
 | `Tury05/PowerLine-LiDAR-Detector` | https://github.com/Tury05/PowerLine-LiDAR-Detector | MIT | 导线点云检测参考 | 可复用/参考，需评估实时性和依赖 |
 | PL2DM 论文方法 | https://pmc.ncbi.nlm.nih.gov/articles/PMC6515251/ | 论文方法 | LiDAR 导线检测与悬链线建模依据 | 作为算法路线依据，不直接照抄实现 |

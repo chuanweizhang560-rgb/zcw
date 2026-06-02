@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 17:34:02 CST
+更新时间：2026-06-02 17:41:43 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -728,3 +728,41 @@
 - 结果：本地 commit 已生成
 - 下一步：提交本记录更新并推送远端分支
 - 阻塞项：无
+
+### 2026-06-02 17:41:43 CST
+
+- 节点：foggy lidar PointCloud2 frame 与官方 P3D pose smoke test
+- 执行动作：
+  - 检查旧 PointCloud2 样本，确认原 `frame_id` 为泛化 `link`
+  - 检查 ROS2 topic，确认原链路没有 `/tf` 或 pose topic，无法直接做 RViz 世界坐标叠加
+  - 在 `assets/gazebo/models/foggy_lidar/model.sdf` 中保留 PX4 foggy lidar 传感器几何，仅增加成熟 Gazebo ROS 插件：
+    - `libgazebo_ros_ray_sensor.so` 增加 `frame_name=foggy_lidar_link`
+    - `libgazebo_ros_p3d.so` 发布 `/zcw/foggy_lidar/pose`
+  - 首次把 `gazebo_ros_p3d` 放在 `<link>` 下时，pose topic 未出现
+  - 根据 ROS Humble 官方 p3d demo，将 `gazebo_ros_p3d` 移到 `<model>` 层后重跑
+  - 新增并运行 `scripts/verify_foggy_lidar_pose.sh`
+  - 修改后重跑 `scripts/verify_foggy_lidar_ransac_batch.sh`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+- 结果：
+  - `scripts/verify_foggy_lidar_pose.sh` 退出码为 0
+  - ROS2 topic 同时存在：
+    - `/zcw/foggy_lidar/points`
+    - `/zcw/foggy_lidar/pose`
+  - PointCloud2 类型：`sensor_msgs/msg/PointCloud2`
+  - pose 类型：`nav_msgs/msg/Odometry`
+  - PointCloud2 样本 `frame_id: foggy_lidar_link`
+  - pose 样本 `frame_id: world`，`child_frame_id: foggy_lidar::link`
+  - 成功日志：
+    - `data/logs/foggy_lidar_pose_px4_20260602_174037.log`
+    - `data/logs/foggy_lidar_pose_topics_20260602_174037.log`
+    - `data/logs/foggy_lidar_pose_points_sample_20260602_174037.log`
+    - `data/logs/foggy_lidar_pose_pose_sample_20260602_174037.log`
+  - 新 pose overlay 后 RANSAC batch 仍通过：5 帧全部通过，`mean_ransac_inliers=57.6`，`failed_frames=0`
+  - 新 batch 汇总：`data/results/foggy_lidar_ransac_batch_20260602_174118/foggy_lidar_line_ransac_batch_20260602_174125.txt`
+  - `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_sim_assets` 成功
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 下一步：
+  - 提交并推送 pose overlay、验证脚本和文档记录
+  - 用 `/zcw/foggy_lidar/pose` 把 PCD/RANSAC inlier 转到 world 坐标，为 RViz 叠加做准备
+- 阻塞项：
+  - pose topic 已有，但还没有把 RANSAC inlier 变换到 world 坐标并与真实导线模型叠加
