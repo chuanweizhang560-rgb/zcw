@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 17:13:43 CST
+更新时间：2026-06-02 17:17:05 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -625,3 +625,13 @@
   - 给 `zcw_cable_perception` 增加 ROI crop 和多帧离线评估，确认 RANSAC 线候选是否对应真实导线
 - 阻塞项：
   - 当前只是单帧线模型 smoke test，尚未证明线候选是导线而非地面线或 2D ray 扫描线
+
+### 2026-06-02 17:17:05 CST
+
+- 节点：电缆点云 RANSAC smoke test 节点提交
+- 执行动作：
+  - 提交 `b978440`：`Add cable pointcloud RANSAC smoke test`
+  - 提交内容包括 `zcw_cable_perception`、`scripts/verify_foggy_lidar_ransac.sh`、执行手册、脚本说明、开源审计、电缆专项工作流和过程记录
+- 结果：本地 commit 已生成
+- 下一步：提交本记录更新并推送远端分支
+- 阻塞项：无
