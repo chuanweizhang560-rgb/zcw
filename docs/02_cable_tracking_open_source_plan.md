@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 17:41:43 CST
+更新时间：2026-06-02 17:54:35 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -56,10 +56,18 @@
      - `data/logs/foggy_lidar_pose_pose_sample_20260602_174037.log`
    - 新 pose overlay 后重跑 batch：`data/results/foggy_lidar_ransac_batch_20260602_174118/foggy_lidar_line_ransac_batch_20260602_174125.txt`
    - 新 batch 结果：5 帧全部通过，`min_ransac_inliers=38`，`max_ransac_inliers=67`，`mean_ransac_inliers=57.6`，`mean_ransac_inlier_ratio=0.352688`，`failed_frames=0`
+10. world-frame RANSAC 坐标审核：
+   - 节点：`pointcloud_pose_line_ransac_world_smoke`
+   - 验证：`scripts/verify_foggy_lidar_world_ransac.sh`
+   - 汇总：`data/results/foggy_lidar_world_ransac_20260602_175348/foggy_lidar_line_ransac_world_20260602_175355.txt`
+   - CSV：`data/results/foggy_lidar_world_ransac_20260602_175348/foggy_lidar_line_ransac_world_20260602_175355.csv`
+   - 结果：5 帧全部通过，`min_ransac_inliers=39`，`max_ransac_inliers=63`，`mean_ransac_inliers=56.8`，`failed_frames=0`
+   - world inlier bbox：min `(11.8229, -78.0769, -0.0829654)`，max `(22.6766, 79.8892, 0.084244)`
+   - 审核结论：inlier 高度接近地面，且 y 方向跨度很大，不符合架空导线目标；当前 foggy lidar 2D ray 不能作为导线识别传感器。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证为后续世界坐标叠加补齐了基础。但仍未证明该线候选就是导线，下一步必须把 RANSAC inlier 转到 world 坐标并做 RViz/导线模型叠加。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明该线候选基本处于地面高度，不应视为导线。foggy lidar 后续只保留为 PointCloud2 管线 smoke test，电缆识别应转向 depth/GPU ray 等可看到高处导线的传感器。
 
 ## 2. 采用的成熟开源组件
 
@@ -160,6 +168,14 @@ scripts/verify_foggy_lidar_pose.sh
 ```
 
 该入口验证 PointCloud2 `frame_id=foggy_lidar_link`，并验证 `/zcw/foggy_lidar/pose` 为 `nav_msgs/msg/Odometry`、`frame_id=world`。
+
+已新增 world-frame RANSAC 验证入口：
+
+```bash
+scripts/verify_foggy_lidar_world_ransac.sh
+```
+
+该入口会保存 sensor-frame 与 world-frame PCD。当前结果显示 foggy lidar RANSAC inlier 不是导线，后续不能再把该传感器作为电缆识别主线。
 
 ## 6. 处理参数初值
 
@@ -266,8 +282,8 @@ scripts/verify_foggy_lidar_pose.sh
 
 ## 10. 下一个执行节点
 
-1. 用 `/zcw/foggy_lidar/pose` 将 batch PCD / RANSAC inlier 转到 world 坐标。
-2. 做 RViz 叠加截图，显示原始点云、RANSAC inlier 和 AerialCore 导线/电塔相对位置。
-3. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
-4. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。
+1. 验证 PX4 `iris_depth_camera` 在 AerialCore 两塔导线 world 中是否能输出可用 depth/pointcloud topic。
+2. 如果 PX4 depth camera 仍不足，再用 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
+3. 新传感器通过后，做 RViz 叠加截图，显示原始点云、RANSAC inlier 和 AerialCore 导线/电塔相对位置。
+4. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
 5. 确认导线候选可靠后，再进入 Ceres/Eigen catenary/spline 拟合节点。

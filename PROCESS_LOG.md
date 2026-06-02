@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 17:45:10 CST
+更新时间：2026-06-02 17:54:35 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -776,3 +776,33 @@
 - 结果：本地 commit 已生成
 - 下一步：提交本记录更新并推送远端分支
 - 阻塞项：无
+
+### 2026-06-02 17:54:35 CST
+
+- 节点：foggy lidar RANSAC inlier world-frame 审核
+- 执行动作：
+  - 新增 `pointcloud_pose_line_ransac_world_smoke`
+  - 节点订阅 `/zcw/foggy_lidar/points` 和 `/zcw/foggy_lidar/pose`
+  - 调用 PCL `SACSegmentation(SACMODEL_LINE)` 和 `transformPointCloud`，输出 sensor-frame 与 world-frame PCD
+  - 新增 `scripts/verify_foggy_lidar_world_ransac.sh`
+  - 构建 `zcw_cable_perception`
+  - 运行 `scripts/verify_foggy_lidar_world_ransac.sh`
+  - 检查 world-frame 汇总、CSV、PCD 输出和仿真残留进程
+  - 更新资产 YAML 并构建 `zcw_sim_assets`
+- 结果：
+  - `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception` 成功
+  - world-frame RANSAC 脚本退出码为 0
+  - 5 帧全部通过，`min_ransac_inliers=39`、`max_ransac_inliers=63`、`mean_ransac_inliers=56.8`、`failed_frames=0`
+  - world inlier bbox：min `(11.8229, -78.0769, -0.0829654)`，max `(22.6766, 79.8892, 0.084244)`
+  - 结果文件：
+    - `data/results/foggy_lidar_world_ransac_20260602_175348/foggy_lidar_line_ransac_world_20260602_175355.txt`
+    - `data/results/foggy_lidar_world_ransac_20260602_175348/foggy_lidar_line_ransac_world_20260602_175355.csv`
+    - `data/results/foggy_lidar_world_ransac_20260602_175348/frame_*_line_inliers_world.pcd`
+  - 审核结论：当前 RANSAC inlier 高度接近地面，不符合架空导线；foggy lidar 2D ray 不能作为导线识别传感器，只保留为 PointCloud2 管线 smoke test
+  - `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_sim_assets` 成功
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 下一步：
+  - 提交并推送 world-frame 审核节点
+  - 验证 PX4 `iris_depth_camera` 或 Gazebo ROS2 GPU ray 方案，寻找能看到高处导线的成熟传感器路径
+- 阻塞项：
+  - 2D foggy lidar 不满足导线识别需求

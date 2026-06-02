@@ -102,4 +102,5 @@ sensor_overlays:
     latest_sample_log: data/logs/foggy_lidar_pose_points_sample_20260602_174037.log
     latest_pose_log: data/logs/foggy_lidar_pose_pose_sample_20260602_174037.log
     latest_ransac_batch_summary: data/results/foggy_lidar_ransac_batch_20260602_174118/foggy_lidar_line_ransac_batch_20260602_174125.txt
-    status: pointcloud2_and_p3d_pose_topics_verified
+    latest_world_ransac_summary: data/results/foggy_lidar_world_ransac_20260602_175348/foggy_lidar_line_ransac_world_20260602_175355.txt
+    status: pointcloud2_and_p3d_pose_verified_but_world_ransac_indicates_ground_scan_not_cable

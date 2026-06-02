@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 17:41:43 CST
+更新时间：2026-06-02 17:54:35 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -31,6 +31,7 @@ PX4 Classic `iris_foggy_lidar` + ROS2 `gazebo_ros_ray_sensor` overlay 已完成 
 `zcw_cable_perception/pointcloud_line_ransac_batch_smoke` 已完成 ROI/滤波可配置的 5 帧 PCL RANSAC 批量烟测。
 PCL Viewer 已可打开 batch 输出 PCD 并截取真实点云可视化截图，但当前截图只能证明线状候选存在，不能确认候选就是导线。
 foggy lidar overlay 已通过官方 `gazebo_ros_p3d` 发布 `/zcw/foggy_lidar/pose`，PointCloud2 `frame_id` 已固定为 `foggy_lidar_link`，具备后续世界坐标叠加的基础。
+`pointcloud_pose_line_ransac_world_smoke` 已把 RANSAC inlier 输出到 world 坐标；结果显示当前 foggy lidar inlier 基本在地面高度，不能作为导线识别结果。
 
 实测成功标志：
 
@@ -168,6 +169,14 @@ colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_ca
 scripts/verify_foggy_lidar_ransac_batch.sh
 ```
 
+电缆点云 world-frame RANSAC 烟测：
+
+```bash
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception
+scripts/verify_foggy_lidar_world_ransac.sh
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -211,9 +220,9 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 用 `/zcw/foggy_lidar/pose` 将 batch PCD 转到 world 坐标，生成 RViz 可显示的 inlier/candidate marker。
-2. 做带世界坐标的 RViz 叠加，确认 RANSAC 线候选是否对应真实导线，而不是地面线或 2D ray 扫描线。
-3. 如果 2D ray 点云不足，评估 PX4 `iris_depth_camera` 或 Gazebo ROS2 GPU ray 方案。
+1. 将 foggy lidar 标记为“管线 smoke 传感器”，不再把它当作导线识别传感器。
+2. 优先验证 PX4 `iris_depth_camera` 或 Gazebo ROS2 GPU ray 方案，要求能看到高处导线/电塔点云。
+3. 新传感器通过后，再做带 world 坐标的 RViz 叠加，确认 RANSAC 线候选对应真实导线。
 4. 在离线几何稳定后，再接 Ceres/Eigen catenary/spline 和 Frenet offset path。
 5. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 6. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。
