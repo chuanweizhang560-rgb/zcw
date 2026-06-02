@@ -13,3 +13,4 @@
 - 当前执行入口见 [RUNBOOK.md](RUNBOOK.md)。
 
 详细工作流见 [docs/00_workflow.md](docs/00_workflow.md)。
+电缆巡检感知与跟踪专项计划见 [docs/02_cable_tracking_open_source_plan.md](docs/02_cable_tracking_open_source_plan.md)。

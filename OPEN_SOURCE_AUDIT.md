@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 15:09:40 CST
+更新时间：2026-06-02 16:03:00 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -60,7 +60,10 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 
 | 候选 | 来源 | 许可证 | 用途 | 初步判断 |
 |---|---|---|---|---|
-| PCL `SampleConsensusModelLine` | https://pointclouds.org/documentation/classpcl_1_1_sample_consensus_model_line.html | BSD | 3D 线模型拟合、RANSAC 主线 | 必选基础库 |
+| PCL `SampleConsensusModelLine` | https://pointclouds.org/documentation/classpcl_1_1_sample_consensus_model_line.html | BSD-3-Clause | 3D 线模型拟合、RANSAC 主线 | 必选基础库；本机已安装 `libpcl-dev 1.12.1` |
+| ROS `pcl_ros` / `pcl_conversions` | https://github.com/ros-perception/perception_pcl | BSD | ROS 2 点云消息和 PCL 互转 | 必选接口；本机已安装 Humble `2.4.5` |
+| Ceres Solver | https://github.com/ceres-solver/ceres-solver | BSD-3-Clause | catenary 曲线参数拟合 | 采用系统包 `libceres-dev 2.0.0`，不自研优化器 |
+| Eigen Splines | https://eigen.tuxfamily.org/ | MPL2 | spline 曲线和平滑中心线 | 采用系统包 `libeigen3-dev 3.4.0` |
 | `Tury05/PowerLine-LiDAR-Detector` | https://github.com/Tury05/PowerLine-LiDAR-Detector | MIT | 导线点云检测参考 | 可复用/参考，需评估实时性和依赖 |
 | PL2DM 论文方法 | https://pmc.ncbi.nlm.nih.gov/articles/PMC6515251/ | 论文方法 | LiDAR 导线检测与悬链线建模依据 | 作为算法路线依据，不直接照抄实现 |
 
@@ -68,6 +71,20 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 
 - 电缆主线仍按 `PCL RANSAC + catenary/spline + Frenet/pure pursuit`。
 - `PowerLine-LiDAR-Detector` 依赖 Conda、PDAL 和 Rust，先作为参考/离线验证候选，不能直接塞进 ROS 2 实时链路。
+- 当前未找到可直接嵌入 ROS 2 Humble + PX4 的成熟 catenary 电缆跟踪包；允许写 Ceres/Eigen/PCL 的薄封装，但不能自研优化器或替代 PCL/Ceres 的核心算法。
+
+### 3.3.1 电缆路径跟踪参考
+
+| 候选 | 来源 | 许可证 | 用途 | 初步判断 |
+|---|---|---|---|---|
+| Nav2 Regulated Pure Pursuit | https://github.com/ros-navigation/navigation2/tree/humble/nav2_regulated_pure_pursuit_controller | Apache-2.0 | lookahead、曲率限速、跟踪稳定性参考 | 只做参考/可借鉴实现边界；其输出是地面机器人 `Twist`，不直接控制 PX4 |
+| PX4 Offboard `TrajectorySetpoint` | https://docs.px4.io/main/en/ros2/offboard_control.html | PX4 BSD-3-Clause 体系 | 飞机实际 setpoint 执行接口 | 继续使用，不被 Nav2 替代 |
+
+备注：
+
+- Nav2 RPP 本地 sparse clone：`third_party/navigation2-humble`，branch `humble`，commit `e9caa42`，package 版本 `1.1.20`。
+- 本机 apt 可安装 `ros-humble-nav2-regulated-pure-pursuit-controller 1.1.20-1jammy.20260425.081712`，但当前尚未安装。
+- Nav2 RPP README 标注其控制器可在现代 Intel CPU 上超过 `1 kHz` 运行；该实时性结论只能作为路径跟踪参考，不能直接推断 PX4 闭环实时性。
 
 ### 3.4 多机 / 风机巡检参考
 
@@ -148,6 +165,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | `third_party/px4_ros_com` | `release/v1.14` | `e18248d` | BSD-3-Clause | 已在 ROS 2 Humble 下构建成功，作为 Offboard 示例/接口参考 |
 | `third_party/Micro-XRCE-DDS-Agent-v2.2.1` | tag `v2.2.1` | `f984380` | Apache-2.0 | 已用系统 FastDDS/FastCDR 构建成功，并完成 PX4 ROS 2 bridge 验证 |
 | `third_party/aerialcore_simulation` | `master` | `edd912e` | `package.xml` 标注 BSD 3-Clause | 包含风机、电塔、两塔带导线等 Gazebo 资产；已完成 Gazebo 11 headless world 加载验证 |
+| `third_party/navigation2-humble` | `humble` | `e9caa42` | `nav2_regulated_pure_pursuit_controller/package.xml` 标注 Apache-2.0 | sparse clone 仅用于 RPP 路径跟踪参考；不直接作为 PX4 控制器 |
 
 立即可用结论：
 
