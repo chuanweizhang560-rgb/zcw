@@ -7,6 +7,7 @@
 ```text
 codex_zcw/
 ├── README.md
+├── PROCESS_LOG.md
 ├── docs/
 │   ├── 00_workflow.md
 │   └── 01_repo_layout.md
@@ -56,3 +57,4 @@ codex_zcw/
 2. 启动脚本和配置必须分离。
 3. 资产和配置要分开管理。
 4. 文档要先行，代码跟着文档走。
+5. 进程记录文件固定放根目录，文件名为 `PROCESS_LOG.md`。

@@ -8,6 +8,6 @@
 - 不复用现有 `BS` 仓库的实现代码，只把它当作历史路线参考。
 - 采用开源成熟方案优先，低层飞控不自研。
 - 第一版默认围绕 `PX4 SITL + ROS 2 Humble + Gazebo 11` 组织。
+- 过程日志见 [PROCESS_LOG.md](PROCESS_LOG.md)。
 
 详细工作流见 [docs/00_workflow.md](docs/00_workflow.md)。
-
