@@ -7,6 +7,10 @@ VENV_DIR="${PX4_VENV:-/tmp/codex_zcw_px4_venv}"
 TIMEOUT_SEC="${TIMEOUT_SEC:-45}"
 LOG_DIR="${LOG_DIR:-${ROOT_DIR}/data/logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/px4_gazebo_classic_headless_$(date +%Y%m%d_%H%M%S).log}"
+PX4_SITL_WORLD_VALUE="${PX4_SITL_WORLD:-}"
+GAZEBO_MODEL_PATH_VALUE="${GAZEBO_MODEL_PATH:-}"
+GAZEBO_RESOURCE_PATH_VALUE="${GAZEBO_RESOURCE_PATH:-/usr/share/gazebo-11}"
+VERBOSE_SIM_VALUE="${VERBOSE_SIM:-}"
 
 if [[ ! -d "${PX4_DIR}" ]]; then
   echo "PX4 directory not found: ${PX4_DIR}" >&2
@@ -29,6 +33,10 @@ timeout "${TIMEOUT_SEC}s" env -i \
   USER="${USER:-travis}" \
   PATH="${VENV_DIR}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
   PYTHON_EXECUTABLE="${VENV_DIR}/bin/python" \
+  PX4_SITL_WORLD="${PX4_SITL_WORLD_VALUE}" \
+  GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH_VALUE}" \
+  GAZEBO_RESOURCE_PATH="${GAZEBO_RESOURCE_PATH_VALUE}" \
+  VERBOSE_SIM="${VERBOSE_SIM_VALUE}" \
   HEADLESS=1 \
   make px4_sitl gazebo-classic >"${LOG_FILE}" 2>&1
 status=$?

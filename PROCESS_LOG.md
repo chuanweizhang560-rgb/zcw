@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 14:51:15 CST
+更新时间：2026-06-02 15:09:40 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -368,6 +368,35 @@
   - 进入单机最小风机巡检几何 waypoint
 - 阻塞项：
   - 尚未把 AerialCore world 接入 PX4 SITL 启动脚本
+  - 未安装 MRS Gazebo camera synchronizer plugin
+  - RViz 截图尚未进行
+  - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 15:09:40 CST
+
+- 节点：PX4 `iris` + AerialCore world 组合 smoke test
+- 执行动作：
+  - 推送提交 `f5a8b5e`：`Add PX4 waypoint baseline`
+  - 更新 `scripts/run_px4_gazebo_classic_headless.sh`，允许透传 `PX4_SITL_WORLD`、`GAZEBO_MODEL_PATH`、`GAZEBO_RESOURCE_PATH`、`VERBOSE_SIM`
+  - 新建 `scripts/run_px4_aerialcore_world_headless.sh`
+  - 运行 `AERIALCORE_WORLD=wind_turbine scripts/run_px4_aerialcore_world_headless.sh`
+  - 运行 `AERIALCORE_WORLD=danube_wires scripts/run_px4_aerialcore_world_headless.sh`
+  - 检查日志中的 AerialCore world 路径、PX4 `iris.sdf`、`Simulator connected on TCP port 4560`、`Startup script returned successfully`
+  - 检查退出后 Gazebo/PX4 残留进程
+- 结果：
+  - 风机组合 smoke test 通过
+  - 两塔导线组合 smoke test 通过
+  - 成功日志：
+    - `data/logs/px4_aerialcore_wind_turbine_20260602_150646.log`
+    - `data/logs/px4_aerialcore_danube_wires_20260602_150825.log`
+  - 两个日志均确认加载 AerialCore world，并使用 PX4 `iris.sdf`
+  - 两个日志均仍存在缺少 `libMRSGazeboRvizCameraSynchronizer.so` 的非核心警告
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo` 残留进程
+- 下一步：
+  - 提交并推送组合 smoke test 脚本和记录
+  - 在风机 world 上叠加最小风机巡检几何 waypoint
+  - 规划电缆巡检最小 waypoint 入口
+- 阻塞项：
   - 未安装 MRS Gazebo camera synchronizer plugin
   - RViz 截图尚未进行
   - 项目自身 LICENSE 尚未确定

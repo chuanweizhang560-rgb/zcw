@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 14:51:15 CST
+更新时间：2026-06-02 15:09:40 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -273,7 +273,8 @@ uxrce_dds_client synchronized
 
 1. `scripts/verify_aerialcore_worlds.sh` 串行加载风机 world 和两塔导线 world。
 2. 两个 world 均在 Gazebo 11 headless 下连接 master 并加载 world 文件。
-3. 退出后未发现 Gazebo 残留进程。
+3. `scripts/run_px4_aerialcore_world_headless.sh` 已验证 PX4 `iris` 可在风机 world 和两塔导线 world 中启动。
+4. 退出后未发现 Gazebo/PX4 残留进程。
 
 已知警告：
 

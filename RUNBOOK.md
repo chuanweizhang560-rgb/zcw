@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 14:51:15 CST
+更新时间：2026-06-02 15:09:40 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -80,6 +80,13 @@ headless 启动验证：
 
 ```bash
 TIMEOUT_SEC=45 scripts/run_px4_gazebo_classic_headless.sh
+```
+
+PX4 `iris` + AerialCore world 组合 smoke test：
+
+```bash
+AERIALCORE_WORLD=wind_turbine scripts/run_px4_aerialcore_world_headless.sh
+AERIALCORE_WORLD=danube_wires scripts/run_px4_aerialcore_world_headless.sh
 ```
 
 构建 Micro XRCE-DDS Agent：

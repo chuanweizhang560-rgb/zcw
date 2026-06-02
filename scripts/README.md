@@ -8,6 +8,7 @@
 
 - `setup_px4_venv.sh`：基于系统 Python 3.10 建立 PX4 release/1.14 专用 venv，并固定 `empy==3.3.4`。
 - `run_px4_gazebo_classic_headless.sh`：用 clean env 启动 PX4 SITL + Gazebo Classic headless，并把运行日志写入 `data/logs/`。
+- `run_px4_aerialcore_world_headless.sh`：用 PX4 `iris` 加载 AerialCore 风机或两塔导线 world，做组合 smoke test。
 - `build_microxrce_agent.sh`：用 eProsima Micro-XRCE-DDS-Agent v2.2.1 和系统 FastDDS/FastCDR 构建 `MicroXRCEAgent`。
 - `verify_px4_ros2_bridge_headless.sh`：启动 Micro XRCE-DDS Agent、PX4/Gazebo headless，并验证 ROS 2 中出现 `/fmu/out/vehicle_status`。
 - `verify_px4_offboard_hover.sh`：通过 `zcw_bringup/single_vehicle_offboard_hover.launch.py` 运行 Offboard baseline，验证单机进入 armed Offboard 悬停状态。

@@ -32,6 +32,18 @@ selected_worlds:
     verification: scripts/verify_aerialcore_worlds.sh
     status: loads_in_gazebo11_headless_with_noncritical_mrs_camera_plugin_warning
 
+px4_sitl_smoke_tests:
+  wind_turbine:
+    script: scripts/run_px4_aerialcore_world_headless.sh
+    command: AERIALCORE_WORLD=wind_turbine scripts/run_px4_aerialcore_world_headless.sh
+    latest_log: data/logs/px4_aerialcore_wind_turbine_20260602_150646.log
+    status: px4_iris_spawned_and_world_loaded
+  danube_towers_with_wires:
+    script: scripts/run_px4_aerialcore_world_headless.sh
+    command: AERIALCORE_WORLD=danube_wires scripts/run_px4_aerialcore_world_headless.sh
+    latest_log: data/logs/px4_aerialcore_danube_wires_20260602_150825.log
+    status: px4_iris_spawned_and_world_loaded
+
 selected_models:
   wind_turbine_mesh:
     path: third_party/aerialcore_simulation/models/wind_turbine/wind_turbine_scaled.dae
