@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 17:24:36 CST
+更新时间：2026-06-02 17:32:53 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -29,6 +29,7 @@ AerialCore 两塔导线 world 上的最小电缆巡检几何 waypoint baseline �
 PX4 Classic `iris_foggy_lidar` + ROS2 `gazebo_ros_ray_sensor` overlay 已完成 PointCloud2 topic 验证。
 `zcw_cable_perception/pointcloud_line_ransac_smoke` 已完成真实仿真 PointCloud2 到 PCL `SACMODEL_LINE` 的最小 RANSAC 烟测。
 `zcw_cable_perception/pointcloud_line_ransac_batch_smoke` 已完成 ROI/滤波可配置的 5 帧 PCL RANSAC 批量烟测。
+PCL Viewer 已可打开 batch 输出 PCD 并截取真实点云可视化截图，但当前截图只能证明线状候选存在，不能确认候选就是导线。
 
 实测成功标志：
 
@@ -160,6 +161,12 @@ colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_ca
 scripts/verify_foggy_lidar_ransac_batch.sh
 ```
 
+电缆点云 PCL Viewer 截图审核：
+
+```bash
+RESULT_DIR=data/results/foggy_lidar_ransac_batch_20260602_172404 FRAME_INDEX=0 scripts/capture_pcd_ransac_viewer.sh
+```
+
 最小风机巡检 GUI 截图审核：
 
 ```bash
@@ -198,7 +205,7 @@ scripts/verify_aerialcore_worlds.sh
 ## 下一步执行顺序
 
 1. 用 RViz 或真实 PCD 可视化确认 RANSAC 线候选是否对应真实导线，而不是地面线或 2D ray 扫描线。
-2. 如果 2D foggy lidar 点云对真实导线内点不足，记录失败证据后评估 PX4 `iris_depth_camera` 或 Gazebo ROS2 GPU ray 方案。
+2. 优先做带 TF/世界坐标的 RViz 叠加，或评估 PX4 `iris_depth_camera` / Gazebo ROS2 GPU ray 方案，避免 2D ray 扫描线被误判为导线。
 3. 在离线几何稳定后，再接 Ceres/Eigen catenary/spline 和 Frenet offset path。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。

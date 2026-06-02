@@ -18,6 +18,7 @@
 - `verify_foggy_lidar_pointcloud.sh`：加载 AerialCore 两塔导线 world 和 PX4 `iris_foggy_lidar`，验证 ROS2 `/zcw/foggy_lidar/points` PointCloud2 输出。
 - `verify_foggy_lidar_ransac.sh`：加载同一电缆场景和 foggy lidar，运行 `zcw_cable_perception` 的 PCL `SACMODEL_LINE` RANSAC 线模型烟测。
 - `verify_foggy_lidar_ransac_batch.sh`：运行 5 帧 PCL RANSAC 批量烟测，输出每帧 CSV、filtered PCD、line-inlier PCD 和汇总结果。
+- `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 batch 输出的 filtered/inlier PCD，并截取真实点云可视化截图。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。
 - `verify_aerialcore_worlds.sh`：串行加载 AerialCore 风机和两塔导线 world，验证 Gazebo 11 headless 可运行。

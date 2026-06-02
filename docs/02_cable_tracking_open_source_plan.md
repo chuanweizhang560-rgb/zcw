@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 17:24:36 CST
+更新时间：2026-06-02 17:32:53 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -38,10 +38,15 @@
    - 汇总文件：`data/results/foggy_lidar_ransac_batch_20260602_172404/foggy_lidar_line_ransac_batch_20260602_172410.txt`
    - CSV：`data/results/foggy_lidar_ransac_batch_20260602_172404/foggy_lidar_line_ransac_batch_20260602_172410.csv`
    - 本次结果：5 帧全部通过，`min_ransac_inliers=52`，`max_ransac_inliers=69`，`mean_ransac_inliers=62.2`，`mean_ransac_inlier_ratio=0.385583`，`failed_frames=0`
+8. PCL Viewer 可视化审核：
+   - 脚本：`scripts/capture_pcd_ransac_viewer.sh`
+   - 输入：`data/results/foggy_lidar_ransac_batch_20260602_172404/frame_0_filtered.pcd` 和 `frame_0_line_inliers.pcd`
+   - 截图：`data/screenshots/pcd_ransac_frame0_20260602_173227_pcl_viewer_left.png`
+   - 结论：截图显示真实 PCD 中存在稳定线状候选；但缺少世界坐标、导线模型或 RViz 叠加，因此不能确认该候选就是导线。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在，但仍未证明该线候选就是导线，下一步必须做可视化或几何方向一致性确认。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑，但仍未证明该线候选就是导线，下一步必须做带世界坐标/导线模型叠加的 RViz 验证或更换更适合的 3D 传感器。
 
 ## 2. 采用的成熟开源组件
 
@@ -125,6 +130,14 @@ scripts/verify_foggy_lidar_ransac_batch.sh
 ```
 
 该入口在同一仿真场景中采集 5 帧 PointCloud2，调用 PCL CropBox、VoxelGrid、StatisticalOutlierRemoval 和 `SACSegmentation`，输出每帧 CSV、filtered PCD、line-inlier PCD 和 batch 汇总。
+
+已新增 PCD 可视化截图入口：
+
+```bash
+RESULT_DIR=data/results/foggy_lidar_ransac_batch_20260602_172404 FRAME_INDEX=0 scripts/capture_pcd_ransac_viewer.sh
+```
+
+该入口只用于证据截图，不参与算法闭环。当前截图提示 2D foggy lidar 点云存在扫描线误判风险。
 
 ## 6. 处理参数初值
 
@@ -231,7 +244,7 @@ scripts/verify_foggy_lidar_ransac_batch.sh
 
 ## 10. 下一个执行节点
 
-1. 用 GUI/RViz 或 PCD 可视化确认线候选是否对应真实导线，而不是地面线或 2D 雷达扫描线。
+1. 做带 TF/世界坐标的 RViz 叠加，显示原始点云、RANSAC inlier 和 AerialCore 导线/电塔相对位置。
 2. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
 3. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。
 4. 确认导线候选可靠后，再进入 Ceres/Eigen catenary/spline 拟合节点。

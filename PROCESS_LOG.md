@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 17:26:01 CST
+更新时间：2026-06-02 17:32:53 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -693,3 +693,28 @@
 - 结果：本地 commit 已生成
 - 下一步：提交本记录更新并推送远端分支
 - 阻塞项：无
+
+### 2026-06-02 17:32:53 CST
+
+- 节点：PCL Viewer 真实 PCD 可视化截图审核
+- 执行动作：
+  - 使用 `pcl_viewer` 打开 batch 输出的 `frame_0_filtered.pcd` 和 `frame_0_line_inliers.pcd`
+  - 手动截取一次全屏并裁剪 PCL Viewer 区域
+  - 新增 `scripts/capture_pcd_ransac_viewer.sh`，固化 PCD 可视化截图流程
+  - 运行 `RESULT_DIR=data/results/foggy_lidar_ransac_batch_20260602_172404 FRAME_INDEX=0 scripts/capture_pcd_ransac_viewer.sh`
+  - 查看裁剪截图并检查 `pcl_viewer` 残留进程
+- 结果：
+  - 截图脚本退出码为 0
+  - 输入 PCD：
+    - `data/results/foggy_lidar_ransac_batch_20260602_172404/frame_0_filtered.pcd`
+    - `data/results/foggy_lidar_ransac_batch_20260602_172404/frame_0_line_inliers.pcd`
+  - 截图证据：
+    - `data/screenshots/pcd_ransac_frame0_20260602_173227.png`
+    - `data/screenshots/pcd_ransac_frame0_20260602_173227_pcl_viewer_left.png`
+  - 截图显示真实 PCD 中有稳定线状点云候选
+  - 退出后未发现 `pcl_viewer`、`gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 下一步：
+  - 提交并推送截图脚本和审核记录
+  - 做带 TF/世界坐标的 RViz 叠加，确认候选线是否对应真实导线
+- 阻塞项：
+  - 当前 PCL Viewer 截图没有 Gazebo world / 导线模型叠加，不能证明 RANSAC 线候选就是导线
