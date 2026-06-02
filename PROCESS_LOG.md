@@ -1115,3 +1115,139 @@
   - 新增“电缆 waypoint 运动 + depth camera 采集/RANSAC”组合验证入口
   - 让无人机实际运动到导线附近后重新审核点云是否覆盖导线
 - 阻塞项：无
+
+### 2026-06-02 21:32:42 CST
+
+- 节点：电缆 waypoint 运动 + depth camera 采集/RANSAC 组合验证准备
+- 执行动作：
+  - 读取 `scripts/verify_cable_waypoints.sh`
+  - 读取 `scripts/verify_px4_offboard_waypoints.sh`
+  - 读取 `scripts/run_px4_aerialcore_world_headless.sh`
+  - 读取 `scripts/verify_depth_camera_world_ransac.sh`
+  - 读取 `ros2_ws/src/zcw_bringup/launch/single_vehicle_cable_inspection.launch.py`
+  - 读取 `ros2_ws/src/zcw_px4_baseline/src/offboard_waypoint_sequence.cpp`
+- 设计判断：
+  - 继续复用 PX4 官方 `iris_depth_camera`、AerialCore `danube_wires` world、Micro XRCE-DDS Agent、已有 Offboard waypoint baseline、Gazebo ROS camera/P3D 插件和 PCL RANSAC 节点
+  - 不新增低层控制算法，不自写传感器/模型，不把 RANSAC 当作已完成导线识别
+  - 新增独立脚本更合适，因为需要同时管理 GUI 渲染、Offboard 运动、ROS2 topic、RANSAC 输出和截图证据
+- 下一步：
+  - 新增 `scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 脚本先让无人机执行电缆 waypoint，再在运动/到达导线附近后采集 depth camera world-frame RANSAC
+- 阻塞项：无
+
+### 2026-06-02 21:35:46 CST
+
+- 节点：电缆 waypoint 运动 + depth camera RANSAC 组合验证脚本创建
+- 执行动作：
+  - 新增 `scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 设置脚本可执行权限
+  - 运行 `bash -n scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 中断后复核工作树和残留进程
+- 结果：
+  - 脚本语法检查通过
+  - 未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+  - 脚本职责：
+    - 启动 Micro XRCE-DDS Agent
+    - 启动 PX4 官方 `iris_depth_camera` + AerialCore `danube_wires` world
+    - 启动现有 `single_vehicle_cable_inspection.launch.py` waypoint baseline
+    - 等待无人机运动后采集 `/camera/points` 和 `/zcw/depth_camera/pose`
+    - 调用现有 PCL world-frame RANSAC 节点输出 summary、CSV 和 PCD
+    - 截取 Gazebo GUI 证据
+- 下一步：
+  - 运行 `scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 检查无人机是否进入 armed Offboard、是否推进 waypoint、capture 时 local position 是否接近导线 corridor
+  - 审核 motion 状态下的 RANSAC summary/PCD/截图
+- 阻塞项：无
+
+### 2026-06-02 21:54:49 CST
+
+- 节点：电缆 waypoint 运动 + depth camera RANSAC 首跑与光学帧修正
+- 执行动作：
+  - 运行 `scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 查看 vehicle status、vehicle local position、Offboard waypoint 日志、RANSAC summary/CSV、Gazebo 截图和 PCL viewer 截图
+  - 读取 PX4 官方 `depth_camera.sdf` 与 `iris_depth_camera.sdf`
+  - 修改：
+    - `scripts/verify_depth_camera_world_ransac.sh`
+    - `scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 默认增加 optical-to-link 旋转：
+    - `APPLY_SENSOR_POSE_IN_LINK=true`
+    - `SENSOR_ROLL_RAD=-1.57079632679`
+    - `SENSOR_PITCH_RAD=0.0`
+    - `SENSOR_YAW_RAD=-1.57079632679`
+  - 运行两个脚本的 `bash -n` 语法检查
+- 首跑证据：
+  - PX4/Gazebo log：`data/logs/depth_camera_motion_px4_20260602_214743.log`
+  - Offboard log：`data/logs/depth_camera_motion_offboard_20260602_214743.log`
+  - vehicle status：`data/logs/depth_camera_motion_vehicle_status_20260602_214743.log`
+  - local position：`data/logs/depth_camera_motion_vehicle_local_position_20260602_214743.log`
+  - summary：`data/results/depth_camera_motion_ransac_20260602_214743/depth_camera_motion_line_ransac_world_20260602_214920.txt`
+  - CSV：`data/results/depth_camera_motion_ransac_20260602_214743/depth_camera_motion_line_ransac_world_20260602_214920.csv`
+  - Gazebo 截图：`data/screenshots/depth_camera_motion_gui_20260602_214743.png`
+  - PCD viewer 截图：`data/screenshots/pcd_ransac_frame0_20260602_215151_pcl_viewer_left.png`
+- 首跑结果：
+  - capture 时 PX4 状态：
+    - `arming_state=2`
+    - `nav_state=14`
+    - `failsafe=false`
+  - capture 时 local position 约为：
+    - `x=-50.0022`
+    - `y=-35.0343`
+    - `z=-22.0230`
+  - Offboard 日志显示 waypoint 1 到 5 全部推进并保持最终 waypoint
+  - RANSAC 结果：
+    - `frames_processed=5`
+    - `mean_ransac_inliers=4405`
+    - `mean_ransac_inlier_ratio=0.010822`
+    - `world_inlier_bbox_min=(-48.0242, -110.106, 87.4907)`
+    - `world_inlier_bbox_max=(-3.05234, 12.9726, 87.8191)`
+- 首跑结论：
+  - 已证明“无人机实际运动到电缆 corridor 后采集 depth camera 点云”这条组合链路可跑通
+  - PCD 截图出现穿过点云画面的细斜线候选，形态上比静态地面大平面更接近导线候选
+  - world-frame `z≈87.5m` 明显不可信，原因是 `/camera/points` 的 `camera_link` 光学坐标与 P3D 的 `depth_camera::link` 坐标未对齐
+- 下一步：
+  - 复跑加入 optical-to-link 旋转后的组合验证
+  - 如果 world bbox 落到导线合理高度，再记录为“运动状态导线候选可见”；否则继续评估官方 GPU ray overlay
+- 阻塞项：无
+
+### 2026-06-02 21:59:23 CST
+
+- 节点：电缆 waypoint 运动 + depth camera RANSAC 光学帧修正复跑
+- 执行动作：
+  - 复跑 `scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 查看 RANSAC summary、CSV、node log、vehicle local position
+  - 使用 `scripts/capture_pcd_ransac_viewer.sh` 对 world-frame PCD 和 inlier PCD 截图
+  - 检查仿真/可视化残留进程
+- 结果：
+  - 脚本退出码：0
+  - PX4/Gazebo log：`data/logs/depth_camera_motion_px4_20260602_215550.log`
+  - Offboard log：`data/logs/depth_camera_motion_offboard_20260602_215550.log`
+  - vehicle local position：`data/logs/depth_camera_motion_vehicle_local_position_20260602_215550.log`
+  - RANSAC node log：`data/logs/depth_camera_motion_ransac_node_20260602_215550.log`
+  - summary：`data/results/depth_camera_motion_ransac_20260602_215550/depth_camera_motion_line_ransac_world_20260602_215722.txt`
+  - CSV：`data/results/depth_camera_motion_ransac_20260602_215550/depth_camera_motion_line_ransac_world_20260602_215722.csv`
+  - Gazebo 截图：`data/screenshots/depth_camera_motion_gui_20260602_215550.png`
+  - PCL viewer 截图：`data/screenshots/pcd_ransac_frame0_20260602_215821_pcl_viewer_left.png`
+  - capture 时 local position 约为：
+    - `x=-50.0052`
+    - `y=-35.0299`
+    - `z=-22.0264`
+  - RANSAC 结果：
+    - `apply_sensor_pose_in_link=true`
+    - `sensor_rpy_rad=(-1.5708, 0, -1.5708)`
+    - `frames_processed=5`
+    - `mean_ransac_inliers=4405`
+    - `mean_ransac_inlier_ratio=0.010822`
+    - `failed_frames=0`
+    - `world_inlier_bbox_min=(-95.9096, 15.8306, 6.81435)`
+    - `world_inlier_bbox_max=(26.2537, 17.6723, 54.0478)`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结论：
+  - optical-to-link 旋转修正有效，world-frame bbox 不再落在 `z≈87m` 的异常高度
+  - PCL 截图显示塔架/多条导线状结构进入 depth camera 点云视场，RANSAC inlier 与导线状结构处于同一视场
+  - 当前可以记录为“运动状态下 depth camera 可见导线状候选，PCL RANSAC 能提取线候选”
+  - 这仍是 smoke test，不代表完成导线实例识别、悬链线拟合或闭环追线
+- 下一步：
+  - 给 motion RANSAC 增加 corridor ROI/高度范围参数配置，避免大面积背景点主导
+  - 输出/审核多条导线候选而不是单条最优 RANSAC 线
+  - 在 PCL 候选稳定后接 Ceres/Eigen catenary/spline 与 Frenet offset path
+- 阻塞项：无

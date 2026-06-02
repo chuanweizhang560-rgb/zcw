@@ -124,6 +124,7 @@ sensor_overlays:
       pointcloud: scripts/verify_depth_camera_pointcloud.sh
       pointcloud_pose: scripts/verify_depth_camera_pose_pointcloud.sh
       world_ransac: scripts/verify_depth_camera_world_ransac.sh
+      motion_world_ransac: scripts/verify_depth_camera_cable_motion_ransac.sh
     latest_px4_log: data/logs/depth_camera_pose_px4_20260602_204840.log
     latest_sample_log: data/logs/depth_camera_pose_points_sample_20260602_204840.log
     latest_pose_log: data/logs/depth_camera_pose_pose_sample_20260602_204840.log
@@ -131,4 +132,7 @@ sensor_overlays:
     latest_world_ransac_summary: data/results/depth_camera_world_ransac_20260602_211626/depth_camera_line_ransac_world_20260602_211646.txt
     latest_world_ransac_csv: data/results/depth_camera_world_ransac_20260602_211626/depth_camera_line_ransac_world_20260602_211646.csv
     latest_world_ransac_pcd_screenshot: data/screenshots/pcd_ransac_frame0_20260602_211833_pcl_viewer_left.png
-    status: pointcloud2_and_p3d_pose_verified_but_static_world_ransac_not_accepted_as_cable
+    latest_motion_world_ransac_summary: data/results/depth_camera_motion_ransac_20260602_215550/depth_camera_motion_line_ransac_world_20260602_215722.txt
+    latest_motion_world_ransac_csv: data/results/depth_camera_motion_ransac_20260602_215550/depth_camera_motion_line_ransac_world_20260602_215722.csv
+    latest_motion_world_ransac_pcd_screenshot: data/screenshots/pcd_ransac_frame0_20260602_215821_pcl_viewer_left.png
+    status: motion_pointcloud_line_candidate_visible_requires_roi_and_multiline_tracking

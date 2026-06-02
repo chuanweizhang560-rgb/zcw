@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 17:41:43 CST
+更新时间：2026-06-02 21:59:23 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -307,7 +307,8 @@ uxrce_dds_client synchronized
 5. `assets/gazebo/models/iris_depth_camera` overlay 保留 PX4 官方 `iris` 与 `depth_camera` include，只增加官方 `gazebo_ros_p3d` 位姿插件。
 6. `scripts/verify_depth_camera_pose_pointcloud.sh` 已验证 `/camera/points` 和 `/zcw/depth_camera/pose` 同时可用，pose 样本 `frame_id: world`、`child_frame_id: depth_camera::link`。
 7. `scripts/verify_depth_camera_world_ransac.sh` 已完成静态 world-frame RANSAC 审核；该审核只证明成熟 PCL 管线可跑，不证明当前静态地面视角已经识别导线。
-8. depth camera 不是自建模型；当前只修正 clean env 的 ROS2/Gazebo runtime path，并使用官方 `gazebo_ros_camera` 与 `gazebo_ros_p3d` 插件。
+8. `scripts/verify_depth_camera_cable_motion_ransac.sh` 已完成 motion smoke 审核；该入口复用 PX4 官方 depth camera、AerialCore 导线 world、Micro XRCE-DDS Agent、现有 waypoint baseline、Gazebo ROS camera/P3D 和 PCL RANSAC。
+9. depth camera 不是自建模型；当前只修正 clean env 的 ROS2/Gazebo runtime path，并使用官方 `gazebo_ros_camera` 与 `gazebo_ros_p3d` 插件。
 
 已知警告：
 
