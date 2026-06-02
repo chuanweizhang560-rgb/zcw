@@ -44,6 +44,15 @@ px4_sitl_smoke_tests:
     latest_log: data/logs/px4_aerialcore_danube_wires_20260602_150825.log
     status: px4_iris_spawned_and_world_loaded
 
+inspection_smoke_tests:
+  wind_turbine_waypoints:
+    script: scripts/verify_wind_turbine_waypoints.sh
+    launch: zcw_bringup/single_vehicle_wind_turbine_inspection.launch.py
+    latest_px4_log: data/logs/waypoints_px4_20260602_152511.log
+    latest_waypoint_log: data/logs/waypoints_control_20260602_152511.log
+    latest_gui_screenshot: data/screenshots/px4_aerialcore_wind_turbine_gui_20260602_153006_gazebo_only.png
+    status: minimal_geometric_waypoint_baseline_verified
+
 selected_models:
   wind_turbine_mesh:
     path: third_party/aerialcore_simulation/models/wind_turbine/wind_turbine_scaled.dae

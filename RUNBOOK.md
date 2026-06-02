@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 15:09:40 CST
+更新时间：2026-06-02 15:32:05 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -121,6 +121,18 @@ Offboard waypoint baseline 验证：
 scripts/verify_px4_offboard_waypoints.sh
 ```
 
+最小风机巡检几何 waypoint 验证：
+
+```bash
+scripts/verify_wind_turbine_waypoints.sh
+```
+
+最小风机巡检 GUI 截图审核：
+
+```bash
+AERIALCORE_WORLD=wind_turbine GUI_SETTLE_SEC=12 scripts/capture_px4_aerialcore_world_gui.sh
+```
+
 Gazebo Classic GUI 截图：
 
 ```bash
@@ -128,6 +140,13 @@ scripts/capture_px4_gazebo_classic_gui.sh
 ```
 
 截图脚本要求当前 shell 存在可用 `DISPLAY`。截图和运行日志分别写入 `data/screenshots/`、`data/logs/`，这两个目录只作本地证据保存，不提交进 git。
+
+AerialCore GUI 截图：
+
+```bash
+AERIALCORE_WORLD=wind_turbine scripts/capture_px4_aerialcore_world_gui.sh
+AERIALCORE_WORLD=danube_wires scripts/capture_px4_aerialcore_world_gui.sh
+```
 
 AerialCore 风机/两塔导线 world 验证：
 
@@ -139,8 +158,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 将 PX4 `iris` 与 AerialCore 风机/两塔导线 world 组合进可运行任务 smoke test。
-2. 在单机任务 smoke test 上叠加最小风机巡检几何 waypoint。
+1. 规划电缆巡检最小 waypoint 入口。
+2. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 
 ## 不允许事项
 

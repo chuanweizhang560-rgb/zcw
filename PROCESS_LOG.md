@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 15:09:40 CST
+更新时间：2026-06-02 15:32:05 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -396,6 +396,44 @@
   - 提交并推送组合 smoke test 脚本和记录
   - 在风机 world 上叠加最小风机巡检几何 waypoint
   - 规划电缆巡检最小 waypoint 入口
+- 阻塞项：
+  - 未安装 MRS Gazebo camera synchronizer plugin
+  - RViz 截图尚未进行
+  - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 15:32:05 CST
+
+- 节点：AerialCore 风机 world 上的最小风机巡检 waypoint 与 GUI 截图审核
+- 执行动作：
+  - 新增 `zcw_bringup/single_vehicle_wind_turbine_inspection.launch.py`
+  - 新增 `scripts/verify_wind_turbine_waypoints.sh`
+  - 修复 `scripts/run_px4_aerialcore_world_headless.sh`，让它尊重外部传入的 `LOG_FILE`
+  - clean env 构建 `zcw_bringup`
+  - 运行 `scripts/verify_wind_turbine_waypoints.sh`
+  - 检查风机 waypoint 日志、最终状态、最终局部位置和仿真残留进程
+  - 更新 `scripts/capture_px4_gazebo_classic_gui.sh`，支持透传自定义 world/env
+  - 新增 `scripts/capture_px4_aerialcore_world_gui.sh`
+  - 运行 `AERIALCORE_WORLD=wind_turbine GUI_SETTLE_SEC=12 scripts/capture_px4_aerialcore_world_gui.sh`
+  - 裁剪 Gazebo 区域截图用于视觉审核
+- 结果：
+  - 风机巡检 waypoint 验证通过
+  - waypoint 日志显示推进到 `[-5, -25, -20]`、`[-25, -5, -20]`、`[-45, -25, -20]`、`[-25, -45, -20]`、`[-5, -25, -20]`
+  - PX4 保持 `arming_state: 2`、`nav_state: 14`
+  - 最终局部位置约为 `x=-4.972`、`y=-25.019`、`z=-19.982`
+  - 成功日志：
+    - `data/logs/waypoints_px4_20260602_152511.log`
+    - `data/logs/waypoints_control_20260602_152511.log`
+    - `data/logs/waypoints_vehicle_status_20260602_152511.log`
+    - `data/logs/waypoints_vehicle_local_position_20260602_152511.log`
+  - GUI 截图：
+    - 原始：`data/screenshots/px4_aerialcore_wind_turbine_gui_20260602_153006.png`
+    - 裁剪：`data/screenshots/px4_aerialcore_wind_turbine_gui_20260602_153006_gazebo_only.png`
+  - 截图显示 Gazebo Classic 中的 AerialCore 风机模型和 PX4 `iris` 机体
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent`、`offboard_waypoint_sequence` 残留进程
+- 下一步：
+  - 提交并推送风机 waypoint + GUI 截图脚本
+  - 规划并实现电缆巡检最小 waypoint 入口
+  - 之后再把风机巡检 waypoint 从方位点改成圆周/螺旋几何配置
 - 阻塞项：
   - 未安装 MRS Gazebo camera synchronizer plugin
   - RViz 截图尚未进行

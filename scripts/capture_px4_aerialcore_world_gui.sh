@@ -4,10 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AERIALCORE_DIR="${AERIALCORE_DIR:-${ROOT_DIR}/third_party/aerialcore_simulation}"
 AERIALCORE_WORLD="${AERIALCORE_WORLD:-wind_turbine}"
-TIMEOUT_SEC="${TIMEOUT_SEC:-60}"
 LOG_DIR="${LOG_DIR:-${ROOT_DIR}/data/logs}"
+SCREENSHOT_DIR="${SCREENSHOT_DIR:-${ROOT_DIR}/data/screenshots}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
-LOG_FILE="${LOG_FILE:-${LOG_DIR}/px4_aerialcore_${AERIALCORE_WORLD}_${STAMP}.log}"
 
 case "${AERIALCORE_WORLD}" in
   wind_turbine)
@@ -23,17 +22,10 @@ case "${AERIALCORE_WORLD}" in
     ;;
 esac
 
-if [[ ! -f "${WORLD_PATH}" ]]; then
-  echo "AerialCore world not found: ${WORLD_PATH}" >&2
-  exit 1
-fi
-
-mkdir -p "${LOG_DIR}"
-
 PX4_SITL_WORLD="${WORLD_PATH}" \
 GAZEBO_MODEL_PATH="${AERIALCORE_DIR}/models" \
 GAZEBO_RESOURCE_PATH="/usr/share/gazebo-11:${AERIALCORE_DIR}" \
 VERBOSE_SIM="${VERBOSE_SIM:-1}" \
-TIMEOUT_SEC="${TIMEOUT_SEC}" \
-LOG_FILE="${LOG_FILE}" \
-  "${ROOT_DIR}/scripts/run_px4_gazebo_classic_headless.sh"
+LOG_FILE="${LOG_DIR}/px4_aerialcore_${AERIALCORE_WORLD}_gui_${STAMP}.log" \
+SCREENSHOT_FILE="${SCREENSHOT_DIR}/px4_aerialcore_${AERIALCORE_WORLD}_gui_${STAMP}.png" \
+  "${ROOT_DIR}/scripts/capture_px4_gazebo_classic_gui.sh"

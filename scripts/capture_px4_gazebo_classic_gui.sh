@@ -11,6 +11,10 @@ SCREENSHOT_DIR="${SCREENSHOT_DIR:-${ROOT_DIR}/data/screenshots}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/px4_gazebo_classic_gui_${STAMP}.log}"
 SCREENSHOT_FILE="${SCREENSHOT_FILE:-${SCREENSHOT_DIR}/px4_gazebo_classic_gui_${STAMP}.png}"
+PX4_SITL_WORLD_VALUE="${PX4_SITL_WORLD:-}"
+GAZEBO_MODEL_PATH_VALUE="${GAZEBO_MODEL_PATH:-}"
+GAZEBO_RESOURCE_PATH_VALUE="${GAZEBO_RESOURCE_PATH:-/usr/share/gazebo-11}"
+VERBOSE_SIM_VALUE="${VERBOSE_SIM:-}"
 
 px4_pid=""
 
@@ -50,6 +54,10 @@ setsid env -i \
   XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-}" \
   PATH="${VENV_DIR}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
   PYTHON_EXECUTABLE="${VENV_DIR}/bin/python" \
+  PX4_SITL_WORLD="${PX4_SITL_WORLD_VALUE}" \
+  GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH_VALUE}" \
+  GAZEBO_RESOURCE_PATH="${GAZEBO_RESOURCE_PATH_VALUE}" \
+  VERBOSE_SIM="${VERBOSE_SIM_VALUE}" \
   QT_X11_NO_MITSHM=1 \
   LIBGL_ALWAYS_SOFTWARE="${LIBGL_ALWAYS_SOFTWARE:-1}" \
   make px4_sitl gazebo-classic >"${LOG_FILE}" 2>&1 &

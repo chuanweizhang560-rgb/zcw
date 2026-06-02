@@ -16,6 +16,8 @@ PX4_WRAPPER_LOG="${PX4_WRAPPER_LOG:-${PX4_LOG}.wrapper}"
 OFFBOARD_LOG="${OFFBOARD_LOG:-${LOG_DIR}/waypoints_control_${STAMP}.log}"
 STATUS_LOG="${STATUS_LOG:-${LOG_DIR}/waypoints_vehicle_status_${STAMP}.log}"
 LOCAL_POSITION_LOG="${LOCAL_POSITION_LOG:-${LOG_DIR}/waypoints_vehicle_local_position_${STAMP}.log}"
+OFFBOARD_LAUNCH_PACKAGE="${OFFBOARD_LAUNCH_PACKAGE:-zcw_bringup}"
+OFFBOARD_LAUNCH_FILE="${OFFBOARD_LAUNCH_FILE:-single_vehicle_waypoint_sequence.launch.py}"
 
 agent_pid=""
 px4_pid=""
@@ -112,7 +114,7 @@ setsid env -i \
   HOME="${HOME:-/home/travis}" \
   USER="${USER:-travis}" \
   PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
-  /bin/bash -c "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 launch zcw_bringup single_vehicle_waypoint_sequence.launch.py" >"${OFFBOARD_LOG}" 2>&1 &
+  /bin/bash -c "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 launch '${OFFBOARD_LAUNCH_PACKAGE}' '${OFFBOARD_LAUNCH_FILE}'" >"${OFFBOARD_LOG}" 2>&1 &
 offboard_pid=$!
 
 sleep "${OFFBOARD_RUN_SEC}"
