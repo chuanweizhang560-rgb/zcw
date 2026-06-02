@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 13:38:28 CST
+更新时间：2026-06-02 13:54:15 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -173,3 +173,47 @@
   - 继续固定 ROS 2 bridge 版本，安装或构建 Micro XRCE-DDS Agent
 - 阻塞项：
   - `MicroXRCEAgent` 当前不在 PATH，ROS 2 bridge 尚未验证
+
+### 2026-06-02 13:52:19 CST
+
+- 节点：PX4 ROS 2 bridge 版本固定与实测
+- 执行动作：
+  - 将 `third_party/px4_msgs` 切到 `release/1.14`，commit `ffb6e80`
+  - 将 `third_party/px4_ros_com` 切到 `release/v1.14`，commit `e18248d`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src third_party/px4_msgs third_party/px4_ros_com --packages-select px4_msgs px4_ros_com zcw_bringup zcw_sim_assets`
+  - 克隆 eProsima `Micro-XRCE-DDS-Agent` tag `v2.2.1` 到 `third_party/Micro-XRCE-DDS-Agent-v2.2.1`
+  - 用系统 FastDDS/FastCDR/fmt/spdlog clean build `MicroXRCEAgent`
+  - 新建 `scripts/build_microxrce_agent.sh`
+  - 新建 `scripts/verify_px4_ros2_bridge_headless.sh`
+  - 执行 `scripts/verify_px4_ros2_bridge_headless.sh`
+  - 检查 ROS 2 topic 列表和仿真退出后残留进程
+- 结果：
+  - `px4_msgs`、`px4_ros_com` 与本仓库两个空包全部构建成功
+  - `MicroXRCEAgent` 可运行，短时 UDP 8888 启动成功
+  - PX4 `uxrce_dds_client` 成功连接 Agent
+  - ROS 2 topic 列表出现 `/fmu/out/vehicle_status`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+- 下一步：
+  - 提交并推送 ROS 2 bridge 阶段脚本和记录
+  - 在 `zcw_bringup` 建立单机 PX4 Offboard launch 入口
+  - 建立单机规则 baseline：先悬停，再 waypoint，不进入风机/电缆任务
+- 阻塞项：
+  - 暂无 bridge 阻塞
+  - 项目自身 LICENSE 尚未确定
+  - 尚未截取 GUI/RViz 截图
+
+### 2026-06-02 13:54:15 CST
+
+- 节点：Micro XRCE-DDS Agent 构建脚本修复
+- 执行动作：
+  - 执行 `scripts/build_microxrce_agent.sh` 做增量复现
+  - 发现 ROS `setup.bash` 在 `set -u` 下会因未定义变量退出
+  - 调整脚本为先 `source /opt/ros/humble/setup.bash`，再启用 `set -u`
+  - 重新执行 `scripts/build_microxrce_agent.sh`
+- 结果：
+  - 脚本退出码为 0
+  - CMake 配置成功
+  - Ninja 显示 `no work to do`
+  - 输出 `MicroXRCEAgent ready`
+- 下一步：提交并推送 ROS 2 bridge 阶段脚本和记录
+- 阻塞项：无

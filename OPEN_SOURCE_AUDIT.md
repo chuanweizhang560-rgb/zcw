@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 13:35:10 CST
+更新时间：2026-06-02 13:52:19 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -144,6 +144,9 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | `third_party/PowerLine-LiDAR-Detector` | `main` | `1f3d7b7` | MIT | 适合做电力线点云检测参考/离线验证；依赖 Conda、PDAL、Rust，不直接进入实时链路 |
 | `third_party/on-policy` | `main` | `de66d7a` | MIT | MAPPO 官方实现参考；默认 Python 3.6 环境，需要隔离或现代化适配 |
 | `third_party/PX4-Autopilot-release-1.14` | `release/1.14` | `1555f2b` | BSD-3-Clause | 已实测可在本机 Gazebo Classic 11 headless 启动，作为当前 PX4 SITL 主底座 |
+| `third_party/px4_msgs` | `release/1.14` | `ffb6e80` | BSD-3-Clause | 已在 ROS 2 Humble 下构建成功，与 PX4 release/1.14 对齐 |
+| `third_party/px4_ros_com` | `release/v1.14` | `e18248d` | BSD-3-Clause | 已在 ROS 2 Humble 下构建成功，作为 Offboard 示例/接口参考 |
+| `third_party/Micro-XRCE-DDS-Agent-v2.2.1` | tag `v2.2.1` | `f984380` | Apache-2.0 | 已用系统 FastDDS/FastCDR 构建成功，并完成 PX4 ROS 2 bridge 验证 |
 
 立即可用结论：
 
@@ -182,3 +185,34 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 结论：
 
 PX4 Classic 虽然不是 Ubuntu 22.04 的官方推荐路线，但在本机 `Gazebo 11.10.2 + ROS 2 Humble` 下具备可运行的最小链路。下一阶段可以基于该版本固定 ROS 2 bridge 和 Offboard 入口。
+
+## 8. PX4 ROS 2 Bridge 实测记录
+
+版本固定：
+
+| 项 | 结果 |
+|---|---|
+| `px4_msgs` | `release/1.14`, commit `ffb6e80` |
+| `px4_ros_com` | `release/v1.14`, commit `e18248d` |
+| Micro XRCE-DDS Agent | `v2.2.1`, commit `f984380` |
+| Micro XRCE-DDS Client | PX4 内置 client version `2.2.1` |
+
+实测范围：
+
+1. `colcon build --symlink-install --base-paths ros2_ws/src third_party/px4_msgs third_party/px4_ros_com --packages-select px4_msgs px4_ros_com zcw_bringup zcw_sim_assets`：成功。
+2. `scripts/build_microxrce_agent.sh` 对 Agent v2.2.1 clean build：成功。
+3. `scripts/verify_px4_ros2_bridge_headless.sh`：成功。
+
+bridge 成功证据：
+
+```text
+MicroXRCEAgent udp4 port: 8888 running
+uxrce_dds_client synchronized
+/fmu/out/vehicle_status
+```
+
+注意：
+
+1. Agent v2.2.1 使用系统 `fmt`/`spdlog` 构建；不能让 conda 的 `fmt` 头文件进入 include path。
+2. `px4_msgs main` 不用于当前链路，当前固定 `release/1.14`。
+3. `px4_ros_com main` 不用于当前链路，当前固定 `release/v1.14`。
