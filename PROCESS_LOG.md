@@ -883,3 +883,50 @@
 - 结果：本地 commit 已生成
 - 下一步：提交本记录更新并推送远端分支
 - 阻塞项：无
+
+### 2026-06-02 20:51:59 CST
+
+- 节点：PX4 官方 depth camera PointCloud2 + P3D pose 验证
+- 执行动作：
+  - 新增 `assets/gazebo/models/iris_depth_camera` overlay
+  - overlay 保留 PX4 官方 `iris` 和 `depth_camera` include，只增加成熟官方插件 `libgazebo_ros_p3d.so`
+  - 新增 `scripts/verify_depth_camera_pose_pointcloud.sh`
+  - 首次运行失败，原因是 overlay 文件名写成 `model.sdf`，PX4 spawn 脚本按 `${model}/${model}.sdf` 查找，实际仍加载第三方 PX4 原始模型
+  - 修正 overlay 文件名为 `iris_depth_camera.sdf`
+  - resume 后发现 `/tmp/codex_zcw_px4_venv` 丢失，PX4 启动脚本在写仿真日志前退出
+  - 重新运行 `scripts/setup_px4_venv.sh` 时，最新 `pip 26` 拒绝 PX4 1.14 requirements 中的 `matplotlib>=3.0.*`
+  - 修正 `scripts/setup_px4_venv.sh`，将 pip 固定为 `<24`
+  - 重建 PX4 venv，并确认 `empy==3.3.4`
+  - 重新运行 `scripts/verify_depth_camera_pose_pointcloud.sh`
+  - 查看 Gazebo 窗口截图、PointCloud2 样本、Odometry 样本和 topic 类型
+  - 回答用户疑问：当前传感器验证脚本不会发 Offboard setpoint，所以 GUI 中无人机停在地面是预期行为；运动验证使用已有 hover/waypoint 脚本
+- 结果：
+  - 脚本退出码为 0
+  - Gazebo 加载 overlay：
+    - `Using: /home/travis/zcw/BS/codex_zcw/assets/gazebo/models/iris_depth_camera/iris_depth_camera.sdf`
+  - 点云 topic：
+    - `/camera/points`
+    - 类型：`sensor_msgs/msg/PointCloud2`
+    - 样本：`data/logs/depth_camera_pose_points_sample_20260602_204840.log`
+    - `frame_id: camera_link`
+    - `width: 848`
+    - `height: 480`
+    - `point_step: 32`
+  - 位姿 topic：
+    - `/zcw/depth_camera/pose`
+    - 类型：`nav_msgs/msg/Odometry`
+    - 样本：`data/logs/depth_camera_pose_pose_sample_20260602_204840.log`
+    - `frame_id: world`
+    - `child_frame_id: depth_camera::link`
+  - Gazebo 截图：
+    - `data/screenshots/depth_camera_pose_gui_20260602_204840.png`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 结论：
+  - PX4 官方 depth camera 现在同时具备 ROS2 PointCloud2 和 world-frame pose 输入
+  - 该节点仍是传感器验证，不代表无人机执行运动任务
+  - 下一步可以做 world-frame 点云/RANSAC 审核，判断 depth camera 是否实际覆盖架空导线
+- 下一步：
+  - 提交并推送 depth camera pose overlay、验证脚本和文档记录
+  - 单独跑一次已有 waypoint/hover 运动脚本，给用户确认“运动链路”和“传感器链路”的区别
+- 阻塞项：
+  - 无阻塞；但导线可见性尚未完成审核

@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<!--
+  Adapted from PX4-Autopilot release/1.14:
+  Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris_depth_camera/iris_depth_camera.sdf
+
+  The airframe and depth camera geometry are preserved through the same PX4
+  model includes. Only the ROS 2 Humble gazebo_ros_p3d plugin is added to
+  publish the depth camera link pose for world-frame point cloud auditing.
+-->
+<sdf version="1.5">
+  <model name="iris_depth_camera">
+    <include>
+      <uri>model://iris</uri>
+    </include>
+
+    <include>
+      <uri>model://depth_camera</uri>
+      <pose>0.1 0 0 0 0 0</pose>
+    </include>
+
+    <joint name="depth_camera_joint" type="revolute">
+      <child>depth_camera::link</child>
+      <parent>iris::base_link</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <upper>0</upper>
+          <lower>0</lower>
+        </limit>
+      </axis>
+    </joint>
+
+    <plugin name="depth_camera_p3d" filename="libgazebo_ros_p3d.so">
+      <ros>
+        <namespace>/zcw/depth_camera</namespace>
+        <remapping>odom:=pose</remapping>
+      </ros>
+      <body_name>depth_camera::link</body_name>
+      <frame_name>world</frame_name>
+      <update_rate>10</update_rate>
+      <gaussian_noise>0.0</gaussian_noise>
+    </plugin>
+  </model>
+</sdf>

@@ -21,6 +21,7 @@
 - `verify_foggy_lidar_ransac_batch.sh`：运行 5 帧 PCL RANSAC 批量烟测，输出每帧 CSV、filtered PCD、line-inlier PCD 和汇总结果。
 - `verify_foggy_lidar_world_ransac.sh`：订阅 foggy lidar PointCloud2 与 P3D pose，输出 sensor/world-frame PCD 并检查 world 坐标 RANSAC 结果。
 - `verify_depth_camera_pointcloud.sh`：用 PX4 官方 `iris_depth_camera` + Gazebo ROS camera plugin 验证 `/camera/points` PointCloud2；默认需要 GUI 渲染和可用 `DISPLAY`。
+- `verify_depth_camera_pose_pointcloud.sh`：验证 depth camera `/camera/points` PointCloud2 和官方 `gazebo_ros_p3d` 输出 `/zcw/depth_camera/pose` Odometry。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 batch 输出的 filtered/inlier PCD，并截取真实点云可视化截图。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。

@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 19:00:48 CST
+更新时间：2026-06-02 20:51:59 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -33,6 +33,7 @@ PCL Viewer 已可打开 batch 输出 PCD 并截取真实点云可视化截图，
 foggy lidar overlay 已通过官方 `gazebo_ros_p3d` 发布 `/zcw/foggy_lidar/pose`，PointCloud2 `frame_id` 已固定为 `foggy_lidar_link`，具备后续世界坐标叠加的基础。
 `pointcloud_pose_line_ransac_world_smoke` 已把 RANSAC inlier 输出到 world 坐标；结果显示当前 foggy lidar inlier 基本在地面高度，不能作为导线识别结果。
 PX4 官方 `iris_depth_camera` 已在 AerialCore 两塔导线 world + Gazebo GUI 渲染模式下发布 ROS 2 `/camera/points` PointCloud2；该链路可作为下一步导线可见性/RANSAC 审核候选。
+`assets/gazebo/models/iris_depth_camera` overlay 已通过官方 `gazebo_ros_p3d` 发布 `/zcw/depth_camera/pose`，为 `/camera/points` world-frame 审核补齐位姿输入。
 
 实测成功标志：
 
@@ -48,7 +49,7 @@ Advancing to waypoint
 注意事项：
 
 1. 必须使用 clean env 启动，避免继承旧 `BS` 项目的 `GAZEBO_MODEL_PATH`、`GAZEBO_PLUGIN_PATH`、`LD_LIBRARY_PATH`。
-2. PX4 release/1.14 的 Python 依赖要固定 `empy==3.3.4`，不能使用 PyPI 默认拉取到的 empy 4.x。
+2. PX4 release/1.14 的 Python 依赖要固定 `empy==3.3.4`，不能使用 PyPI 默认拉取到的 empy 4.x；`pip` 也要固定 `<24`，否则旧 requirements 中的 `matplotlib>=3.0.*` 会解析失败。
 3. Ubuntu 22.04 上构建 Classic 插件需要 `ninja-build`、`python3.10-venv`、`libgstreamer-plugins-base1.0-dev`。
 4. headless 验证脚本使用 timeout 退出；只要日志中出现上述成功标志，timeout 退出不是失败。
 5. Micro XRCE-DDS Agent v2.2.1 必须使用 clean build 目录和系统 `fmt`/`spdlog`，避免 conda include 路径导致 ABI/模板错误。
@@ -56,6 +57,7 @@ Advancing to waypoint
 7. PX4 `/fmu/out/*` topic 使用 best-effort QoS；订阅 `vehicle_status` 时必须按 PX4 官方 Python 示例使用 best-effort/transient-local。
 8. PX4 主日志会持续输出 `pxh>` 提示符，日志文件可能达到数百 MB；排障时只用限长 `head -c`/`tail -c` 过滤，不直接 `strings` 或全文 grep。
 9. Depth camera 依赖 Gazebo 渲染；headless 下会因为 rendering disabled 无法生成点云。验证时必须使用可用 `DISPLAY`，并把 `/opt/ros/humble`、Gazebo system plugin 目录和 ROS 2 ament 前缀显式带入 clean env。
+10. 传感器验证脚本只启动仿真和采样 ROS2 topic，不发 Offboard setpoint；GUI 里无人机停在地面是预期行为。要验证运动，使用 Offboard/waypoint 脚本。
 
 ## 本地第三方仓库
 
@@ -198,6 +200,27 @@ log: data/logs/depth_camera_pointcloud_sample_20260602_191429.log
 screenshot: data/screenshots/depth_camera_pointcloud_gui_20260602_191429.png
 ```
 
+PX4 depth camera PointCloud2 + P3D pose 验证：
+
+```bash
+scripts/verify_depth_camera_pose_pointcloud.sh
+```
+
+最新成功证据：
+
+```text
+points_topic: /camera/points
+points_type: sensor_msgs/msg/PointCloud2
+points_frame_id: camera_link
+pose_topic: /zcw/depth_camera/pose
+pose_type: nav_msgs/msg/Odometry
+pose_frame_id: world
+pose_child_frame_id: depth_camera::link
+points_log: data/logs/depth_camera_pose_points_sample_20260602_204840.log
+pose_log: data/logs/depth_camera_pose_pose_sample_20260602_204840.log
+screenshot: data/screenshots/depth_camera_pose_gui_20260602_204840.png
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -242,7 +265,7 @@ scripts/verify_aerialcore_worlds.sh
 ## 下一步执行顺序
 
 1. 将 foggy lidar 标记为“管线 smoke 传感器”，不再把它当作导线识别传感器。
-2. 基于已通过的 PX4 `iris_depth_camera` PointCloud2 topic，补 world-frame pose / TF 叠加，确认点云是否覆盖高处导线/电塔。
+2. 基于已通过的 PX4 `iris_depth_camera` PointCloud2 + P3D pose，做 world-frame 点云/RANSAC 审核，确认点云是否覆盖高处导线/电塔。
 3. 若 depth camera 视角或 range 不足，再用 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 新传感器通过导线叠加后，再做 RANSAC inlier 与真实导线的 RViz/PCD 截图审核。
 5. 在离线几何稳定后，再接 Ceres/Eigen catenary/spline 和 Frenet offset path。

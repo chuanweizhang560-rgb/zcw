@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 19:00:48 CST
+更新时间：2026-06-02 20:51:59 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -74,10 +74,25 @@
    - GUI 截图：`data/screenshots/depth_camera_pointcloud_gui_20260602_191429.png`
    - 样本字段：`width=848`，`height=480`，`point_step=32`
    - 审核边界：该节点只证明成熟 Gazebo ROS depth camera 点云链路可用；尚未证明点云覆盖真实架空导线。
+12. PX4 官方 depth camera PointCloud2 + P3D pose 验证：
+   - overlay：`assets/gazebo/models/iris_depth_camera`
+   - 新增成熟插件：`libgazebo_ros_p3d.so`
+   - 验证：`scripts/verify_depth_camera_pose_pointcloud.sh`
+   - 点云 topic：`/camera/points`
+   - 点云类型：`sensor_msgs/msg/PointCloud2`
+   - 点云 frame：`camera_link`
+   - pose topic：`/zcw/depth_camera/pose`
+   - pose 类型：`nav_msgs/msg/Odometry`
+   - pose frame：`world`
+   - pose child frame：`depth_camera::link`
+   - 成功样本：
+     - `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
+     - `data/logs/depth_camera_pose_pose_sample_20260602_204840.log`
+   - GUI 截图：`data/screenshots/depth_camera_pose_gui_20260602_204840.png`
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明该线候选基本处于地面高度，不应视为导线。foggy lidar 后续只保留为 PointCloud2 管线 smoke test。PX4 官方 depth camera 已输出 `/camera/points`，下一步必须做 world-frame pose / RViz 叠加，确认点云是否覆盖真实导线。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明该线候选基本处于地面高度，不应视为导线。foggy lidar 后续只保留为 PointCloud2 管线 smoke test。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`，下一步必须做 world-frame 点云/RANSAC 审核，确认点云是否覆盖真实导线。
 
 ## 2. 采用的成熟开源组件
 
@@ -85,7 +100,7 @@
 |---|---|---|---|---|
 | 仿真机体/传感器 | PX4 Gazebo Classic `iris_foggy_lidar` + ROS2 ray sensor overlay | PX4 release/1.14 自带模型 + `ros-humble-gazebo-plugins 3.9.0` | BSD-3-Clause / Apache-2.0 体系 | 已验证 PointCloud2 topic；world-frame 审核显示不适合作为导线识别主线 |
 | 仿真机体/传感器 | PX4 Gazebo Classic `iris_depth_camera` + ROS2 camera plugin | PX4 release/1.14 自带模型 + `ros-humble-gazebo-plugins 3.9.0` | BSD-3-Clause / Apache-2.0 体系 | 已验证 `/camera/points` PointCloud2；依赖 Gazebo GUI 渲染，导线可见性待审核 |
-| 传感器位姿 | Gazebo ROS `p3d` plugin | `/opt/ros/humble/lib/libgazebo_ros_p3d.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | 输出 `/zcw/foggy_lidar/pose`，用于后续点云 world 坐标叠加 |
+| 传感器位姿 | Gazebo ROS `p3d` plugin | `/opt/ros/humble/lib/libgazebo_ros_p3d.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | 输出 `/zcw/foggy_lidar/pose` 和 `/zcw/depth_camera/pose`，用于后续点云 world 坐标叠加 |
 | 点云接口 | `sensor_msgs/PointCloud2` + `pcl_conversions` + `pcl_ros` | `ros-humble-pcl-ros 2.4.5`，`ros-humble-pcl-conversions 2.4.5` | BSD | ROS2 点云消息与 PCL 互转 |
 | 几何分割 | PCL `SampleConsensusModelLine` / `SACSegmentation` | `libpcl-dev 1.12.1` | BSD-3-Clause | RANSAC 线模型分割导线候选点 |
 | 曲线拟合 | Ceres Solver + Eigen Splines | `libceres-dev 2.0.0`，`libeigen3-dev 3.4.0` | BSD-3-Clause / MPL2 | 用成熟优化和样条库拟合 catenary/spline，不写自研优化器 |
@@ -196,6 +211,14 @@ scripts/verify_depth_camera_pointcloud.sh
 
 该入口使用 PX4 direct model 模式启动官方 `iris_depth_camera`，并强制 clean env 带入 ROS 2 Humble / Gazebo system plugin runtime path。depth camera 依赖 Gazebo 渲染，默认使用 GUI 模式；headless 下不会生成深度点云。当前验证只证明 `/camera/points` 可用，下一步必须补位姿和导线叠加审核。
 
+已新增 depth camera PointCloud2 + pose 验证入口：
+
+```bash
+scripts/verify_depth_camera_pose_pointcloud.sh
+```
+
+该入口使用 `assets/gazebo/models/iris_depth_camera` overlay。overlay 保留 PX4 官方 `iris` 和 `depth_camera` include，只增加官方 `gazebo_ros_p3d` 位姿插件；不自建机体、相机或传感器插件。当前验证只证明点云和位姿 topic 同时可用，下一步仍需做导线可见性审核。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -301,8 +324,8 @@ scripts/verify_depth_camera_pointcloud.sh
 
 ## 10. 下一个执行节点
 
-1. 给 PX4 `iris_depth_camera` 补 world-frame pose / TF 或 Gazebo P3D 输出。
-2. 用 RViz/PCD 叠加截图显示 `/camera/points`、RANSAC inlier 和 AerialCore 导线/电塔相对位置。
+1. 用 depth camera pose 将 `/camera/points` 转到 world-frame。
+2. 用 RViz/PCD 叠加截图显示 world-frame `/camera/points`、RANSAC inlier 和 AerialCore 导线/电塔相对位置。
 3. 如果 PX4 depth camera 视角/range 仍不足，再用 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
 5. 确认导线候选可靠后，再进入 Ceres/Eigen catenary/spline 拟合节点。

@@ -21,7 +21,9 @@ if ! command -v /usr/bin/python3 >/dev/null 2>&1; then
 fi
 
 /usr/bin/python3 -m venv "${VENV_DIR}"
-"${VENV_DIR}/bin/python" -m pip install --upgrade pip
+# PX4 release/1.14 has legacy requirement specifiers such as
+# matplotlib>=3.0.* that modern pip rejects. Keep pip on the 23.x parser.
+"${VENV_DIR}/bin/python" -m pip install "pip<24"
 "${VENV_DIR}/bin/python" -m pip install -r "${PX4_DIR}/Tools/setup/requirements.txt"
 
 # PX4 release/1.14 expects the empy 3.x API. The requirements file may pull
