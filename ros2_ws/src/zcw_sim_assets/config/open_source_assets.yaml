@@ -123,8 +123,12 @@ sensor_overlays:
     verification:
       pointcloud: scripts/verify_depth_camera_pointcloud.sh
       pointcloud_pose: scripts/verify_depth_camera_pose_pointcloud.sh
+      world_ransac: scripts/verify_depth_camera_world_ransac.sh
     latest_px4_log: data/logs/depth_camera_pose_px4_20260602_204840.log
     latest_sample_log: data/logs/depth_camera_pose_points_sample_20260602_204840.log
     latest_pose_log: data/logs/depth_camera_pose_pose_sample_20260602_204840.log
     latest_gui_screenshot: data/screenshots/depth_camera_pose_gui_20260602_204840.png
-    status: pointcloud2_and_p3d_pose_verified_in_gazebo11_gui_mode_cable_visibility_not_yet_verified
+    latest_world_ransac_summary: data/results/depth_camera_world_ransac_20260602_211626/depth_camera_line_ransac_world_20260602_211646.txt
+    latest_world_ransac_csv: data/results/depth_camera_world_ransac_20260602_211626/depth_camera_line_ransac_world_20260602_211646.csv
+    latest_world_ransac_pcd_screenshot: data/screenshots/pcd_ransac_frame0_20260602_211833_pcl_viewer_left.png
+    status: pointcloud2_and_p3d_pose_verified_but_static_world_ransac_not_accepted_as_cable

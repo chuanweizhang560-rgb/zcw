@@ -92,6 +92,7 @@ fi
     -p topic:="${POINTS_TOPIC}" \
     -p pose_topic:="${POSE_TOPIC}" \
     -p output_dir:="${RESULT_DIR}" \
+    -p output_prefix:="foggy_lidar_line_ransac_world" \
     -p frames:="${FRAMES}" \
     -p distance_threshold_m:="${DISTANCE_THRESHOLD}" \
     -p min_inliers:="${MIN_INLIERS}" \

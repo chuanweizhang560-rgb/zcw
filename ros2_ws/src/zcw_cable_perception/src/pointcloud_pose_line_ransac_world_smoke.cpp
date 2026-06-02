@@ -40,7 +40,8 @@ std::string stamp_string()
   return out.str();
 }
 
-using Cloud = pcl::PointCloud<pcl::PointXYZI>;
+using PointT = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointT>;
 using CloudPtr = Cloud::Ptr;
 
 struct Bbox
@@ -107,6 +108,7 @@ public:
     topic_ = declare_parameter<std::string>("topic", "/zcw/foggy_lidar/points");
     pose_topic_ = declare_parameter<std::string>("pose_topic", "/zcw/foggy_lidar/pose");
     output_dir_ = declare_parameter<std::string>("output_dir", "data/results");
+    output_prefix_ = declare_parameter<std::string>("output_prefix", "pointcloud_line_ransac_world");
     frames_ = declare_parameter<int>("frames", 5);
     distance_threshold_ = declare_parameter<double>("distance_threshold_m", 0.35);
     min_inliers_ = declare_parameter<int>("min_inliers", 8);
@@ -153,7 +155,7 @@ private:
   CloudPtr crop(const CloudPtr & input) const
   {
     auto cropped = std::make_shared<Cloud>();
-    pcl::CropBox<pcl::PointXYZI> crop_box;
+    pcl::CropBox<PointT> crop_box;
     crop_box.setMin(Eigen::Vector4f(crop_min_x_, crop_min_y_, crop_min_z_, 1.0f));
     crop_box.setMax(Eigen::Vector4f(crop_max_x_, crop_max_y_, crop_max_z_, 1.0f));
     crop_box.setInputCloud(input);
@@ -200,7 +202,7 @@ private:
       return stats;
     }
 
-    pcl::SACSegmentation<pcl::PointXYZI> segmentation;
+    pcl::SACSegmentation<PointT> segmentation;
     segmentation.setOptimizeCoefficients(true);
     segmentation.setModelType(pcl::SACMODEL_LINE);
     segmentation.setMethodType(pcl::SAC_RANSAC);
@@ -212,7 +214,7 @@ private:
     pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
     segmentation.segment(*inliers, *coefficients);
 
-    pcl::ExtractIndices<pcl::PointXYZI> extract;
+    pcl::ExtractIndices<PointT> extract;
     extract.setInputCloud(cloud);
     extract.setIndices(inliers);
     inlier_cloud = std::make_shared<Cloud>();
@@ -288,8 +290,8 @@ private:
   void write_summary()
   {
     const auto stamp = stamp_string();
-    const auto summary_txt = output_dir_ + "/foggy_lidar_line_ransac_world_" + stamp + ".txt";
-    const auto csv_path = output_dir_ + "/foggy_lidar_line_ransac_world_" + stamp + ".csv";
+    const auto summary_txt = output_dir_ + "/" + output_prefix_ + "_" + stamp + ".txt";
+    const auto csv_path = output_dir_ + "/" + output_prefix_ + "_" + stamp + ".csv";
 
     std::ofstream csv(csv_path);
     csv << "frame,raw_points,finite_points,roi_points,ransac_inliers,ransac_inlier_ratio,"
@@ -339,6 +341,7 @@ private:
     std::ofstream summary(summary_txt);
     summary << "topic: " << topic_ << "\n";
     summary << "pose_topic: " << pose_topic_ << "\n";
+    summary << "output_prefix: " << output_prefix_ << "\n";
     summary << "frames_requested: " << frames_ << "\n";
     summary << "frames_processed: " << stats_.size() << "\n";
     summary << "distance_threshold_m: " << distance_threshold_ << "\n";
@@ -364,6 +367,7 @@ private:
   std::string topic_;
   std::string pose_topic_;
   std::string output_dir_;
+  std::string output_prefix_;
   int frames_{5};
   double distance_threshold_{0.35};
   int min_inliers_{8};

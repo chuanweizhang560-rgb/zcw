@@ -306,7 +306,8 @@ uxrce_dds_client synchronized
 4. PX4 release/1.14 官方 `iris_depth_camera` 已通过 `scripts/verify_depth_camera_pointcloud.sh` 验证 `/camera/points` 为 `sensor_msgs/msg/PointCloud2`，样本 `width: 848`、`height: 480`、`point_step: 32`。
 5. `assets/gazebo/models/iris_depth_camera` overlay 保留 PX4 官方 `iris` 与 `depth_camera` include，只增加官方 `gazebo_ros_p3d` 位姿插件。
 6. `scripts/verify_depth_camera_pose_pointcloud.sh` 已验证 `/camera/points` 和 `/zcw/depth_camera/pose` 同时可用，pose 样本 `frame_id: world`、`child_frame_id: depth_camera::link`。
-7. depth camera 不是自建模型；当前只修正 clean env 的 ROS2/Gazebo runtime path，并使用官方 `gazebo_ros_camera` 与 `gazebo_ros_p3d` 插件。
+7. `scripts/verify_depth_camera_world_ransac.sh` 已完成静态 world-frame RANSAC 审核；该审核只证明成熟 PCL 管线可跑，不证明当前静态地面视角已经识别导线。
+8. depth camera 不是自建模型；当前只修正 clean env 的 ROS2/Gazebo runtime path，并使用官方 `gazebo_ros_camera` 与 `gazebo_ros_p3d` 插件。
 
 已知警告：
 

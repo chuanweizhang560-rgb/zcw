@@ -982,3 +982,120 @@
   - 提交本记录更新并推送远端分支
   - 进入 world-frame depth pointcloud / RANSAC 审核，或新增 sensor+waypoint 组合脚本
 - 阻塞项：无
+
+### 2026-06-02 21:07:06 CST
+
+- 节点：实时过程记录要求复核与 depth camera world-frame RANSAC 准备
+- 执行动作：
+  - 用户提醒必须实时记录日志，不能只在阶段结束后补写
+  - 复核仓库状态和 `PROCESS_LOG.md` 最近记录
+  - 读取现有 `scripts/verify_foggy_lidar_world_ransac.sh`
+  - 读取现有 PCL world-frame RANSAC 节点 `ros2_ws/src/zcw_cable_perception/src/pointcloud_pose_line_ransac_world_smoke.cpp`
+  - 读取 depth camera pose 验证入口 `scripts/verify_depth_camera_pose_pointcloud.sh`
+- 结果：
+  - 当前远端分支为 `origin/codex/initial-workflow`
+  - 最新已记录节点为单机电缆 waypoint 运动链路复核
+  - world-frame RANSAC 节点已具备成熟 PCL `SACMODEL_LINE`、CropBox、pose 叠加、PCD 输出能力
+  - 下一步只新增 depth camera 专用验证入口，不自研核心算法
+- 下一步：
+  - 新增 `scripts/verify_depth_camera_world_ransac.sh`
+  - 使用 `/camera/points` 和 `/zcw/depth_camera/pose` 做 world-frame PCD/RANSAC 审核
+  - 优先判断 depth camera 是否真实覆盖架空导线；若结果仍扫到地面或点云坐标异常，记录原因后再选成熟传感器替代方案
+- 阻塞项：无
+
+### 2026-06-02 21:08:53 CST
+
+- 节点：depth camera world-frame RANSAC 验证入口创建
+- 执行动作：
+  - 新增 `scripts/verify_depth_camera_world_ransac.sh`
+  - 复用 PX4 官方 `iris_depth_camera`、AerialCore `danube_wires` world、ROS2 Gazebo camera plugin、Gazebo P3D pose 和现有 PCL RANSAC 节点
+  - 默认输入：
+    - `/camera/points`
+    - `/zcw/depth_camera/pose`
+  - 默认参数：
+    - `apply_sensor_pose_in_link=false`
+    - `RANSAC_CROP_MIN_Z=0.0`
+    - `RANSAC_CROP_MAX_Z=80.0`
+    - `RANSAC_MIN_INLIERS=50`
+  - 设置脚本可执行权限
+  - 运行 `bash -n scripts/verify_depth_camera_world_ransac.sh`
+- 结果：
+  - 脚本语法检查通过
+  - 该入口仅做成熟开源组件编排，不新增自研核心感知算法
+- 下一步：
+  - 启动 Gazebo GUI + PX4 SITL，采集 depth camera world-frame PCD/RANSAC 证据
+  - 根据 summary、CSV、PCD 和截图判断导线可见性
+- 阻塞项：无
+
+### 2026-06-02 21:14:40 CST
+
+- 节点：depth camera world-frame RANSAC 首次运行与点云字段兼容修正
+- 执行动作：
+  - 运行 `scripts/verify_depth_camera_world_ransac.sh`
+  - 查看 Gazebo GUI 截图、PCL RANSAC summary、CSV、node 日志和 PCD viewer 截图
+  - 发现 PCL node 日志出现 `Failed to find match for field 'intensity'`
+  - 原因判断：PX4 depth camera 发布 XYZ/RGB 点云，不包含 foggy lidar 的 `intensity` 字段；现有 smoke 节点使用 `PointXYZI`
+  - 修改 `ros2_ws/src/zcw_cable_perception/src/pointcloud_pose_line_ransac_world_smoke.cpp`，将验证点类型改为 `PointXYZ`
+  - 给 world-frame RANSAC 节点新增 `output_prefix` 参数
+  - 更新：
+    - `scripts/verify_foggy_lidar_world_ransac.sh`
+    - `scripts/verify_depth_camera_world_ransac.sh`
+  - 扩展 `scripts/capture_pcd_ransac_viewer.sh`，允许通过环境变量指定 filtered/inlier PCD
+  - 运行脚本语法检查
+- 首次运行证据：
+  - PX4/Gazebo log：`data/logs/depth_camera_world_ransac_px4_20260602_210922.log`
+  - node log：`data/logs/depth_camera_world_ransac_node_20260602_210922.log`
+  - summary：`data/results/depth_camera_world_ransac_20260602_210922/foggy_lidar_line_ransac_world_20260602_210943.txt`
+  - CSV：`data/results/depth_camera_world_ransac_20260602_210922/foggy_lidar_line_ransac_world_20260602_210943.csv`
+  - Gazebo 截图：`data/screenshots/depth_camera_world_ransac_gui_20260602_210922.png`
+  - PCD viewer 截图：`data/screenshots/pcd_ransac_frame0_20260602_211230_pcl_viewer_left.png`
+- 首次运行结论：
+  - 脚本可跑通，但无人机静止在地面；该节点仍是传感器静态审核，不是运动巡线
+  - `world_inlier_bbox_min/max` 为约 `[-46.69, -8.04, 0.26]` 到 `[1.48, 1.04, 65.57]`
+  - bbox 与 PCD 截图更像 depth camera 看到的大面积深度平面/坐标系候选，不应直接视为架空导线
+  - 必须复跑 PointXYZ 兼容版本，消除 intensity 字段不匹配后再给最终判断
+- 下一步：
+  - 编译 `zcw_cable_perception`
+  - 复跑 `scripts/verify_depth_camera_world_ransac.sh`
+  - 对新 summary/CSV/截图做导线可见性判断
+- 阻塞项：无
+
+### 2026-06-02 21:23:21 CST
+
+- 节点：depth camera world-frame RANSAC 复跑、截图审核与文档同步
+- 执行动作：
+  - 编译 `zcw_cable_perception`
+  - 复跑 `scripts/verify_depth_camera_world_ransac.sh`
+  - 查看 summary、CSV、node log、Gazebo 截图和 PCL viewer 截图
+  - 检查仿真残留进程
+  - 更新：
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+- 结果：
+  - 编译结果：`zcw_cable_perception` 构建成功
+  - 复跑脚本退出码：0
+  - node log 不再出现 `Failed to find match for field 'intensity'`
+  - PX4/Gazebo log：`data/logs/depth_camera_world_ransac_px4_20260602_211626.log`
+  - node log：`data/logs/depth_camera_world_ransac_node_20260602_211626.log`
+  - summary：`data/results/depth_camera_world_ransac_20260602_211626/depth_camera_line_ransac_world_20260602_211646.txt`
+  - CSV：`data/results/depth_camera_world_ransac_20260602_211626/depth_camera_line_ransac_world_20260602_211646.csv`
+  - Gazebo 截图：`data/screenshots/depth_camera_world_ransac_gui_20260602_211626.png`
+  - PCD viewer 截图：`data/screenshots/pcd_ransac_frame0_20260602_211833_pcl_viewer_left.png`
+  - 统计结果：
+    - `frames_processed=5`
+    - `mean_ransac_inliers=78700.4`
+    - `failed_frames=0`
+    - `world_inlier_bbox_min=(-46.6904, -8.0371, 0.255494)`
+    - `world_inlier_bbox_max=(1.47922, 1.03503, 65.5754)`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 结论：
+  - PointXYZ 兼容修正有效，depth camera PointCloud2 可进入 world-frame PCL RANSAC 管线
+  - 当前脚本是静态传感器审核，不发送 Offboard setpoint，因此 GUI 中无人机停在地面是预期行为
+  - 当前静态地面状态下，depth camera RANSAC inlier 呈大面积深度平面，不符合单根架空导线几何特征，不能作为导线识别结果
+- 下一步：
+  - 新增“电缆 waypoint 运动 + depth camera 采集/RANSAC”组合验证，让无人机飞到导线附近后再采集点云
+  - 如果运动状态下仍无法看到导线，再评估成熟 Gazebo ROS2 GPU ray overlay
+- 阻塞项：无

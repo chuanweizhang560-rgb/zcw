@@ -38,8 +38,8 @@ if [[ -z "${RESULT_DIR}" || ! -d "${RESULT_DIR}" ]]; then
   exit 1
 fi
 
-FILTERED_PCD="${RESULT_DIR}/frame_${FRAME_INDEX}_filtered.pcd"
-INLIERS_PCD="${RESULT_DIR}/frame_${FRAME_INDEX}_line_inliers.pcd"
+FILTERED_PCD="${FILTERED_PCD:-${RESULT_DIR}/frame_${FRAME_INDEX}_filtered.pcd}"
+INLIERS_PCD="${INLIERS_PCD:-${RESULT_DIR}/frame_${FRAME_INDEX}_line_inliers.pcd}"
 if [[ ! -f "${FILTERED_PCD}" || ! -f "${INLIERS_PCD}" ]]; then
   echo "Expected PCD files not found:" >&2
   echo "  ${FILTERED_PCD}" >&2
