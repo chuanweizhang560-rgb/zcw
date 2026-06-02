@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 16:55:16 CST
+更新时间：2026-06-02 17:01:50 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -569,3 +569,13 @@
 - 阻塞项：
   - AerialCore world 仍有缺少 `libMRSGazeboRvizCameraSynchronizer.so` 的非核心警告
   - 该 foggy lidar 是 2D ray -> PointCloud2 输出，不是多线 3D LiDAR；第一版可用于 corridor 点云 smoke test，后续若导线分割点数不足，需要再评估 depth/GPU ray 方案
+
+### 2026-06-02 17:01:50 CST
+
+- 节点：foggy lidar PointCloud2 节点提交
+- 执行动作：
+  - 提交 `af4d467`：`Add foggy lidar pointcloud smoke test`
+  - 提交内容包括 ROS2 ray sensor overlay、PX4 model/env 透传脚本、PointCloud2 验证脚本、资产审计、执行手册和过程记录
+- 结果：本地 commit 已生成
+- 下一步：提交本记录更新并推送远端分支
+- 阻塞项：无
