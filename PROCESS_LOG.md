@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 17:41:43 CST
+更新时间：2026-06-02 17:45:10 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -766,3 +766,13 @@
   - 用 `/zcw/foggy_lidar/pose` 把 PCD/RANSAC inlier 转到 world 坐标，为 RViz 叠加做准备
 - 阻塞项：
   - pose topic 已有，但还没有把 RANSAC inlier 变换到 world 坐标并与真实导线模型叠加
+
+### 2026-06-02 17:45:10 CST
+
+- 节点：foggy lidar pose 验证节点提交
+- 执行动作：
+  - 提交 `1be1038`：`Add foggy lidar pose verification`
+  - 提交内容包括 foggy lidar overlay 的 `frame_name` / `gazebo_ros_p3d` 适配、`scripts/verify_foggy_lidar_pose.sh`、资产 YAML、执行手册、脚本说明、开源审计、电缆专项工作流和过程记录
+- 结果：本地 commit 已生成
+- 下一步：提交本记录更新并推送远端分支
+- 阻塞项：无
