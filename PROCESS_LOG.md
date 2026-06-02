@@ -944,3 +944,41 @@
 - 结果：本地 commit 已生成
 - 下一步：提交本记录更新并推送远端分支
 - 阻塞项：无
+
+### 2026-06-02 21:02:06 CST
+
+- 节点：单机电缆 waypoint 运动链路复核
+- 执行动作：
+  - 用户指出传感器验证截图中无人机一直停在地面
+  - 说明原因：传感器验证脚本只采集 topic，不发送 Offboard setpoint；无人机不动是预期行为
+  - 单独运行 `scripts/verify_cable_waypoints.sh`，验证已有电缆 waypoint baseline 是否仍能让无人机运动
+  - 检查 waypoint 控制日志、vehicle status、local position 和残留进程
+- 结果：
+  - 脚本退出码为 0
+  - 控制日志：`data/logs/waypoints_control_20260602_210008.log`
+  - PX4 日志：`data/logs/waypoints_px4_20260602_210008.log`
+  - vehicle status：`data/logs/waypoints_vehicle_status_20260602_210008.log`
+  - local position：`data/logs/waypoints_vehicle_local_position_20260602_210008.log`
+  - 状态证据：
+    - `arming_state: 2`
+    - `nav_state: 14`
+    - `failsafe: false`
+  - 控制日志显示 waypoint 推进：
+    - waypoint 1：`[-50.00, -35.00, -22.00]`
+    - waypoint 2：`[-5.00, -25.00, -22.00]`
+    - waypoint 3：`[-50.00, -15.00, -22.00]`
+    - waypoint 4：`[-5.00, -5.00, -22.00]`
+    - waypoint 5：`[-50.00, -35.00, -22.00]`
+  - 末端 local position 约为：
+    - `x: -49.9923`
+    - `y: -34.9996`
+    - `z: -22.0489`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 结论：
+  - 无人机运动链路可用
+  - 当前 depth camera / foggy lidar 相关脚本不运动，是因为它们是传感器验证入口
+  - 后续需要新增“depth camera + 电缆 waypoint 同时运行”的组合验证，才能在运动过程中采集点云
+- 下一步：
+  - 提交本记录更新并推送远端分支
+  - 进入 world-frame depth pointcloud / RANSAC 审核，或新增 sensor+waypoint 组合脚本
+- 阻塞项：无
