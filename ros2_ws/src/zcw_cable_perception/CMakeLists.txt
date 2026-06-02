@@ -20,7 +20,18 @@ ament_target_dependencies(pointcloud_line_ransac_smoke
   pcl_conversions
 )
 
-install(TARGETS pointcloud_line_ransac_smoke
+add_executable(pointcloud_line_ransac_batch_smoke src/pointcloud_line_ransac_batch_smoke.cpp)
+target_include_directories(pointcloud_line_ransac_batch_smoke SYSTEM PRIVATE ${PCL_INCLUDE_DIRS})
+target_link_libraries(pointcloud_line_ransac_batch_smoke ${PCL_LIBRARIES})
+ament_target_dependencies(pointcloud_line_ransac_batch_smoke
+  rclcpp
+  sensor_msgs
+  pcl_conversions
+)
+
+install(TARGETS
+  pointcloud_line_ransac_smoke
+  pointcloud_line_ransac_batch_smoke
   DESTINATION lib/${PROJECT_NAME}
 )
 

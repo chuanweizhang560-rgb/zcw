@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 17:13:43 CST
+更新时间：2026-06-02 17:24:36 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -31,9 +31,17 @@
    - 成功日志：`data/logs/foggy_lidar_ransac_node_20260602_171303.log`
    - 结果文件：`data/results/foggy_lidar_ransac_20260602_171303/foggy_lidar_line_ransac_20260602_171309.txt`
    - 本次结果：`raw_points=169`，`finite_points=169`，`ransac_inliers=66`，`ransac_inlier_ratio=0.390533`
+7. PCL RANSAC 多帧 batch smoke test：
+   - 节点：`pointcloud_line_ransac_batch_smoke`
+   - 验证：`scripts/verify_foggy_lidar_ransac_batch.sh`
+   - 成功日志：`data/logs/foggy_lidar_ransac_batch_node_20260602_172404.log`
+   - 汇总文件：`data/results/foggy_lidar_ransac_batch_20260602_172404/foggy_lidar_line_ransac_batch_20260602_172410.txt`
+   - CSV：`data/results/foggy_lidar_ransac_batch_20260602_172404/foggy_lidar_line_ransac_batch_20260602_172410.csv`
+   - 本次结果：5 帧全部通过，`min_ransac_inliers=52`，`max_ransac_inliers=69`，`mean_ransac_inliers=62.2`，`mean_ransac_inlier_ratio=0.385583`，`failed_frames=0`
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在，但仍未证明该线候选就是导线，下一步必须做可视化或几何方向一致性确认。
 
 ## 2. 采用的成熟开源组件
 
@@ -109,6 +117,14 @@ scripts/verify_foggy_lidar_ransac.sh
 ```
 
 该入口只调用 PCL `SACSegmentation` 的 `SACMODEL_LINE`，并输出 raw PCD、RANSAC inlier PCD 和文本结果；后续仍需补 ROI、多帧稳定性和导线方向一致性判据。
+
+已新增多帧 PCL RANSAC 烟测入口：
+
+```bash
+scripts/verify_foggy_lidar_ransac_batch.sh
+```
+
+该入口在同一仿真场景中采集 5 帧 PointCloud2，调用 PCL CropBox、VoxelGrid、StatisticalOutlierRemoval 和 `SACSegmentation`，输出每帧 CSV、filtered PCD、line-inlier PCD 和 batch 汇总。
 
 ## 6. 处理参数初值
 
@@ -215,7 +231,7 @@ scripts/verify_foggy_lidar_ransac.sh
 
 ## 10. 下一个执行节点
 
-1. 给 `zcw_cable_perception` 增加配置化 ROI crop 和体素/离群点过滤，仍然只调用 PCL。
-2. 录制或导出 `/zcw/foggy_lidar/points` 的短时多帧样本，统计每帧 RANSAC 内点数和方向稳定性。
-3. 用 GUI/RViz 或 PCD 可视化确认线候选是否对应真实导线，而不是地面线或 2D 雷达扫描线。
-4. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。
+1. 用 GUI/RViz 或 PCD 可视化确认线候选是否对应真实导线，而不是地面线或 2D 雷达扫描线。
+2. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
+3. 如果 2D ray 点云不足，记录失败证据后再切换 depth/GPU ray 方案。
+4. 确认导线候选可靠后，再进入 Ceres/Eigen catenary/spline 拟合节点。

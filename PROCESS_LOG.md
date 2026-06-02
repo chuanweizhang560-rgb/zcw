@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 17:17:36 CST
+更新时间：2026-06-02 17:24:36 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -651,3 +651,35 @@
   - 提交并推送本 push 记录
   - 进入 ROI crop + 多帧点云离线评估，确认 RANSAC 线候选是否对应真实导线
 - 阻塞项：无
+
+### 2026-06-02 17:24:36 CST
+
+- 节点：电缆点云 ROI/多帧 PCL RANSAC batch smoke test
+- 执行动作：
+  - 新增 `pointcloud_line_ransac_batch_smoke`
+  - 节点调用 PCL `CropBox`、`VoxelGrid`、`StatisticalOutlierRemoval` 和 `SACSegmentation(SACMODEL_LINE)`
+  - 新增 `scripts/verify_foggy_lidar_ransac_batch.sh`
+  - 构建 `zcw_cable_perception`
+  - 首次运行 batch 脚本时，PCL 节点已生成结果，但脚本末尾因 PX4/Gazebo 退出短暂延迟误判残留进程
+  - 修复脚本清理等待后重跑 `scripts/verify_foggy_lidar_ransac_batch.sh`
+  - 检查 batch 汇总、CSV、节点日志和仿真残留进程
+- 结果：
+  - `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception` 成功
+  - 修复后的 batch 脚本退出码为 0
+  - 输入 topic：`/zcw/foggy_lidar/points`
+  - batch 结果：5 帧全部通过，`min_ransac_inliers=52`、`max_ransac_inliers=69`、`mean_ransac_inliers=62.2`、`mean_ransac_inlier_ratio=0.385583`、`failed_frames=0`
+  - 成功日志：
+    - `data/logs/foggy_lidar_ransac_batch_px4_20260602_172404.log`
+    - `data/logs/foggy_lidar_ransac_batch_topics_20260602_172404.log`
+    - `data/logs/foggy_lidar_ransac_batch_node_20260602_172404.log`
+  - 结果文件：
+    - `data/results/foggy_lidar_ransac_batch_20260602_172404/foggy_lidar_line_ransac_batch_20260602_172410.txt`
+    - `data/results/foggy_lidar_ransac_batch_20260602_172404/foggy_lidar_line_ransac_batch_20260602_172410.csv`
+    - `data/results/foggy_lidar_ransac_batch_20260602_172404/frame_*_filtered.pcd`
+    - `data/results/foggy_lidar_ransac_batch_20260602_172404/frame_*_line_inliers.pcd`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 下一步：
+  - 提交并推送本节点代码、脚本和文档记录
+  - 用 RViz 或 PCD 可视化确认 RANSAC 线候选是否对应真实导线
+- 阻塞项：
+  - 当前 batch 只证明短时多帧中存在稳定线模型，尚未证明线候选就是导线
