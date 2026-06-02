@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 13:07:25 CST
+更新时间：2026-06-02 13:35:10 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -143,6 +143,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | `third_party/mav_trajectory_generation` | `master` | `7aeebd9` | Apache-2.0 | ROS1/catkin 生态，不能直接作为 ROS 2 Humble 主依赖；可做算法参考或离线轨迹层候选 |
 | `third_party/PowerLine-LiDAR-Detector` | `main` | `1f3d7b7` | MIT | 适合做电力线点云检测参考/离线验证；依赖 Conda、PDAL、Rust，不直接进入实时链路 |
 | `third_party/on-policy` | `main` | `de66d7a` | MIT | MAPPO 官方实现参考；默认 Python 3.6 环境，需要隔离或现代化适配 |
+| `third_party/PX4-Autopilot-release-1.14` | `release/1.14` | `1555f2b` | BSD-3-Clause | 已实测可在本机 Gazebo Classic 11 headless 启动，作为当前 PX4 SITL 主底座 |
 
 立即可用结论：
 
@@ -150,3 +151,34 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 2. PX4 Classic 插件库已克隆，但必须先做 Gazebo 11 实测，不能假设已稳定。
 3. `mav_trajectory_generation` 不适合直接进 ROS 2 Humble 主链路，第一版轨迹层应先保留为可选候选。
 4. MAPPO 和电力线检测仓库都不应直接嵌入实时仿真主链路，应先作为离线参考和实验基线。
+
+## 7. PX4 Classic / Gazebo 11 实测记录
+
+本机已完成 PX4 release/1.14 的最小编译和 headless 启动验证。
+
+实测范围：
+
+1. `make px4_sitl_default`：成功。
+2. `make px4_sitl_default sitl_gazebo-classic`：成功。
+3. clean env 下 `HEADLESS=1 make px4_sitl gazebo-classic`：成功连接 Gazebo，并在 timeout 前完成 PX4 启动。
+
+关键版本：
+
+| 项 | 结果 |
+|---|---|
+| PX4-Autopilot | `release/1.14`, commit `1555f2b` |
+| Gazebo Classic plugin submodule | `Tools/simulation/gazebo-classic/sitl_gazebo-classic`, commit `2e3ed9b` |
+| Python venv | `/tmp/codex_zcw_px4_venv` |
+| Python | system Python 3.10 venv |
+| empy | fixed to `3.3.4` |
+
+依赖处理：
+
+1. 安装 `python3.10-venv`、`ninja-build`。
+2. 安装 `libgstreamer-plugins-base1.0-dev`，解决 Gazebo Classic 插件构建中的 `gstreamer-app-1.0` 缺失。
+3. 对浅克隆的 NuttX 子模块执行 `git fetch --tags --force`，解决 PX4 git version header 生成失败。
+4. 构建时允许 PX4 下载/构建其上游 Micro-CDR 依赖。
+
+结论：
+
+PX4 Classic 虽然不是 Ubuntu 22.04 的官方推荐路线，但在本机 `Gazebo 11.10.2 + ROS 2 Humble` 下具备可运行的最小链路。下一阶段可以基于该版本固定 ROS 2 bridge 和 Offboard 入口。

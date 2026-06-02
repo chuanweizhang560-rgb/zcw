@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 13:11:41 CST
+更新时间：2026-06-02 13:38:28 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -127,3 +127,49 @@
 - 阻塞项：
   - PX4 Classic 在 Ubuntu 22.04 + Gazebo 11 上仍需实测
   - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 13:35:10 CST
+
+- 节点：PX4 Classic / Gazebo 11 最小链路实测
+- 执行动作：
+  - 克隆 `PX4/PX4-Autopilot` 的 `release/1.14` 到 `third_party/PX4-Autopilot-release-1.14`
+  - 安装系统依赖 `python3.10-venv`、`ninja-build`、`libgstreamer-plugins-base1.0-dev`
+  - 创建 PX4 专用 venv `/tmp/codex_zcw_px4_venv`
+  - 安装 PX4 requirements，并固定 `empy==3.3.4`
+  - 对浅克隆 NuttX 子模块拉取 tags，修复 PX4 version header 生成失败
+  - 构建 `px4_sitl_default`
+  - 构建 `sitl_gazebo-classic`
+  - 使用 clean env/headless 方式启动 `make px4_sitl gazebo-classic`
+  - 将可重复执行入口写入 `scripts/setup_px4_venv.sh` 和 `scripts/run_px4_gazebo_classic_headless.sh`
+  - 更新 `RUNBOOK.md` 与 `OPEN_SOURCE_AUDIT.md`
+- 结果：
+  - PX4 release/1.14 可在本机 Gazebo Classic 11 下编译
+  - Gazebo Classic headless 可连接 PX4，日志出现 `Simulator connected on TCP port 4560` 与 `Startup script returned successfully`
+  - 上一次 headless 验证通过 timeout 退出，属于预期退出方式，不是仿真崩溃
+- 下一步：
+  - 运行脚本化 headless 验证，确认脚本入口可复现
+  - 固定 `px4_msgs` / `px4_ros_com` 与 PX4 release/1.14 的版本关系
+  - 安装或构建 Micro XRCE-DDS Agent，验证 ROS 2 bridge
+- 阻塞项：
+  - `MicroXRCEAgent` 当前不在 PATH，ROS 2 bridge 尚未验证
+  - 项目自身 LICENSE 尚未确定
+  - 本阶段未截取 GUI/RViz 截图，仅完成 headless 日志证据
+
+### 2026-06-02 13:38:28 CST
+
+- 节点：脚本化 headless 仿真入口复现
+- 执行动作：
+  - 执行 `scripts/run_px4_gazebo_classic_headless.sh`
+  - 将运行日志写入 `data/logs/px4_gazebo_classic_headless_20260602_133728.log`
+  - 检查日志中的 PX4/Gazebo 连接标志
+  - 检查退出后是否存在 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+- 结果：
+  - 脚本退出码为 0
+  - 日志包含 `Simulator connected on TCP port 4560`
+  - 日志包含 `Startup script returned successfully`
+  - timeout 后 PX4 正常退出，未发现仿真残留进程
+- 下一步：
+  - 提交并推送本阶段脚本和文档
+  - 继续固定 ROS 2 bridge 版本，安装或构建 Micro XRCE-DDS Agent
+- 阻塞项：
+  - `MicroXRCEAgent` 当前不在 PATH，ROS 2 bridge 尚未验证

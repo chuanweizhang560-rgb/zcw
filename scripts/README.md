@@ -3,3 +3,8 @@
 启动、检查、评估和训练入口脚本放在这里。
 
 脚本只能做工程编排，不能隐藏核心算法实现。
+
+## 当前脚本
+
+- `setup_px4_venv.sh`：基于系统 Python 3.10 建立 PX4 release/1.14 专用 venv，并固定 `empy==3.3.4`。
+- `run_px4_gazebo_classic_headless.sh`：用 clean env 启动 PX4 SITL + Gazebo Classic headless，并把运行日志写入 `data/logs/`。
