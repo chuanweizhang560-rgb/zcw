@@ -65,6 +65,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | Ceres Solver | https://github.com/ceres-solver/ceres-solver | BSD-3-Clause | catenary 曲线参数拟合 | 采用系统包 `libceres-dev 2.0.0`，不自研优化器 |
 | Eigen Splines | https://eigen.tuxfamily.org/ | MPL2 | spline 曲线和平滑中心线 | 采用系统包 `libeigen3-dev 3.4.0` |
 | ROS2 Gazebo Ray Sensor plugin | `/opt/ros/humble/lib/libgazebo_ros_ray_sensor.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | Gazebo ray -> ROS2 PointCloud2 | 已用于 `foggy_lidar` overlay，输出 `/zcw/foggy_lidar/points` |
+| ROS2 Gazebo Camera plugin | `/opt/ros/humble/lib/libgazebo_ros_camera.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | Gazebo depth camera -> ROS2 image/depth/PointCloud2 | 已用于 PX4 官方 `iris_depth_camera`，输出 `/camera/points`；依赖 GUI 渲染和 Gazebo system plugin runtime path |
 | ROS2 Gazebo P3D plugin | `/opt/ros/humble/lib/libgazebo_ros_p3d.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | Gazebo link pose -> ROS2 Odometry | 已用于 `foggy_lidar` overlay，输出 `/zcw/foggy_lidar/pose` |
 | 本仓库 `zcw_cable_perception` 薄封装 | `ros2_ws/src/zcw_cable_perception` | BSD-3-Clause | 订阅 PointCloud2/Odometry、调用 PCL CropBox/VoxelGrid/SOR/RANSAC/transformPointCloud、保存 PCD/结果 | 已完成单帧、5 帧 batch 和 world-frame smoke test；不得扩展为自研 LiDAR 分割核心 |
 | `Tury05/PowerLine-LiDAR-Detector` | https://github.com/Tury05/PowerLine-LiDAR-Detector | MIT | 导线点云检测参考 | 可复用/参考，需评估实时性和依赖 |
@@ -302,6 +303,8 @@ uxrce_dds_client synchronized
 1. `assets/gazebo/models/foggy_lidar` 基于 PX4 release/1.14 `foggy_lidar`，保留 ray sensor 几何、range、scan pattern 和 noise。
 2. 仅将插件从 PX4 MAVLink lidar plugin 替换为 ROS2 Humble `libgazebo_ros_ray_sensor.so`。
 3. `scripts/verify_foggy_lidar_pointcloud.sh` 已验证 `/zcw/foggy_lidar/points` 为 `sensor_msgs/msg/PointCloud2`，样本 `width: 180`，发布频率约 `5.43 Hz`。
+4. PX4 release/1.14 官方 `iris_depth_camera` 已通过 `scripts/verify_depth_camera_pointcloud.sh` 验证 `/camera/points` 为 `sensor_msgs/msg/PointCloud2`，样本 `width: 848`、`height: 480`、`point_step: 32`。
+5. depth camera 不是自建模型；当前只修正 clean env 的 ROS2/Gazebo runtime path，并使用官方 `gazebo_ros_camera` 插件。
 
 已知警告：
 

@@ -104,3 +104,19 @@ sensor_overlays:
     latest_ransac_batch_summary: data/results/foggy_lidar_ransac_batch_20260602_174118/foggy_lidar_line_ransac_batch_20260602_174125.txt
     latest_world_ransac_summary: data/results/foggy_lidar_world_ransac_20260602_175348/foggy_lidar_line_ransac_world_20260602_175355.txt
     status: pointcloud2_and_p3d_pose_verified_but_world_ransac_indicates_ground_scan_not_cable
+  px4_iris_depth_camera:
+    path: third_party/PX4-Autopilot-release-1.14/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris_depth_camera
+    upstream_basis: px4_release_1.14_builtin_model
+    ros2_plugin: /opt/ros/humble/lib/libgazebo_ros_camera.so
+    output_topic: /camera/points
+    output_type: sensor_msgs/msg/PointCloud2
+    output_frame: camera_link
+    sample_width: 848
+    sample_height: 480
+    sample_point_step: 32
+    verification:
+      pointcloud: scripts/verify_depth_camera_pointcloud.sh
+    latest_px4_log: data/logs/depth_camera_px4_20260602_191429.log
+    latest_sample_log: data/logs/depth_camera_pointcloud_sample_20260602_191429.log
+    latest_gui_screenshot: data/screenshots/depth_camera_pointcloud_gui_20260602_191429.png
+    status: pointcloud2_verified_in_gazebo11_gui_mode_cable_visibility_not_yet_verified

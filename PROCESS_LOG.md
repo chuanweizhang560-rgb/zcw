@@ -816,3 +816,57 @@
 - 结果：本地 commit 已生成
 - 下一步：提交本记录更新并推送远端分支
 - 阻塞项：无
+
+### 2026-06-02 19:00:48 CST
+
+- 节点：PX4 官方 depth camera PointCloud2 验证
+- 执行动作：
+  - 新增 `scripts/verify_depth_camera_pointcloud.sh`
+  - 扩展 `scripts/run_px4_gazebo_classic_headless.sh`：
+    - 支持 `PX4_DIRECT_MODEL=1`，绕过 PX4 make target 列表，直接启动官方 `iris_depth_camera`
+    - 支持 `PX4_SYS_AUTOSTART=10015`，用 PX4 `iris` airframe 初始化 depth camera 模型
+    - 支持 `PX4_HEADLESS=` 打开 Gazebo GUI 渲染
+    - 在 clean env 中显式传入 `/opt/ros/humble`、Gazebo system plugin 目录和 ROS 2 ament 前缀
+  - 首次 headless 验证失败，日志显示 `DepthCameraSensor` 因 rendering disabled 无法创建
+  - GUI 验证初期失败，原因包括：
+    - `libgazebo_ros_camera.so` 缺少 `libCameraPlugin.so` 运行时路径
+    - `gazebo_ros_camera` 初始化需要 `AMENT_PREFIX_PATH`
+    - X11 窗口查找管道在 `pipefail` 下产生 141 退出码
+  - 逐项修复后重新运行 `scripts/verify_depth_camera_pointcloud.sh`
+  - 查看 Gazebo 窗口截图、ROS2 topic 类型和 PointCloud2 样本
+  - 检查退出后仿真进程残留
+- 结果：
+  - 脚本退出码为 0
+  - PX4/Gazebo 日志：
+    - `data/logs/depth_camera_px4_20260602_191429.log`
+  - ROS2 topic 验证：
+    - `/camera/points`
+    - 类型：`sensor_msgs/msg/PointCloud2`
+  - 样本：
+    - `data/logs/depth_camera_pointcloud_sample_20260602_191429.log`
+    - `frame_id: camera_link`
+    - `width: 848`
+    - `height: 480`
+    - `point_step: 32`
+  - Gazebo 截图：
+    - `data/screenshots/depth_camera_pointcloud_gui_20260602_191429.png`
+    - 窗口 ID 记录：`data/screenshots/depth_camera_pointcloud_gui_20260602_191429.png.window_id.txt`
+  - Gazebo 日志显示 `camera_controller` 发布：
+    - `/camera/camera_info`
+    - `/camera/depth/camera_info`
+    - `/camera/points`
+  - 通用启动脚本回归：
+    - `TIMEOUT_SEC=45 scripts/run_px4_gazebo_classic_headless.sh` 退出码为 0
+    - 日志：`data/logs/px4_gazebo_classic_headless_20260602_191316.log`
+    - 修复后 timeout 成功退出不再留下 `gzserver`
+  - 退出后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make` 残留进程
+- 结论：
+  - PX4 官方 `iris_depth_camera` + ROS2 `gazebo_ros_camera` 的 PointCloud2 链路可用
+  - depth camera 依赖 Gazebo GUI 渲染，不能用纯 headless 作为点云验证
+  - 当前只证明 `/camera/points` 可用，尚未证明点云覆盖真实架空导线
+- 下一步：
+  - 给 depth camera 补 world-frame pose / TF 或 Gazebo P3D 输出
+  - 用 RViz/PCD 叠加截图审核 `/camera/points`、RANSAC inlier 和 AerialCore 导线/电塔相对位置
+  - 如果 depth camera 视角或 range 不足，再评估官方 Gazebo ROS2 GPU ray overlay
+- 阻塞项：
+  - 无阻塞；但导线可见性尚未完成审核
