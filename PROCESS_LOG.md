@@ -1251,3 +1251,29 @@
   - 输出/审核多条导线候选而不是单条最优 RANSAC 线
   - 在 PCL 候选稳定后接 Ceres/Eigen catenary/spline 与 Frenet offset path
 - 阻塞项：无
+
+### 2026-06-02 22:07:45 CST
+
+- 节点：电缆 waypoint 运动 + depth camera RANSAC 审核提交与推送
+- 执行动作：
+  - 运行 `git diff --check`
+  - 运行脚本语法检查：
+    - `bash -n scripts/verify_depth_camera_world_ransac.sh`
+    - `bash -n scripts/verify_depth_camera_cable_motion_ransac.sh`
+  - 提交 `ac17bb0`：`Add depth camera cable motion ransac audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已从 `9992d39` 更新到 `ac17bb0`
+  - 提交内容包括：
+    - `scripts/verify_depth_camera_cable_motion_ransac.sh`
+    - depth camera world RANSAC optical-to-link 默认参数
+    - `PROCESS_LOG.md`
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 本次提交未包含 `data/` 下的仿真日志、截图或 PCD 证据文件；证据保留在本地工作区
+- 下一步：
+  - 在 motion RANSAC 基础上做 corridor ROI、高度门限、多线候选和方向一致性审核
+- 阻塞项：无
