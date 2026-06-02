@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 14:20:18 CST
+更新时间：2026-06-02 14:25:09 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -282,6 +282,29 @@
   - 提交并推送 GUI 截图脚本与日志记录
   - 在 `zcw_bringup` 建立单机 launch 入口
   - 继续推进单机 waypoint baseline
+- 阻塞项：
+  - RViz 截图尚未进行
+  - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 14:25:09 CST
+
+- 节点：`zcw_bringup` 单机 Offboard launch 入口
+- 执行动作：
+  - 推送提交 `ca8f4ce`：`Add Gazebo GUI screenshot capture`
+  - 新建 `ros2_ws/src/zcw_bringup/launch/single_vehicle_offboard_hover.launch.py`
+  - 更新 `scripts/verify_px4_offboard_hover.sh`，由直接 `ros2 run` 改为 `ros2 launch zcw_bringup single_vehicle_offboard_hover.launch.py`
+  - clean env 重建 `zcw_bringup`
+  - 重新运行 `scripts/verify_px4_offboard_hover.sh`
+  - 检查 launch 日志、最终 `vehicle_status` 和仿真残留进程
+- 结果：
+  - `zcw_bringup` 构建成功
+  - Offboard 验证通过，launch 日志显示 `offboard_hover_retry` 由 ROS 2 launch 启动
+  - 成功证据：`data/logs/offboard_vehicle_status_20260602_142431.log` 中 `arming_state: 2`、`nav_state: 14`
+  - 退出后未发现仿真残留进程
+- 下一步：
+  - 提交并推送 bringup launch 入口
+  - 开始建立 Gazebo 11 world/model 引用入口
+  - 继续单机 waypoint baseline
 - 阻塞项：
   - RViz 截图尚未进行
   - 项目自身 LICENSE 尚未确定

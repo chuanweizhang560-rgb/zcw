@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 14:20:18 CST
+更新时间：2026-06-02 14:25:09 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -97,6 +97,14 @@ Offboard 悬停验证：
 scripts/verify_px4_offboard_hover.sh
 ```
 
+单独启动 ROS 2 Offboard baseline launch：
+
+```bash
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+ros2 launch zcw_bringup single_vehicle_offboard_hover.launch.py
+```
+
 Gazebo Classic GUI 截图：
 
 ```bash
@@ -107,10 +115,8 @@ scripts/capture_px4_gazebo_classic_gui.sh
 
 ## 下一步执行顺序
 
-1. 在 `ros2_ws/src/zcw_bringup` 中建立 PX4 Offboard launch 入口。
-2. 在 `ros2_ws/src/zcw_sim_assets` 中建立 Gazebo 11 world/model 引用入口。
-3. 对单机 Offboard 悬停做 GUI/Gazebo 截图审核。
-4. 进入单机 waypoint baseline，再接风机/电缆任务。
+1. 在 `ros2_ws/src/zcw_sim_assets` 中建立 Gazebo 11 world/model 引用入口。
+2. 进入单机 waypoint baseline，再接风机/电缆任务。
 
 ## 不允许事项
 

@@ -15,8 +15,8 @@ PX4_LOG="${PX4_LOG:-${LOG_DIR}/offboard_px4_${STAMP}.log}"
 PX4_WRAPPER_LOG="${PX4_WRAPPER_LOG:-${PX4_LOG}.wrapper}"
 OFFBOARD_LOG="${OFFBOARD_LOG:-${LOG_DIR}/offboard_control_${STAMP}.log}"
 STATUS_LOG="${STATUS_LOG:-${LOG_DIR}/offboard_vehicle_status_${STAMP}.log}"
-OFFBOARD_PACKAGE="${OFFBOARD_PACKAGE:-zcw_px4_baseline}"
-OFFBOARD_EXECUTABLE="${OFFBOARD_EXECUTABLE:-offboard_hover_retry}"
+OFFBOARD_LAUNCH_PACKAGE="${OFFBOARD_LAUNCH_PACKAGE:-zcw_bringup}"
+OFFBOARD_LAUNCH_FILE="${OFFBOARD_LAUNCH_FILE:-single_vehicle_offboard_hover.launch.py}"
 
 agent_pid=""
 px4_pid=""
@@ -112,7 +112,7 @@ setsid env -i \
   HOME="${HOME:-/home/travis}" \
   USER="${USER:-travis}" \
   PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
-  /bin/bash -c "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 run '${OFFBOARD_PACKAGE}' '${OFFBOARD_EXECUTABLE}'" >"${OFFBOARD_LOG}" 2>&1 &
+  /bin/bash -c "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 launch '${OFFBOARD_LAUNCH_PACKAGE}' '${OFFBOARD_LAUNCH_FILE}'" >"${OFFBOARD_LOG}" 2>&1 &
 offboard_pid=$!
 
 sleep "${OFFBOARD_RUN_SEC}"
