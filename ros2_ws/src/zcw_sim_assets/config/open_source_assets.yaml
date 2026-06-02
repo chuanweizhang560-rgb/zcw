@@ -1,0 +1,55 @@
+version: 1
+
+upstreams:
+  aerialcore_simulation:
+    source: https://github.com/ctu-mrs/aerialcore_simulation
+    local_path: third_party/aerialcore_simulation
+    branch: master
+    commit: edd912e
+    license: BSD-3-Clause
+    license_evidence: package.xml
+    role:
+      - wind_turbine_model
+      - transmission_tower_model
+      - transmission_line_world
+
+gazebo_paths:
+  model_path:
+    - third_party/aerialcore_simulation/models
+  resource_path:
+    - /usr/share/gazebo-11
+    - third_party/aerialcore_simulation
+
+selected_worlds:
+  wind_turbine:
+    path: third_party/aerialcore_simulation/worlds/wind_turbine_autospawn.world
+    primary_asset: third_party/aerialcore_simulation/models/wind_turbine/wind_turbine_scaled.dae
+    verification: scripts/verify_aerialcore_worlds.sh
+    status: loads_in_gazebo11_headless_with_noncritical_mrs_camera_plugin_warning
+  danube_towers_with_wires:
+    path: third_party/aerialcore_simulation/worlds/power_towers_danube_wires_rescaled_autospawn.world
+    primary_asset: third_party/aerialcore_simulation/models/power_tower_danube_2towers_wires/meshes/power_tower_danube_2tower_and_wires.dae
+    verification: scripts/verify_aerialcore_worlds.sh
+    status: loads_in_gazebo11_headless_with_noncritical_mrs_camera_plugin_warning
+
+selected_models:
+  wind_turbine_mesh:
+    path: third_party/aerialcore_simulation/models/wind_turbine/wind_turbine_scaled.dae
+    use: wind_turbine_inspection_target
+  wind_turbine_v4_mesh:
+    path: third_party/aerialcore_simulation/models/wind_turbine_use/wind_turbine_v4.dae
+    use: alternate_wind_turbine_inspection_target
+  danube_tower:
+    path: third_party/aerialcore_simulation/models/power_tower_danube/model.sdf
+    use: tower_obstacle_or_reference_feature
+  danube_two_towers_wires:
+    path: third_party/aerialcore_simulation/models/power_tower_danube_2towers_wires/model.sdf
+    use: cable_inspection_target
+  three_power_towers:
+    path: third_party/aerialcore_simulation/models/three_power_towers/model.sdf
+    use: alternate_cable_corridor_target
+
+known_warnings:
+  - AerialCore autospawn worlds reference MRS RViz camera synchronizer plugins that are not installed on this machine.
+  - The missing MRS camera synchronizer plugin is not required for static model visibility in Gazebo headless smoke tests.
+  - Do not copy or remodel these assets into this repository unless licensing and attribution are reviewed again.

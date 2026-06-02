@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-02 14:25:09 CST
+更新时间：2026-06-02 14:41:12 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -56,6 +56,7 @@ third_party/PX4-Autopilot-release-1.14
 third_party/px4_msgs                -> release/1.14, commit ffb6e80
 third_party/px4_ros_com             -> release/v1.14, commit e18248d
 third_party/Micro-XRCE-DDS-Agent-v2.2.1
+third_party/aerialcore_simulation
 ```
 
 ## 可执行入口
@@ -113,10 +114,18 @@ scripts/capture_px4_gazebo_classic_gui.sh
 
 截图脚本要求当前 shell 存在可用 `DISPLAY`。截图和运行日志分别写入 `data/screenshots/`、`data/logs/`，这两个目录只作本地证据保存，不提交进 git。
 
+AerialCore 风机/两塔导线 world 验证：
+
+```bash
+scripts/verify_aerialcore_worlds.sh
+```
+
+当前 AerialCore world 会报告缺少 MRS RViz camera synchronizer plugin；该警告不影响静态模型 world 的 headless 加载，但进入正式任务 world 前需要决定是安装 MRS 插件还是使用不依赖该插件的引用 world。
+
 ## 下一步执行顺序
 
-1. 在 `ros2_ws/src/zcw_sim_assets` 中建立 Gazebo 11 world/model 引用入口。
-2. 进入单机 waypoint baseline，再接风机/电缆任务。
+1. 进入单机 waypoint baseline。
+2. 将 PX4 `iris` 与 AerialCore 风机/两塔导线 world 组合进可运行任务 smoke test。
 
 ## 不允许事项
 

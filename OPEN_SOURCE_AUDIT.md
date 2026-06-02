@@ -1,6 +1,6 @@
 # 开源资产与上游仓库审计
 
-更新时间：2026-06-02 14:14:25 CST
+更新时间：2026-06-02 14:38:26 CST
 
 本文件记录第一阶段外部开源项目、仿真资产和算法实现候选。执行规则是：优先复用成熟开源项目，不自行从零编写核心算法或模型。
 
@@ -147,6 +147,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | `third_party/px4_msgs` | `release/1.14` | `ffb6e80` | BSD-3-Clause | 已在 ROS 2 Humble 下构建成功，与 PX4 release/1.14 对齐 |
 | `third_party/px4_ros_com` | `release/v1.14` | `e18248d` | BSD-3-Clause | 已在 ROS 2 Humble 下构建成功，作为 Offboard 示例/接口参考 |
 | `third_party/Micro-XRCE-DDS-Agent-v2.2.1` | tag `v2.2.1` | `f984380` | Apache-2.0 | 已用系统 FastDDS/FastCDR 构建成功，并完成 PX4 ROS 2 bridge 验证 |
+| `third_party/aerialcore_simulation` | `master` | `edd912e` | `package.xml` 标注 BSD 3-Clause | 包含风机、电塔、两塔带导线等 Gazebo 资产；已完成 Gazebo 11 headless world 加载验证 |
 
 立即可用结论：
 
@@ -246,3 +247,34 @@ uxrce_dds_client synchronized
 1. `px4_ros_com` 官方 C++ 示例只发一次 arm 命令；本机实测可进入 Offboard，但可能保持 `arming_state: 1`。
 2. `vehicle_status` 订阅必须使用 best-effort QoS，否则 ROS 2 会报告 `RELIABILITY_QOS_POLICY` 不兼容。
 3. Offboard setpoint 当前只用于悬停验证，不代表风机巡检或电缆巡检策略。
+
+## 10. AerialCore Gazebo Asset 实测记录
+
+采用来源：
+
+| 项 | 结果 |
+|---|---|
+| 上游仓库 | `ctu-mrs/aerialcore_simulation` |
+| 来源 | https://github.com/ctu-mrs/aerialcore_simulation |
+| 分支 | `master` |
+| commit | `edd912e` |
+| 许可证证据 | `package.xml` 标注 `BSD 3-Clause` |
+| 本地引用清单 | `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml` |
+
+已选资产：
+
+1. 风机 world：`worlds/wind_turbine_autospawn.world`
+2. 风机 mesh：`models/wind_turbine/wind_turbine_scaled.dae`
+3. 两塔带导线 world：`worlds/power_towers_danube_wires_rescaled_autospawn.world`
+4. 两塔带导线 mesh：`models/power_tower_danube_2towers_wires/meshes/power_tower_danube_2tower_and_wires.dae`
+
+实测范围：
+
+1. `scripts/verify_aerialcore_worlds.sh` 串行加载风机 world 和两塔导线 world。
+2. 两个 world 均在 Gazebo 11 headless 下连接 master 并加载 world 文件。
+3. 退出后未发现 Gazebo 残留进程。
+
+已知警告：
+
+1. AerialCore world 引用了本机未安装的 MRS RViz camera synchronizer plugin。
+2. 该 plugin 对静态风机/导线模型可见性不是核心依赖；当前先记录为警告，不自行改上游 world。

@@ -1,6 +1,6 @@
 # 进程记录
 
-更新时间：2026-06-02 14:25:09 CST
+更新时间：2026-06-02 14:41:12 CST
 
 这个文件是仓库的过程日志。后续每完成一个大节点，都要在这里追加一条记录，方便随时查看。
 
@@ -306,5 +306,37 @@
   - 开始建立 Gazebo 11 world/model 引用入口
   - 继续单机 waypoint baseline
 - 阻塞项：
+  - RViz 截图尚未进行
+  - 项目自身 LICENSE 尚未确定
+
+### 2026-06-02 14:38:26 CST
+
+- 节点：AerialCore 风机/两塔导线资产审计与 Gazebo 11 加载验证
+- 执行动作：
+  - 推送提交 `bbb23a2`：`Add single vehicle offboard launch`
+  - 克隆 `ctu-mrs/aerialcore_simulation` 到 `third_party/aerialcore_simulation`
+  - 复核 `package.xml`：许可证标注 `BSD 3-Clause`
+  - 记录 commit `edd912e`
+  - 检查模型目录，确认存在 `wind_turbine`、`power_tower_danube`、`power_tower_danube_2towers_wires`、`three_power_towers`
+  - 新建 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 新建 `scripts/verify_aerialcore_worlds.sh`
+  - 串行加载 `wind_turbine_autospawn.world` 与 `power_towers_danube_wires_rescaled_autospawn.world`
+  - 检查 Gazebo 退出后残留进程
+- 结果：
+  - 风机 world 和两塔导线 world 均在 Gazebo 11 headless 下进入运行态
+  - 运行日志：
+    - `data/logs/aerialcore_wind_turbine_20260602_143722.log`
+    - `data/logs/aerialcore_danube_wires_20260602_143722.log`
+  - 两个 world 均存在缺少 `libMRSGazeboRvizCameraSynchronizer.so` 的警告
+  - 该警告不影响静态模型 world 的 headless 加载，已写入资产清单
+  - `zcw_sim_assets` 构建成功，`open_source_assets.yaml` 已安装到 `install/zcw_sim_assets/share/zcw_sim_assets/config/`
+  - `third_party/aerialcore_simulation` 仍被 git 忽略，未提交外部源码
+  - 退出后未发现 Gazebo 残留进程
+- 下一步：
+  - 提交并推送资产审计与验证脚本
+  - 进入单机 waypoint baseline
+  - 将 PX4 `iris` 与 AerialCore 风机/两塔导线 world 做组合 smoke test
+- 阻塞项：
+  - 未安装 MRS Gazebo camera synchronizer plugin
   - RViz 截图尚未进行
   - 项目自身 LICENSE 尚未确定
