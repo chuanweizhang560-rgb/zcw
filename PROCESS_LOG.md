@@ -930,3 +930,17 @@
   - 单独跑一次已有 waypoint/hover 运动脚本，给用户确认“运动链路”和“传感器链路”的区别
 - 阻塞项：
   - 无阻塞；但导线可见性尚未完成审核
+
+### 2026-06-02 20:54:34 CST
+
+- 节点：depth camera pose 验证节点提交
+- 执行动作：
+  - 提交 `ab22a2b`：`Add depth camera pose verification`
+  - 提交内容包括：
+    - `assets/gazebo/models/iris_depth_camera` overlay
+    - `scripts/verify_depth_camera_pose_pointcloud.sh`
+    - `scripts/setup_px4_venv.sh` 固定 `pip<24`
+    - 执行手册、电缆专项工作流、开源审计、资产 YAML、脚本说明和过程记录
+- 结果：本地 commit 已生成
+- 下一步：提交本记录更新并推送远端分支
+- 阻塞项：无
