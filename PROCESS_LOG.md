@@ -1403,6 +1403,31 @@
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
 
+### 2026-06-03 12:31:54 CST
+
+- 节点：高空 ROI 一致性审核提交与推送
+- 执行动作：
+  - 提交 `fc42706`：`Add multiline candidate consistency audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已从 `08a5c9a` 更新到 `fc42706`
+  - 提交内容包括：
+    - `multiline_candidate_consistency_audit`
+    - `scripts/audit_depth_camera_multiline_consistency.sh`
+    - 高空 wire-band ROI 审核证据索引
+    - 宽 ROI 拒绝、高空 ROI 通过的过程记录
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+  - 本次提交未包含 `data/` 下的仿真日志、截图、PCD 或 CSV 证据文件；证据保留在本地工作区
+- 下一步：
+  - 提交并推送本条进程记录
+  - 后续进入高度层分组或线路编号分组，再接 Ceres/Eigen catenary/spline
+- 阻塞项：无
+
 ### 2026-06-03 11:40:18 CST
 
 - 节点：motion 多线候选审核提交与推送
