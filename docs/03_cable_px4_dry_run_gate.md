@@ -33,6 +33,14 @@ Current status:
   - Dry Run Path: OK
   - Dry Run Candidate: OK
   - forbidden `/fmu/in/*` topics: none
+- Latest PX4 isolation evidence:
+  - summary: `data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
+  - `package.xml` has no `px4_msgs` dependency
+  - CMake does not find/link `px4_msgs`
+  - cable perception source has no PX4 message API reference
+  - cable perception source does not publish `/fmu/in/*`
+  - lookahead scripts do not publish `/fmu/in/*`
+  - decision: `accepted_px4_isolation_smoke`
 
 No PX4 Offboard control may consume these topics until the dry-run gates below pass.
 
@@ -123,4 +131,4 @@ Required pass criteria:
 
 `lookahead_dry_run_setpoint.cpp` has passed the first read-only smoke test and RViz overlay evidence.
 
-The next implementation node should design PX4 Offboard isolation checks. It must remain a read-only/debug workflow and must not publish PX4 input topics.
+The next implementation node should design the PX4 Offboard dry-run bridge interface. It must remain a documented interface plan first; code may only be added after the forbidden-topic audit is kept in the verification sequence.

@@ -262,10 +262,22 @@
      - forbidden topics：`data/logs/lookahead_dry_run_rviz_forbidden_topics_20260603_175512.log`
    - 结果：RViz Global Status、`Offset Path`、`Lookahead Target`、`Dry Run Path`、`Dry Run Candidate` 均为 OK；未发现 `/fmu/in/*`
    - 审核结论：dry-run candidate 可视化证据达标；当前仍未启动 Gazebo/PX4。
+27. PX4 Offboard 隔离审计：
+   - 工具：`scripts/audit_px4_isolation.sh`
+   - 验证：`OUTPUT_DIR=data/results/px4_isolation_audit_20260603_180400 scripts/audit_px4_isolation.sh`
+   - summary：`data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
+   - 结果：
+     - `package.xml` 不依赖 `px4_msgs`
+     - CMake 不 find/link `px4_msgs`
+     - cable perception source 无 PX4 message API
+     - cable perception source 不发布 `/fmu/in/*`
+     - lookahead scripts 不发布 `/fmu/in/*`
+     - dry-run debug topics 位于 `/zcw/cable/dry_run/*`
+   - 审核结论：`decision=accepted_px4_isolation_smoke`；当前仍未接 PX4 setpoint。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint 和 dry-run RViz overlay 均已通过。下一步不是接飞控，而是做 PX4 Offboard 隔离验证设计。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay 和 PX4 隔离审计均已通过。下一步不是接飞控，而是设计 PX4 Offboard dry-run bridge 接口和验收表。
 
 ## 2. 采用的成熟开源组件
 
@@ -490,6 +502,14 @@ scripts/capture_lookahead_dry_run_rviz_overlay.sh
 
 该入口启动只读 publisher、safety monitor、dry-run setpoint、static TF 和 RViz2，加载 `dry_run_overlay.rviz`，并保存真实 RViz 截图。该入口不启动 Gazebo、不接 PX4、不发布 setpoint。
 
+已新增 PX4 隔离审计入口：
+
+```bash
+scripts/audit_px4_isolation.sh
+```
+
+该入口静态检查 `zcw_cable_perception` 和 lookahead 脚本，确认当前 dry-run 管线不依赖 `px4_msgs`、不引用 PX4 message API、不发布 `/fmu/in/*`，并确认 dry-run debug topics 位于 `/zcw/cable/dry_run/*`。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -595,7 +615,7 @@ scripts/capture_lookahead_dry_run_rviz_overlay.sh
 
 ## 10. 下一个执行节点
 
-1. 开始 PX4 Offboard 隔离验证设计：只检查 topic/依赖边界，不发布 setpoint。
-2. 隔离验证通过后，才允许设计 PX4 Offboard dry-run bridge，不能直接飞完整闭环。
+1. 设计 PX4 Offboard dry-run bridge 文档，明确只允许生成代码前的接口表和验收项。
+2. 若实现 bridge，必须先 dry-run topic 隔离审计通过，再启动 PX4，不能直接飞完整闭环。
 3. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

@@ -580,6 +580,25 @@ forbidden_fmu_in_topics: none
 visual_check: green offset path, red lookahead target, blue dry-run path, yellow dry-run candidate visible
 ```
 
+PX4 Offboard 隔离审计：
+
+```bash
+OUTPUT_DIR=data/results/px4_isolation_audit_20260603_180400 scripts/audit_px4_isolation.sh
+```
+
+最新审核证据：
+
+```text
+summary: data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt
+package_xml_px4_msgs_dependency: PASS
+cmake_px4_msgs_reference: PASS
+source_px4_message_api: PASS
+source_fmu_in_publish: PASS
+lookahead_script_fmu_in_publish: PASS
+dry_run_debug_topics_under_zcw_cable_dry_run: PASS
+decision: accepted_px4_isolation_smoke
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -623,8 +642,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 开始 PX4 Offboard 隔离验证设计：只检查 topic/依赖边界，不发布 setpoint。
-2. 隔离验证通过后，才允许设计 PX4 Offboard dry-run bridge，不能直接飞完整闭环。
+1. 设计 PX4 Offboard dry-run bridge 文档，明确只允许生成代码前的接口表和验收项。
+2. 若实现 bridge，必须先 dry-run topic 隔离审计通过，再启动 PX4，不能直接飞完整闭环。
 3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。

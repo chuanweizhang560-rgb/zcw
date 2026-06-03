@@ -2792,3 +2792,52 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 PX4 Offboard 隔离验证设计节点
 - 阻塞项：无
+
+### 2026-06-03 18:03:00 CST
+
+- 节点：PX4 Offboard 隔离验证设计开始
+- 执行动作：
+  - 确认仓库干净
+  - 搜索 `zcw_cable_perception`、脚本和文档中的 PX4 / `/fmu/in` / `px4_msgs` 相关引用
+  - 读取 `zcw_cable_perception` 文件清单
+- 结果：
+  - `zcw_cable_perception` 源码中没有 `/fmu/in/*` 发布
+  - `zcw_cable_perception` 当前不依赖 `px4_msgs`
+  - 需要将隔离检查固化为脚本，避免后续误引入 PX4 input topic 或 PX4 消息依赖
+- 下一步：
+  - 新增 PX4 隔离审计脚本
+  - 运行审计并记录结果
+- 阻塞项：无
+
+### 2026-06-03 18:03:31 CST
+
+- 节点：PX4 Offboard 隔离审计脚本通过
+- 执行动作：
+  - 新增 `scripts/audit_px4_isolation.sh`
+  - 运行 `bash -n scripts/audit_px4_isolation.sh`
+  - 运行 `git diff --check`
+  - 运行 `OUTPUT_DIR=data/results/px4_isolation_audit_20260603_180400 scripts/audit_px4_isolation.sh`
+  - 读取：`data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
+  - 检查残留进程：
+    - `lookahead_path_publisher`
+    - `lookahead_safety_monitor`
+    - `lookahead_dry_run_setpoint`
+    - `rviz2`
+    - `static_transform_publisher`
+    - `gzserver/gzclient/px4/gazebo/pcl_viewer`
+- 结果：
+  - `package.xml` 不依赖 `px4_msgs`
+  - `CMakeLists.txt` 不 find/link `px4_msgs`
+  - `zcw_cable_perception/src` 不包含 PX4 message API
+  - `zcw_cable_perception/src` 不发布 `/fmu/in/*`
+  - lookahead scripts 不发布 `/fmu/in/*`
+  - dry-run debug topics 位于 `/zcw/cable/dry_run/*`
+  - `decision=accepted_px4_isolation_smoke`
+  - 未发现 ROS/Gazebo/PX4/PCL 残留进程
+- 结论：
+  - 当前电缆 perception/dry-run 包与 PX4 input topic 保持隔离
+  - 当前仍未接 PX4 Offboard 或 setpoint
+- 下一步：
+  - 更新 RUNBOOK、脚本索引、电缆计划、dry-run gate 和资产索引
+  - 提交并推送本阶段脚本、文档和进程记录
+- 阻塞项：无
