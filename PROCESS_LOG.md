@@ -3216,3 +3216,50 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 Offboard 接入前 arming/hold/abort gate 设计节点
 - 阻塞项：无
+
+### 2026-06-03 19:48:22 CST
+
+- 节点：Offboard 接入前 arming/hold/abort gate 设计开始
+- 执行动作：
+  - 确认仓库干净并已推送到 `862bfa6`
+  - 读取：
+    - `offboard_waypoint_sequence.cpp`
+    - `cable_px4_bridge_dry_run.cpp`
+    - `docs/04_cable_px4_bridge_interface_plan.md`
+- 目标：
+  - 新增 Phase B gate 设计文档
+  - 明确显式用户批准之前不得发布 `/fmu/in/*`
+  - 明确 arming、Offboard、hold、abort、publisher audit 和日志证据要求
+- 下一步：
+  - 写入 `docs/05_cable_phase_b_gate_plan.md`
+  - 更新 bridge 计划、RUNBOOK、脚本索引和 PROCESS_LOG
+- 阻塞项：无
+
+### 2026-06-03 19:50:20 CST
+
+- 节点：Offboard 接入前 arming/hold/abort gate 设计完成
+- 执行动作：
+  - 新增 `docs/05_cable_phase_b_gate_plan.md`
+  - 更新 `docs/04_cable_px4_bridge_interface_plan.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `RUNBOOK.md`
+- 结果：
+  - 明确 Phase B 未被本文档批准
+  - 明确显式用户批准前仍禁止：
+    - `/fmu/in/offboard_control_mode`
+    - `/fmu/in/trajectory_setpoint`
+    - `/fmu/in/vehicle_command`
+  - 明确 dry-run gate 只能输出：
+    - `/zcw/cable/offboard_gate/state`
+    - `/zcw/cable/offboard_gate/phase_b_allowed`
+    - `/zcw/cable/offboard_gate/ned_setpoint_approved_dry_run`
+  - 明确第一版 gate 只能到 `PHASE_B_READY_DRY_RUN`
+  - 明确 dry-run 期间车辆若意外 armed，必须进入 abort
+  - 明确每次验证必须记录所有 `/fmu/in/*` 的 publisher count
+- 结论：
+  - Phase B 接入前 gate 边界已固化
+  - 下一步可以实现 `cable_offboard_gate_dry_run`，但仍不得发布 `/fmu/in/*`
+- 下一步：
+  - 运行文档检查
+  - 提交并推送本阶段文档和进程记录
+- 阻塞项：无

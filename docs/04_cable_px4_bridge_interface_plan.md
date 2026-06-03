@@ -215,4 +215,10 @@ PX4 uXRCE-DDS creates `/fmu/in/*` subscriptions, so those topic names can appear
 
 ## 11. Next Node
 
-The next node should design the Phase B arming/hold/abort gate. It must not directly connect the dry-run candidate to `/fmu/in/trajectory_setpoint` without an explicit user-approved transition and a logged publisher audit.
+The Phase B gate design is documented in:
+
+```bash
+docs/05_cable_phase_b_gate_plan.md
+```
+
+The next implementation node should create `cable_offboard_gate_dry_run` and `scripts/verify_cable_offboard_gate_dry_run.sh`. It must not directly connect the dry-run candidate to `/fmu/in/trajectory_setpoint` without an explicit user-approved transition and a logged publisher audit.
