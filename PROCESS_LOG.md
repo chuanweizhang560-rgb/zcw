@@ -2693,3 +2693,21 @@
   - 更新 RUNBOOK、脚本索引、电缆计划、dry-run gate 和资产索引
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
+
+### 2026-06-03 17:49:25 CST
+
+- 节点：只读 dry-run candidate setpoint 提交与推送
+- 执行动作：
+  - 提交：`6233a66 Add lookahead dry-run setpoint`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `75c64e2` 更新到 `6233a66`
+  - 本次提交包含：
+    - `lookahead_dry_run_setpoint`
+    - `scripts/verify_lookahead_dry_run_setpoint.sh`
+    - RUNBOOK、电缆计划、dry-run gate、开源审计、脚本索引、资产索引和 PROCESS_LOG 更新
+  - `data/` 下 dry-run smoke 日志仍未提交
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 进入 dry-run candidate RViz overlay 截图节点，不启动 Gazebo/PX4
+- 阻塞项：无
