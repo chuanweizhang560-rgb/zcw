@@ -21,3 +21,4 @@ Current executable:
 RViz:
 
 - `rviz/lookahead_overlay.rviz`: displays `/zcw/cable/offset_path` and `/zcw/cable/lookahead_target` for read-only visual inspection.
+- `rviz/dry_run_overlay.rviz`: displays offset path, lookahead target, dry-run candidate setpoint, and dry-run candidate path.

@@ -2711,3 +2711,66 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 dry-run candidate RViz overlay 截图节点，不启动 Gazebo/PX4
 - 阻塞项：无
+
+### 2026-06-03 17:52:00 CST
+
+- 节点：dry-run candidate RViz overlay 截图开始
+- 执行动作：
+  - 确认仓库干净
+  - 读取现有 `lookahead_overlay.rviz`
+  - 读取现有 `capture_lookahead_rviz_overlay.sh`
+- 目标：
+  - 新增单独 dry-run RViz 配置
+  - 新增 dry-run RViz 截图脚本
+  - 显示 offset path、lookahead target、dry-run candidate setpoint 和 dry-run path
+  - 不启动 Gazebo/PX4
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 新增配置和脚本
+  - 运行真实 RViz 截图审核
+- 阻塞项：无
+
+### 2026-06-03 17:56:08 CST
+
+- 节点：dry-run candidate RViz overlay 截图审核通过
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_cable_perception/rviz/dry_run_overlay.rviz`
+  - 新增 `scripts/capture_lookahead_dry_run_rviz_overlay.sh`
+  - 运行 `bash -n scripts/capture_lookahead_dry_run_rviz_overlay.sh`
+  - 运行 `git diff --check`
+  - 使用 require_escalated 权限运行 `scripts/capture_lookahead_dry_run_rviz_overlay.sh`
+  - 读取：
+    - `data/logs/lookahead_dry_run_rviz_publisher_20260603_175512.log`
+    - `data/logs/lookahead_dry_run_rviz_20260603_175512.log`
+    - `data/logs/lookahead_dry_run_rviz_topic_list_20260603_175512.log`
+    - `data/logs/lookahead_dry_run_rviz_forbidden_topics_20260603_175512.log`
+  - 查看截图：`data/screenshots/lookahead_dry_run_rviz_overlay_20260603_175512.png`
+  - 检查残留进程：
+    - `lookahead_path_publisher`
+    - `lookahead_safety_monitor`
+    - `lookahead_dry_run_setpoint`
+    - `rviz2`
+    - `static_transform_publisher`
+    - `gzserver/gzclient/px4/gazebo/pcl_viewer`
+- 结果：
+  - 截图脚本退出码为 0
+  - publisher 加载 `group='y8_z20'`，`13` 个 path points，`11` 个 targets
+  - RViz OpenGL 正常
+  - topic list 包含 dry-run debug topics
+  - forbidden `/fmu/in/*` topic 日志大小为 0
+  - 截图文件为 `2490x1522` PNG
+  - 视觉审核：
+    - RViz Global Status 为 OK
+    - `Offset Path` display 为 OK
+    - `Lookahead Target` display 为 OK
+    - `Dry Run Path` display 为 OK
+    - `Dry Run Candidate` display 为 OK
+    - 绿色 offset path、红色 lookahead target、蓝色 dry-run path、黄色 dry-run candidate 均清晰可见
+  - 未发现 ROS/Gazebo/PX4/PCL 残留进程
+- 结论：
+  - dry-run candidate RViz overlay 证据达标
+  - 当前仍未启动 Gazebo/PX4，未发布 PX4 input topic
+- 下一步：
+  - 更新 RUNBOOK、脚本索引、电缆计划、dry-run gate 和资产索引
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

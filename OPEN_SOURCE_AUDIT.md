@@ -336,6 +336,7 @@ uxrce_dds_client synchronized
 6. RViz overlay 截图已通过：Global Status、`Offset Path`、`Lookahead Target` 均为 OK，绿色路径和红色目标点可见。
 7. 只读安全状态机已通过：`tracking_state=TRACK_READY`，`safety_gate=true`。
 8. 只读 dry-run candidate setpoint 已通过：`TRACK_READY`，`publishes_px4=false`，forbidden `/fmu/in/*` topic 为空。
+9. 只读 dry-run RViz overlay 已通过：Global Status、`Offset Path`、`Lookahead Target`、`Dry Run Path`、`Dry Run Candidate` 均为 OK，forbidden `/fmu/in/*` topic 为空。
 
 最新证据：
 
@@ -352,9 +353,11 @@ uxrce_dds_client synchronized
 11. dry-run state echo：`data/logs/lookahead_dry_run_state_echo_20260603_174508.log`
 12. dry-run candidate echo：`data/logs/lookahead_dry_run_candidate_echo_20260603_174508.log`
 13. dry-run forbidden topics：`data/logs/lookahead_dry_run_forbidden_topics_20260603_174508.log`
+14. dry-run RViz screenshot：`data/screenshots/lookahead_dry_run_rviz_overlay_20260603_175512.png`
+15. dry-run RViz forbidden topics：`data/logs/lookahead_dry_run_rviz_forbidden_topics_20260603_175512.log`
 
 注意：
 
 1. 当前 lookahead target 是只读离线证据，不代表无人机已经沿导线运动。
-2. 下一步只能先做 dry-run candidate RViz overlay，不能直接跳到完整闭环。
+2. 下一步只能先做 PX4 Offboard 隔离验证设计，不能直接跳到完整闭环。
 3. dry-run 门限已在 `docs/03_cable_px4_dry_run_gate.md` 中定义；该文档明确禁止 dry-run 发布 PX4 input topic。

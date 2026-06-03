@@ -174,5 +174,10 @@ sensor_overlays:
     latest_lookahead_dry_run_path_echo_log: data/logs/lookahead_dry_run_path_echo_20260603_174508.log
     latest_lookahead_dry_run_topic_list_log: data/logs/lookahead_dry_run_topic_list_20260603_174508.log
     latest_lookahead_dry_run_forbidden_topics_log: data/logs/lookahead_dry_run_forbidden_topics_20260603_174508.log
+    latest_lookahead_dry_run_rviz_publisher_log: data/logs/lookahead_dry_run_rviz_publisher_20260603_175512.log
+    latest_lookahead_dry_run_rviz_log: data/logs/lookahead_dry_run_rviz_20260603_175512.log
+    latest_lookahead_dry_run_rviz_topic_list_log: data/logs/lookahead_dry_run_rviz_topic_list_20260603_175512.log
+    latest_lookahead_dry_run_rviz_forbidden_topics_log: data/logs/lookahead_dry_run_rviz_forbidden_topics_20260603_175512.log
+    latest_lookahead_dry_run_rviz_screenshot: data/screenshots/lookahead_dry_run_rviz_overlay_20260603_175512.png
     latest_wire_band_pcd_screenshot: data/screenshots/pcd_ransac_frame0_20260603_114532_pcl_viewer_left.png
-    status: wire_band_offset_path_lookahead_safety_and_dry_run_debug_topics_verified_requires_dry_run_rviz_overlay
+    status: wire_band_offset_path_lookahead_safety_dry_run_and_dry_run_rviz_verified_requires_px4_isolation_plan
