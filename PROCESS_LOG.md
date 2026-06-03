@@ -1426,6 +1426,101 @@
   - 后续进入 Ceres/Eigen catenary/spline 输入烟测
 - 阻塞项：无
 
+### 2026-06-03 13:16:11 CST
+
+- 节点：Ceres/Eigen catenary/spline 输入烟测工具创建
+- 执行动作：
+  - 检查本机 Ceres/Eigen：
+    - `/usr/include/ceres/ceres.h`
+    - `/usr/include/eigen3/Eigen/Core`
+    - `/usr/lib/cmake/Ceres/CeresConfig.cmake`
+  - 新增离线工具 `catenary_fit_audit`
+  - 新增脚本 `scripts/audit_catenary_fit.sh`
+  - 更新 `zcw_cable_perception` CMake，使用 `find_package(Ceres REQUIRED)` 和 `find_package(Eigen3 REQUIRED)`
+- 设计边界：
+  - 只读取高空 wire-band ROI 的 line CSV
+  - 默认使用 `GROUP_MODE=yz`、`Z_BIN_SIZE=3.0`
+  - Ceres 用于 catenary 拟合，Eigen 用于二次曲线残差对照
+  - 不接 PX4，不输出 setpoint，不做闭环追线
+  - 该节点是输入烟测，目的是证明高度层候选可以进入成熟优化/线性代数库处理
+- 下一步：
+  - 设置脚本可执行权限
+  - 编译 `zcw_cable_perception`
+  - 运行 `scripts/audit_catenary_fit.sh`
+  - 审核每个高度层的拟合残差
+- 阻塞项：无
+
+### 2026-06-03 13:24:36 CST
+
+- 节点：Ceres/Eigen catenary/spline 输入烟测结果
+- 执行动作：
+  - 设置 `scripts/audit_catenary_fit.sh` 可执行权限
+  - 运行 `bash -n scripts/audit_catenary_fit.sh`
+  - 运行 `git diff --check`
+  - 编译 `zcw_cable_perception`
+  - 运行默认 `yz` / `Z_BIN_SIZE=3.0` 拟合烟测：
+    - `OUTPUT_DIR=data/results/catenary_fit_yz_20260603_131800`
+    - `OUTPUT_PREFIX=depth_camera_motion_catenary_fit_yz`
+  - 读取 fits CSV 后发现 `y8_z13` 混入约 `39m` 和 `41.6m` 两层，RMSE 超过 1m
+  - 收紧高度 bin，运行 `Z_BIN_SIZE=2.0` 拟合烟测：
+    - `OUTPUT_DIR=data/results/catenary_fit_yz_zbin2_20260603_132000`
+    - `OUTPUT_PREFIX=depth_camera_motion_catenary_fit_yz_zbin2`
+- 结果：
+  - Ceres/Eigen target 构建成功，仅有既有 conda runtime path warning
+  - `Z_BIN_SIZE=3.0` 结果：
+    - summary：`data/results/catenary_fit_yz_20260603_131800/depth_camera_motion_catenary_fit_yz_20260603_125130.txt`
+    - fits CSV：`data/results/catenary_fit_yz_20260603_131800/depth_camera_motion_catenary_fit_yz_fits_20260603_125130.csv`
+    - `fit_groups=6`
+    - `accepted_fits=5`
+    - `decision=accepted_catenary_fit_smoke`
+  - `Z_BIN_SIZE=2.0` 结果：
+    - summary：`data/results/catenary_fit_yz_zbin2_20260603_132000/depth_camera_motion_catenary_fit_yz_zbin2_20260603_125147.txt`
+    - fits CSV：`data/results/catenary_fit_yz_zbin2_20260603_132000/depth_camera_motion_catenary_fit_yz_zbin2_fits_20260603_125147.csv`
+    - `groups_with_samples=10`
+    - `fit_groups=5`
+    - `accepted_fits=5`
+    - `decision=accepted_catenary_fit_smoke`
+  - `Z_BIN_SIZE=2.0` 的 5 个拟合组 RMSE：
+    - `y8_z20`：catenary `0.09996m`，quadratic `0.04936m`
+    - `y8_z21`：catenary `0.33255m`，quadratic `0.31926m`
+    - `y8_z23`：catenary `0.49940m`，quadratic `0.49059m`
+    - `y8_z25`：catenary `0.19246m`，quadratic `0.16848m`
+    - `y8_z26`：catenary `0.52019m`，quadratic `0.51178m`
+- 结论：
+  - 高空 ROI 的高度层候选已经可以进入 Ceres/Eigen 离线拟合烟测
+  - `Z_BIN_SIZE=2.0` 比 `3.0` 更稳健，避免把相邻高度层混在一起
+  - 当前拟合仍是离线输入烟测；下一步要输出每个 accepted fit 的中心线采样 CSV，再进入 Frenet offset path
+- 下一步：
+  - 将 Ceres/Eigen 拟合入口和证据同步到 `RUNBOOK.md`、电缆工作流、脚本索引和开源审计
+  - 后续增加中心线采样输出和 Frenet offset path 烟测
+- 阻塞项：无
+
+### 2026-06-03 13:33:18 CST
+
+- 节点：Ceres/Eigen 拟合文档同步与构建复核
+- 执行动作：
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `scripts/README.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 更新 `ros2_ws/src/zcw_cable_perception/README.md`
+  - 运行脚本语法检查：
+    - `bash -n scripts/audit_catenary_fit.sh`
+    - `bash -n scripts/audit_depth_camera_multiline_consistency.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 检查 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - 未发现仿真或 PCL Viewer 残留进程
+  - `data/` 下拟合 CSV、日志、截图和 PCD 仍只作为本地证据，不提交进 git
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无
+
 ### 2026-06-03 12:31:54 CST
 
 - 节点：高空 ROI 一致性审核提交与推送

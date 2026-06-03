@@ -11,6 +11,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common filters io sample_consensus segmentation)
+find_package(Ceres REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 add_executable(pointcloud_line_ransac_smoke src/pointcloud_line_ransac_smoke.cpp)
 target_include_directories(pointcloud_line_ransac_smoke SYSTEM PRIVATE ${PCL_INCLUDE_DIRS})
@@ -52,12 +54,16 @@ ament_target_dependencies(pointcloud_pose_multiline_ransac_world_smoke
 
 add_executable(multiline_candidate_consistency_audit src/multiline_candidate_consistency_audit.cpp)
 
+add_executable(catenary_fit_audit src/catenary_fit_audit.cpp)
+target_link_libraries(catenary_fit_audit Ceres::ceres Eigen3::Eigen)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
   pointcloud_pose_line_ransac_world_smoke
   pointcloud_pose_multiline_ransac_world_smoke
   multiline_candidate_consistency_audit
+  catenary_fit_audit
   DESTINATION lib/${PROJECT_NAME}
 )
 
