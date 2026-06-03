@@ -16,6 +16,9 @@ Y_BIN_SIZE="${Y_BIN_SIZE:-2.0}"
 Z_BIN_SIZE="${Z_BIN_SIZE:-3.0}"
 MAX_CATENARY_RMSE="${MAX_CATENARY_RMSE:-1.0}"
 MAX_QUADRATIC_RMSE="${MAX_QUADRATIC_RMSE:-1.0}"
+PATH_STEP_M="${PATH_STEP_M:-10.0}"
+OFFSET_Y_M="${OFFSET_Y_M:--5.0}"
+OFFSET_Z_M="${OFFSET_Z_M:-0.0}"
 
 if [[ ! -f "${INPUT_CSV}" ]]; then
   echo "Input CSV does not exist: ${INPUT_CSV}" >&2
@@ -37,13 +40,18 @@ ros2 run zcw_cable_perception catenary_fit_audit \
   --y-bin-size "${Y_BIN_SIZE}" \
   --z-bin-size "${Z_BIN_SIZE}" \
   --max-catenary-rmse "${MAX_CATENARY_RMSE}" \
-  --max-quadratic-rmse "${MAX_QUADRATIC_RMSE}"
+  --max-quadratic-rmse "${MAX_QUADRATIC_RMSE}" \
+  --path-step-m "${PATH_STEP_M}" \
+  --offset-y-m "${OFFSET_Y_M}" \
+  --offset-z-m "${OFFSET_Z_M}"
 fit_rc=$?
 set -e
 
 SUMMARY_TXT="$(find "${OUTPUT_DIR}" -maxdepth 1 -name "${OUTPUT_PREFIX}_*.txt" | sort | tail -n 1)"
 FITS_CSV="$(find "${OUTPUT_DIR}" -maxdepth 1 -name "${OUTPUT_PREFIX}_fits_*.csv" | sort | tail -n 1)"
 SAMPLES_CSV="$(find "${OUTPUT_DIR}" -maxdepth 1 -name "${OUTPUT_PREFIX}_samples_*.csv" | sort | tail -n 1)"
+CENTERLINE_CSV="$(find "${OUTPUT_DIR}" -maxdepth 1 -name "${OUTPUT_PREFIX}_centerline_*.csv" | sort | tail -n 1)"
+OFFSET_PATH_CSV="$(find "${OUTPUT_DIR}" -maxdepth 1 -name "${OUTPUT_PREFIX}_offset_path_*.csv" | sort | tail -n 1)"
 
 if [[ -z "${SUMMARY_TXT}" || ! -f "${SUMMARY_TXT}" ]]; then
   echo "Catenary fit summary was not created." >&2
@@ -57,5 +65,7 @@ echo "Output dir: ${OUTPUT_DIR}"
 echo "Summary txt: ${SUMMARY_TXT}"
 echo "Fits csv: ${FITS_CSV}"
 echo "Samples csv: ${SAMPLES_CSV}"
+echo "Centerline csv: ${CENTERLINE_CSV}"
+echo "Offset path csv: ${OFFSET_PATH_CSV}"
 
 exit "${fit_rc}"

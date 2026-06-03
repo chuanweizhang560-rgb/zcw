@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-03 13:24:36 CST
+更新时间：2026-06-03 14:02:12 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -160,10 +160,19 @@
    - `Z_BIN_SIZE=2.0` fits CSV：`data/results/catenary_fit_yz_zbin2_20260603_132000/depth_camera_motion_catenary_fit_yz_zbin2_fits_20260603_125147.csv`
    - `Z_BIN_SIZE=2.0` 结果：`fit_groups=5`，`accepted_fits=5`，`decision=accepted_catenary_fit_smoke`
    - 审核结论：`Z_BIN_SIZE=2.0` 更稳健，避免把相邻高度层混入同一拟合组；当前可接受 5 条高度层中心线进入后续采样/offset path 烟测。
+19. 中心线采样与 Frenet offset path 烟测：
+   - 工具：`catenary_fit_audit`
+   - 验证：`scripts/audit_catenary_fit.sh`
+   - 参数：`PATH_STEP_M=10.0`，`OFFSET_Y_M=-5.0`，`OFFSET_Z_M=0.0`
+   - summary：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_20260603_125948.txt`
+   - centerline CSV：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_centerline_20260603_125948.csv`
+   - offset path CSV：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_offset_path_20260603_125948.csv`
+   - 结果：`accepted_fits=5`，centerline `65` 点，offset path `65` 点
+   - 审核结论：已能从 accepted Ceres/Eigen fit 生成离线中心线和几何 offset path；该结果仍不接 PX4，不发布 ROS topic。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组和 Ceres/Eigen 拟合输入烟测。下一步不是接飞控，而是输出中心线采样和 Frenet offset path。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成离线中心线/offset path。下一步不是接飞控，而是做 offset path 连续性审核。
 
 ## 2. 采用的成熟开源组件
 
@@ -330,7 +339,7 @@ scripts/audit_depth_camera_multiline_consistency.sh
 scripts/audit_catenary_fit.sh
 ```
 
-该入口读取高空 wire-band ROI 多线候选 CSV，复用一致性审核中的几何门限和 `GROUP_MODE=yz` 分组，调用 Ceres 拟合 catenary，并用 Eigen 二次曲线计算对照残差。该入口只输出 summary、fit CSV 和 sample CSV，不发布 ROS setpoint。
+该入口读取高空 wire-band ROI 多线候选 CSV，复用一致性审核中的几何门限和 `GROUP_MODE=yz` 分组，调用 Ceres 拟合 catenary，并用 Eigen 二次曲线计算对照残差。它也可输出中心线采样 CSV 和 offset path CSV。该入口只输出离线文件，不发布 ROS setpoint。
 
 ## 6. 处理参数初值
 
@@ -437,7 +446,7 @@ scripts/audit_catenary_fit.sh
 
 ## 10. 下一个执行节点
 
-1. 基于 `Z_BIN_SIZE=2.0` 下接受的 5 个 Ceres/Eigen fit，输出每条高度层中心线采样 CSV。
-2. 基于中心线采样生成 Frenet offset path 烟测。
-3. Frenet offset path 稳定后，再考虑只读 lookahead target，不直接接 PX4 闭环。
+1. 对 offset path 做连续性、曲率和步长审核。
+2. offset path 审核稳定后，生成只读 lookahead target 烟测。
+3. lookahead target 稳定后，再考虑 ROS topic 发布，不直接接 PX4 闭环。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

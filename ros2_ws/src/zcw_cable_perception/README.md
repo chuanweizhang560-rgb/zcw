@@ -11,4 +11,4 @@ Current executable:
 - `pointcloud_pose_line_ransac_world_smoke`: subscribes to PointCloud2 plus `nav_msgs/msg/Odometry`, runs PCL RANSAC, and saves sensor-frame and world-frame PCD evidence using PCL `transformPointCloud`.
 - `pointcloud_pose_multiline_ransac_world_smoke`: subscribes to PointCloud2 plus `nav_msgs/msg/Odometry`, applies PCL CropBox in sensor/world frames, iteratively runs PCL `SACSegmentation` with `SACMODEL_LINE`, saves multiple line candidate PCDs, and writes frame/line CSV evidence.
 - `multiline_candidate_consistency_audit`: offline CSV audit for multiline candidates. It checks direction/span gates and cross-frame grouping before a candidate set can be used as catenary/spline input evidence. It supports `y`, `z`, and `yz` grouping modes.
-- `catenary_fit_audit`: offline CSV audit that groups accepted line candidates, fits catenary curves with Ceres, computes a quadratic reference with Eigen, and writes fit/sample CSV evidence.
+- `catenary_fit_audit`: offline CSV audit that groups accepted line candidates, fits catenary curves with Ceres, computes a quadratic reference with Eigen, and writes fit/sample/centerline/offset-path CSV evidence.

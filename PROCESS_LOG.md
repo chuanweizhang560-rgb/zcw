@@ -1428,6 +1428,93 @@
   - 后续进入中心线采样 CSV 与 Frenet offset path 烟测
 - 阻塞项：无
 
+### 2026-06-03 13:49:41 CST
+
+- 节点：中心线采样与 Frenet offset path 烟测准备
+- 执行动作：
+  - 扩展 `catenary_fit_audit`
+    - 输出 `centerline_csv`
+    - 输出 `offset_path_csv`
+    - 增加 `--path-step-m`
+    - 增加 `--offset-y-m`
+    - 增加 `--offset-z-m`
+  - 扩展 `scripts/audit_catenary_fit.sh`
+    - 增加 `PATH_STEP_M`
+    - 增加 `OFFSET_Y_M`
+    - 增加 `OFFSET_Z_M`
+- 设计边界：
+  - 仍是离线 CSV 烟测，不发布 ROS topic
+  - offset path 只做几何候选，不接 PX4 Offboard
+  - 默认采样步长 `10m`，侧向偏移 `-5m`，竖向偏移 `0m`
+- 下一步：
+  - 编译 `zcw_cable_perception`
+  - 运行 `scripts/audit_catenary_fit.sh`
+  - 审核 centerline/offset CSV
+- 阻塞项：无
+
+### 2026-06-03 14:02:12 CST
+
+- 节点：中心线采样与 Frenet offset path 烟测结果
+- 执行动作：
+  - 运行 `bash -n scripts/audit_catenary_fit.sh`
+  - 运行 `git diff --check`
+  - 编译 `zcw_cable_perception`
+  - 运行：
+    - `OUTPUT_DIR=data/results/catenary_offset_yz_zbin2_20260603_135000`
+    - `OUTPUT_PREFIX=depth_camera_motion_catenary_offset_yz_zbin2`
+    - `GROUP_MODE=yz`
+    - `Z_BIN_SIZE=2.0`
+    - `Y_BIN_SIZE=2.0`
+    - `PATH_STEP_M=10.0`
+    - `OFFSET_Y_M=-5.0`
+    - `OFFSET_Z_M=0.0`
+    - `scripts/audit_catenary_fit.sh`
+  - 读取 summary、centerline CSV 和 offset path CSV
+- 结果：
+  - catenary/offset 烟测退出码为 0
+  - summary：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_20260603_125948.txt`
+  - fits CSV：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_fits_20260603_125948.csv`
+  - centerline CSV：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_centerline_20260603_125948.csv`
+  - offset path CSV：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_offset_path_20260603_125948.csv`
+  - `fit_groups=5`
+  - `accepted_fits=5`
+  - centerline CSV 行数：`66`，即 `65` 个采样点加表头
+  - offset path CSV 行数：`66`，即 `65` 个采样点加表头
+  - offset path 中 `offset_y_m=-5`，`offset_z_m=0`
+  - 采样切向量接近 x 方向，`tangent_z` 小，符合当前近水平导线候选
+- 结论：
+  - Ceres/Eigen accepted fit 已能产生离线中心线采样和几何 offset path
+  - 当前 offset path 仍是几何候选，不发布 ROS topic，不接 PX4 Offboard
+  - 下一步可以做 offset path 的连续性/曲率/步长审核，再进入只读 lookahead target
+- 下一步：
+  - 将 centerline/offset path 入口和证据同步到 `RUNBOOK.md`、电缆工作流、脚本索引和资产索引
+  - 后续增加 offset path 连续性审核
+- 阻塞项：无
+
+### 2026-06-03 14:10:44 CST
+
+- 节点：中心线/offset path 文档同步与构建复核
+- 执行动作：
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `scripts/README.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 更新 `ros2_ws/src/zcw_cable_perception/README.md`
+  - 运行脚本语法检查：`bash -n scripts/audit_catenary_fit.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 检查 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - 未发现仿真或 PCL Viewer 残留进程
+  - `data/` 下中心线/offset CSV、拟合 CSV、仿真日志、截图和 PCD 仍只作为本地证据，不提交进 git
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无
+
 ### 2026-06-03 13:04:22 CST
 
 - 节点：高度层分组审核提交与推送

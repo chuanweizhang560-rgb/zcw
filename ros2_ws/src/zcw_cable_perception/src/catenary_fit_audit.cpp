@@ -63,6 +63,9 @@ struct Args
   int min_samples_per_group{6};
   double max_catenary_rmse{1.0};
   double max_quadratic_rmse{1.0};
+  double path_step_m{10.0};
+  double offset_y_m{-5.0};
+  double offset_z_m{0.0};
 };
 
 struct FitResult
@@ -211,6 +214,11 @@ double catenary_eval(double a, double b, double c, double x)
   return a * std::cosh((x - b) / a) + c;
 }
 
+double catenary_dzdx(double a, double b, double x)
+{
+  return std::sinh((x - b) / a);
+}
+
 FitResult fit_group(const std::string & group_id, const std::vector<Sample> & samples)
 {
   FitResult result;
@@ -312,7 +320,10 @@ void print_usage()
     << "  --y-bin-size <meters>\n"
     << "  --z-bin-size <meters>\n"
     << "  --max-catenary-rmse <meters>\n"
-    << "  --max-quadratic-rmse <meters>\n";
+    << "  --max-quadratic-rmse <meters>\n"
+    << "  --path-step-m <meters>\n"
+    << "  --offset-y-m <meters>\n"
+    << "  --offset-z-m <meters>\n";
 }
 
 Args parse_args(int argc, char ** argv)
@@ -342,6 +353,12 @@ Args parse_args(int argc, char ** argv)
       args.max_catenary_rmse = to_double(require_value(key));
     } else if (key == "--max-quadratic-rmse") {
       args.max_quadratic_rmse = to_double(require_value(key));
+    } else if (key == "--path-step-m") {
+      args.path_step_m = to_double(require_value(key));
+    } else if (key == "--offset-y-m") {
+      args.offset_y_m = to_double(require_value(key));
+    } else if (key == "--offset-z-m") {
+      args.offset_z_m = to_double(require_value(key));
     } else if (key == "--help" || key == "-h") {
       print_usage();
       std::exit(0);
@@ -354,6 +371,9 @@ Args parse_args(int argc, char ** argv)
   }
   if (args.group_mode != "y" && args.group_mode != "z" && args.group_mode != "yz") {
     throw std::runtime_error("--group-mode must be y, z, or yz");
+  }
+  if (args.path_step_m <= 0.0) {
+    throw std::runtime_error("--path-step-m must be positive");
   }
   return args;
 }
@@ -394,6 +414,8 @@ int main(int argc, char ** argv)
     const auto summary_path = args.output_dir + "/" + args.output_prefix + "_" + stamp + ".txt";
     const auto fits_path = args.output_dir + "/" + args.output_prefix + "_fits_" + stamp + ".csv";
     const auto samples_path = args.output_dir + "/" + args.output_prefix + "_samples_" + stamp + ".csv";
+    const auto centerline_path = args.output_dir + "/" + args.output_prefix + "_centerline_" + stamp + ".csv";
+    const auto offset_path = args.output_dir + "/" + args.output_prefix + "_offset_path_" + stamp + ".csv";
 
     std::ofstream samples_csv(samples_path);
     samples_csv << "group_id,x,y,z\n";
@@ -433,6 +455,48 @@ int main(int argc, char ** argv)
                << (r.accepted ? "true" : "false") << "\n";
     }
 
+    std::ofstream centerline_csv(centerline_path);
+    centerline_csv << "group_id,index,x,y,z,tangent_x,tangent_y,tangent_z\n";
+    std::ofstream offset_csv(offset_path);
+    offset_csv << "group_id,index,x,y,z,source_x,source_y,source_z,offset_y_m,offset_z_m,"
+               << "tangent_x,tangent_y,tangent_z\n";
+    for (const auto & r : results) {
+      if (!r.accepted) {
+        continue;
+      }
+      int index = 0;
+      for (double x = r.min_x; x <= r.max_x + 1e-6; x += args.path_step_m) {
+        const double z = catenary_eval(r.catenary_a, r.catenary_b, r.catenary_c, x);
+        const double dzdx = catenary_dzdx(r.catenary_a, r.catenary_b, x);
+        const double tangent_norm = std::sqrt(1.0 + dzdx * dzdx);
+        const double tx = 1.0 / tangent_norm;
+        const double ty = 0.0;
+        const double tz = dzdx / tangent_norm;
+        centerline_csv << r.group_id << ","
+                       << index << ","
+                       << x << ","
+                       << r.mean_y << ","
+                       << z << ","
+                       << tx << ","
+                       << ty << ","
+                       << tz << "\n";
+        offset_csv << r.group_id << ","
+                   << index << ","
+                   << x << ","
+                   << (r.mean_y + args.offset_y_m) << ","
+                   << (z + args.offset_z_m) << ","
+                   << x << ","
+                   << r.mean_y << ","
+                   << z << ","
+                   << args.offset_y_m << ","
+                   << args.offset_z_m << ","
+                   << tx << ","
+                   << ty << ","
+                   << tz << "\n";
+        ++index;
+      }
+    }
+
     std::ofstream summary(summary_path);
     summary << "input_csv: " << args.input_csv << "\n";
     summary << "total_candidates: " << candidates.size() << "\n";
@@ -445,8 +509,13 @@ int main(int argc, char ** argv)
     summary << "accepted_fits: " << accepted_fits << "\n";
     summary << "max_catenary_rmse: " << args.max_catenary_rmse << "\n";
     summary << "max_quadratic_rmse: " << args.max_quadratic_rmse << "\n";
+    summary << "path_step_m: " << args.path_step_m << "\n";
+    summary << "offset_y_m: " << args.offset_y_m << "\n";
+    summary << "offset_z_m: " << args.offset_z_m << "\n";
     summary << "samples_csv: " << samples_path << "\n";
     summary << "fits_csv: " << fits_path << "\n";
+    summary << "centerline_csv: " << centerline_path << "\n";
+    summary << "offset_path_csv: " << offset_path << "\n";
     summary << "decision: "
             << (accepted_fits > 0 ? "accepted_catenary_fit_smoke" : "rejected_catenary_fit_smoke")
             << "\n";
@@ -455,6 +524,8 @@ int main(int argc, char ** argv)
     std::cout << "Summary: " << summary_path << "\n";
     std::cout << "Fits CSV: " << fits_path << "\n";
     std::cout << "Samples CSV: " << samples_path << "\n";
+    std::cout << "Centerline CSV: " << centerline_path << "\n";
+    std::cout << "Offset path CSV: " << offset_path << "\n";
     std::cout << "Accepted fits: " << accepted_fits << "\n";
     return accepted_fits > 0 ? 0 : 2;
   } catch (const std::exception & e) {
