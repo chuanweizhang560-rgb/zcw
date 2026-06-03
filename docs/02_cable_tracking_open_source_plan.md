@@ -309,10 +309,34 @@
      - forbidden topics：`data/logs/px4_bridge_dry_run_rviz_forbidden_topics_20260603_191816.log`
    - 结果：`DRY_RUN_READY`，`publishes_fmu_in=false`，NED frame 为 `px4_local_ned_dry_run`，RViz Global Status 为 OK，未发现 `/fmu/in/*`
    - 审核结论：Phase A bridge debug 可视化通过；`px4_local_ned_dry_run` static TF 只用于显示，不代表 PX4 local frame 闭环坐标对齐完成。
+31. PX4/Gazebo 只读坐标采样 smoke：
+   - 工具：`px4_gazebo_frame_alignment_audit`
+   - 验证：`scripts/verify_px4_gazebo_readonly_frame_alignment.sh`
+   - 数据流：
+     - PX4/Gazebo headless + AerialCore `danube_wires`
+     - Micro XRCE-DDS Agent
+     - `/fmu/out/vehicle_local_position`
+     - `/zcw/depth_camera/pose`
+     - `/zcw/cable/dry_run/candidate_setpoint`
+     - `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
+   - 最新 summary：`data/results/px4_gazebo_frame_alignment_20260603_194311/px4_gazebo_frame_alignment_20260603_194311.txt`
+   - 最新日志：
+     - PX4/Gazebo：`data/logs/px4_gazebo_frame_alignment_px4_20260603_194311.log`
+     - forbidden publishers：`data/logs/px4_gazebo_frame_alignment_forbidden_publishers_20260603_194311.log`
+     - topic list：`data/logs/px4_gazebo_frame_alignment_topic_list_20260603_194311.log`
+   - 结果：
+     - `decision=accepted_readonly_frame_sample_smoke`
+     - `px4_local_finite=true`
+     - `gazebo_pose_finite=true`
+     - `dry_run_ready=true`
+     - `bridge_ready=true`
+     - `debug_transform_smoke_ok=true`
+     - 所有 `/fmu/in/*` topic 的 `Publisher count` 均为 0
+   - 审核结论：已能在同一时间窗采集 PX4 local NED、Gazebo world pose、map candidate 和 bridge NED debug point；仍未启动 Offboard、未 arm、未发布 PX4 input topic。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay、PX4 隔离审计、Phase A bridge dry-run isolation 和 Phase A bridge RViz overlay 均已通过。下一步不是发布 PX4 setpoint，而是设计带 PX4/Gazebo 的只读坐标系对齐验证。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay、PX4 隔离审计、Phase A bridge dry-run isolation、Phase A bridge RViz overlay 和 PX4/Gazebo 只读坐标采样均已通过。下一步不是直接发布 PX4 setpoint，而是设计 Offboard 接入前的 arming/hold/abort gate。
 
 ## 2. 采用的成熟开源组件
 
@@ -553,6 +577,14 @@ scripts/capture_px4_bridge_dry_run_rviz_overlay.sh
 
 该入口启动只读 lookahead pipeline、Phase A bridge dry-run、static TF 和 RViz2，加载 `px4_bridge_dry_run_overlay.rviz`，并保存真实 RViz 截图。该入口不启动 Gazebo/PX4，不发布 `/fmu/in/*`。RViz 中的 `px4_local_ned_dry_run` static TF 仅用于显示 debug 点，不是闭环坐标验证。
 
+已新增 PX4/Gazebo 只读坐标采样入口：
+
+```bash
+scripts/verify_px4_gazebo_readonly_frame_alignment.sh
+```
+
+该入口启动 PX4/Gazebo headless、Micro XRCE-DDS Agent、只读 lookahead pipeline 和 Phase A bridge dry-run，运行 `px4_gazebo_frame_alignment_audit` 输出 summary。它不启动 Offboard、不 arm、不发布 `/fmu/in/*`。PX4 uXRCE-DDS 会让 `/fmu/in/*` 订阅 topic 出现在 ROS 图中，因此脚本逐个检查这些 topic 的 `Publisher count: 0`。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -658,7 +690,7 @@ scripts/capture_px4_bridge_dry_run_rviz_overlay.sh
 
 ## 10. 下一个执行节点
 
-1. 设计带 PX4/Gazebo 的只读坐标系对齐验证；仍不能发布 setpoint。
-2. 对齐验证需要同时记录 Gazebo pose、PX4 local position、dry-run map candidate 和 bridge NED debug point。
-3. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
+1. 设计 Offboard 接入前的 arming/hold/abort gate；仍不能直接把 dry-run topic 接入 `/fmu/in/*`。
+2. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
+3. 任何 Phase B setpoint 发布都需要显式记录 `/fmu/in/*` publisher、arming 状态、nav_state 和 abort 条件。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

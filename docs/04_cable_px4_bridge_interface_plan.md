@@ -143,6 +143,8 @@ Latest Phase A evidence:
 - RViz overlay screenshot: `data/screenshots/px4_bridge_dry_run_rviz_overlay_20260603_191816.png`
 - RViz bridge state echo: `data/logs/px4_bridge_dry_run_rviz_state_echo_20260603_191816.log`
 - RViz bridge NED echo: `data/logs/px4_bridge_dry_run_rviz_ned_echo_20260603_191816.log`
+- PX4/Gazebo read-only frame summary: `data/results/px4_gazebo_frame_alignment_20260603_194311/px4_gazebo_frame_alignment_20260603_194311.txt`
+- PX4/Gazebo read-only forbidden publisher log: `data/logs/px4_gazebo_frame_alignment_forbidden_publishers_20260603_194311.log`
 
 ## 7. Acceptance Criteria
 
@@ -193,4 +195,24 @@ The RViz static transform for `px4_local_ned_dry_run` is debug-only. It is used 
 
 ## 10. Next Node
 
-The next node should design a PX4/Gazebo read-only coordinate alignment test. It may start Gazebo/PX4 to compare poses, but it must still avoid `/fmu/in/*` publication unless the user explicitly approves the transition to Phase B.
+The PX4/Gazebo read-only coordinate sampling test is implemented:
+
+```bash
+scripts/verify_px4_gazebo_readonly_frame_alignment.sh
+```
+
+Latest result:
+
+- `decision=accepted_readonly_frame_sample_smoke`
+- PX4 local position finite and valid
+- Gazebo P3D pose finite
+- dry-run state ready
+- bridge state ready
+- bridge debug transform smoke passed
+- all `/fmu/in/*` topics had `Publisher count: 0`
+
+PX4 uXRCE-DDS creates `/fmu/in/*` subscriptions, so those topic names can appear even when this project publishes nothing into them.
+
+## 11. Next Node
+
+The next node should design the Phase B arming/hold/abort gate. It must not directly connect the dry-run candidate to `/fmu/in/trajectory_setpoint` without an explicit user-approved transition and a logged publisher audit.

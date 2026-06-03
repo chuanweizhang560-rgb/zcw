@@ -3090,3 +3090,110 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 PX4/Gazebo 只读坐标系对齐验证设计节点，仍不发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-03 19:22:11 CST
+
+- 节点：PX4/Gazebo 只读坐标系对齐验证开始
+- 执行动作：
+  - 确认仓库干净并已推送到 `d2c0bb8`
+  - 读取：
+    - `scripts/run_px4_aerialcore_world_headless.sh`
+    - `scripts/verify_depth_camera_pose_pointcloud.sh`
+    - `scripts/verify_depth_camera_cable_motion_ransac.sh`
+    - `scripts/verify_px4_bridge_dry_run_isolation.sh`
+    - `ros2_ws/src/zcw_px4_baseline/CMakeLists.txt`
+    - `ros2_ws/src/zcw_px4_baseline/README.md`
+- 目标：
+  - 启动 PX4/Gazebo + Micro XRCE-DDS
+  - 只订阅 `/fmu/out/vehicle_local_position`
+  - 只订阅 Gazebo P3D pose `/zcw/depth_camera/pose`
+  - 同时采集 dry-run map candidate 和 bridge NED debug point
+  - 输出只读 summary 文件
+  - 不启动 Offboard waypoint、不 arm、不发布 `/fmu/in/*`
+- 设计边界：
+  - 新节点只做 topic 采样和坐标关系记录，不做控制、不做算法闭环
+  - 本节点只能证明可在同一时间窗采集 PX4 local NED 与 Gazebo world pose，不能证明可安全飞行跟踪导线
+- 下一步：
+  - 新增只读 audit 节点和验证脚本
+  - 构建并运行 headless smoke
+- 阻塞项：无
+
+### 2026-06-03 19:43:54 CST
+
+- 节点：PX4/Gazebo 只读坐标采样 smoke 通过
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_px4_baseline/src/px4_gazebo_frame_alignment_audit.cpp`
+  - 更新 `zcw_px4_baseline` 的 CMake/package/README
+  - 新增 `scripts/verify_px4_gazebo_readonly_frame_alignment.sh`
+  - 运行 `bash -n scripts/verify_px4_gazebo_readonly_frame_alignment.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src third_party/px4_msgs --packages-select px4_msgs zcw_cable_perception zcw_px4_baseline`
+  - 第一次运行验证脚本失败：
+    - 原因：`/tmp/codex_zcw_px4_venv` 不存在
+    - 处理：运行 `scripts/setup_px4_venv.sh` 恢复 PX4 venv，并固定 `empy==3.3.4`
+  - 第二次运行验证脚本失败：
+    - 原因：传给 PX4 启动脚本的 `LOG_FILE` 是相对路径，PX4 脚本内部 `cd` 后无法写日志
+    - 处理：将本脚本 `LOG_DIR` 和 `RESULT_ROOT` 默认值改为绝对路径
+  - 第三次运行验证脚本失败：
+    - 原因：ROS `setup.bash` 与 `set -u` 兼容问题
+    - 处理：source ROS 环境前临时 `set +u`，source 后恢复 `set -u`
+  - 第四次运行验证脚本失败：
+    - 原因：PX4 uXRCE-DDS 会创建 `/fmu/in/*` 订阅 topic，不能用 topic 名存在作为“发布 setpoint”的判据
+    - 处理：逐个检查 `/fmu/in/*` 的 `Publisher count: 0`
+    - 同时修复失败路径 cleanup，清掉遗留 Agent/lookahead/bridge 子进程
+  - 第五次运行验证脚本失败：
+    - 原因：audit 对动态 dry-run candidate 和 bridge NED debug 点做了精确同步相等检查，异步采样下出现约 1m 误差
+    - 处理：把 debug transform smoke 容差参数化，仍记录 exact check 和实际误差
+  - 第六次运行验证脚本通过但 cleanup 有 `pkill` 自匹配噪声
+    - 处理：将 cleanup 的 `pkill -f` pattern 改为 bracket pattern，避免匹配自身
+  - 最终运行 `scripts/verify_px4_gazebo_readonly_frame_alignment.sh` 通过
+  - 读取：
+    - `data/results/px4_gazebo_frame_alignment_20260603_194311/px4_gazebo_frame_alignment_20260603_194311.txt`
+    - `data/logs/px4_gazebo_frame_alignment_px4_20260603_194311.log`
+    - `data/logs/px4_gazebo_frame_alignment_forbidden_publishers_20260603_194311.log`
+    - `data/logs/px4_gazebo_frame_alignment_topic_list_20260603_194311.log`
+  - 检查残留进程：
+    - `verify_px4_gazebo_readonly_frame_alignment`
+    - `gzserver/gzclient/px4/gazebo`
+    - `MicroXRCEAgent`
+    - `lookahead_path_publisher`
+    - `lookahead_safety_monitor`
+    - `lookahead_dry_run_setpoint`
+    - `cable_px4_bridge_dry_run`
+  - 更新：
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `docs/04_cable_px4_bridge_interface_plan.md`
+    - `scripts/README.md`
+    - `ros2_ws/src/zcw_px4_baseline/README.md`
+- 结果：
+  - `decision=accepted_readonly_frame_sample_smoke`
+  - `publishes_fmu_in=false`
+  - `scope=read_only_topic_sample_no_offboard_no_arm`
+  - PX4 local position：
+    - `px4_local_finite=true`
+    - `px4_xy_valid=true`
+    - `px4_z_valid=true`
+    - `x=-0.014280079864`
+    - `y=0.000166541372892`
+    - `z=0.100376069546`
+  - Gazebo P3D pose：
+    - `gazebo_pose_finite=true`
+    - `x=1.10996490562`
+    - `y=0.979995334947`
+    - `z=0.0541716508529`
+  - dry-run state：`TRACK_READY`
+  - bridge state：`DRY_RUN_READY`
+  - bridge NED frame：`px4_local_ned_dry_run`
+  - `debug_transform_exact_ok=true`
+  - `debug_transform_smoke_ok=true`
+  - 所有 `/fmu/in/*` topic 的 `Publisher count` 均为 0
+  - 未发现 ROS/Gazebo/PX4/Agent 残留进程
+- 结论：
+  - 已能在同一时间窗采集 PX4 local NED、Gazebo world pose、dry-run map candidate 和 bridge NED debug point
+  - 当前仍未启动 Offboard、未 arm、未发布 PX4 input topic
+  - 本节点是只读数据可用性 smoke，不代表闭环导线跟踪已完成
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+  - 进入 Offboard 接入前 arming/hold/abort gate 设计节点
+- 阻塞项：无

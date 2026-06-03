@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(px4_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
 add_executable(offboard_hover_retry src/offboard_hover_retry.cpp)
@@ -24,10 +25,14 @@ ament_target_dependencies(offboard_waypoint_sequence rclcpp px4_msgs)
 add_executable(cable_px4_bridge_dry_run src/cable_px4_bridge_dry_run.cpp)
 ament_target_dependencies(cable_px4_bridge_dry_run rclcpp geometry_msgs std_msgs)
 
+add_executable(px4_gazebo_frame_alignment_audit src/px4_gazebo_frame_alignment_audit.cpp)
+ament_target_dependencies(px4_gazebo_frame_alignment_audit rclcpp px4_msgs geometry_msgs nav_msgs std_msgs)
+
 install(TARGETS
   offboard_hover_retry
   offboard_waypoint_sequence
   cable_px4_bridge_dry_run
+  px4_gazebo_frame_alignment_audit
   DESTINATION lib/${PROJECT_NAME}
 )
 

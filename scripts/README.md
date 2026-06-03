@@ -37,6 +37,7 @@
 - `audit_px4_isolation.sh`：静态检查 `zcw_cable_perception` 与 lookahead 脚本没有 `px4_msgs` 依赖、PX4 message API 或 `/fmu/in/*` 发布。
 - `verify_px4_bridge_dry_run_isolation.sh`：启动只读 lookahead pipeline 和 Phase A bridge dry-run，验证 `/zcw/cable/px4_bridge/*` debug topics，并确认没有 `/fmu/in/*` topic。
 - `capture_px4_bridge_dry_run_rviz_overlay.sh`：启动只读 lookahead pipeline、Phase A bridge dry-run、static TF 和 RViz2，加载 bridge overlay 配置并截取真实 RViz 截图；不启动 Gazebo/PX4，不发布 `/fmu/in/*`。
+- `verify_px4_gazebo_readonly_frame_alignment.sh`：启动 PX4/Gazebo + Micro XRCE-DDS 和只读 bridge debug pipeline，采集 PX4 local position、Gazebo P3D pose、map candidate 和 bridge NED debug point；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。
