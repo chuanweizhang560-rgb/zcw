@@ -335,6 +335,7 @@ uxrce_dds_client synchronized
 5. 只读 ROS topic 发布已通过：`/zcw/cable/offset_path` 与 `/zcw/cable/lookahead_target` 可被 `ros2 topic echo` 读取。
 6. RViz overlay 截图已通过：Global Status、`Offset Path`、`Lookahead Target` 均为 OK，绿色路径和红色目标点可见。
 7. 只读安全状态机已通过：`tracking_state=TRACK_READY`，`safety_gate=true`。
+8. 只读 dry-run candidate setpoint 已通过：`TRACK_READY`，`publishes_px4=false`，forbidden `/fmu/in/*` topic 为空。
 
 最新证据：
 
@@ -348,9 +349,12 @@ uxrce_dds_client synchronized
 8. RViz log：`data/logs/lookahead_rviz_20260603_171401.log`
 9. safety state echo：`data/logs/lookahead_tracking_state_echo_20260603_172502.log`
 10. safety gate echo：`data/logs/lookahead_safety_gate_echo_20260603_172502.log`
+11. dry-run state echo：`data/logs/lookahead_dry_run_state_echo_20260603_174508.log`
+12. dry-run candidate echo：`data/logs/lookahead_dry_run_candidate_echo_20260603_174508.log`
+13. dry-run forbidden topics：`data/logs/lookahead_dry_run_forbidden_topics_20260603_174508.log`
 
 注意：
 
 1. 当前 lookahead target 是只读离线证据，不代表无人机已经沿导线运动。
-2. 下一步只能先做 PX4 Offboard dry-run 方案和验收门限，不能直接跳到完整闭环。
+2. 下一步只能先做 dry-run candidate RViz overlay，不能直接跳到完整闭环。
 3. dry-run 门限已在 `docs/03_cable_px4_dry_run_gate.md` 中定义；该文档明确禁止 dry-run 发布 PX4 input topic。

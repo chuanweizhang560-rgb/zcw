@@ -17,6 +17,14 @@ Current status:
   - `min_target_to_path_m=0`
   - `last_target_jump_m=10.0005`
   - `safety_gate=true`
+- Latest dry-run evidence:
+  - `TRACK_READY`
+  - `target_to_path_m=0`
+  - `candidate_jump_m=1.99995`
+  - `candidate_vertical_jump_m=0.0105846`
+  - `candidate_speed_mps=5`
+  - `publishes_px4=false`
+  - forbidden `/fmu/in/*` topics: none
 
 No PX4 Offboard control may consume these topics until the dry-run gates below pass.
 
@@ -105,6 +113,6 @@ Required pass criteria:
 
 ## 6. Next Code Node
 
-The next implementation node may add `lookahead_dry_run_setpoint.cpp`.
+`lookahead_dry_run_setpoint.cpp` has passed the first read-only smoke test.
 
-It must remain a read-only/debug node and must not include PX4 message dependencies unless the dry-run evidence above is already passing.
+The next implementation node should add RViz dry-run overlay evidence. It must remain a read-only/debug workflow and must not include PX4 message dependencies until the RViz evidence and forbidden-topic checks are both passing.

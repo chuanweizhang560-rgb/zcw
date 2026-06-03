@@ -230,10 +230,30 @@
      - safety gate：`data/logs/lookahead_safety_gate_echo_20260603_172502.log`
    - 结果：`TRACK_READY`，`path_points=13`，`min_target_to_path_m=0`，`last_target_jump_m=10.0005`，`safety_gate=true`
    - 审核结论：只读状态机安全门限 smoke 通过；当前仍不接 PX4 setpoint。
+25. 只读 dry-run candidate setpoint smoke：
+   - 工具：`lookahead_dry_run_setpoint`
+   - 验证：`scripts/verify_lookahead_dry_run_setpoint.sh`
+   - 输入 topic：
+     - `/zcw/cable/offset_path`
+     - `/zcw/cable/lookahead_target`
+     - `/zcw/cable/tracking_state`
+     - `/zcw/cable/safety_gate`
+   - 输出 topic：
+     - `/zcw/cable/dry_run/state`
+     - `/zcw/cable/dry_run/candidate_setpoint`
+     - `/zcw/cable/dry_run/path`
+   - 最新日志：
+     - state：`data/logs/lookahead_dry_run_state_echo_20260603_174508.log`
+     - candidate：`data/logs/lookahead_dry_run_candidate_echo_20260603_174508.log`
+     - path：`data/logs/lookahead_dry_run_path_echo_20260603_174508.log`
+     - topic list：`data/logs/lookahead_dry_run_topic_list_20260603_174508.log`
+     - forbidden topics：`data/logs/lookahead_dry_run_forbidden_topics_20260603_174508.log`
+   - 结果：`TRACK_READY`，`candidate_jump_m=1.99995`，`candidate_speed_mps=5`，`publishes_px4=false`
+   - 审核结论：dry-run candidate setpoint smoke 通过；当前仍未发布任何 `/fmu/in/*` topic。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay 和只读安全状态机均已通过。下一步不是直接接飞控，而是定义 PX4 Offboard 接入前的状态机验收门限。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机和 dry-run candidate setpoint 均已通过。下一步不是接飞控，而是补 dry-run candidate 的 RViz overlay 截图。
 
 ## 2. 采用的成熟开源组件
 
@@ -442,6 +462,14 @@ scripts/verify_lookahead_safety_monitor.sh
 
 该入口启动只读 publisher 和 `lookahead_safety_monitor`，验证 `/zcw/cable/tracking_state` 与 `/zcw/cable/safety_gate`。该入口不启动 Gazebo、不接 PX4、不发布 setpoint。
 
+已新增只读 dry-run candidate setpoint smoke 入口：
+
+```bash
+scripts/verify_lookahead_dry_run_setpoint.sh
+```
+
+该入口启动只读 publisher、safety monitor 和 `lookahead_dry_run_setpoint`，验证 `/zcw/cable/dry_run/*` debug topics，并检查没有 `/fmu/in/*` forbidden topics。该入口不启动 Gazebo、不接 PX4、不发布 setpoint。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -547,7 +575,7 @@ scripts/verify_lookahead_safety_monitor.sh
 
 ## 10. 下一个执行节点
 
-1. 按 `docs/03_cable_px4_dry_run_gate.md` 实现只读 dry-run candidate setpoint，不发布 PX4 topic。
-2. dry-run evidence 通过后，再讨论是否接 PX4 Offboard，不能跳过安全门限。
+1. 为 dry-run candidate setpoint 增加 RViz overlay 截图，不启动 Gazebo/PX4。
+2. RViz dry-run 证据通过后，再讨论 PX4 Offboard dry-run 与真实 PX4 topic 的隔离验证。
 3. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

@@ -78,6 +78,14 @@ ament_target_dependencies(lookahead_safety_monitor
   std_msgs
 )
 
+add_executable(lookahead_dry_run_setpoint src/lookahead_dry_run_setpoint.cpp)
+ament_target_dependencies(lookahead_dry_run_setpoint
+  rclcpp
+  nav_msgs
+  geometry_msgs
+  std_msgs
+)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
@@ -89,6 +97,7 @@ install(TARGETS
   lookahead_target_audit
   lookahead_path_publisher
   lookahead_safety_monitor
+  lookahead_dry_run_setpoint
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -2563,3 +2563,133 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入只读 dry-run candidate setpoint 实现节点
 - 阻塞项：无
+
+### 2026-06-03 17:36:00 CST
+
+- 节点：只读 dry-run candidate setpoint 实现开始
+- 执行动作：
+  - 确认仓库干净
+  - 读取 `docs/03_cable_px4_dry_run_gate.md`
+  - 读取 `zcw_cable_perception` 当前 CMake 入口
+- 目标：
+  - 新增只读 `lookahead_dry_run_setpoint`
+  - 订阅 offset path、lookahead target、tracking state 和 safety gate
+  - 只发布 `/zcw/cable/dry_run/*`
+  - 不引入 PX4 消息依赖
+  - 不发布任何 `/fmu/in/*`
+- 下一步：
+  - 新增源码和验证脚本
+  - 构建并运行 dry-run smoke
+- 阻塞项：无
+
+### 2026-06-03 17:41:10 CST
+
+- 节点：只读 dry-run candidate setpoint 首次 smoke 失败与限幅修正
+- 执行动作：
+  - 新增 `lookahead_dry_run_setpoint`
+  - 新增 `scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 运行 `bash -n scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 使用 require_escalated 权限运行 `scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 读取：
+    - `data/logs/lookahead_dry_run_topic_list_20260603_174110.log`
+    - `data/logs/lookahead_dry_run_state_echo_20260603_174110.log`
+    - `data/logs/lookahead_dry_run_candidate_echo_20260603_174110.log`
+    - `data/logs/lookahead_dry_run_path_echo_20260603_174110.log`
+- 结果：
+  - 构建成功
+  - dry-run debug topics 均出现
+  - 未出现 `/fmu/in/*` forbidden topic
+  - candidate setpoint topic 有输出
+  - dry-run state 为 `HOLD_CANDIDATE_JUMP`
+  - 观测到 `candidate_jump_m=20.0009`
+- 原因：
+  - 首版 dry-run 直接把 lookahead target 透传为 candidate setpoint
+  - 当前 lookahead target 采样间隔约 10m，且 topic echo 可能跨 target 抓样，导致 candidate jump 远超门限
+- 修正：
+  - 修改 `lookahead_dry_run_setpoint.cpp`
+  - candidate 不再直接透传 target
+  - candidate 按 `max_candidate_jump_m` 和 `max_candidate_speed_mps * dt` 向 target 渐进
+  - 当前仍只发布 `/zcw/cable/dry_run/*`，不发布 PX4 topic
+- 下一步：
+  - 重新构建并重跑 dry-run smoke
+- 阻塞项：无
+
+### 2026-06-03 17:44:01 CST
+
+- 节点：只读 dry-run candidate setpoint 第二次 smoke 输出已达标但脚本截断失败
+- 执行动作：
+  - 将 smoke 脚本默认门限恢复为：
+    - `MAX_CANDIDATE_JUMP_M=5.0`
+    - `MAX_CANDIDATE_SPEED_MPS=5.0`
+  - 运行 `bash -n scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 使用 require_escalated 权限运行 `scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 读取：
+    - `data/logs/lookahead_dry_run_state_echo_20260603_174401.log`
+    - `data/logs/lookahead_dry_run_candidate_echo_20260603_174401.log`
+    - `data/logs/lookahead_dry_run_path_echo_20260603_174401.log`
+    - `data/logs/lookahead_dry_run_topic_list_20260603_174401.log`
+- 结果：
+  - dry-run state 已达到 `TRACK_READY`
+  - `candidate_jump_m=1.00015`
+  - `candidate_vertical_jump_m=0.00557822`
+  - `candidate_speed_mps=5`
+  - candidate setpoint 和 dry-run path 均有输出
+  - topic list 中没有 `/fmu/in/*`
+  - 脚本仍退出码为 1
+- 原因：
+  - `ros2 topic echo` 默认截断长 `std_msgs/String`
+  - `publishes_px4=false` 被截断为 `publishe...`
+  - 脚本 grep 不到完整安全标记
+- 修正：
+  - 修改脚本，state echo 使用 `ros2 topic echo --full-length --once`
+- 下一步：
+  - 重新运行 dry-run smoke
+- 阻塞项：无
+
+### 2026-06-03 17:45:38 CST
+
+- 节点：只读 dry-run candidate setpoint smoke 通过
+- 执行动作：
+  - 运行 `bash -n scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 运行 `git diff --check`
+  - 使用 require_escalated 权限运行 `scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 读取：
+    - `data/logs/lookahead_dry_run_state_echo_20260603_174508.log`
+    - `data/logs/lookahead_dry_run_candidate_echo_20260603_174508.log`
+    - `data/logs/lookahead_dry_run_path_echo_20260603_174508.log`
+    - `data/logs/lookahead_dry_run_topic_list_20260603_174508.log`
+    - `data/logs/lookahead_dry_run_forbidden_topics_20260603_174508.log`
+  - 检查残留进程：
+    - `lookahead_path_publisher`
+    - `lookahead_safety_monitor`
+    - `lookahead_dry_run_setpoint`
+    - `rviz2`
+    - `static_transform_publisher`
+    - `gzserver/gzclient/px4/gazebo/pcl_viewer`
+- 结果：
+  - dry-run smoke 退出码为 0
+  - dry-run state：`TRACK_READY`
+  - `target_to_path_m=0`
+  - `candidate_jump_m=1.99995`
+  - `candidate_vertical_jump_m=0.0105846`
+  - `candidate_speed_mps=5`
+  - `publishes_px4=false`
+  - candidate setpoint 样本：
+    - `x=-41.816705134089204`
+    - `y=11.7591`
+    - `z=41.52087241063747`
+  - dry-run path 有 poses 输出
+  - topic list 只包含 `/zcw/cable/*`、`/rosout` 和 `/parameter_events`
+  - forbidden `/fmu/in/*` topic 日志大小为 0
+  - 未发现 ROS/Gazebo/PX4/PCL 残留进程
+- 结论：
+  - 只读 dry-run candidate setpoint 通过 smoke
+  - 当前仍未引入 PX4 消息依赖，未发布 PX4 input topic
+- 下一步：
+  - 更新 RUNBOOK、脚本索引、电缆计划、dry-run gate 和资产索引
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

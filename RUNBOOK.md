@@ -532,6 +532,30 @@ last_target_jump_m: 10.0005
 safety_gate: true
 ```
 
+只读 dry-run candidate setpoint smoke：
+
+```bash
+scripts/verify_lookahead_dry_run_setpoint.sh
+```
+
+最新审核证据：
+
+```text
+state_echo: data/logs/lookahead_dry_run_state_echo_20260603_174508.log
+candidate_echo: data/logs/lookahead_dry_run_candidate_echo_20260603_174508.log
+path_echo: data/logs/lookahead_dry_run_path_echo_20260603_174508.log
+topic_list: data/logs/lookahead_dry_run_topic_list_20260603_174508.log
+forbidden_topics: data/logs/lookahead_dry_run_forbidden_topics_20260603_174508.log
+dry_run_state: TRACK_READY
+target_to_path_m: 0
+candidate_jump_m: 1.99995
+candidate_vertical_jump_m: 0.0105846
+candidate_speed_mps: 5
+publishes_px4: false
+candidate_sample: x=-41.816705134089204, y=11.7591, z=41.52087241063747
+forbidden_fmu_in_topics: none
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -575,8 +599,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 按 `docs/03_cable_px4_dry_run_gate.md` 实现只读 dry-run candidate setpoint，不发布 PX4 topic。
-2. dry-run evidence 通过后，再讨论是否接 PX4 Offboard，不能跳过安全门限。
+1. 为 dry-run candidate setpoint 增加 RViz overlay 截图，不启动 Gazebo/PX4。
+2. RViz dry-run 证据通过后，再讨论 PX4 Offboard dry-run 与真实 PX4 topic 的隔离验证。
 3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。
