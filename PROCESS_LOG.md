@@ -1403,6 +1403,31 @@
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
 
+### 2026-06-03 16:59:08 CST
+
+- 节点：offset path 连续性审核提交与推送
+- 执行动作：
+  - 提交 `522d7da`：`Add offset path continuity audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已从 `8edbad4` 更新到 `522d7da`
+  - 提交内容包括：
+    - `offset_path_audit`
+    - `scripts/audit_offset_path.sh`
+    - `zcw_cable_perception` CMake 集成
+    - offset path 连续性审核证据索引
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+  - 本次提交未包含 `data/` 下的审核 CSV、中心线/offset CSV、拟合 CSV、仿真日志、截图或 PCD 证据文件；证据保留在本地工作区
+- 下一步：
+  - 提交并推送本条进程记录
+  - 后续进入只读 lookahead target 烟测
+- 阻塞项：无
+
 ### 2026-06-03 14:14:31 CST
 
 - 节点：中心线/offset path 烟测提交与推送
