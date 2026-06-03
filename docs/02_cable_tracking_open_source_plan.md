@@ -203,10 +203,21 @@
      - target echo：`data/logs/lookahead_target_echo_20260603_170640.log`
    - 结果：`group='y8_z20'`，offset path `13` 点，lookahead target `11` 点
    - 审核结论：只读 ROS topic 发布已通过；当前仍不接 PX4 setpoint。
+23. RViz lookahead overlay 截图审核：
+   - 工具：`rviz2` + `tf2_ros static_transform_publisher`
+   - 验证：`scripts/capture_lookahead_rviz_overlay.sh`
+   - 配置：`ros2_ws/src/zcw_cable_perception/rviz/lookahead_overlay.rviz`
+   - 输出截图：`data/screenshots/lookahead_rviz_overlay_20260603_171401.png`
+   - 最新日志：
+     - publisher：`data/logs/lookahead_rviz_publisher_20260603_171401.log`
+     - RViz：`data/logs/lookahead_rviz_20260603_171401.log`
+     - static TF：`data/logs/lookahead_rviz_static_tf_20260603_171401.log`
+   - 结果：RViz Global Status 为 OK，`Offset Path` 和 `Lookahead Target` display 均为 OK
+   - 审核结论：绿色 offset path 和红色 lookahead target 点可视化证据达标；当前仍不接 PX4 setpoint。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic 发布已通过。下一步不是接飞控，而是 RViz 可视化。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic 发布与 RViz overlay 均已通过。下一步不是接飞控，而是只读状态机安全门限。
 
 ## 2. 采用的成熟开源组件
 
@@ -399,6 +410,14 @@ scripts/verify_lookahead_topic_publish.sh
 
 该入口启动 `lookahead_path_publisher`，读取已审核 CSV，并发布 `/zcw/cable/offset_path` 与 `/zcw/cable/lookahead_target`。该入口不接 PX4、不发布 setpoint。
 
+已新增 RViz lookahead overlay 截图入口：
+
+```bash
+scripts/capture_lookahead_rviz_overlay.sh
+```
+
+该入口启动只读 publisher、static TF 和 RViz2，加载 `lookahead_overlay.rviz`，并保存真实 RViz 截图。该入口不启动 Gazebo、不接 PX4、不发布 setpoint。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -504,7 +523,7 @@ scripts/verify_lookahead_topic_publish.sh
 
 ## 10. 下一个执行节点
 
-1. 补 RViz overlay 显示 offset path 和 lookahead point。
-2. RViz 可视化稳定后，再讨论是否接入 PX4 Offboard，不能跳过安全门限。
-3. 若接 PX4，必须先做只读状态机安全门限，不直接从 topic 接 setpoint。
+1. 为 lookahead topic 增加只读状态机安全门限，不接 PX4 闭环。
+2. 状态机安全门限稳定后，再讨论是否接入 PX4 Offboard，不能跳过安全门限。
+3. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

@@ -15,3 +15,7 @@ Current executable:
 - `offset_path_audit`: offline CSV audit for offset paths. It checks group size, monotonic x ordering, segment length, curvature, and offset consistency before lookahead target generation.
 - `lookahead_target_audit`: offline CSV audit for read-only lookahead target generation. It checks target distance bounds and monotonic target index before any ROS topic or PX4 setpoint integration.
 - `lookahead_path_publisher`: read-only ROS 2 publisher for audited offset path and lookahead target CSV files. It publishes `nav_msgs/Path` and `geometry_msgs/PointStamped`; it does not publish PX4 setpoints.
+
+RViz:
+
+- `rviz/lookahead_overlay.rviz`: displays `/zcw/cable/offset_path` and `/zcw/cable/lookahead_target` for read-only visual inspection.

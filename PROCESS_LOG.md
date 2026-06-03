@@ -2245,3 +2245,136 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 RViz overlay 验证节点，不接 PX4 闭环
 - 阻塞项：无
+
+### 2026-06-03 17:11:00 CST
+
+- 节点：RViz lookahead overlay 验证开始
+- 执行动作：
+  - 检查 `rviz2`：`/opt/ros/humble/bin/rviz2`
+  - 检查截图工具：`/usr/bin/import`
+  - 检查 `DISPLAY=:1`
+- 目标：
+  - 新增 RViz 配置显示 `/zcw/cable/offset_path`
+  - 新增 RViz 配置显示 `/zcw/cable/lookahead_target`
+  - 新增截图脚本，保存真实 RViz 截图到 `data/screenshots/`
+- 边界：
+  - 不启动 Gazebo
+  - 不接 PX4 Offboard
+  - 不发布 setpoint
+- 下一步：
+  - 新增 RViz config 和 capture 脚本
+  - 运行 RViz overlay 截图 smoke
+- 阻塞项：无
+
+### 2026-06-03 17:12:00 CST
+
+- 节点：RViz lookahead overlay 首次截图通过但证据质量不足
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_cable_perception/rviz/lookahead_overlay.rviz`
+  - 新增 `scripts/capture_lookahead_rviz_overlay.sh`
+  - 运行 `bash -n scripts/capture_lookahead_rviz_overlay.sh`
+  - 运行 `git diff --check`
+  - 使用 require_escalated 权限运行 `scripts/capture_lookahead_rviz_overlay.sh`
+  - 查看截图 `data/screenshots/lookahead_rviz_overlay_20260603_171129.png`
+- 结果：
+  - 脚本退出码为 0
+  - publisher 加载 `group='y8_z20'`，`13` 个 path points，`11` 个 targets
+  - RViz 日志显示 OpenGL 正常
+  - 截图文件为 `5120x1600` PNG
+  - 视觉审核发现：
+    - 截图截取了整个桌面，RViz 只占左侧小窗口
+    - RViz Global Status 有 fixed frame/TF 提示
+    - 路径/目标点可见但证据不够清晰
+- 修正：
+  - 更新截图脚本，启动 `tf2_ros static_transform_publisher world map`
+  - 更新截图脚本，优先用 `xwininfo` 查找 RViz 窗口 ID 并只截 RViz 窗口
+- 下一步：
+  - 重跑 RViz overlay 截图
+- 阻塞项：无
+
+### 2026-06-03 17:13:05 CST
+
+- 节点：RViz 窗口截图脚本 SIGPIPE 失败与修正
+- 执行动作：
+  - 使用 require_escalated 权限重跑 `scripts/capture_lookahead_rviz_overlay.sh`
+  - 检查残留进程：
+    - `rviz2`
+    - `lookahead_path_publisher`
+    - `static_transform_publisher`
+- 结果：
+  - 脚本退出码为 `141`
+  - 未发现 RViz/publisher/static TF 残留进程
+  - 本轮产生日志：
+    - `data/logs/lookahead_rviz_20260603_171305.log`
+    - `data/logs/lookahead_rviz_static_tf_20260603_171305.log`
+    - `data/logs/lookahead_rviz_publisher_20260603_171305.log`
+- 原因：
+  - `xwininfo -root -tree | awk '/RViz/ {print $1; exit}'` 在 `set -o pipefail` 下触发 SIGPIPE
+  - `awk` 找到第一条 RViz window 后提前退出，`xwininfo` 收到 SIGPIPE
+- 修正：
+  - 在窗口 ID 查找前临时 `set +o pipefail`
+  - 查找结束后恢复 `set -o pipefail`
+- 下一步：
+  - 再次重跑 RViz overlay 截图
+- 阻塞项：无
+
+### 2026-06-03 17:14:39 CST
+
+- 节点：RViz lookahead overlay 截图审核通过
+- 执行动作：
+  - 运行 `bash -n scripts/capture_lookahead_rviz_overlay.sh`
+  - 运行 `git diff --check`
+  - 使用 require_escalated 权限运行 `scripts/capture_lookahead_rviz_overlay.sh`
+  - 读取：
+    - `data/logs/lookahead_rviz_publisher_20260603_171401.log`
+    - `data/logs/lookahead_rviz_20260603_171401.log`
+    - `data/logs/lookahead_rviz_static_tf_20260603_171401.log`
+  - 查看截图：`data/screenshots/lookahead_rviz_overlay_20260603_171401.png`
+  - 检查残留进程：
+    - `rviz2`
+    - `lookahead_path_publisher`
+    - `static_transform_publisher`
+    - `gzserver/gzclient/px4/gazebo/pcl_viewer`
+- 结果：
+  - 截图脚本退出码为 0
+  - publisher 加载 `group='y8_z20'`，`13` 个 path points，`11` 个 targets
+  - RViz OpenGL 正常
+  - static TF 正常发布 `world -> map`
+  - 截图文件为 `2490x1522` PNG
+  - 视觉审核：
+    - RViz Global Status 为 OK
+    - `Offset Path` display 为 OK
+    - `Lookahead Target` display 为 OK
+    - 绿色 offset path 和红色 lookahead target 点在 RViz 中清晰可见
+  - 未发现 RViz、publisher、static TF、Gazebo、PX4 或 PCL Viewer 残留进程
+- 结论：
+  - RViz overlay 证据达标
+  - 当前仍未接 PX4 Offboard 或 setpoint
+- 下一步：
+  - 更新 RUNBOOK、脚本索引、电缆计划和资产索引
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无
+
+### 2026-06-03 17:16:00 CST
+
+- 节点：RViz lookahead overlay 文档同步与构建复核
+- 执行动作：
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `scripts/README.md`
+  - 更新 `ros2_ws/src/zcw_cable_perception/README.md`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 更新 `ros2_ws/src/zcw_cable_perception/CMakeLists.txt`，安装 `rviz/` 配置目录
+  - 运行 `bash -n scripts/capture_lookahead_rviz_overlay.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - 构建只出现既有 PCL/conda runtime path warning
+  - `data/` 下截图和日志仍只作为本地 evidence，不提交进 git
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无
