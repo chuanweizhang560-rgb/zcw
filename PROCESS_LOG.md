@@ -1403,6 +1403,30 @@
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
 
+### 2026-06-03 14:14:31 CST
+
+- 节点：中心线/offset path 烟测提交与推送
+- 执行动作：
+  - 提交 `be115d3`：`Add offset path sampling audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已从 `c5ce7c3` 更新到 `be115d3`
+  - 提交内容包括：
+    - `catenary_fit_audit` 输出 centerline CSV 与 offset path CSV
+    - `scripts/audit_catenary_fit.sh` 的 `PATH_STEP_M`、`OFFSET_Y_M`、`OFFSET_Z_M` 参数
+    - 中心线/offset path 烟测证据索引
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+  - 本次提交未包含 `data/` 下的中心线/offset CSV、拟合 CSV、仿真日志、截图或 PCD 证据文件；证据保留在本地工作区
+- 下一步：
+  - 提交并推送本条进程记录
+  - 后续进入 offset path 连续性、曲率和步长审核
+- 阻塞项：无
+
 ### 2026-06-03 13:37:02 CST
 
 - 节点：Ceres/Eigen catenary 拟合审核提交与推送
