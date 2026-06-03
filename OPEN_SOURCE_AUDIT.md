@@ -314,3 +314,32 @@ uxrce_dds_client synchronized
 
 1. AerialCore world 引用了本机未安装的 MRS RViz camera synchronizer plugin。
 2. 该 plugin 对静态风机/导线模型可见性不是核心依赖；当前先记录为警告，不自行改上游 world。
+
+## 11. 电缆几何离线管线实测记录
+
+采用来源：
+
+| 项 | 结果 |
+|---|---|
+| 点云线模型 | PCL `SACSegmentation<SACMODEL_LINE>` / `ExtractIndices` |
+| 曲线拟合 | Ceres Solver + Eigen |
+| 路径跟踪思想 | Nav2 Regulated Pure Pursuit lookahead 思路 |
+| 本仓库边界 | 只做离线 CSV 审核和薄封装，不发布 PX4 setpoint |
+
+最新实测范围：
+
+1. 高空 wire-band ROI 多线 RANSAC 已通过真实仿真 motion smoke。
+2. 多线候选已通过 `GROUP_MODE=yz` 与 `Z_BIN_SIZE=2.0` 分组、Ceres/Eigen catenary 输入烟测。
+3. offset path 已通过步长、曲率、x 单调性和偏移一致性审核。
+4. lookahead target 已通过离线审核：`groups=5`、`accepted_groups=5`、`targets=55`、`decision=accepted_lookahead_target_smoke`。
+
+最新证据：
+
+1. lookahead summary：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_20260603_165501.txt`
+2. lookahead target CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv`
+3. lookahead group CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_groups_20260603_165501.csv`
+
+注意：
+
+1. 当前 lookahead target 是只读离线证据，不代表无人机已经沿导线运动。
+2. 下一步只能先做 ROS topic/RViz 可视化，不能直接跳到 PX4 闭环。

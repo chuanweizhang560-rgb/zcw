@@ -177,10 +177,20 @@
    - groups CSV：`data/results/offset_path_audit_20260603_143000/depth_camera_motion_offset_path_audit_groups_20260603_164538.csv`
    - 结果：`points=65`，`groups=5`，`accepted_groups=5`，`decision=accepted_offset_path_smoke`
    - 审核结论：offset path 通过步长、曲率、x 单调性和偏移一致性审核；该结果仍不接 PX4，不发布 ROS topic。
+21. 只读 lookahead target 离线审核：
+   - 工具：`lookahead_target_audit`
+   - 验证：`scripts/audit_lookahead_target.sh`
+   - 输入：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_offset_path_20260603_125948.csv`
+   - 参数：`LOOKAHEAD_M=20.0`，`MIN_TARGET_DISTANCE_M=15.0`，`MAX_TARGET_DISTANCE_M=25.0`
+   - summary：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_20260603_165501.txt`
+   - targets CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv`
+   - groups CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_groups_20260603_165501.csv`
+   - 结果：`groups=5`，`accepted_groups=5`，`targets=55`，`decision=accepted_lookahead_target_smoke`
+   - 审核结论：每个导线高度组都能从 offset path 生成连续、索引单调的前视目标点；该结果仍不接 PX4，不发布 ROS topic。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性审核的离线中心线/offset path。下一步不是接飞控，而是做只读 lookahead target。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。下一步不是接飞控，而是只读 ROS topic 发布和 RViz 可视化。
 
 ## 2. 采用的成熟开源组件
 
@@ -357,6 +367,14 @@ scripts/audit_offset_path.sh
 
 该入口读取 offset path CSV，检查每个 group 的点数、x 单调性、单段步长、曲率和 offset 一致性。该入口只输出 summary 和 group CSV，不发布 ROS setpoint。
 
+已新增只读 lookahead target 离线审核入口：
+
+```bash
+scripts/audit_lookahead_target.sh
+```
+
+该入口读取通过连续性审核的 offset path CSV，按每个路径点寻找前视距离目标点，并检查 target 距离窗口和 target index 单调性。该入口只输出 summary、target CSV 和 group CSV，不发布 ROS setpoint。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -372,7 +390,7 @@ scripts/audit_offset_path.sh
 | tracking setpoint 频率 | `20 Hz` | 维持 PX4 Offboard |
 | 导线侧向巡检偏移 | `5 m` | 与工作流默认一致 |
 | 导线上方/下方偏移 | `2-5 m` | 按传感器可见性调整 |
-| lookahead distance | `8-15 m` | 初始纯跟踪前视距离 |
+| lookahead distance | `20 m` | 当前离线 offset path 的 10m 采样步长下，使用 20m 前视距离通过 smoke 审核 |
 | 最大 setpoint 步长 | `2-5 m` | 限制离散航点跳变 |
 
 ## 7. 验证顺序
@@ -462,7 +480,7 @@ scripts/audit_offset_path.sh
 
 ## 10. 下一个执行节点
 
-1. 基于通过审核的 offset path 生成只读 lookahead target 烟测。
-2. lookahead target 稳定后，再考虑 ROS topic 发布，不直接接 PX4 闭环。
-3. ROS topic 发布稳定后，再讨论是否接入 PX4 Offboard，不能跳过安全门限。
+1. 把通过审核的 lookahead target 生成逻辑封装为只读 ROS topic 发布，不直接接 PX4 闭环。
+2. ROS topic 发布稳定后，补 RViz overlay 显示 offset path 和 lookahead point。
+3. ROS/RViz 可视化稳定后，再讨论是否接入 PX4 Offboard，不能跳过安全门限。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

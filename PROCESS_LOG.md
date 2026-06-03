@@ -2024,3 +2024,60 @@
 - 下一步：
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
+
+### 2026-06-03 16:53:31 CST
+
+- 节点：lookahead target 离线审核工具接入开始
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_cable_perception/src/lookahead_target_audit.cpp`
+  - 更新 `ros2_ws/src/zcw_cable_perception/CMakeLists.txt`，接入 `lookahead_target_audit`
+  - 新增 `scripts/audit_lookahead_target.sh`
+- 目标：
+  - 读取已通过连续性审核的 offset path CSV
+  - 按每个路径点查找前视距离目标点
+  - 输出 target CSV 与 group audit CSV
+  - 检查 target 距离窗口和 target index 单调性
+- 注意：
+  - 当前节点仍是离线审核，不启动 Gazebo/PX4
+  - 只验证线缆规则 baseline 的路径跟踪输入，不进入无人机真实运动控制
+- 下一步：
+  - 运行脚本语法检查、构建检查和 lookahead target 审核
+- 阻塞项：无
+
+### 2026-06-03 16:55:01 CST
+
+- 节点：lookahead target 离线审核通过
+- 执行动作：
+  - 运行 `bash -n scripts/audit_lookahead_target.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 运行：
+    - `OUTPUT_DIR=data/results/lookahead_target_audit_20260603_165600`
+    - `OUTPUT_PREFIX=depth_camera_motion_lookahead_target_audit`
+    - `LOOKAHEAD_M=20.0`
+    - `MIN_TARGET_DISTANCE_M=15.0`
+    - `MAX_TARGET_DISTANCE_M=25.0`
+    - `scripts/audit_lookahead_target.sh`
+  - 检查 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - lookahead 审核退出码为 0
+  - summary：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_20260603_165501.txt`
+  - targets CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv`
+  - groups CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_groups_20260603_165501.csv`
+  - `groups=5`
+  - `accepted_groups=5`
+  - `targets=55`
+  - `decision=accepted_lookahead_target_smoke`
+  - 每组 target 距离约 `20.0-20.0012m`
+  - 每组 `monotonic_target_index=true`
+  - 未发现仿真或 PCL Viewer 残留进程
+- 结论：
+  - 已能从离线 offset path 生成可审核的只读 lookahead target
+  - 当前仍未接 ROS topic、RViz 或 PX4 setpoint
+- 下一步：
+  - 更新文档、脚本索引和资产索引
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

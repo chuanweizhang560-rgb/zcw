@@ -13,3 +13,4 @@ Current executable:
 - `multiline_candidate_consistency_audit`: offline CSV audit for multiline candidates. It checks direction/span gates and cross-frame grouping before a candidate set can be used as catenary/spline input evidence. It supports `y`, `z`, and `yz` grouping modes.
 - `catenary_fit_audit`: offline CSV audit that groups accepted line candidates, fits catenary curves with Ceres, computes a quadratic reference with Eigen, and writes fit/sample/centerline/offset-path CSV evidence.
 - `offset_path_audit`: offline CSV audit for offset paths. It checks group size, monotonic x ordering, segment length, curvature, and offset consistency before lookahead target generation.
+- `lookahead_target_audit`: offline CSV audit for read-only lookahead target generation. It checks target distance bounds and monotonic target index before any ROS topic or PX4 setpoint integration.

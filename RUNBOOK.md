@@ -443,6 +443,31 @@ max_curvature_observed: 0.000101
 max_offset_error_observed_m: 0
 ```
 
+PX4 depth camera 高空 wire-band ROI lookahead target 离线审核：
+
+```bash
+OUTPUT_DIR=data/results/lookahead_target_audit_20260603_165600 \
+OUTPUT_PREFIX=depth_camera_motion_lookahead_target_audit \
+LOOKAHEAD_M=20.0 \
+MIN_TARGET_DISTANCE_M=15.0 \
+MAX_TARGET_DISTANCE_M=25.0 \
+scripts/audit_lookahead_target.sh
+```
+
+最新审核证据：
+
+```text
+summary: data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_20260603_165501.txt
+targets_csv: data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv
+groups_csv: data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_groups_20260603_165501.csv
+groups: 5
+accepted_groups: 5
+targets: 55
+decision: accepted_lookahead_target_smoke
+target_distance_range_m: 20 to 20.0012
+monotonic_target_index: true
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -486,8 +511,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 基于通过审核的 offset path 生成只读 lookahead target 烟测。
-2. lookahead target 稳定后，再考虑 ROS topic 发布，不直接接 PX4 闭环。
+1. 把通过审核的 lookahead target 生成逻辑封装为只读 ROS topic 发布，不直接接 PX4 闭环。
+2. ROS topic 稳定后，再考虑 RViz 可视化 lookahead point 和 offset path。
 3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。
