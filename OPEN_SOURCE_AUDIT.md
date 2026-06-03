@@ -353,3 +353,4 @@ uxrce_dds_client synchronized
 
 1. 当前 lookahead target 是只读离线证据，不代表无人机已经沿导线运动。
 2. 下一步只能先做 PX4 Offboard dry-run 方案和验收门限，不能直接跳到完整闭环。
+3. dry-run 门限已在 `docs/03_cable_px4_dry_run_gate.md` 中定义；该文档明确禁止 dry-run 发布 PX4 input topic。

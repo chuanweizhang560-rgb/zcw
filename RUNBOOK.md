@@ -575,8 +575,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 设计 PX4 Offboard 接入前的电缆跟踪状态机文档和验收门限。
-2. 状态机验收门限明确后，再做 PX4 Offboard dry-run，不直接飞完整闭环。
+1. 按 `docs/03_cable_px4_dry_run_gate.md` 实现只读 dry-run candidate setpoint，不发布 PX4 topic。
+2. dry-run evidence 通过后，再讨论是否接 PX4 Offboard，不能跳过安全门限。
 3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。

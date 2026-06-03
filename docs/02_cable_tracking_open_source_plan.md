@@ -547,7 +547,7 @@ scripts/verify_lookahead_safety_monitor.sh
 
 ## 10. 下一个执行节点
 
-1. 设计 PX4 Offboard 接入前的电缆跟踪状态机文档和验收门限。
-2. 状态机验收门限明确后，再做 PX4 Offboard dry-run，不直接飞完整闭环。
+1. 按 `docs/03_cable_px4_dry_run_gate.md` 实现只读 dry-run candidate setpoint，不发布 PX4 topic。
+2. dry-run evidence 通过后，再讨论是否接 PX4 Offboard，不能跳过安全门限。
 3. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

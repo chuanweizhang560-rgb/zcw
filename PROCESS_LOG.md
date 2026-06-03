@@ -2503,3 +2503,45 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 PX4 Offboard dry-run 方案和验收门限文档节点
 - 阻塞项：无
+
+### 2026-06-03 17:30:00 CST
+
+- 节点：PX4 Offboard dry-run 方案和验收门限文档开始
+- 执行动作：
+  - 确认仓库干净
+  - 准备新增电缆 lookahead 到 PX4 dry-run 的安全接入文档
+- 目标：
+  - 明确只读状态机之后、PX4 setpoint 之前的验收门限
+  - 明确 dry-run 只允许记录目标/状态，不允许控制飞机
+  - 明确真正闭环前必须具备的停机、限幅、丢失保持和截图证据
+- 下一步：
+  - 新增 `docs/03_cable_px4_dry_run_gate.md`
+  - 更新 RUNBOOK 和电缆计划索引
+- 阻塞项：无
+
+### 2026-06-03 17:32:00 CST
+
+- 节点：PX4 Offboard dry-run 方案和验收门限文档完成
+- 执行动作：
+  - 新增 `docs/03_cable_px4_dry_run_gate.md`
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+- 结果：
+  - 文档明确 dry-run 只能输出 `/zcw/cable/dry_run/*`
+  - 文档明确 dry-run 禁止发布：
+    - `/fmu/in/trajectory_setpoint`
+    - `/fmu/in/offboard_control_mode`
+    - `/fmu/in/vehicle_command`
+  - 文档明确 PX4 接入前必须先通过：
+    - safety gate
+    - target/path freshness
+    - target-to-path distance
+    - target jump
+    - candidate setpoint jump
+    - RViz 截图
+    - forbidden PX4 topic absence check
+- 下一步：
+  - 运行文档/格式检查
+  - 提交并推送本阶段文档和进程记录
+- 阻塞项：无
