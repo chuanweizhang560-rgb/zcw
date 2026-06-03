@@ -1403,6 +1403,31 @@
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
 
+### 2026-06-03 13:37:02 CST
+
+- 节点：Ceres/Eigen catenary 拟合审核提交与推送
+- 执行动作：
+  - 提交 `e71431c`：`Add catenary fit audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已从 `95cac51` 更新到 `e71431c`
+  - 提交内容包括：
+    - `catenary_fit_audit`
+    - `scripts/audit_catenary_fit.sh`
+    - `zcw_cable_perception` CMake Ceres/Eigen 集成
+    - Ceres/Eigen 拟合烟测证据索引
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+  - 本次提交未包含 `data/` 下的拟合 CSV、仿真日志、截图或 PCD 证据文件；证据保留在本地工作区
+- 下一步：
+  - 提交并推送本条进程记录
+  - 后续进入中心线采样 CSV 与 Frenet offset path 烟测
+- 阻塞项：无
+
 ### 2026-06-03 13:04:22 CST
 
 - 节点：高度层分组审核提交与推送
