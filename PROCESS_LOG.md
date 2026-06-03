@@ -2918,3 +2918,68 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 Phase A bridge dry-run 实现节点，仍不启动 Gazebo/PX4，不发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-03 18:14:00 CST
+
+- 节点：Phase A PX4 bridge dry-run 实现开始
+- 执行动作：
+  - 确认仓库干净
+  - 准备在 `zcw_px4_baseline` 中新增 Phase A debug bridge
+- 目标：
+  - 订阅 `/zcw/cable/dry_run/state`
+  - 订阅 `/zcw/cable/dry_run/candidate_setpoint`
+  - 发布 `/zcw/cable/px4_bridge/state`
+  - 发布 `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
+  - 不发布 `/fmu/in/*`
+  - 不启动 Gazebo/PX4
+- 下一步：
+  - 新增源码、CMake 入口和验证脚本
+- 阻塞项：无
+
+### 2026-06-03 19:08:44 CST
+
+- 节点：Phase A PX4 bridge dry-run isolation smoke 通过
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_px4_baseline/src/cable_px4_bridge_dry_run.cpp`
+  - 更新 `ros2_ws/src/zcw_px4_baseline/CMakeLists.txt`
+  - 更新 `ros2_ws/src/zcw_px4_baseline/package.xml`
+  - 新增 `scripts/verify_px4_bridge_dry_run_isolation.sh`
+  - 运行 `bash -n scripts/verify_px4_bridge_dry_run_isolation.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src third_party/px4_msgs --packages-select px4_msgs zcw_cable_perception zcw_px4_baseline`
+  - 使用 require_escalated 权限运行 `scripts/verify_px4_bridge_dry_run_isolation.sh`
+  - 读取：
+    - `data/logs/px4_bridge_dry_run_state_echo_20260603_190805.log`
+    - `data/logs/px4_bridge_dry_run_ned_echo_20260603_190805.log`
+    - `data/logs/px4_bridge_dry_run_topic_list_20260603_190805.log`
+    - `data/logs/px4_bridge_dry_run_forbidden_topics_20260603_190805.log`
+  - 检查残留进程：
+    - `lookahead_path_publisher`
+    - `lookahead_safety_monitor`
+    - `lookahead_dry_run_setpoint`
+    - `cable_px4_bridge_dry_run`
+    - `rviz2`
+    - `static_transform_publisher`
+    - `gzserver/gzclient/px4/gazebo/pcl_viewer`
+- 结果：
+  - 构建成功
+  - Phase A bridge smoke 退出码为 0
+  - bridge state：`DRY_RUN_READY`
+  - `phase=PHASE_A_DRY_RUN`
+  - `publishes_fmu_in=false`
+  - `map_to_ned=debug_x_y_neg_z`
+  - NED dry-run setpoint：
+    - frame：`px4_local_ned_dry_run`
+    - `x=-48.8198330876827`
+    - `y=11.7591`
+    - `z=-41.4620108793388`
+  - topic list 未出现 `/fmu/in/*`
+  - forbidden `/fmu/in/*` topic 日志大小为 0
+  - 未发现 ROS/Gazebo/PX4/PCL 残留进程
+- 结论：
+  - Phase A bridge dry-run isolation 通过
+  - 当前仍未启动 Gazebo/PX4，未发布 PX4 input topic
+- 下一步：
+  - 更新 RUNBOOK、脚本索引、电缆计划、bridge 计划和资产索引
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

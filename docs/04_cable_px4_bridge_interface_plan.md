@@ -2,7 +2,19 @@
 
 This document defines the planned boundary for a future cable dry-run to PX4 Offboard bridge.
 
-No bridge code is implemented in this step.
+Phase A bridge code is implemented only as a dry-run/debug bridge. It does not publish PX4 input topics.
+
+Current Phase A status:
+
+- `cable_px4_bridge_dry_run` implemented in `zcw_px4_baseline`.
+- It publishes only:
+  - `/zcw/cable/px4_bridge/state`
+  - `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
+- Latest evidence:
+  - bridge state: `DRY_RUN_READY`
+  - `publishes_fmu_in=false`
+  - NED frame: `px4_local_ned_dry_run`
+  - forbidden `/fmu/in/*` topics: none
 
 ## 1. Package Boundary
 
@@ -103,7 +115,7 @@ Phase A must never arm the vehicle.
 
 ## 6. Required Verification Script
 
-The next code node may add:
+Implemented verification script:
 
 ```bash
 scripts/verify_px4_bridge_dry_run_isolation.sh
@@ -121,6 +133,13 @@ Required behavior:
 8. Confirm `/fmu/in/offboard_control_mode` is absent.
 9. Confirm `/fmu/in/vehicle_command` is absent.
 10. Confirm no Gazebo/PX4 process is required for this Phase A isolation test.
+
+Latest Phase A evidence:
+
+- bridge state echo: `data/logs/px4_bridge_dry_run_state_echo_20260603_190805.log`
+- NED dry-run echo: `data/logs/px4_bridge_dry_run_ned_echo_20260603_190805.log`
+- topic list: `data/logs/px4_bridge_dry_run_topic_list_20260603_190805.log`
+- forbidden topic log: `data/logs/px4_bridge_dry_run_forbidden_topics_20260603_190805.log`
 
 ## 7. Acceptance Criteria
 
@@ -143,3 +162,7 @@ This phase does not:
 4. publish Offboard heartbeat.
 5. publish PX4 trajectory setpoints.
 6. claim that the drone can follow the cable.
+
+## 9. Next Node
+
+The next node should add RViz overlay evidence for the Phase A bridge dry-run setpoint. It must still avoid Gazebo/PX4 startup and must still confirm that `/fmu/in/*` topics are absent.

@@ -284,10 +284,23 @@
      - Phase A bridge 禁止发布 `/fmu/in/vehicle_command`
      - `map.z -> ned.z=-map.z` 仅允许作为 Phase A debug transform，不能直接作为闭环飞行依据
    - 审核结论：下一步可实现 Phase A bridge dry-run，但仍不能启动 Gazebo/PX4 或发布 `/fmu/in/*`。
+29. PX4 Phase A bridge dry-run isolation smoke：
+   - 工具：`cable_px4_bridge_dry_run`
+   - 验证：`scripts/verify_px4_bridge_dry_run_isolation.sh`
+   - 输出 topic：
+     - `/zcw/cable/px4_bridge/state`
+     - `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
+   - 最新日志：
+     - state：`data/logs/px4_bridge_dry_run_state_echo_20260603_190805.log`
+     - NED setpoint：`data/logs/px4_bridge_dry_run_ned_echo_20260603_190805.log`
+     - topic list：`data/logs/px4_bridge_dry_run_topic_list_20260603_190805.log`
+     - forbidden topics：`data/logs/px4_bridge_dry_run_forbidden_topics_20260603_190805.log`
+   - 结果：`DRY_RUN_READY`，`publishes_fmu_in=false`，NED frame 为 `px4_local_ned_dry_run`，未发现 `/fmu/in/*`
+   - 审核结论：Phase A bridge dry-run isolation 通过；当前仍未启动 Gazebo/PX4。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay 和 PX4 隔离审计均已通过。PX4 Offboard dry-run bridge 接口计划已定义。下一步可实现 Phase A bridge dry-run，但仍不能发布 `/fmu/in/*`。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay、PX4 隔离审计和 Phase A bridge dry-run isolation 均已通过。下一步不是启动 PX4/Gazebo，而是补 Phase A bridge RViz overlay 截图。
 
 ## 2. 采用的成熟开源组件
 
@@ -625,7 +638,7 @@ scripts/audit_px4_isolation.sh
 
 ## 10. 下一个执行节点
 
-1. 按 `docs/04_cable_px4_bridge_interface_plan.md` 实现 Phase A bridge dry-run，只发布 `/zcw/cable/px4_bridge/*`。
-2. Phase A bridge 验证必须确认没有 `/fmu/in/*` topic；通过后才能讨论 PX4/Gazebo 接入。
+1. 为 Phase A bridge dry-run 增加 RViz overlay 截图，不启动 Gazebo/PX4。
+2. RViz bridge 证据通过后，再设计带 PX4/Gazebo 的只读坐标系对齐验证；仍不能发布 setpoint。
 3. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
