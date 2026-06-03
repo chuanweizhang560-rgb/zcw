@@ -3197,3 +3197,22 @@
   - 提交并推送本阶段代码、脚本、文档和进程记录
   - 进入 Offboard 接入前 arming/hold/abort gate 设计节点
 - 阻塞项：无
+
+### 2026-06-03 19:45:10 CST
+
+- 节点：PX4/Gazebo 只读坐标采样提交与推送
+- 执行动作：
+  - 提交：`1e5cb50 Add PX4 Gazebo read-only frame audit`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `d2c0bb8` 更新到 `1e5cb50`
+  - 本次提交包含：
+    - `px4_gazebo_frame_alignment_audit`
+    - `scripts/verify_px4_gazebo_readonly_frame_alignment.sh`
+    - `zcw_px4_baseline` CMake/package/README 更新
+    - RUNBOOK、电缆计划、bridge 计划、脚本索引和 PROCESS_LOG 更新
+  - `data/` 下只读坐标采样结果和日志仍未提交
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 进入 Offboard 接入前 arming/hold/abort gate 设计节点
+- 阻塞项：无
