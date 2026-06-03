@@ -3072,3 +3072,21 @@
   - 提交并推送本阶段配置、脚本、文档和进程记录
   - 进入 PX4/Gazebo 只读坐标系对齐验证设计节点，仍不发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-03 19:21:10 CST
+
+- 节点：Phase A bridge RViz overlay 提交与推送
+- 执行动作：
+  - 提交：`2426aa3 Add PX4 bridge RViz overlay capture`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `949b3ba` 更新到 `2426aa3`
+  - 本次提交包含：
+    - `ros2_ws/src/zcw_cable_perception/rviz/px4_bridge_dry_run_overlay.rviz`
+    - `scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
+    - RUNBOOK、电缆计划、bridge 计划、脚本索引、包 README 和 PROCESS_LOG 更新
+  - `data/` 下 bridge RViz 截图和日志仍未提交
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 进入 PX4/Gazebo 只读坐标系对齐验证设计节点，仍不发布 `/fmu/in/*`
+- 阻塞项：无
