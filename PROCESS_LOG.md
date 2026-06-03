@@ -1427,3 +1427,122 @@
   - 提交并推送本条进程记录
   - 后续进入导线候选合并、方向一致性筛选和跨帧稳定性审核
 - 阻塞项：无
+
+### 2026-06-03 12:02:11 CST
+
+- 节点：导线多线候选一致性离线审核工具创建
+- 执行动作：
+  - 读取最新 motion 多线候选 CSV：
+    - `data/results/depth_camera_motion_ransac_20260603_111923/depth_camera_motion_multiline_ransac_world_lines_20260603_112105.csv`
+  - 发现候选 `dir_x` 与 `dir_y` 稳定，但 `dir_z` 约 `0.32-0.43`，且单条候选 `z` bbox 跨度较大
+  - 新增 `multiline_candidate_consistency_audit` 离线审核工具
+  - 新增 `scripts/audit_depth_camera_multiline_consistency.sh`
+- 设计边界：
+  - 本节点不接 PX4，不输出 setpoint，不做闭环追线
+  - 只读取上一轮真实仿真 CSV，做可复跑的几何一致性审核
+  - 审核逻辑用于挡掉明显不适合进入 catenary/spline 的候选，不替代 PCL/Ceres/Eigen 核心算法
+- 下一步：
+  - 编译 `zcw_cable_perception`
+  - 运行离线一致性审核
+  - 将结果写回 `PROCESS_LOG.md` 和执行文档
+- 阻塞项：无
+
+### 2026-06-03 12:08:43 CST
+
+- 节点：导线多线候选一致性离线审核结果
+- 执行动作：
+  - 运行 `bash -n scripts/audit_depth_camera_multiline_consistency.sh`
+  - 运行 `git diff --check`
+  - 编译 `zcw_cable_perception`
+  - 首次运行脚本发现可执行位缺失，执行 `chmod +x scripts/audit_depth_camera_multiline_consistency.sh`
+  - 第二次运行发现 ROS 2 `setup.bash` 与 `set -u` 不兼容，调整脚本为 source 后再启用 `set -u`
+  - 第三次运行离线一致性审核
+- 结果：
+  - `zcw_cable_perception` 构建成功，仅有既有 conda runtime path warning
+  - 审核输入：`data/results/depth_camera_motion_ransac_20260603_111923/depth_camera_motion_multiline_ransac_world_lines_20260603_112105.csv`
+  - 审核输出：`data/results/multiline_consistency_20260603_114006/depth_camera_motion_multiline_consistency_20260603_114007.txt`
+  - `total_candidates=18`
+  - `geometry_gate_candidates=0`
+  - `accepted_groups=0`
+  - `decision=rejected_for_catenary_input_smoke`
+  - 主要拒绝原因：
+    - 候选 `abs(dir_z)` 约 `0.318-0.436`
+    - 候选 `z_span` 约 `40.7-56.6m`
+    - 虽然 `dir_x` 稳定且 `dir_y` 很小，但该几何形态更像塔架斜边或大结构长边，不适合直接作为导线中心线输入
+- 结论：
+  - 上一轮 motion 多线 RANSAC 证明“线候选可见”，但一致性审核明确拒绝其进入 catenary/spline
+  - 该失败是有效安全门限，不是工具故障
+- 下一步：
+  - 用更严格的高空 wire-band world ROI 重新运行 motion 多线 RANSAC
+  - 优先缩小 `world_crop_z`，减少塔架/地面长边进入 RANSAC
+- 阻塞项：无
+
+### 2026-06-03 12:18:27 CST
+
+- 节点：高空 wire-band ROI 多线候选重跑与一致性通过
+- 执行动作：
+  - 重新运行真实仿真：
+    - `RANSAC_WORLD_CROP_MIN_Z=38.0`
+    - `RANSAC_WORLD_CROP_MAX_Z=62.0`
+    - `RANSAC_WORLD_CROP_MIN_Y=10.0`
+    - `RANSAC_WORLD_CROP_MAX_Y=24.0`
+    - `RANSAC_MIN_LINE_INLIERS=300`
+    - `RANSAC_MIN_LINES_PER_FRAME=1`
+    - `RANSAC_MAX_LINES=6`
+    - `RANSAC_FRAMES=3`
+    - `scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+  - 读取新的 summary、frame CSV 和 line CSV
+  - 使用 `INPUT_CSV=... scripts/audit_depth_camera_multiline_consistency.sh` 对新候选做一致性审核
+  - 使用 PCL Viewer 对 `frame_0_roi_world.pcd` 和 `frame_0_line_0_inliers_world.pcd` 截图
+- 结果：
+  - motion 多线 RANSAC 退出码为 0
+  - RANSAC 汇总：`data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_20260603_114312.txt`
+  - RANSAC line CSV：`data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_lines_20260603_114312.csv`
+  - 一致性审核汇总：`data/results/multiline_consistency_20260603_114337/depth_camera_motion_multiline_consistency_20260603_114337.txt`
+  - PCL 截图：`data/screenshots/pcd_ransac_frame0_20260603_114532_pcl_viewer_left.png`
+  - 3 帧全部通过，每帧 6 条候选，`failed_frames=0`
+  - `mean_world_roi_points=109907`
+  - 一致性审核：
+    - `total_candidates=18`
+    - `geometry_gate_candidates=18`
+    - `accepted_groups=1`
+    - `decision=accepted_for_catenary_input_smoke`
+  - 新候选几何特征：
+    - `abs(dir_z)` 约 `0.00004-0.00201`
+    - 单条候选 `z_span` 约 `0.58-0.82m`
+    - 单条候选 `x_span` 约 `122m`
+    - PCL 截图可见长水平线候选
+- 结论：
+  - 宽 ROI 会让塔架/斜向大结构进入 RANSAC，不能直接接 catenary
+  - 高空 wire-band ROI 可得到水平、跨帧稳定的导线候选，可作为 catenary/spline 输入烟测的上游数据
+  - 仍需注意：当前 18 条候选被 y-bin 合成 1 个稳定组，下一步需要按高度层或线路编号做分组，避免多根导线被合并成一个组
+- 下一步：
+  - 将高空 ROI 与一致性审核入口写入 `RUNBOOK.md`、电缆工作流、脚本索引和资产索引
+  - 继续做高度层分组或线路编号分组，再接 Ceres/Eigen catenary/spline
+- 阻塞项：无
+
+### 2026-06-03 12:27:36 CST
+
+- 节点：高空 ROI 一致性审核文档同步与构建复核
+- 执行动作：
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `scripts/README.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 更新 `ros2_ws/src/zcw_cable_perception/README.md`
+  - 运行脚本语法检查：
+    - `bash -n scripts/audit_depth_camera_multiline_consistency.sh`
+    - `bash -n scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 检查 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - 未发现仿真或 PCL Viewer 残留进程
+  - `data/` 下日志、截图、PCD 和 CSV 仍只作为本地证据，不提交进 git
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

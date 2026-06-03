@@ -50,11 +50,14 @@ ament_target_dependencies(pointcloud_pose_multiline_ransac_world_smoke
   pcl_conversions
 )
 
+add_executable(multiline_candidate_consistency_audit src/multiline_candidate_consistency_audit.cpp)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
   pointcloud_pose_line_ransac_world_smoke
   pointcloud_pose_multiline_ransac_world_smoke
+  multiline_candidate_consistency_audit
   DESTINATION lib/${PROJECT_NAME}
 )
 

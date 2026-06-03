@@ -10,3 +10,4 @@ Current executable:
 - `pointcloud_line_ransac_batch_smoke`: collects several PointCloud2 frames, optionally applies PCL CropBox, VoxelGrid and StatisticalOutlierRemoval, runs PCL `SACSegmentation` on each frame, and writes per-frame CSV plus a batch summary.
 - `pointcloud_pose_line_ransac_world_smoke`: subscribes to PointCloud2 plus `nav_msgs/msg/Odometry`, runs PCL RANSAC, and saves sensor-frame and world-frame PCD evidence using PCL `transformPointCloud`.
 - `pointcloud_pose_multiline_ransac_world_smoke`: subscribes to PointCloud2 plus `nav_msgs/msg/Odometry`, applies PCL CropBox in sensor/world frames, iteratively runs PCL `SACSegmentation` with `SACMODEL_LINE`, saves multiple line candidate PCDs, and writes frame/line CSV evidence.
+- `multiline_candidate_consistency_audit`: offline CSV audit for multiline candidates. It checks direction/span gates and cross-frame grouping before a candidate set can be used as catenary/spline input evidence.

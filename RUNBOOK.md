@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-03 11:28:16 CST
+更新时间：2026-06-03 12:18:27 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -37,6 +37,7 @@ PX4 官方 `iris_depth_camera` 已在 AerialCore 两塔导线 world + Gazebo GUI
 depth camera world-frame RANSAC 已完成静态地面审核；PointXYZ 兼容版本无 intensity 字段 warning，但 RANSAC inlier 呈大面积深度平面，不应视为导线识别结果。
 depth camera + 电缆 waypoint 运动组合审核已完成；无人机在 armed Offboard 状态飞到电缆 corridor 后，PCL 截图显示塔架/导线状结构进入点云视场，RANSAC 能提取线候选。该结果仍是 smoke test，不等同于导线实例识别或闭环追线完成。
 depth camera + 电缆 waypoint 运动多线候选审核已完成；`pointcloud_pose_multiline_ransac_world_smoke` 在 world-frame corridor ROI 内每帧抽取 6 条线候选，PCL 截图显示长连续线候选。该结果仍是 smoke test，不等同于导线实例识别、悬链线拟合或闭环追线完成。
+depth camera 高空 wire-band ROI 多线候选已通过一致性审核；宽 ROI 候选因 `dir_z` 和 `z_span` 过大被拒绝，高空 ROI 候选形成 1 个跨 3 帧稳定组，可作为 catenary/spline 输入烟测的上游数据。
 
 实测成功标志：
 
@@ -298,6 +299,39 @@ world_roi_max: 40 30 65
 decision: motion_depth_camera_multiline_candidates_visible_but_not_final_cable_tracking
 ```
 
+PX4 depth camera 高空 wire-band ROI 多线候选 RANSAC 与一致性审核：
+
+```bash
+RANSAC_WORLD_CROP_MIN_Z=38.0 \
+RANSAC_WORLD_CROP_MAX_Z=62.0 \
+RANSAC_WORLD_CROP_MIN_Y=10.0 \
+RANSAC_WORLD_CROP_MAX_Y=24.0 \
+RANSAC_MIN_LINE_INLIERS=300 \
+RANSAC_MIN_LINES_PER_FRAME=1 \
+RANSAC_MAX_LINES=6 \
+RANSAC_FRAMES=3 \
+scripts/verify_depth_camera_cable_motion_multiline_ransac.sh
+
+INPUT_CSV=data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_lines_20260603_114312.csv \
+scripts/audit_depth_camera_multiline_consistency.sh
+```
+
+最新审核证据：
+
+```text
+ransac_summary: data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_20260603_114312.txt
+ransac_line_csv: data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_lines_20260603_114312.csv
+consistency_summary: data/results/multiline_consistency_20260603_114337/depth_camera_motion_multiline_consistency_20260603_114337.txt
+consistency_groups_csv: data/results/multiline_consistency_20260603_114337/depth_camera_motion_multiline_consistency_groups_20260603_114337.csv
+pcd_screenshot: data/screenshots/pcd_ransac_frame0_20260603_114532_pcl_viewer_left.png
+world_roi_min: -120 10 38
+world_roi_max: 40 24 62
+total_candidates: 18
+geometry_gate_candidates: 18
+accepted_groups: 1
+decision: accepted_for_catenary_input_smoke
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -341,9 +375,9 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 将 motion 多线候选结果升级为候选合并、方向一致性筛选和跨帧稳定性审核。
-2. 在多线候选稳定后，接 Ceres/Eigen catenary/spline 和 Frenet offset path。
-3. 如果 depth camera 后续 ROI/多线候选仍不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
+1. 基于高空 wire-band ROI 的通过结果，增加高度层分组或线路编号分组，避免多根导线被 y-bin 合并成一个组。
+2. 高度层分组稳定后，接 Ceres/Eigen catenary/spline 和 Frenet offset path。
+3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。
 
