@@ -338,6 +338,7 @@ uxrce_dds_client synchronized
 8. 只读 dry-run candidate setpoint 已通过：`TRACK_READY`，`publishes_px4=false`，forbidden `/fmu/in/*` topic 为空。
 9. 只读 dry-run RViz overlay 已通过：Global Status、`Offset Path`、`Lookahead Target`、`Dry Run Path`、`Dry Run Candidate` 均为 OK，forbidden `/fmu/in/*` topic 为空。
 10. PX4 隔离审计已通过：`zcw_cable_perception` 不依赖 `px4_msgs`，不引用 PX4 message API，不发布 `/fmu/in/*`。
+11. PX4 Offboard dry-run bridge 接口计划已定义：Phase A 只允许 `/zcw/cable/px4_bridge/*` debug topics，不允许 `/fmu/in/*`。
 
 最新证据：
 
@@ -357,9 +358,10 @@ uxrce_dds_client synchronized
 14. dry-run RViz screenshot：`data/screenshots/lookahead_dry_run_rviz_overlay_20260603_175512.png`
 15. dry-run RViz forbidden topics：`data/logs/lookahead_dry_run_rviz_forbidden_topics_20260603_175512.log`
 16. PX4 isolation summary：`data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
+17. PX4 bridge interface plan：`docs/04_cable_px4_bridge_interface_plan.md`
 
 注意：
 
 1. 当前 lookahead target 是只读离线证据，不代表无人机已经沿导线运动。
-2. 下一步只能先做 PX4 Offboard dry-run bridge 接口计划，不能直接跳到完整闭环。
+2. 下一步只能先实现 PX4 Offboard Phase A bridge dry-run，且只能发布 `/zcw/cable/px4_bridge/*`。
 3. dry-run 门限已在 `docs/03_cable_px4_dry_run_gate.md` 中定义；该文档明确禁止 dry-run 发布 PX4 input topic。

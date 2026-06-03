@@ -2858,3 +2858,47 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 PX4 Offboard dry-run bridge 接口计划节点
 - 阻塞项：无
+
+### 2026-06-03 18:09:00 CST
+
+- 节点：PX4 Offboard dry-run bridge 接口计划开始
+- 执行动作：
+  - 确认仓库干净
+  - 读取 `docs/03_cable_px4_dry_run_gate.md`
+  - 读取 `ros2_ws/src/zcw_px4_baseline/README.md`
+  - 读取 `ros2_ws/src/zcw_px4_baseline/package.xml`
+  - 读取 `offboard_waypoint_sequence.cpp` 的发布 topic 和 PX4 消息类型
+- 结果：
+  - `zcw_px4_baseline` 是官方 PX4 示例派生包，依赖 `px4_msgs`
+  - `offboard_waypoint_sequence` 会发布 `/fmu/in/offboard_control_mode`、`/fmu/in/trajectory_setpoint`、`/fmu/in/vehicle_command`
+  - 因此 cable dry-run bridge 不能放入 `zcw_cable_perception`
+  - bridge 实现前必须先完成坐标系、topic 隔离、arming 禁止和 dry-run 验收表
+- 下一步：
+  - 新增 PX4 bridge 接口计划文档
+  - 更新 RUNBOOK 和电缆计划
+- 阻塞项：无
+
+### 2026-06-03 18:10:30 CST
+
+- 节点：PX4 Offboard dry-run bridge 接口计划完成
+- 执行动作：
+  - 新增 `docs/04_cable_px4_bridge_interface_plan.md`
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/03_cable_px4_dry_run_gate.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+- 结果：
+  - 明确 bridge 不能放入 `zcw_cable_perception`
+  - 明确 Phase A bridge 只允许发布：
+    - `/zcw/cable/px4_bridge/state`
+    - `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
+  - 明确 Phase A bridge 禁止发布：
+    - `/fmu/in/trajectory_setpoint`
+    - `/fmu/in/offboard_control_mode`
+    - `/fmu/in/vehicle_command`
+  - 明确 `map.z -> ned.z=-map.z` 仅允许作为 Phase A debug transform，不能作为闭环飞行依据
+  - 明确下一实现节点仍不启动 Gazebo/PX4，不发布 setpoint
+- 下一步：
+  - 运行文档/格式检查
+  - 提交并推送本阶段文档和进程记录
+- 阻塞项：无

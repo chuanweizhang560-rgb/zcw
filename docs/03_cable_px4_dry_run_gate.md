@@ -132,3 +132,5 @@ Required pass criteria:
 `lookahead_dry_run_setpoint.cpp` has passed the first read-only smoke test and RViz overlay evidence.
 
 The next implementation node should design the PX4 Offboard dry-run bridge interface. It must remain a documented interface plan first; code may only be added after the forbidden-topic audit is kept in the verification sequence.
+
+The bridge interface plan is now defined in `docs/04_cable_px4_bridge_interface_plan.md`. Phase A may only publish `/zcw/cable/px4_bridge/*` debug topics and must not publish `/fmu/in/*`.
