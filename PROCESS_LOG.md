@@ -1427,6 +1427,85 @@
   - 后续进入 offset path 连续性、曲率和步长审核
 - 阻塞项：无
 
+### 2026-06-03 14:30:22 CST
+
+- 节点：offset path 连续性/曲率/步长审核工具创建
+- 执行动作：
+  - 新增离线工具 `offset_path_audit`
+  - 更新 `zcw_cable_perception` CMake，安装 `offset_path_audit`
+  - 新增脚本 `scripts/audit_offset_path.sh`
+- 设计边界：
+  - 只读取上一轮离线 offset path CSV
+  - 检查每个 group 的点数、x 单调性、单段步长、曲率和 offset 一致性
+  - 不接 PX4，不发布 ROS topic，不生成控制命令
+- 下一步：
+  - 设置脚本可执行权限
+  - 编译 `zcw_cable_perception`
+  - 运行 `scripts/audit_offset_path.sh`
+  - 审核 summary 和 group CSV
+- 阻塞项：无
+
+### 2026-06-03 16:48:31 CST
+
+- 节点：offset path 连续性/曲率/步长审核结果
+- 执行动作：
+  - 设置 `scripts/audit_offset_path.sh` 可执行权限
+  - 运行 `bash -n scripts/audit_offset_path.sh`
+  - 运行 `git diff --check`
+  - 编译 `zcw_cable_perception`
+  - 运行：
+    - `OUTPUT_DIR=data/results/offset_path_audit_20260603_143000`
+    - `OUTPUT_PREFIX=depth_camera_motion_offset_path_audit`
+    - `EXPECTED_STEP_M=10.0`
+    - `MAX_STEP_ERROR_M=1.0`
+    - `MAX_CURVATURE=0.02`
+    - `MAX_OFFSET_ERROR_M=0.05`
+    - `scripts/audit_offset_path.sh`
+  - 读取 summary 和 group CSV
+- 结果：
+  - offset path 审核退出码为 0
+  - summary：`data/results/offset_path_audit_20260603_143000/depth_camera_motion_offset_path_audit_20260603_164538.txt`
+  - groups CSV：`data/results/offset_path_audit_20260603_143000/depth_camera_motion_offset_path_audit_groups_20260603_164538.csv`
+  - `points=65`
+  - `groups=5`
+  - `accepted_groups=5`
+  - `decision=accepted_offset_path_smoke`
+  - 最大步长误差约 `0.00064m`
+  - 最大曲率约 `0.000101 1/m`
+  - offset y/z 误差为 `0`
+  - 未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结论：
+  - 离线 offset path 已通过连续性、曲率、步长和偏移一致性审核
+  - 结果仍是几何路径候选，不接 PX4 Offboard，不发布 ROS topic
+- 下一步：
+  - 同步 `RUNBOOK.md`、电缆工作流、脚本索引、资产索引和开源审计
+  - 后续进入只读 lookahead target 烟测
+- 阻塞项：无
+
+### 2026-06-03 16:55:12 CST
+
+- 节点：offset path 连续性审核文档同步与构建复核
+- 执行动作：
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `scripts/README.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 更新 `ros2_ws/src/zcw_cable_perception/README.md`
+  - 运行脚本语法检查：`bash -n scripts/audit_offset_path.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 检查 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - 未发现仿真或 PCL Viewer 残留进程
+  - `data/` 下 offset path 审核 CSV、中心线/offset CSV、拟合 CSV、仿真日志、截图和 PCD 仍只作为本地证据，不提交进 git
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无
+
 ### 2026-06-03 13:37:02 CST
 
 - 节点：Ceres/Eigen catenary 拟合审核提交与推送

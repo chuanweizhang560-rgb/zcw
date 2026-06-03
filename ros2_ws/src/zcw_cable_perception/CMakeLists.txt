@@ -57,6 +57,8 @@ add_executable(multiline_candidate_consistency_audit src/multiline_candidate_con
 add_executable(catenary_fit_audit src/catenary_fit_audit.cpp)
 target_link_libraries(catenary_fit_audit Ceres::ceres Eigen3::Eigen)
 
+add_executable(offset_path_audit src/offset_path_audit.cpp)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
@@ -64,6 +66,7 @@ install(TARGETS
   pointcloud_pose_multiline_ransac_world_smoke
   multiline_candidate_consistency_audit
   catenary_fit_audit
+  offset_path_audit
   DESTINATION lib/${PROJECT_NAME}
 )
 

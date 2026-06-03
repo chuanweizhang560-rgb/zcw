@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-03 14:02:12 CST
+更新时间：2026-06-03 16:48:31 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -41,6 +41,7 @@ depth camera 高空 wire-band ROI 多线候选已通过一致性审核；宽 ROI
 depth camera 高空 wire-band ROI 候选已完成高度层分组审核；`GROUP_MODE=z` 和 `GROUP_MODE=yz` 均得到 6 个稳定高度层组，推荐后续默认使用 `yz` 分组作为 catenary/spline 输入烟测。
 depth camera 高空 wire-band ROI 候选已完成 Ceres/Eigen 离线拟合烟测；`Z_BIN_SIZE=2.0` 下 5 个高度层拟合通过，作为后续中心线采样和 Frenet offset path 的输入。
 depth camera 高空 wire-band ROI accepted fit 已输出离线中心线采样 CSV 和 offset path CSV；默认 `PATH_STEP_M=10m`、`OFFSET_Y_M=-5m`、`OFFSET_Z_M=0m`，不接 PX4。
+depth camera 高空 wire-band ROI offset path 已完成离线连续性、曲率、步长和偏移一致性审核；5 个 group 全部通过，仍不接 PX4。
 
 实测成功标志：
 
@@ -416,6 +417,32 @@ offset_y_m: -5
 offset_z_m: 0
 ```
 
+PX4 depth camera 高空 wire-band ROI offset path 连续性审核：
+
+```bash
+OUTPUT_DIR=data/results/offset_path_audit_20260603_143000 \
+OUTPUT_PREFIX=depth_camera_motion_offset_path_audit \
+EXPECTED_STEP_M=10.0 \
+MAX_STEP_ERROR_M=1.0 \
+MAX_CURVATURE=0.02 \
+MAX_OFFSET_ERROR_M=0.05 \
+scripts/audit_offset_path.sh
+```
+
+最新审核证据：
+
+```text
+summary: data/results/offset_path_audit_20260603_143000/depth_camera_motion_offset_path_audit_20260603_164538.txt
+groups_csv: data/results/offset_path_audit_20260603_143000/depth_camera_motion_offset_path_audit_groups_20260603_164538.csv
+points: 65
+groups: 5
+accepted_groups: 5
+decision: accepted_offset_path_smoke
+max_step_error_observed_m: 0.00064
+max_curvature_observed: 0.000101
+max_offset_error_observed_m: 0
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -459,8 +486,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 对 offset path 做连续性、曲率和步长审核。
-2. offset path 审核稳定后，生成只读 lookahead target 烟测。
+1. 基于通过审核的 offset path 生成只读 lookahead target 烟测。
+2. lookahead target 稳定后，再考虑 ROS topic 发布，不直接接 PX4 闭环。
 3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。
