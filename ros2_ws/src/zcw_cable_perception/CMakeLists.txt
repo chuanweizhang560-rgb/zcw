@@ -9,6 +9,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common filters io sample_consensus segmentation)
 find_package(Ceres REQUIRED)
@@ -61,6 +62,13 @@ add_executable(offset_path_audit src/offset_path_audit.cpp)
 
 add_executable(lookahead_target_audit src/lookahead_target_audit.cpp)
 
+add_executable(lookahead_path_publisher src/lookahead_path_publisher.cpp)
+ament_target_dependencies(lookahead_path_publisher
+  rclcpp
+  nav_msgs
+  geometry_msgs
+)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
@@ -70,6 +78,7 @@ install(TARGETS
   catenary_fit_audit
   offset_path_audit
   lookahead_target_audit
+  lookahead_path_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
 

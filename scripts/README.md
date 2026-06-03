@@ -29,6 +29,7 @@
 - `audit_catenary_fit.sh`：读取高空 wire-band ROI 多线候选 CSV，调用 Ceres 做 catenary 拟合、调用 Eigen 做二次曲线残差对照，并输出离线中心线/offset path 烟测证据。
 - `audit_offset_path.sh`：读取离线 offset path CSV，检查步长、曲率、x 单调性和偏移一致性。
 - `audit_lookahead_target.sh`：读取已审核的 offset path CSV，生成只读 lookahead target CSV，并检查前视距离窗口和 target index 单调性。
+- `verify_lookahead_topic_publish.sh`：启动只读 `lookahead_path_publisher`，验证 `/zcw/cable/offset_path` 和 `/zcw/cable/lookahead_target` ROS topic 可发布；不接 PX4 setpoint。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。

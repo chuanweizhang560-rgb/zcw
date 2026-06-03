@@ -2099,3 +2099,130 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入只读 ROS topic 发布节点，不接 PX4 闭环
 - 阻塞项：无
+
+### 2026-06-03 17:04:00 CST
+
+- 节点：只读 lookahead ROS topic 发布节点开始
+- 执行动作：
+  - 在 `zcw_cable_perception` 中新增只读 publisher 节点
+  - 节点只读取已审核通过的 offset path CSV 和 lookahead target CSV
+  - 计划发布：
+    - `nav_msgs/Path` offset path
+    - `geometry_msgs/PointStamped` lookahead target
+- 边界：
+  - 不接 PX4 Offboard
+  - 不发布 setpoint
+  - 不启动 Gazebo
+  - 只做 ROS topic/RViz 前置验证
+- 下一步：
+  - 新增源码、构建入口和验证脚本
+  - 编译后运行只读 topic smoke test
+- 阻塞项：无
+
+### 2026-06-03 17:04:30 CST
+
+- 节点：只读 lookahead ROS topic 发布首次运行失败与修正
+- 执行动作：
+  - 运行 `bash -n scripts/verify_lookahead_topic_publish.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 运行 `scripts/verify_lookahead_topic_publish.sh`
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - 首次 topic smoke 失败：
+    - `Failed opening file /home/travis/.ros/log/python3_31_1780477397931.log for writing: Read-only file system`
+- 原因：
+  - ROS 2 默认日志目录位于 `/home/travis/.ros/log`
+  - 当前执行环境只允许写仓库目录和 `/tmp`
+- 修正：
+  - 在 `scripts/verify_lookahead_topic_publish.sh` 中设置 `ROS_LOG_DIR=data/logs/ros`
+- 下一步：
+  - 重新运行只读 topic smoke
+- 阻塞项：无
+
+### 2026-06-03 17:05:20 CST
+
+- 节点：只读 lookahead ROS topic 发布第二次运行失败与权限处理
+- 执行动作：
+  - 修正 `ROS_LOG_DIR` 后重新运行 `scripts/verify_lookahead_topic_publish.sh`
+- 结果：
+  - 脚本仍失败
+  - 关键错误：
+    - `getifaddrs: Operation not permitted`
+    - `PermissionError: [Errno 1] Operation not permitted`
+  - 失败发生在 `ros2 topic echo` 创建本机 socket / 访问 ROS daemon 阶段
+- 原因：
+  - 当前沙箱限制 socket/network 接口访问
+  - ROS 2 topic introspection 需要本机 DDS/daemon 通信
+- 下一步：
+  - 使用 require_escalated 权限重跑同一验证脚本
+  - 成功或失败都继续写入 PROCESS_LOG
+- 阻塞项：无
+
+### 2026-06-03 17:06:10 CST
+
+- 节点：只读 lookahead ROS topic 首次通过但发现 offset path 列映射错误
+- 执行动作：
+  - 使用 require_escalated 权限运行 `scripts/verify_lookahead_topic_publish.sh`
+  - 读取：
+    - `data/logs/lookahead_path_publisher_20260603_170434.log`
+    - `data/logs/lookahead_topic_list_20260603_170434.log`
+    - `data/logs/lookahead_offset_path_echo_20260603_170434.log`
+    - `data/logs/lookahead_target_echo_20260603_170434.log`
+- 结果：
+  - 脚本退出码为 0
+  - topic list 包含：
+    - `/zcw/cable/offset_path`
+    - `/zcw/cable/lookahead_target`
+  - publisher 加载 `group='y8_z20'`，`13` 个 path points，`11` 个 targets
+  - lookahead target echo 坐标正常：`x=-65.8193`，`y=11.7591`，`z=41.4078`
+  - offset path echo 坐标异常：
+    - 第一项 `x=16.7591`
+    - 第一项 `y=41.3862`
+    - 第一项 `z=-5.0`
+- 原因：
+  - `lookahead_path_publisher` 读取 offset path CSV 时误用了 `source_y/source_z/offset_y_m` 列
+  - 正确 offset path CSV 列为 `x,y,z`，即第 2、3、4 列
+- 修正：
+  - 修改 `lookahead_path_publisher.cpp`，offset path 坐标读取 `cols[2]`、`cols[3]`、`cols[4]`
+- 下一步：
+  - 重新构建并重跑只读 topic smoke
+- 阻塞项：无
+
+### 2026-06-03 17:08:32 CST
+
+- 节点：只读 lookahead ROS topic 发布修正后通过
+- 执行动作：
+  - 运行 `bash -n scripts/verify_lookahead_topic_publish.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 使用 require_escalated 权限运行 `scripts/verify_lookahead_topic_publish.sh`
+  - 读取：
+    - `data/logs/lookahead_path_publisher_20260603_170640.log`
+    - `data/logs/lookahead_topic_list_20260603_170640.log`
+    - `data/logs/lookahead_offset_path_echo_20260603_170640.log`
+    - `data/logs/lookahead_target_echo_20260603_170640.log`
+- 结果：
+  - 构建成功
+  - 只读 topic smoke 退出码为 0
+  - topic list 包含：
+    - `/zcw/cable/offset_path`
+    - `/zcw/cable/lookahead_target`
+  - publisher 加载 `group='y8_z20'`，`13` 个 path points，`11` 个 targets
+  - offset path 第一项坐标已修正为：
+    - `x=-95.8193`
+    - `y=11.7591`
+    - `z=41.3862`
+  - lookahead target 样本：
+    - `x=-65.8193`
+    - `y=11.7591`
+    - `z=41.4078`
+- 结论：
+  - 只读 ROS topic 发布节点可用
+  - 当前仍未接 PX4 Offboard 或 setpoint
+- 下一步：
+  - 更新文档、脚本索引和资产索引
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

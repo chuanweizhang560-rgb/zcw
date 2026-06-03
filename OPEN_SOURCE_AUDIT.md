@@ -332,14 +332,18 @@ uxrce_dds_client synchronized
 2. 多线候选已通过 `GROUP_MODE=yz` 与 `Z_BIN_SIZE=2.0` 分组、Ceres/Eigen catenary 输入烟测。
 3. offset path 已通过步长、曲率、x 单调性和偏移一致性审核。
 4. lookahead target 已通过离线审核：`groups=5`、`accepted_groups=5`、`targets=55`、`decision=accepted_lookahead_target_smoke`。
+5. 只读 ROS topic 发布已通过：`/zcw/cable/offset_path` 与 `/zcw/cable/lookahead_target` 可被 `ros2 topic echo` 读取。
 
 最新证据：
 
 1. lookahead summary：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_20260603_165501.txt`
 2. lookahead target CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv`
 3. lookahead group CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_groups_20260603_165501.csv`
+4. topic node log：`data/logs/lookahead_path_publisher_20260603_170640.log`
+5. offset path echo：`data/logs/lookahead_offset_path_echo_20260603_170640.log`
+6. lookahead target echo：`data/logs/lookahead_target_echo_20260603_170640.log`
 
 注意：
 
 1. 当前 lookahead target 是只读离线证据，不代表无人机已经沿导线运动。
-2. 下一步只能先做 ROS topic/RViz 可视化，不能直接跳到 PX4 闭环。
+2. 下一步只能先做 RViz 可视化，不能直接跳到 PX4 闭环。
