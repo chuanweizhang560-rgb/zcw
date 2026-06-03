@@ -2774,3 +2774,21 @@
   - 更新 RUNBOOK、脚本索引、电缆计划、dry-run gate 和资产索引
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
+
+### 2026-06-03 18:00:59 CST
+
+- 节点：dry-run candidate RViz overlay 提交与推送
+- 执行动作：
+  - 提交：`3a23ca0 Add dry-run RViz overlay capture`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `c2af3ba` 更新到 `3a23ca0`
+  - 本次提交包含：
+    - `ros2_ws/src/zcw_cable_perception/rviz/dry_run_overlay.rviz`
+    - `scripts/capture_lookahead_dry_run_rviz_overlay.sh`
+    - RUNBOOK、电缆计划、dry-run gate、开源审计、脚本索引、资产索引和 PROCESS_LOG 更新
+  - `data/` 下 RViz 截图和日志仍未提交
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 进入 PX4 Offboard 隔离验证设计节点
+- 阻塞项：无
