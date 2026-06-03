@@ -1403,6 +1403,29 @@
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
 
+### 2026-06-03 13:04:22 CST
+
+- 节点：高度层分组审核提交与推送
+- 执行动作：
+  - 提交 `9c18410`：`Add wire height layer grouping audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已从 `b2d1b46` 更新到 `9c18410`
+  - 提交内容包括：
+    - `multiline_candidate_consistency_audit` 的 `y|z|yz` 分组模式
+    - `scripts/audit_depth_camera_multiline_consistency.sh` 的 `GROUP_MODE` 与 `Z_BIN_SIZE` 参数
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+  - 本次提交未包含 `data/` 下的仿真日志、截图、PCD 或 CSV 证据文件；证据保留在本地工作区
+- 下一步：
+  - 提交并推送本条进程记录
+  - 后续进入 Ceres/Eigen catenary/spline 输入烟测
+- 阻塞项：无
+
 ### 2026-06-03 12:31:54 CST
 
 - 节点：高空 ROI 一致性审核提交与推送
