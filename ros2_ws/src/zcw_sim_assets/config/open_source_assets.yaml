@@ -165,5 +165,9 @@ sensor_overlays:
     latest_lookahead_rviz_log: data/logs/lookahead_rviz_20260603_171401.log
     latest_lookahead_rviz_static_tf_log: data/logs/lookahead_rviz_static_tf_20260603_171401.log
     latest_lookahead_rviz_screenshot: data/screenshots/lookahead_rviz_overlay_20260603_171401.png
+    latest_lookahead_safety_publisher_log: data/logs/lookahead_safety_publisher_20260603_172502.log
+    latest_lookahead_safety_topic_list_log: data/logs/lookahead_safety_topic_list_20260603_172502.log
+    latest_lookahead_tracking_state_echo_log: data/logs/lookahead_tracking_state_echo_20260603_172502.log
+    latest_lookahead_safety_gate_echo_log: data/logs/lookahead_safety_gate_echo_20260603_172502.log
     latest_wire_band_pcd_screenshot: data/screenshots/pcd_ransac_frame0_20260603_114532_pcl_viewer_left.png
-    status: wire_band_offset_path_and_lookahead_rviz_overlay_verified_requires_readonly_safety_state_machine
+    status: wire_band_offset_path_lookahead_rviz_and_readonly_safety_gate_verified_requires_px4_dry_run_plan

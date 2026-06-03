@@ -2397,3 +2397,90 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入只读状态机安全门限节点，不接 PX4 闭环
 - 阻塞项：无
+
+### 2026-06-03 17:20:00 CST
+
+- 节点：只读 lookahead 安全状态机开始
+- 执行动作：
+  - 确认仓库干净
+  - 规划新增 `lookahead_safety_monitor`
+- 目标：
+  - 监听 `/zcw/cable/offset_path`
+  - 监听 `/zcw/cable/lookahead_target`
+  - 检查 path 点数、target 到 path 的距离、target 跳变和数据超时
+  - 发布只读安全状态，不发布 PX4 setpoint
+- 计划输出：
+  - `/zcw/cable/tracking_state` (`std_msgs/String`)
+  - `/zcw/cable/safety_gate` (`std_msgs/Bool`)
+- 下一步：
+  - 新增源码、依赖和验证脚本
+  - 运行只读安全状态机 smoke
+- 阻塞项：无
+
+### 2026-06-03 17:23:46 CST
+
+- 节点：只读 lookahead 安全状态机首次 smoke 采样失败与修正
+- 执行动作：
+  - 新增 `lookahead_safety_monitor`
+  - 新增 `scripts/verify_lookahead_safety_monitor.sh`
+  - 运行 `bash -n scripts/verify_lookahead_safety_monitor.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 使用 require_escalated 权限运行 `scripts/verify_lookahead_safety_monitor.sh`
+  - 读取：
+    - `data/logs/lookahead_safety_publisher_20260603_172346.log`
+    - `data/logs/lookahead_safety_monitor_20260603_172346.log`
+    - `data/logs/lookahead_safety_topic_list_20260603_172346.log`
+    - `data/logs/lookahead_tracking_state_echo_20260603_172346.log`
+    - `data/logs/lookahead_safety_gate_echo_20260603_172346.log`
+- 结果：
+  - 构建成功
+  - topic list 包含 `/zcw/cable/tracking_state` 和 `/zcw/cable/safety_gate`
+  - tracking state echo：`TRACK_READY; path_points=13; target_received=true; min_target_to_path_m=0; last_target_jump_m=10.0004`
+  - safety gate echo：`data: false`
+  - 脚本退出码为 1
+- 原因：
+  - safety gate 单次 echo 抓到了启动阶段或采样时序中的 `false`
+  - 同一轮 tracking state 已显示 `TRACK_READY`，说明 monitor 逻辑已进入可用状态
+- 修正：
+  - 修改 smoke 脚本，在 10 秒内轮询 `/zcw/cable/tracking_state` 和 `/zcw/cable/safety_gate`
+  - 只有同时看到 `TRACK_READY` 和 `data: true` 才通过
+- 下一步：
+  - 重新运行只读安全状态机 smoke
+- 阻塞项：无
+
+### 2026-06-03 17:25:26 CST
+
+- 节点：只读 lookahead 安全状态机 smoke 通过
+- 执行动作：
+  - 运行 `bash -n scripts/verify_lookahead_safety_monitor.sh`
+  - 运行 `git diff --check`
+  - 使用 require_escalated 权限运行 `scripts/verify_lookahead_safety_monitor.sh`
+  - 读取：
+    - `data/logs/lookahead_safety_publisher_20260603_172502.log`
+    - `data/logs/lookahead_safety_topic_list_20260603_172502.log`
+    - `data/logs/lookahead_tracking_state_echo_20260603_172502.log`
+    - `data/logs/lookahead_safety_gate_echo_20260603_172502.log`
+  - 检查残留进程：
+    - `lookahead_path_publisher`
+    - `lookahead_safety_monitor`
+    - `rviz2`
+    - `static_transform_publisher`
+    - `gzserver/gzclient/px4/gazebo/pcl_viewer`
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - safety monitor smoke 退出码为 0
+  - topic list 包含：
+    - `/zcw/cable/tracking_state`
+    - `/zcw/cable/safety_gate`
+  - tracking state：`TRACK_READY; path_points=13; target_received=true; min_target_to_path_m=0; last_target_jump_m=10.0005`
+  - safety gate：`data: true`
+  - 未发现 ROS/Gazebo/PX4/PCL 残留进程
+- 结论：
+  - 只读状态机安全门限 smoke 通过
+  - 当前仍未接 PX4 Offboard 或 setpoint
+- 下一步：
+  - 更新 RUNBOOK、脚本索引、电缆计划和资产索引
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

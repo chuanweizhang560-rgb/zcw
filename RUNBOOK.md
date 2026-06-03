@@ -511,6 +511,27 @@ lookahead_target_display: OK
 visual_check: green offset path and red lookahead target points visible
 ```
 
+只读 lookahead 安全状态机 smoke：
+
+```bash
+scripts/verify_lookahead_safety_monitor.sh
+```
+
+最新审核证据：
+
+```text
+publisher_log: data/logs/lookahead_safety_publisher_20260603_172502.log
+topic_list_log: data/logs/lookahead_safety_topic_list_20260603_172502.log
+tracking_state_echo: data/logs/lookahead_tracking_state_echo_20260603_172502.log
+safety_gate_echo: data/logs/lookahead_safety_gate_echo_20260603_172502.log
+tracking_state: TRACK_READY
+path_points: 13
+target_received: true
+min_target_to_path_m: 0
+last_target_jump_m: 10.0005
+safety_gate: true
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -554,8 +575,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 为 lookahead topic 增加只读状态机安全门限，不接 PX4 闭环。
-2. 状态机安全门限稳定后，再讨论是否接入 PX4 Offboard，不能跳过安全门限。
+1. 设计 PX4 Offboard 接入前的电缆跟踪状态机文档和验收门限。
+2. 状态机验收门限明确后，再做 PX4 Offboard dry-run，不直接飞完整闭环。
 3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。

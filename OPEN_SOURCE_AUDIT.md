@@ -334,6 +334,7 @@ uxrce_dds_client synchronized
 4. lookahead target 已通过离线审核：`groups=5`、`accepted_groups=5`、`targets=55`、`decision=accepted_lookahead_target_smoke`。
 5. 只读 ROS topic 发布已通过：`/zcw/cable/offset_path` 与 `/zcw/cable/lookahead_target` 可被 `ros2 topic echo` 读取。
 6. RViz overlay 截图已通过：Global Status、`Offset Path`、`Lookahead Target` 均为 OK，绿色路径和红色目标点可见。
+7. 只读安全状态机已通过：`tracking_state=TRACK_READY`，`safety_gate=true`。
 
 最新证据：
 
@@ -345,8 +346,10 @@ uxrce_dds_client synchronized
 6. lookahead target echo：`data/logs/lookahead_target_echo_20260603_170640.log`
 7. RViz screenshot：`data/screenshots/lookahead_rviz_overlay_20260603_171401.png`
 8. RViz log：`data/logs/lookahead_rviz_20260603_171401.log`
+9. safety state echo：`data/logs/lookahead_tracking_state_echo_20260603_172502.log`
+10. safety gate echo：`data/logs/lookahead_safety_gate_echo_20260603_172502.log`
 
 注意：
 
 1. 当前 lookahead target 是只读离线证据，不代表无人机已经沿导线运动。
-2. 下一步只能先做只读状态机安全门限，不能直接跳到 PX4 闭环。
+2. 下一步只能先做 PX4 Offboard dry-run 方案和验收门限，不能直接跳到完整闭环。

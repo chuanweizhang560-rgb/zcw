@@ -10,6 +10,7 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common filters io sample_consensus segmentation)
 find_package(Ceres REQUIRED)
@@ -69,6 +70,14 @@ ament_target_dependencies(lookahead_path_publisher
   geometry_msgs
 )
 
+add_executable(lookahead_safety_monitor src/lookahead_safety_monitor.cpp)
+ament_target_dependencies(lookahead_safety_monitor
+  rclcpp
+  nav_msgs
+  geometry_msgs
+  std_msgs
+)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
@@ -79,6 +88,7 @@ install(TARGETS
   offset_path_audit
   lookahead_target_audit
   lookahead_path_publisher
+  lookahead_safety_monitor
   DESTINATION lib/${PROJECT_NAME}
 )
 

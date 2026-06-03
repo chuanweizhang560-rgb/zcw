@@ -214,10 +214,26 @@
      - static TF：`data/logs/lookahead_rviz_static_tf_20260603_171401.log`
    - 结果：RViz Global Status 为 OK，`Offset Path` 和 `Lookahead Target` display 均为 OK
    - 审核结论：绿色 offset path 和红色 lookahead target 点可视化证据达标；当前仍不接 PX4 setpoint。
+24. 只读 lookahead 安全状态机 smoke：
+   - 工具：`lookahead_safety_monitor`
+   - 验证：`scripts/verify_lookahead_safety_monitor.sh`
+   - 输入 topic：
+     - `/zcw/cable/offset_path`
+     - `/zcw/cable/lookahead_target`
+   - 输出 topic：
+     - `/zcw/cable/tracking_state`
+     - `/zcw/cable/safety_gate`
+   - 最新日志：
+     - publisher：`data/logs/lookahead_safety_publisher_20260603_172502.log`
+     - topic list：`data/logs/lookahead_safety_topic_list_20260603_172502.log`
+     - tracking state：`data/logs/lookahead_tracking_state_echo_20260603_172502.log`
+     - safety gate：`data/logs/lookahead_safety_gate_echo_20260603_172502.log`
+   - 结果：`TRACK_READY`，`path_points=13`，`min_target_to_path_m=0`，`last_target_jump_m=10.0005`，`safety_gate=true`
+   - 审核结论：只读状态机安全门限 smoke 通过；当前仍不接 PX4 setpoint。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic 发布与 RViz overlay 均已通过。下一步不是接飞控，而是只读状态机安全门限。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay 和只读安全状态机均已通过。下一步不是直接接飞控，而是定义 PX4 Offboard 接入前的状态机验收门限。
 
 ## 2. 采用的成熟开源组件
 
@@ -418,6 +434,14 @@ scripts/capture_lookahead_rviz_overlay.sh
 
 该入口启动只读 publisher、static TF 和 RViz2，加载 `lookahead_overlay.rviz`，并保存真实 RViz 截图。该入口不启动 Gazebo、不接 PX4、不发布 setpoint。
 
+已新增只读 lookahead 安全状态机 smoke 入口：
+
+```bash
+scripts/verify_lookahead_safety_monitor.sh
+```
+
+该入口启动只读 publisher 和 `lookahead_safety_monitor`，验证 `/zcw/cable/tracking_state` 与 `/zcw/cable/safety_gate`。该入口不启动 Gazebo、不接 PX4、不发布 setpoint。
+
 ## 6. 处理参数初值
 
 第一版参数只作为默认值，必须放入配置文件，不写死在算法代码里：
@@ -523,7 +547,7 @@ scripts/capture_lookahead_rviz_overlay.sh
 
 ## 10. 下一个执行节点
 
-1. 为 lookahead topic 增加只读状态机安全门限，不接 PX4 闭环。
-2. 状态机安全门限稳定后，再讨论是否接入 PX4 Offboard，不能跳过安全门限。
+1. 设计 PX4 Offboard 接入前的电缆跟踪状态机文档和验收门限。
+2. 状态机验收门限明确后，再做 PX4 Offboard dry-run，不直接飞完整闭环。
 3. 若接 PX4，必须先经过状态机安全门限，不直接从 topic 接 setpoint。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
