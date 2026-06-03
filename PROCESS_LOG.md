@@ -1402,3 +1402,28 @@
 - 下一步：
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
+
+### 2026-06-03 11:40:18 CST
+
+- 节点：motion 多线候选审核提交与推送
+- 执行动作：
+  - 提交 `9f851a9`：`Add depth camera motion multiline ransac audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已从 `c8e10d8` 更新到 `9f851a9`
+  - 提交内容包括：
+    - `pointcloud_pose_multiline_ransac_world_smoke`
+    - `scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+    - `scripts/verify_depth_camera_cable_motion_ransac.sh` 的 single/multiline 参数化
+    - `PROCESS_LOG.md`
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+    - `OPEN_SOURCE_AUDIT.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+  - 本次提交未包含 `data/` 下的仿真日志、截图或 PCD 证据文件；证据保留在本地工作区
+- 下一步：
+  - 提交并推送本条进程记录
+  - 后续进入导线候选合并、方向一致性筛选和跨帧稳定性审核
+- 阻塞项：无
