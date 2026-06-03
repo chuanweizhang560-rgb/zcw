@@ -24,6 +24,10 @@ RESULT_DIR="${RESULT_ROOT}/depth_camera_motion_ransac_${STAMP}"
 
 POINTS_TOPIC="${DEPTH_CAMERA_POINTS_TOPIC:-/camera/points}"
 POSE_TOPIC="${DEPTH_CAMERA_POSE_TOPIC:-/zcw/depth_camera/pose}"
+RANSAC_MODE="${RANSAC_MODE:-single}"
+RANSAC_EXECUTABLE="${RANSAC_EXECUTABLE:-pointcloud_pose_line_ransac_world_smoke}"
+RANSAC_OUTPUT_PREFIX="${RANSAC_OUTPUT_PREFIX:-depth_camera_motion_line_ransac_world}"
+RANSAC_REQUIRED_PCD="${RANSAC_REQUIRED_PCD:-frame_0_line_inliers_world.pcd}"
 FRAMES="${RANSAC_FRAMES:-5}"
 DISTANCE_THRESHOLD="${RANSAC_DISTANCE_THRESHOLD_M:-0.35}"
 MIN_INLIERS="${RANSAC_MIN_INLIERS:-50}"
@@ -37,6 +41,15 @@ CROP_MIN_Y="${RANSAC_CROP_MIN_Y:--80.0}"
 CROP_MAX_Y="${RANSAC_CROP_MAX_Y:-80.0}"
 CROP_MIN_Z="${RANSAC_CROP_MIN_Z:-0.0}"
 CROP_MAX_Z="${RANSAC_CROP_MAX_Z:-80.0}"
+WORLD_CROP_MIN_X="${RANSAC_WORLD_CROP_MIN_X:--120.0}"
+WORLD_CROP_MAX_X="${RANSAC_WORLD_CROP_MAX_X:-40.0}"
+WORLD_CROP_MIN_Y="${RANSAC_WORLD_CROP_MIN_Y:-5.0}"
+WORLD_CROP_MAX_Y="${RANSAC_WORLD_CROP_MAX_Y:-30.0}"
+WORLD_CROP_MIN_Z="${RANSAC_WORLD_CROP_MIN_Z:-0.0}"
+WORLD_CROP_MAX_Z="${RANSAC_WORLD_CROP_MAX_Z:-65.0}"
+MAX_LINES="${RANSAC_MAX_LINES:-6}"
+MIN_LINES_PER_FRAME="${RANSAC_MIN_LINES_PER_FRAME:-2}"
+MIN_LINE_INLIERS="${RANSAC_MIN_LINE_INLIERS:-500}"
 
 PX4_TIMEOUT_SEC="${PX4_TIMEOUT_SEC:-190}"
 VERIFY_TIMEOUT_SEC="${VERIFY_TIMEOUT_SEC:-95}"
@@ -229,32 +242,65 @@ timeout 8s ros2 topic echo --once /fmu/out/vehicle_local_position >"${LOCAL_POSI
 capture_gazebo_screenshot
 
 set +e
-(
-  cd "${ROOT_DIR}"
-  timeout "${RANSAC_TIMEOUT_SEC}s" ros2 run zcw_cable_perception pointcloud_pose_line_ransac_world_smoke --ros-args \
-    -p topic:="${POINTS_TOPIC}" \
-    -p pose_topic:="${POSE_TOPIC}" \
-    -p output_dir:="${RESULT_DIR}" \
-    -p output_prefix:="depth_camera_motion_line_ransac_world" \
-    -p frames:="${FRAMES}" \
-    -p distance_threshold_m:="${DISTANCE_THRESHOLD}" \
-    -p min_inliers:="${MIN_INLIERS}" \
-    -p apply_sensor_pose_in_link:="${APPLY_SENSOR_POSE}" \
-    -p sensor_roll_rad:="${SENSOR_ROLL_RAD}" \
-    -p sensor_pitch_rad:="${SENSOR_PITCH_RAD}" \
-    -p sensor_yaw_rad:="${SENSOR_YAW_RAD}" \
-    -p crop_min_x:="${CROP_MIN_X}" \
-    -p crop_max_x:="${CROP_MAX_X}" \
-    -p crop_min_y:="${CROP_MIN_Y}" \
-    -p crop_max_y:="${CROP_MAX_Y}" \
-    -p crop_min_z:="${CROP_MIN_Z}" \
-    -p crop_max_z:="${CROP_MAX_Z}"
-) >"${NODE_LOG}" 2>&1
-node_rc=$?
+if [[ "${RANSAC_MODE}" == "multiline" ]]; then
+  (
+    cd "${ROOT_DIR}"
+    timeout "${RANSAC_TIMEOUT_SEC}s" ros2 run zcw_cable_perception "${RANSAC_EXECUTABLE}" --ros-args \
+      -p topic:="${POINTS_TOPIC}" \
+      -p pose_topic:="${POSE_TOPIC}" \
+      -p output_dir:="${RESULT_DIR}" \
+      -p output_prefix:="${RANSAC_OUTPUT_PREFIX}" \
+      -p frames:="${FRAMES}" \
+      -p max_lines:="${MAX_LINES}" \
+      -p min_lines_per_frame:="${MIN_LINES_PER_FRAME}" \
+      -p distance_threshold_m:="${DISTANCE_THRESHOLD}" \
+      -p min_line_inliers:="${MIN_LINE_INLIERS}" \
+      -p apply_sensor_pose_in_link:="${APPLY_SENSOR_POSE}" \
+      -p sensor_roll_rad:="${SENSOR_ROLL_RAD}" \
+      -p sensor_pitch_rad:="${SENSOR_PITCH_RAD}" \
+      -p sensor_yaw_rad:="${SENSOR_YAW_RAD}" \
+      -p crop_min_x:="${CROP_MIN_X}" \
+      -p crop_max_x:="${CROP_MAX_X}" \
+      -p crop_min_y:="${CROP_MIN_Y}" \
+      -p crop_max_y:="${CROP_MAX_Y}" \
+      -p crop_min_z:="${CROP_MIN_Z}" \
+      -p crop_max_z:="${CROP_MAX_Z}" \
+      -p world_crop_min_x:="${WORLD_CROP_MIN_X}" \
+      -p world_crop_max_x:="${WORLD_CROP_MAX_X}" \
+      -p world_crop_min_y:="${WORLD_CROP_MIN_Y}" \
+      -p world_crop_max_y:="${WORLD_CROP_MAX_Y}" \
+      -p world_crop_min_z:="${WORLD_CROP_MIN_Z}" \
+      -p world_crop_max_z:="${WORLD_CROP_MAX_Z}"
+  ) >"${NODE_LOG}" 2>&1
+  node_rc=$?
+else
+  (
+    cd "${ROOT_DIR}"
+    timeout "${RANSAC_TIMEOUT_SEC}s" ros2 run zcw_cable_perception "${RANSAC_EXECUTABLE}" --ros-args \
+      -p topic:="${POINTS_TOPIC}" \
+      -p pose_topic:="${POSE_TOPIC}" \
+      -p output_dir:="${RESULT_DIR}" \
+      -p output_prefix:="${RANSAC_OUTPUT_PREFIX}" \
+      -p frames:="${FRAMES}" \
+      -p distance_threshold_m:="${DISTANCE_THRESHOLD}" \
+      -p min_inliers:="${MIN_INLIERS}" \
+      -p apply_sensor_pose_in_link:="${APPLY_SENSOR_POSE}" \
+      -p sensor_roll_rad:="${SENSOR_ROLL_RAD}" \
+      -p sensor_pitch_rad:="${SENSOR_PITCH_RAD}" \
+      -p sensor_yaw_rad:="${SENSOR_YAW_RAD}" \
+      -p crop_min_x:="${CROP_MIN_X}" \
+      -p crop_max_x:="${CROP_MAX_X}" \
+      -p crop_min_y:="${CROP_MIN_Y}" \
+      -p crop_max_y:="${CROP_MAX_Y}" \
+      -p crop_min_z:="${CROP_MIN_Z}" \
+      -p crop_max_z:="${CROP_MAX_Z}"
+  ) >"${NODE_LOG}" 2>&1
+  node_rc=$?
+fi
 set -e
 
-SUMMARY_TXT="$(find "${RESULT_DIR}" -maxdepth 1 -name 'depth_camera_motion_line_ransac_world_*.txt' | sort | tail -n 1)"
-SUMMARY_CSV="$(find "${RESULT_DIR}" -maxdepth 1 -name 'depth_camera_motion_line_ransac_world_*.csv' | sort | tail -n 1)"
+SUMMARY_TXT="$(find "${RESULT_DIR}" -maxdepth 1 -name "${RANSAC_OUTPUT_PREFIX}_*.txt" | sort | tail -n 1)"
+SUMMARY_CSV="$(find "${RESULT_DIR}" -maxdepth 1 -name "${RANSAC_OUTPUT_PREFIX}*.csv" | sort | tail -n 1)"
 if [[ -z "${SUMMARY_TXT}" || ! -f "${SUMMARY_TXT}" || -z "${SUMMARY_CSV}" || ! -f "${SUMMARY_CSV}" ]]; then
   echo "Depth camera motion RANSAC summary files were not created." >&2
   cat "${NODE_LOG}" >&2 || true
@@ -276,7 +322,7 @@ if ! grep -q "Advancing to waypoint" "${OFFBOARD_LOG}"; then
   exit 1
 fi
 
-if [[ ! -f "${RESULT_DIR}/frame_0_line_inliers_world.pcd" ]]; then
+if [[ ! -f "${RESULT_DIR}/${RANSAC_REQUIRED_PCD}" ]]; then
   echo "World-frame inlier PCD was not created." >&2
   find "${RESULT_DIR}" -maxdepth 1 -type f -printf '%f\n' >&2 | sort
   exit 1
@@ -295,6 +341,8 @@ if ps -C gzserver -C gzclient -C px4 -C gazebo -C make -o pid=,comm=,args= | gre
 fi
 
 echo "Depth camera cable-motion RANSAC audit completed."
+echo "RANSAC mode: ${RANSAC_MODE}"
+echo "RANSAC executable: ${RANSAC_EXECUTABLE}"
 echo "Node result code: ${node_rc}"
 echo "Agent log: ${AGENT_LOG}"
 echo "PX4/Gazebo log: ${PX4_LOG}"

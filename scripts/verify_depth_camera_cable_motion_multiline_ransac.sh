@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+RANSAC_MODE="multiline" \
+RANSAC_EXECUTABLE="pointcloud_pose_multiline_ransac_world_smoke" \
+RANSAC_OUTPUT_PREFIX="depth_camera_motion_multiline_ransac_world" \
+RANSAC_REQUIRED_PCD="frame_0_line_0_inliers_world.pcd" \
+RANSAC_FRAMES="${RANSAC_FRAMES:-3}" \
+RANSAC_MAX_LINES="${RANSAC_MAX_LINES:-6}" \
+RANSAC_MIN_LINES_PER_FRAME="${RANSAC_MIN_LINES_PER_FRAME:-2}" \
+RANSAC_MIN_LINE_INLIERS="${RANSAC_MIN_LINE_INLIERS:-500}" \
+RANSAC_DISTANCE_THRESHOLD_M="${RANSAC_DISTANCE_THRESHOLD_M:-0.35}" \
+RANSAC_WORLD_CROP_MIN_X="${RANSAC_WORLD_CROP_MIN_X:--120.0}" \
+RANSAC_WORLD_CROP_MAX_X="${RANSAC_WORLD_CROP_MAX_X:-40.0}" \
+RANSAC_WORLD_CROP_MIN_Y="${RANSAC_WORLD_CROP_MIN_Y:-5.0}" \
+RANSAC_WORLD_CROP_MAX_Y="${RANSAC_WORLD_CROP_MAX_Y:-30.0}" \
+RANSAC_WORLD_CROP_MIN_Z="${RANSAC_WORLD_CROP_MIN_Z:-0.0}" \
+RANSAC_WORLD_CROP_MAX_Z="${RANSAC_WORLD_CROP_MAX_Z:-65.0}" \
+  "${ROOT_DIR}/scripts/verify_depth_camera_cable_motion_ransac.sh"

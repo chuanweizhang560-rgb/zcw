@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-02 21:59:23 CST
+更新时间：2026-06-03 11:28:16 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -112,17 +112,29 @@
    - 结果：5 帧全部通过，`mean_ransac_inliers=4405`，`failed_frames=0`
    - world inlier bbox：min `(-95.9096, 15.8306, 6.81435)`，max `(26.2537, 17.6723, 54.0478)`
    - 审核结论：运动状态下 depth camera 点云中可见塔架/多条导线状结构，PCL RANSAC 可提取线候选；该节点仍是 smoke test，不代表已完成导线实例识别、悬链线拟合或闭环追线。
+15. PX4 官方 depth camera + 电缆 waypoint 运动多线候选 RANSAC 审核：
+   - 节点：`pointcloud_pose_multiline_ransac_world_smoke`
+   - 验证：`scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+   - 数据流：复用 PX4 官方 `iris_depth_camera`、AerialCore `danube_wires`、Micro XRCE-DDS Agent、`single_vehicle_cable_inspection.launch.py`、Gazebo P3D pose 和 PCL
+   - 处理边界：只调用 PCL `CropBox`、`SACSegmentation<SACMODEL_LINE>` 和 `ExtractIndices`，不自研线分割算法
+   - world ROI：min `(-120, 5, 0)`，max `(40, 30, 65)`
+   - 汇总：`data/results/depth_camera_motion_ransac_20260603_111923/depth_camera_motion_multiline_ransac_world_20260603_112105.txt`
+   - frame CSV：`data/results/depth_camera_motion_ransac_20260603_111923/depth_camera_motion_multiline_ransac_world_frames_20260603_112105.csv`
+   - line CSV：`data/results/depth_camera_motion_ransac_20260603_111923/depth_camera_motion_multiline_ransac_world_lines_20260603_112105.csv`
+   - PCD 截图：`data/screenshots/pcd_ransac_frame0_20260603_112534_pcl_viewer_left.png`
+   - 结果：3 帧全部通过，每帧抽取 6 条线候选，`failed_frames=0`，`total_candidates=18`，`mean_world_roi_points=348453`
+   - 审核结论：运动状态下 depth camera 点云已能稳定产生多条线候选；该节点仍是 smoke test，不代表已完成导线实例识别、悬链线拟合或闭环追线。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场，PCL RANSAC 可提取线候选。下一步不是换传感器，而是先收紧 ROI、高度门限和多线候选提取。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场，PCL 单线和多线候选均可运行。下一步不是换传感器，而是做候选合并、方向一致性筛选、跨帧稳定性审核，再接 Ceres/Eigen 拟合。
 
 ## 2. 采用的成熟开源组件
 
 | 层 | 组件 | 来源/版本 | 许可证 | 采用方式 |
 |---|---|---|---|---|
 | 仿真机体/传感器 | PX4 Gazebo Classic `iris_foggy_lidar` + ROS2 ray sensor overlay | PX4 release/1.14 自带模型 + `ros-humble-gazebo-plugins 3.9.0` | BSD-3-Clause / Apache-2.0 体系 | 已验证 PointCloud2 topic；world-frame 审核显示不适合作为导线识别主线 |
-| 仿真机体/传感器 | PX4 Gazebo Classic `iris_depth_camera` + ROS2 camera plugin | PX4 release/1.14 自带模型 + `ros-humble-gazebo-plugins 3.9.0` | BSD-3-Clause / Apache-2.0 体系 | 已验证 `/camera/points` + P3D pose；静态地面 world-frame RANSAC 不满足导线可见性验收，运动状态已可见导线状线候选 |
+| 仿真机体/传感器 | PX4 Gazebo Classic `iris_depth_camera` + ROS2 camera plugin | PX4 release/1.14 自带模型 + `ros-humble-gazebo-plugins 3.9.0` | BSD-3-Clause / Apache-2.0 体系 | 已验证 `/camera/points` + P3D pose；静态地面 world-frame RANSAC 不满足导线可见性验收，运动状态已可见单线和多线候选 |
 | 传感器位姿 | Gazebo ROS `p3d` plugin | `/opt/ros/humble/lib/libgazebo_ros_p3d.so` | Apache-2.0 / BSD 体系，见 `ros-humble-gazebo-plugins` | 输出 `/zcw/foggy_lidar/pose` 和 `/zcw/depth_camera/pose`，用于后续点云 world 坐标叠加 |
 | 点云接口 | `sensor_msgs/PointCloud2` + `pcl_conversions` + `pcl_ros` | `ros-humble-pcl-ros 2.4.5`，`ros-humble-pcl-conversions 2.4.5` | BSD | ROS2 点云消息与 PCL 互转 |
 | 几何分割 | PCL `SampleConsensusModelLine` / `SACSegmentation` | `libpcl-dev 1.12.1` | BSD-3-Clause | RANSAC 线模型分割导线候选点 |
@@ -176,7 +188,7 @@ Gazebo/PX4 iris_depth_camera or Gazebo ROS2 GPU ray overlay
 1. `foggy_lidar` 已降级为 PointCloud2 管线 smoke 传感器，不能作为导线识别主线。
 2. 当前主候选转为 PX4 Classic 自带 `iris_depth_camera`，通过官方 ROS 2 `gazebo_ros_camera` 输出 `/camera/points`。
 3. depth camera 静态地面 world-frame RANSAC 不满足导线可见性验收；运动状态采集已通过 smoke 验证。
-4. 先在 depth camera 运动点云上做 corridor ROI、高度门限、多线候选和方向一致性审核。
+4. depth camera 运动点云上已完成 corridor ROI 与多线候选 smoke 审核，下一步做候选合并、方向一致性和跨帧稳定性审核。
 5. 如果 depth camera 后续 ROI/多线候选仍不稳定，再评估 GPU ray 方案；不得直接自研 Gazebo 传感器插件。
 6. 不修改 AerialCore 电塔/导线 mesh；只允许通过 launch/env 选择 PX4 模型和 world。
 
@@ -259,6 +271,14 @@ scripts/verify_depth_camera_cable_motion_ransac.sh
 ```
 
 该入口复用已有电缆 waypoint baseline，先让无人机飞到电缆 corridor，再采集 `/camera/points` 和 `/zcw/depth_camera/pose` 做 world-frame RANSAC。当前审核显示线候选可见，但仍需 ROI、多线候选、悬链线/样条拟合与追踪状态机。
+
+已新增 depth camera + 电缆 waypoint 运动多线候选 RANSAC 审核入口：
+
+```bash
+scripts/verify_depth_camera_cable_motion_multiline_ransac.sh
+```
+
+该入口在 motion 组合审核基础上切换到 `pointcloud_pose_multiline_ransac_world_smoke`，使用 world-frame corridor ROI，并迭代调用 PCL `SACSegmentation<SACMODEL_LINE>` / `ExtractIndices` 抽取多条线候选。当前审核已通过 3 帧、每帧 6 条候选的 smoke 阈值；仍需做候选合并、方向一致性、跨帧稳定性与后续 catenary/spline 拟合。
 
 ## 6. 处理参数初值
 
@@ -365,9 +385,8 @@ scripts/verify_depth_camera_cable_motion_ransac.sh
 
 ## 10. 下一个执行节点
 
-1. 在 `verify_depth_camera_cable_motion_ransac.sh` 基础上增加 corridor ROI、高度门限和方向一致性审核。
-2. 从单条最优 RANSAC 线升级为多线候选输出，避免只保留一根导线或误选背景线。
-3. 多线候选稳定后，接 Ceres/Eigen catenary/spline 与 Frenet offset path。
-4. 如果 depth camera ROI/多线候选仍不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
-4. 增加导线方向一致性/高度范围判据，避免把稳定扫描线误认为电缆。
-5. 确认导线候选可靠后，再进入 Ceres/Eigen catenary/spline 拟合节点。
+1. 在 `verify_depth_camera_cable_motion_multiline_ransac.sh` 结果上增加候选合并和方向一致性审核。
+2. 增加跨帧稳定性判据，避免把塔架边缘、背景线或稳定扫描线误认为导线。
+3. 输出可复查的候选分组 CSV、RViz/PCD 截图和失败阈值记录。
+4. 多线候选稳定后，接 Ceres/Eigen catenary/spline 与 Frenet offset path。
+5. 如果 depth camera ROI/多线候选仍不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

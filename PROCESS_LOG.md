@@ -1277,3 +1277,128 @@
 - 下一步：
   - 在 motion RANSAC 基础上做 corridor ROI、高度门限、多线候选和方向一致性审核
 - 阻塞项：无
+
+### 2026-06-03 11:06:24 CST
+
+- 节点：恢复现场与 motion depth camera 多线候选审核准备
+- 执行动作：
+  - 读取当前 git 状态
+  - 读取 `PROCESS_LOG.md` 最近记录
+  - 读取 `RUNBOOK.md`
+  - 列出 `scripts/` 与 `ros2_ws/src/zcw_cable_perception` 当前文件
+- 结果：
+  - 当前分支：`codex/initial-workflow`
+  - 工作树干净，已同步 `origin/codex/initial-workflow`
+  - 上一节点结论：motion depth camera 已能在电缆 corridor 看到导线状候选，PCL RANSAC 可提取线候选，但仍是 smoke test
+  - 当前明确下一步：corridor ROI、高度门限、多线候选和方向一致性审核
+- 设计判断：
+  - 新增一个独立 PCL 多线候选 smoke 节点，只做 ROS2/PCL 薄封装
+  - 多线候选仍复用 PCL `SACSegmentation` 的 `SACMODEL_LINE`，通过迭代 extract inliers 得到多个候选，不自研核心分割算法
+  - 配套脚本复用现有 PX4 官方 `iris_depth_camera`、AerialCore `danube_wires`、Micro XRCE-DDS Agent、Offboard waypoint baseline、Gazebo ROS camera/P3D 和 PCL
+- 下一步：
+  - 新增 `pointcloud_pose_multiline_ransac_world_smoke`
+  - 新增 motion multi-line RANSAC 验证脚本
+  - 编译并复跑仿真截图审核
+- 阻塞项：无
+
+### 2026-06-03 11:13:27 CST
+
+- 节点：PCL 多线候选 smoke 节点与 motion wrapper 创建
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_cable_perception/src/pointcloud_pose_multiline_ransac_world_smoke.cpp`
+  - 更新 `ros2_ws/src/zcw_cable_perception/CMakeLists.txt`
+  - 参数化 `scripts/verify_depth_camera_cable_motion_ransac.sh`：
+    - 默认仍为 single-line RANSAC
+    - 可通过 `RANSAC_MODE=multiline` 切换到多线候选节点
+  - 新增 wrapper：`scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+  - 设置 wrapper 可执行权限
+  - 运行脚本语法检查
+  - 编译 `zcw_cable_perception`
+- 结果：
+  - `bash -n scripts/verify_depth_camera_cable_motion_ransac.sh` 通过
+  - `bash -n scripts/verify_depth_camera_cable_motion_multiline_ransac.sh` 通过
+  - `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception` 成功
+  - 编译仍有既有 conda runtime path 警告，但未导致失败
+- 设计边界：
+  - 多线候选只复用 PCL `SACSegmentation` / `SACMODEL_LINE` 和 `ExtractIndices`
+  - 新代码是 ROS2/PCL 薄封装，不自研核心分割算法
+  - 当前多线输出仍是 smoke test，不代表完成悬链线拟合或闭环追线
+- 下一步：
+  - 运行 `scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+  - 审核 summary、frames CSV、lines CSV 和 PCD 截图
+- 阻塞项：无
+
+### 2026-06-03 11:17:35 CST
+
+- 节点：motion 多线候选首次运行失败与 PX4 venv 诊断
+- 执行动作：
+  - 运行 `scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+  - 脚本失败后查看 wrapper log、agent log 和残留进程
+- 结果：
+  - 脚本未进入 PX4/Gazebo ready 状态
+  - wrapper log：`data/logs/depth_camera_motion_px4_20260603_111519.log.wrapper`
+  - 错误原因：
+    - `PX4 venv python not found: /tmp/codex_zcw_px4_venv/bin/python`
+    - `Run scripts/setup_px4_venv.sh first.`
+  - MicroXRCEAgent 正常启动：
+    - `data/logs/depth_camera_motion_agent_20260603_111519.log`
+  - 未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结论：
+  - 失败原因是 `/tmp` 下 PX4 venv 丢失，不是多线 RANSAC 节点或 motion 脚本逻辑失败
+- 下一步：
+  - 运行 `scripts/setup_px4_venv.sh` 重建 PX4 venv
+  - 复跑 `scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+- 阻塞项：无
+
+### 2026-06-03 11:28:16 CST
+
+- 节点：motion depth camera 多线候选 RANSAC 审核通过
+- 执行动作：
+  - 执行 `scripts/setup_px4_venv.sh`，恢复 `/tmp/codex_zcw_px4_venv`
+  - 重跑 `scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+  - 启动 PX4 官方 `iris_depth_camera`、AerialCore `danube_wires` world、Micro XRCE-DDS Agent 和电缆 waypoint baseline
+  - 在无人机飞到电缆 corridor 后，订阅 `/camera/points` 与 `/zcw/depth_camera/pose`
+  - 调用 PCL `CropBox`、`SACSegmentation<SACMODEL_LINE>` 与 `ExtractIndices`，在 world-frame ROI 内逐帧抽取多条线候选
+  - 使用 PCL Viewer 对 `frame_0_roi_world.pcd` 与 `frame_0_line_0_inliers_world.pcd` 截图审核
+- 结果：
+  - `pointcloud_pose_multiline_ransac_world_smoke` 退出码为 0
+  - 3 帧全部通过，每帧抽取 6 条线候选，`failed_frames=0`
+  - `mean_world_roi_points=348453`，`total_candidates=18`
+  - 最新汇总：`data/results/depth_camera_motion_ransac_20260603_111923/depth_camera_motion_multiline_ransac_world_20260603_112105.txt`
+  - 最新 CSV：`data/results/depth_camera_motion_ransac_20260603_111923/depth_camera_motion_multiline_ransac_world_lines_20260603_112105.csv`
+  - Gazebo 截图：`data/screenshots/depth_camera_motion_gui_20260603_111923.png`
+  - PCL 截图：`data/screenshots/pcd_ransac_frame0_20260603_112534_pcl_viewer_left.png`
+  - 截图可见一条长连续线候选；CSV 中候选方向以 x 方向为主、y 方向变化很小，符合电缆 corridor 线状目标的初步几何特征
+- 结论：
+  - 运动状态下 depth camera 点云已能稳定产生多条线候选
+  - 当前仍是 smoke test，只证明多线候选抽取链路可运行；尚未完成导线实例识别、悬链线拟合或闭环追线
+- 下一步：
+  - 将多线候选入口和证据同步到 `RUNBOOK.md`、`docs/02_cable_tracking_open_source_plan.md`、`scripts/README.md`、`OPEN_SOURCE_AUDIT.md` 和资产索引
+  - 继续推进候选合并、方向一致性筛选和 catenary/spline 拟合接口
+- 阻塞项：无
+
+### 2026-06-03 11:36:42 CST
+
+- 节点：motion 多线候选文档同步与构建复核
+- 执行动作：
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `scripts/README.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 更新 `ros2_ws/src/zcw_cable_perception/README.md`
+  - 运行脚本语法检查：
+    - `bash -n scripts/verify_depth_camera_cable_motion_ransac.sh`
+    - `bash -n scripts/verify_depth_camera_cable_motion_multiline_ransac.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 检查 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结果：
+  - 两个脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - 未发现仿真或 PCL Viewer 残留进程
+  - `data/` 下日志、截图、PCD 仍只作为本地证据，不提交进 git
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

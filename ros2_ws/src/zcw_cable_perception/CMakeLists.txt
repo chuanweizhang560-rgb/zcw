@@ -40,10 +40,21 @@ ament_target_dependencies(pointcloud_pose_line_ransac_world_smoke
   pcl_conversions
 )
 
+add_executable(pointcloud_pose_multiline_ransac_world_smoke src/pointcloud_pose_multiline_ransac_world_smoke.cpp)
+target_include_directories(pointcloud_pose_multiline_ransac_world_smoke SYSTEM PRIVATE ${PCL_INCLUDE_DIRS})
+target_link_libraries(pointcloud_pose_multiline_ransac_world_smoke ${PCL_LIBRARIES})
+ament_target_dependencies(pointcloud_pose_multiline_ransac_world_smoke
+  rclcpp
+  sensor_msgs
+  nav_msgs
+  pcl_conversions
+)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
   pointcloud_pose_line_ransac_world_smoke
+  pointcloud_pose_multiline_ransac_world_smoke
   DESTINATION lib/${PROJECT_NAME}
 )
 
