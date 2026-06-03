@@ -45,7 +45,9 @@ struct Args
   double min_x_span{40.0};
   double max_y_span{5.0};
   double max_z_span{18.0};
+  std::string group_mode{"y"};
   double y_bin_size{2.0};
+  double z_bin_size{3.0};
   int min_candidates_per_group{2};
   int min_frames_per_group{2};
   int min_accepted_groups{1};
@@ -53,7 +55,7 @@ struct Args
 
 struct GroupStats
 {
-  int group_id{0};
+  std::string group_id;
   int candidates{0};
   int min_frame{std::numeric_limits<int>::max()};
   int max_frame{std::numeric_limits<int>::min()};
@@ -156,11 +158,24 @@ bool passes_geometry_gate(const Candidate & c, const Args & args)
          z_span <= args.max_z_span;
 }
 
-std::map<int, GroupStats> build_groups(const std::vector<Candidate> & accepted, const Args & args)
+std::string group_key_for(const Candidate & c, const Args & args)
 {
-  std::map<int, GroupStats> groups;
+  const int y_bin = static_cast<int>(std::floor(c.point_y / args.y_bin_size));
+  const int z_bin = static_cast<int>(std::floor(c.point_z / args.z_bin_size));
+  if (args.group_mode == "z") {
+    return "z" + std::to_string(z_bin);
+  }
+  if (args.group_mode == "yz") {
+    return "y" + std::to_string(y_bin) + "_z" + std::to_string(z_bin);
+  }
+  return "y" + std::to_string(y_bin);
+}
+
+std::map<std::string, GroupStats> build_groups(const std::vector<Candidate> & accepted, const Args & args)
+{
+  std::map<std::string, GroupStats> groups;
   for (const auto & c : accepted) {
-    const int group_id = static_cast<int>(std::floor(c.point_y / args.y_bin_size));
+    const auto group_id = group_key_for(c, args);
     auto & g = groups[group_id];
     g.group_id = group_id;
     g.candidates += 1;
@@ -220,7 +235,9 @@ void print_usage()
     << "  --min-x-span <meters>\n"
     << "  --max-y-span <meters>\n"
     << "  --max-z-span <meters>\n"
+    << "  --group-mode <y|z|yz>\n"
     << "  --y-bin-size <meters>\n"
+    << "  --z-bin-size <meters>\n"
     << "  --min-candidates-per-group <count>\n"
     << "  --min-frames-per-group <count>\n"
     << "  --min-accepted-groups <count>\n";
@@ -256,8 +273,12 @@ Args parse_args(int argc, char ** argv)
       args.max_y_span = to_double(require_value(key));
     } else if (key == "--max-z-span") {
       args.max_z_span = to_double(require_value(key));
+    } else if (key == "--group-mode") {
+      args.group_mode = require_value(key);
     } else if (key == "--y-bin-size") {
       args.y_bin_size = to_double(require_value(key));
+    } else if (key == "--z-bin-size") {
+      args.z_bin_size = to_double(require_value(key));
     } else if (key == "--min-candidates-per-group") {
       args.min_candidates_per_group = to_int(require_value(key));
     } else if (key == "--min-frames-per-group") {
@@ -277,6 +298,12 @@ Args parse_args(int argc, char ** argv)
   }
   if (args.y_bin_size <= 0.0) {
     throw std::runtime_error("--y-bin-size must be positive");
+  }
+  if (args.z_bin_size <= 0.0) {
+    throw std::runtime_error("--z-bin-size must be positive");
+  }
+  if (args.group_mode != "y" && args.group_mode != "z" && args.group_mode != "yz") {
+    throw std::runtime_error("--group-mode must be y, z, or yz");
   }
   return args;
 }
@@ -363,7 +390,9 @@ int main(int argc, char ** argv)
     summary << "min_x_span: " << args.min_x_span << "\n";
     summary << "max_y_span: " << args.max_y_span << "\n";
     summary << "max_z_span: " << args.max_z_span << "\n";
+    summary << "group_mode: " << args.group_mode << "\n";
     summary << "y_bin_size: " << args.y_bin_size << "\n";
+    summary << "z_bin_size: " << args.z_bin_size << "\n";
     summary << "min_candidates_per_group: " << args.min_candidates_per_group << "\n";
     summary << "min_frames_per_group: " << args.min_frames_per_group << "\n";
     summary << "accepted_csv: " << accepted_path << "\n";

@@ -1,6 +1,6 @@
 # 电缆巡检开源复用工作流
 
-更新时间：2026-06-03 12:18:27 CST
+更新时间：2026-06-03 12:50:42 CST
 
 本文档只定义电缆巡检从“固定 corridor waypoint”升级到“导线感知 + 几何跟踪”的执行路线。原则不变：不自研低层飞控，不从零造传感器/模型，不自研优化器，不把 RL 接到高频控制闭环。
 
@@ -137,10 +137,22 @@
    - PCD 截图：`data/screenshots/pcd_ransac_frame0_20260603_114532_pcl_viewer_left.png`
    - 高空 ROI 结果：`geometry_gate_candidates=18`，`accepted_groups=1`，`decision=accepted_for_catenary_input_smoke`
    - 审核结论：必须使用 wire-band ROI 和一致性门限，不能把宽 ROI 的任意线候选直接送入 catenary/spline。
+17. 高空 wire-band ROI 的高度层分组审核：
+   - 工具：`multiline_candidate_consistency_audit`
+   - 验证：`scripts/audit_depth_camera_multiline_consistency.sh`
+   - 推荐分组：`GROUP_MODE=yz`，`Y_BIN_SIZE=2.0`，`Z_BIN_SIZE=3.0`
+   - 输入：`data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_lines_20260603_114312.csv`
+   - z 分组 summary：`data/results/multiline_consistency_z_20260603_124000/depth_camera_motion_multiline_consistency_z_20260603_123714.txt`
+   - z 分组 CSV：`data/results/multiline_consistency_z_20260603_124000/depth_camera_motion_multiline_consistency_z_groups_20260603_123714.csv`
+   - yz 分组 summary：`data/results/multiline_consistency_yz_20260603_124000/depth_camera_motion_multiline_consistency_yz_20260603_123719.txt`
+   - yz 分组 CSV：`data/results/multiline_consistency_yz_20260603_124000/depth_camera_motion_multiline_consistency_yz_groups_20260603_123719.csv`
+   - 结果：`groups=6`，`accepted_groups=6`，`decision=accepted_for_catenary_input_smoke`
+   - 高度层 mean z：约 `40.77m`、`43.14m`、`47.11m`、`49.88m`、`53.02m`、`55.63m`
+   - 审核结论：高空 ROI 候选已能按高度层拆成 6 个稳定导线候选组；当前场景 y 维集中，`z` 和 `yz` 分组等价，但后续推荐 `yz` 以保留横向 corridor 区分能力。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性审核。下一步不是换传感器，而是做高度层/线路编号分组，再接 Ceres/Eigen 拟合。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性和高度层分组审核。下一步不是换传感器，而是接 Ceres/Eigen 拟合输入烟测。
 
 ## 2. 采用的成熟开源组件
 
@@ -299,7 +311,7 @@ scripts/verify_depth_camera_cable_motion_multiline_ransac.sh
 scripts/audit_depth_camera_multiline_consistency.sh
 ```
 
-该入口读取多线候选 CSV，按 `dir_x/dir_y/dir_z`、`x/y/z` span 和跨帧候选组数量做安全门限审核。默认读取最新宽 ROI CSV 会得到 `rejected_for_catenary_input_smoke`；用高空 wire-band ROI CSV 运行时得到 `accepted_for_catenary_input_smoke`。该入口只做审核，不输出飞控 setpoint。
+该入口读取多线候选 CSV，按 `dir_x/dir_y/dir_z`、`x/y/z` span 和跨帧候选组数量做安全门限审核。默认读取最新宽 ROI CSV 会得到 `rejected_for_catenary_input_smoke`；用高空 wire-band ROI CSV 运行时得到 `accepted_for_catenary_input_smoke`。脚本支持 `GROUP_MODE=y|z|yz`，推荐后续高空导线候选使用 `GROUP_MODE=yz`。该入口只做审核，不输出飞控 setpoint。
 
 ## 6. 处理参数初值
 
@@ -406,7 +418,7 @@ scripts/audit_depth_camera_multiline_consistency.sh
 
 ## 10. 下一个执行节点
 
-1. 在高空 wire-band ROI 结果上增加高度层分组或线路编号分组，避免多根导线被 y-bin 合并成一个组。
-2. 输出可复查的高度层候选 CSV、RViz/PCD 截图和失败阈值记录。
-3. 高度层候选稳定后，接 Ceres/Eigen catenary/spline 与 Frenet offset path。
+1. 基于 `GROUP_MODE=yz` 的 6 个高度层候选组，接 Ceres/Eigen catenary/spline 输入烟测。
+2. 输出每个高度层的拟合参数、残差、采样中心线 CSV 和失败阈值记录。
+3. catenary/spline 拟合稳定后，再生成 Frenet offset path。
 4. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。

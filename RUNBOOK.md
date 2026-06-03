@@ -1,6 +1,6 @@
 # 执行手册
 
-更新时间：2026-06-03 12:18:27 CST
+更新时间：2026-06-03 12:50:42 CST
 
 本文件记录当前仓库的可执行入口和下一步操作顺序。
 
@@ -38,6 +38,7 @@ depth camera world-frame RANSAC 已完成静态地面审核；PointXYZ 兼容版
 depth camera + 电缆 waypoint 运动组合审核已完成；无人机在 armed Offboard 状态飞到电缆 corridor 后，PCL 截图显示塔架/导线状结构进入点云视场，RANSAC 能提取线候选。该结果仍是 smoke test，不等同于导线实例识别或闭环追线完成。
 depth camera + 电缆 waypoint 运动多线候选审核已完成；`pointcloud_pose_multiline_ransac_world_smoke` 在 world-frame corridor ROI 内每帧抽取 6 条线候选，PCL 截图显示长连续线候选。该结果仍是 smoke test，不等同于导线实例识别、悬链线拟合或闭环追线完成。
 depth camera 高空 wire-band ROI 多线候选已通过一致性审核；宽 ROI 候选因 `dir_z` 和 `z_span` 过大被拒绝，高空 ROI 候选形成 1 个跨 3 帧稳定组，可作为 catenary/spline 输入烟测的上游数据。
+depth camera 高空 wire-band ROI 候选已完成高度层分组审核；`GROUP_MODE=z` 和 `GROUP_MODE=yz` 均得到 6 个稳定高度层组，推荐后续默认使用 `yz` 分组作为 catenary/spline 输入烟测。
 
 实测成功标志：
 
@@ -332,6 +333,32 @@ accepted_groups: 1
 decision: accepted_for_catenary_input_smoke
 ```
 
+PX4 depth camera 高空 wire-band ROI 高度层分组审核：
+
+```bash
+INPUT_CSV=data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_lines_20260603_114312.csv \
+GROUP_MODE=yz \
+Y_BIN_SIZE=2.0 \
+Z_BIN_SIZE=3.0 \
+MIN_ACCEPTED_GROUPS=2 \
+OUTPUT_DIR=data/results/multiline_consistency_yz_20260603_124000 \
+OUTPUT_PREFIX=depth_camera_motion_multiline_consistency_yz \
+scripts/audit_depth_camera_multiline_consistency.sh
+```
+
+最新审核证据：
+
+```text
+summary: data/results/multiline_consistency_yz_20260603_124000/depth_camera_motion_multiline_consistency_yz_20260603_123719.txt
+groups_csv: data/results/multiline_consistency_yz_20260603_124000/depth_camera_motion_multiline_consistency_yz_groups_20260603_123719.csv
+group_mode: yz
+z_bin_size: 3
+groups: 6
+accepted_groups: 6
+decision: accepted_for_catenary_input_smoke
+height_layers_mean_z: 40.77, 43.14, 47.11, 49.88, 53.02, 55.63
+```
+
 电缆点云 PCL Viewer 截图审核：
 
 ```bash
@@ -375,8 +402,8 @@ scripts/verify_aerialcore_worlds.sh
 
 ## 下一步执行顺序
 
-1. 基于高空 wire-band ROI 的通过结果，增加高度层分组或线路编号分组，避免多根导线被 y-bin 合并成一个组。
-2. 高度层分组稳定后，接 Ceres/Eigen catenary/spline 和 Frenet offset path。
+1. 基于 `yz` 高度层分组结果，接 Ceres/Eigen catenary/spline 输入烟测。
+2. catenary/spline 拟合稳定后，再生成 Frenet offset path。
 3. 如果 depth camera 高空 ROI 后续不稳定，再评估 Gazebo ROS2 GPU ray sensor overlay，但必须复用官方 `gazebo_ros_ray_sensor`，不自写传感器插件。
 4. 对风机巡检 waypoint 做更贴近覆盖验收的圆周/螺旋几何轨迹配置。
 5. 在上述两个规则 baseline 稳定后，再进入双机/四机通信和角色分配，不提前接 RL。

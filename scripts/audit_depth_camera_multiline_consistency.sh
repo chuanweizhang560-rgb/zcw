@@ -17,7 +17,9 @@ MAX_ABS_DIR_Z="${MAX_ABS_DIR_Z:-0.18}"
 MIN_X_SPAN="${MIN_X_SPAN:-40.0}"
 MAX_Y_SPAN="${MAX_Y_SPAN:-5.0}"
 MAX_Z_SPAN="${MAX_Z_SPAN:-18.0}"
+GROUP_MODE="${GROUP_MODE:-y}"
 Y_BIN_SIZE="${Y_BIN_SIZE:-2.0}"
+Z_BIN_SIZE="${Z_BIN_SIZE:-3.0}"
 MIN_CANDIDATES_PER_GROUP="${MIN_CANDIDATES_PER_GROUP:-2}"
 MIN_FRAMES_PER_GROUP="${MIN_FRAMES_PER_GROUP:-2}"
 MIN_ACCEPTED_GROUPS="${MIN_ACCEPTED_GROUPS:-1}"
@@ -44,7 +46,9 @@ ros2 run zcw_cable_perception multiline_candidate_consistency_audit \
   --min-x-span "${MIN_X_SPAN}" \
   --max-y-span "${MAX_Y_SPAN}" \
   --max-z-span "${MAX_Z_SPAN}" \
+  --group-mode "${GROUP_MODE}" \
   --y-bin-size "${Y_BIN_SIZE}" \
+  --z-bin-size "${Z_BIN_SIZE}" \
   --min-candidates-per-group "${MIN_CANDIDATES_PER_GROUP}" \
   --min-frames-per-group "${MIN_FRAMES_PER_GROUP}" \
   --min-accepted-groups "${MIN_ACCEPTED_GROUPS}"

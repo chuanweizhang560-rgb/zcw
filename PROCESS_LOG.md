@@ -1428,6 +1428,101 @@
   - 后续进入高度层分组或线路编号分组，再接 Ceres/Eigen catenary/spline
 - 阻塞项：无
 
+### 2026-06-03 12:42:05 CST
+
+- 节点：多线候选高度层分组审核准备
+- 执行动作：
+  - 读取最新高空 wire-band ROI line CSV：
+    - `data/results/depth_camera_motion_ransac_20260603_114139/depth_camera_motion_multiline_ransac_world_lines_20260603_114312.csv`
+  - 确认候选高度 `point_z` 分布在约 `39-56m`
+  - 扩展 `multiline_candidate_consistency_audit`：
+    - 增加 `--group-mode y|z|yz`
+    - 增加 `--z-bin-size`
+  - 扩展 `scripts/audit_depth_camera_multiline_consistency.sh`：
+    - 增加 `GROUP_MODE`
+    - 增加 `Z_BIN_SIZE`
+- 设计边界：
+  - 仍是离线 CSV 审核，不接 PX4、不输出 setpoint
+  - 分组只用于判断候选是否能作为后续 Ceres/Eigen catenary/spline 的输入集合
+- 下一步：
+  - 编译 `zcw_cable_perception`
+  - 用 `GROUP_MODE=z` 和 `GROUP_MODE=yz` 分别审核高空 ROI 候选
+  - 记录哪种分组适合作为下一阶段输入
+- 阻塞项：无
+
+### 2026-06-03 12:50:42 CST
+
+- 节点：多线候选高度层分组审核通过
+- 执行动作：
+  - 运行 `bash -n scripts/audit_depth_camera_multiline_consistency.sh`
+  - 运行 `git diff --check`
+  - 编译 `zcw_cable_perception`
+  - 首次并行运行 `GROUP_MODE=z` 与 `GROUP_MODE=yz` 时发现输出目录时间戳冲突，改为指定不同 `OUTPUT_DIR` 顺序重跑
+  - 运行 z 分组：
+    - `GROUP_MODE=z`
+    - `Z_BIN_SIZE=3.0`
+    - `MIN_ACCEPTED_GROUPS=2`
+    - `OUTPUT_DIR=data/results/multiline_consistency_z_20260603_124000`
+  - 运行 yz 分组：
+    - `GROUP_MODE=yz`
+    - `Y_BIN_SIZE=2.0`
+    - `Z_BIN_SIZE=3.0`
+    - `MIN_ACCEPTED_GROUPS=2`
+    - `OUTPUT_DIR=data/results/multiline_consistency_yz_20260603_124000`
+- 结果：
+  - z 分组 summary：`data/results/multiline_consistency_z_20260603_124000/depth_camera_motion_multiline_consistency_z_20260603_123714.txt`
+  - z 分组 CSV：`data/results/multiline_consistency_z_20260603_124000/depth_camera_motion_multiline_consistency_z_groups_20260603_123714.csv`
+  - yz 分组 summary：`data/results/multiline_consistency_yz_20260603_124000/depth_camera_motion_multiline_consistency_yz_20260603_123719.txt`
+  - yz 分组 CSV：`data/results/multiline_consistency_yz_20260603_124000/depth_camera_motion_multiline_consistency_yz_groups_20260603_123719.csv`
+  - 两种分组均通过：
+    - `total_candidates=18`
+    - `geometry_gate_candidates=18`
+    - `groups=6`
+    - `accepted_groups=6`
+    - `decision=accepted_for_catenary_input_smoke`
+  - 高度层约为：
+    - `z13`：mean `40.77m`
+    - `z14`：mean `43.14m`
+    - `z15`：mean `47.11m`
+    - `z16`：mean `49.88m`
+    - `z17`：mean `53.02m`
+    - `z18`：mean `55.63m`
+- 结论：
+  - 高空 ROI 候选可以按高度层拆成 6 个稳定导线候选组
+  - 当前场景 y 维集中在同一 corridor，`z` 和 `yz` 分组结果等价；后续推荐默认使用 `yz`，为多 corridor 或多回路保留横向区分能力
+- 下一步：
+  - 将高度层分组结果同步到执行手册和电缆工作流
+  - 下一阶段可开始 Ceres/Eigen catenary/spline 输入烟测，但仍不接 PX4 闭环
+- 阻塞项：无
+
+### 2026-06-03 13:00:16 CST
+
+- 节点：高度层分组文档同步与构建复核
+- 执行动作：
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `scripts/README.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+  - 更新 `ros2_ws/src/zcw_cable_perception/README.md`
+  - 运行脚本语法检查：`bash -n scripts/audit_depth_camera_multiline_consistency.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 使用安装后的入口复跑 `GROUP_MODE=yz` 审核：
+    - `OUTPUT_DIR=data/results/multiline_consistency_yz_recheck_20260603_125000`
+    - `OUTPUT_PREFIX=depth_camera_motion_multiline_consistency_yz_recheck`
+  - 检查 `gzserver`、`gzclient`、`px4`、`gazebo`、`make`、`pcl_viewer` 残留进程
+- 结果：
+  - 脚本语法检查通过
+  - `git diff --check` 通过
+  - `zcw_cable_perception` 构建成功
+  - `yz` 复核审核退出码为 0，`accepted_groups=6`
+  - 未发现仿真或 PCL Viewer 残留进程
+  - `data/` 下日志、截图、PCD 和 CSV 仍只作为本地证据，不提交进 git
+- 下一步：
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无
+
 ### 2026-06-03 11:40:18 CST
 
 - 节点：motion 多线候选审核提交与推送
