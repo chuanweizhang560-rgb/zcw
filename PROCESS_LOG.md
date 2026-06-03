@@ -3002,3 +3002,73 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 进入 Phase A bridge RViz overlay 截图节点，不启动 Gazebo/PX4
 - 阻塞项：无
+
+### 2026-06-03 19:15:30 CST
+
+- 节点：Phase A bridge RViz overlay 截图开始
+- 执行动作：
+  - 确认仓库干净
+  - 读取 dry-run RViz 配置和截图脚本
+- 目标：
+  - 新增 bridge RViz 配置
+  - 新增 bridge RViz 截图脚本
+  - 显示 `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
+  - 检查 `/fmu/in/*` 为空
+  - 不启动 Gazebo/PX4
+- 注意：
+  - RViz 中的 `px4_local_ned_dry_run` static TF 只用于显示 debug 点，不代表闭环坐标对齐已验证
+- 下一步：
+  - 新增配置和脚本
+  - 运行真实 RViz 截图审核
+- 阻塞项：无
+
+### 2026-06-03 19:20:03 CST
+
+- 节点：Phase A bridge RViz overlay 截图通过
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_cable_perception/rviz/px4_bridge_dry_run_overlay.rviz`
+  - 新增 `scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
+  - 运行 `bash -n scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
+  - 运行 `git diff --check`
+  - 第一次运行 `scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
+  - 发现 bridge state echo 在 settle 前触发，抓到 `WAITING`
+  - 修正脚本为 settle 后再 echo bridge state 和 NED setpoint
+  - 第二次运行 `scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
+  - 读取：
+    - `data/logs/px4_bridge_dry_run_rviz_state_echo_20260603_191816.log`
+    - `data/logs/px4_bridge_dry_run_rviz_ned_echo_20260603_191816.log`
+    - `data/logs/px4_bridge_dry_run_rviz_topic_list_20260603_191816.log`
+    - `data/logs/px4_bridge_dry_run_rviz_forbidden_topics_20260603_191816.log`
+  - 目视审核截图：
+    - `data/screenshots/px4_bridge_dry_run_rviz_overlay_20260603_191816.png`
+  - 更新：
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `docs/04_cable_px4_bridge_interface_plan.md`
+    - `scripts/README.md`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+- 结果：
+  - bridge state：`DRY_RUN_READY`
+  - `phase=PHASE_A_DRY_RUN`
+  - `publishes_fmu_in=false`
+  - NED frame：`px4_local_ned_dry_run`
+  - NED debug point：
+    - `x=-40.81736630175542`
+    - `y=11.7591`
+    - `z=-41.51897885800197`
+  - topic list 未出现 `/fmu/in/*`
+  - forbidden `/fmu/in/*` topic 日志大小为 0
+  - RViz Global Status 为 OK
+  - 截图中可见：
+    - 绿色 offset path
+    - 红色 lookahead target
+    - 黄色 dry-run candidate
+    - 紫色 bridge NED dry-run debug points
+- 结论：
+  - Phase A bridge RViz overlay 截图证据通过
+  - 当前仍未启动 Gazebo/PX4，未发布 PX4 input topic
+  - `px4_local_ned_dry_run` static TF 只用于 RViz 显示，不代表闭环坐标对齐已验证
+- 下一步：
+  - 提交并推送本阶段配置、脚本、文档和进程记录
+  - 进入 PX4/Gazebo 只读坐标系对齐验证设计节点，仍不发布 `/fmu/in/*`
+- 阻塞项：无

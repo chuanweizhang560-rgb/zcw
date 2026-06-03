@@ -22,3 +22,4 @@ RViz:
 
 - `rviz/lookahead_overlay.rviz`: displays `/zcw/cable/offset_path` and `/zcw/cable/lookahead_target` for read-only visual inspection.
 - `rviz/dry_run_overlay.rviz`: displays offset path, lookahead target, dry-run candidate setpoint, and dry-run candidate path.
+- `rviz/px4_bridge_dry_run_overlay.rviz`: displays the dry-run path/candidate plus `/zcw/cable/px4_bridge/ned_setpoint_dry_run` for Phase A bridge visual inspection. It is debug-only and does not imply closed-loop PX4 frame validation.

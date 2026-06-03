@@ -42,6 +42,7 @@ depth camera 高空 wire-band ROI 候选已完成高度层分组审核；`GROUP_
 depth camera 高空 wire-band ROI 候选已完成 Ceres/Eigen 离线拟合烟测；`Z_BIN_SIZE=2.0` 下 5 个高度层拟合通过，作为后续中心线采样和 Frenet offset path 的输入。
 depth camera 高空 wire-band ROI accepted fit 已输出离线中心线采样 CSV 和 offset path CSV；默认 `PATH_STEP_M=10m`、`OFFSET_Y_M=-5m`、`OFFSET_Z_M=0m`，不接 PX4。
 depth camera 高空 wire-band ROI offset path 已完成离线连续性、曲率、步长和偏移一致性审核；5 个 group 全部通过，仍不接 PX4。
+电缆 lookahead/dry-run/Phase A PX4 bridge debug pipeline 已完成只读 topic、safety gate、dry-run candidate、bridge NED dry-run topic 和 RViz overlay 截图审核；当前仍未启动 Gazebo/PX4，也未发布 `/fmu/in/*`。
 
 实测成功标志：
 
@@ -66,6 +67,7 @@ Advancing to waypoint
 8. PX4 主日志会持续输出 `pxh>` 提示符，日志文件可能达到数百 MB；排障时只用限长 `head -c`/`tail -c` 过滤，不直接 `strings` 或全文 grep。
 9. Depth camera 依赖 Gazebo 渲染；headless 下会因为 rendering disabled 无法生成点云。验证时必须使用可用 `DISPLAY`，并把 `/opt/ros/humble`、Gazebo system plugin 目录和 ROS 2 ament 前缀显式带入 clean env。
 10. 传感器验证脚本只启动仿真和采样 ROS2 topic，不发 Offboard setpoint；GUI 里无人机停在地面是预期行为。要验证运动，使用 Offboard/waypoint 脚本。
+11. Phase A bridge RViz 中的 `px4_local_ned_dry_run` static TF 只用于显示 debug 点，不代表 PX4 local frame 闭环坐标对齐已经通过。
 
 ## 本地第三方仓库
 

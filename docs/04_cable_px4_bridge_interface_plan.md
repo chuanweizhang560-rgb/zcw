@@ -140,6 +140,9 @@ Latest Phase A evidence:
 - NED dry-run echo: `data/logs/px4_bridge_dry_run_ned_echo_20260603_190805.log`
 - topic list: `data/logs/px4_bridge_dry_run_topic_list_20260603_190805.log`
 - forbidden topic log: `data/logs/px4_bridge_dry_run_forbidden_topics_20260603_190805.log`
+- RViz overlay screenshot: `data/screenshots/px4_bridge_dry_run_rviz_overlay_20260603_191816.png`
+- RViz bridge state echo: `data/logs/px4_bridge_dry_run_rviz_state_echo_20260603_191816.log`
+- RViz bridge NED echo: `data/logs/px4_bridge_dry_run_rviz_ned_echo_20260603_191816.log`
 
 ## 7. Acceptance Criteria
 
@@ -163,6 +166,31 @@ This phase does not:
 5. publish PX4 trajectory setpoints.
 6. claim that the drone can follow the cable.
 
-## 9. Next Node
+## 9. RViz Overlay Evidence
 
-The next node should add RViz overlay evidence for the Phase A bridge dry-run setpoint. It must still avoid Gazebo/PX4 startup and must still confirm that `/fmu/in/*` topics are absent.
+Implemented screenshot script:
+
+```bash
+scripts/capture_px4_bridge_dry_run_rviz_overlay.sh
+```
+
+It starts the read-only lookahead pipeline, Phase A bridge dry-run, static TF and RViz2. It displays:
+
+1. `/zcw/cable/offset_path`
+2. `/zcw/cable/lookahead_target`
+3. `/zcw/cable/dry_run/path`
+4. `/zcw/cable/dry_run/candidate_setpoint`
+5. `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
+
+Latest result:
+
+- bridge state: `DRY_RUN_READY`
+- `publishes_fmu_in=false`
+- NED frame: `px4_local_ned_dry_run`
+- forbidden `/fmu/in/*` topics: none
+
+The RViz static transform for `px4_local_ned_dry_run` is debug-only. It is used to render the point and does not prove PX4 local-frame alignment.
+
+## 10. Next Node
+
+The next node should design a PX4/Gazebo read-only coordinate alignment test. It may start Gazebo/PX4 to compare poses, but it must still avoid `/fmu/in/*` publication unless the user explicitly approves the transition to Phase B.
