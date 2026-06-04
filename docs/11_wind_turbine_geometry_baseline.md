@@ -128,9 +128,10 @@ last_observed_local_position: x=-31.930338, y=-6.575594, z=-19.689199
 
 The first sandboxed run failed before PX4 startup because Micro XRCE-DDS could not bind UDP `8888`. The same script passed when run outside the restricted network namespace. This should be treated as an execution-environment issue, not a wind launch failure.
 
-Remaining evidence gap:
+User-confirmed visual boundary:
 
-- Target-framed Gazebo GUI screenshot for the multilevel orbit is still pending.
+- The real Gazebo GUI motion screenshot is accepted for the current wind turbine multilevel orbit evidence.
+- Per user feedback on 2026-06-04 13:54 CST, no further same-frame wind turbine screenshot is required for this node.
 
 GUI capture entry:
 
@@ -162,4 +163,4 @@ local_position: x=-42.167988, y=-35.401360, z=-35.040619
 Visual audit:
 
 - accepted as real Gazebo GUI motion evidence.
-- not accepted as target-framed inspection evidence because the wind turbine target is not visible in the screenshot.
+- target same-frame evidence is not pursued further per user confirmation.

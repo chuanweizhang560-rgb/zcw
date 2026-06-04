@@ -206,7 +206,7 @@ screenshot_size: 2560x1403
 advancements: 8
 arming_state: 2
 nav_state: 14
-visual_audit: accepted as real Gazebo GUI motion evidence; target-framed screenshot still pending
+visual_audit: accepted as real Gazebo GUI motion evidence; user confirmed no further same-frame wind turbine screenshot is required for this node
 ```
 
 风机几何 baseline 只读审计：
