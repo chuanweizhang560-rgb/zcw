@@ -3570,6 +3570,27 @@
   - 提交并推送本阶段变更
 - 阻塞项：无
 
+### 2026-06-04 13:10:07 CST
+
+- 节点：本地 ignored 证据清单审计提交与推送
+- 执行动作：
+  - 提交：`4defc69 Add evidence inventory audit`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `f3805c9` 更新到 `4defc69`
+  - 本次提交包含：
+    - `scripts/audit_evidence_inventory.sh`
+    - `docs/10_evidence_inventory.md`
+    - `docs/09_dry_run_readiness_matrix.md` evidence inventory 状态更新
+    - `RUNBOOK.md` 证据清单入口与最新结果路径
+    - `scripts/README.md` 脚本索引
+    - `PROCESS_LOG.md` 本节点过程记录
+  - `.venv/`、`data/`、`third_party/` 仍未提交
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 继续下一个节点：在不批准 Phase B active 的前提下，推进 dry-run-only 证据再生成能力或风机几何覆盖 baseline 细化
+- 阻塞项：无
+
 ### 2026-06-04 09:15:25 CST
 
 - 节点：Phase B active bridge 前置评审与边界审计提交与推送
