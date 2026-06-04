@@ -3401,3 +3401,64 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 继续下一个节点：Offboard gate dry-run RViz/debug overlay 或 Phase B active bridge 方案评审
 - 阻塞项：无
+
+### 2026-06-04 09:02:15 CST
+
+- 节点：Offboard gate dry-run RViz/debug overlay 开始
+- 执行动作：
+  - 确认工作区干净且在 `origin/codex/initial-workflow`
+  - 读取：
+    - `scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
+    - `scripts/verify_cable_offboard_gate_dry_run.sh`
+    - `ros2_ws/src/zcw_cable_perception/rviz/px4_bridge_dry_run_overlay.rviz`
+    - `scripts/README.md`
+- 目标：
+  - 新增 offboard gate dry-run RViz overlay 配置
+  - 新增真实 PX4/Gazebo + Micro XRCE-DDS + RViz 截图脚本
+  - 叠加显示 offset path、lookahead target、dry-run candidate、bridge NED dry-run、gate approved NED dry-run
+  - 审计所有 `/fmu/in/*` topic 的 `Publisher count: 0`
+  - 不启动 Offboard、不 arm、不发布 PX4 input topic
+- 环境约束：
+  - PX4 venv 必须使用持久路径 `.venv/px4_venv` 或显式 `PX4_VENV`，不得依赖 `/tmp` 持久化
+- 下一步：
+  - 新增 RViz 配置和截图脚本
+  - 运行语法检查、截图脚本和图像审核
+- 阻塞项：无
+
+### 2026-06-04 09:06:04 CST
+
+- 节点：Offboard gate dry-run RViz/debug overlay 通过
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_cable_perception/rviz/offboard_gate_dry_run_overlay.rviz`
+  - 新增 `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+  - 运行 `bash -n scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+  - 运行 `git diff --check`
+  - 运行 `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+  - 读取：
+    - `data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt`
+    - `data/logs/cable_offboard_gate_rviz_state_echo_20260604_090442.log`
+    - `data/logs/cable_offboard_gate_rviz_allowed_echo_20260604_090442.log`
+    - `data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260604_090442.log`
+  - 审核截图：
+    - `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260604_090442.png`
+  - 检查残留进程：
+    - `gzserver/gzclient/px4/gazebo`
+    - `MicroXRCEAgent`
+    - `rviz2`
+- 结果：
+  - `decision=accepted_cable_offboard_gate_rviz_overlay_capture`
+  - gate state：`PHASE_B_READY_DRY_RUN`
+  - `phase_b_allowed=false`
+  - `publishes_fmu_in=false`
+  - `abort_latched=false`
+  - 所有 `/fmu/in/*` topic 的 `Publisher count` 均为 0
+  - 截图尺寸：`2490x1522`
+  - 未发现 ROS/Gazebo/PX4/Agent/RViz 残留进程
+- 结论：
+  - Offboard gate dry-run RViz/debug overlay 通过
+  - 当前仍未启动 Offboard、未 arm、未发布 PX4 input topic
+  - RViz 中 `map -> px4_local_ned_dry_run` identity TF 仅为 debug 叠加，不代表 active frame closure
+- 下一步：
+  - 更新脚本索引、RUNBOOK、电缆计划和 Phase B gate 文档
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

@@ -39,6 +39,7 @@
 - `capture_px4_bridge_dry_run_rviz_overlay.sh`：启动只读 lookahead pipeline、Phase A bridge dry-run、static TF 和 RViz2，加载 bridge overlay 配置并截取真实 RViz 截图；不启动 Gazebo/PX4，不发布 `/fmu/in/*`。
 - `verify_px4_gazebo_readonly_frame_alignment.sh`：启动 PX4/Gazebo + Micro XRCE-DDS 和只读 bridge debug pipeline，采集 PX4 local position、Gazebo P3D pose、map candidate 和 bridge NED debug point；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `verify_cable_offboard_gate_dry_run.sh`：启动 PX4/Gazebo + Micro XRCE-DDS、只读 bridge debug pipeline 和 offboard gate dry-run，验证 `/zcw/cable/offboard_gate/*`，并确认所有 `/fmu/in/*` topic 的 publisher count 为 0。
+- `capture_cable_offboard_gate_dry_run_rviz_overlay.sh`：启动 PX4/Gazebo + Micro XRCE-DDS、只读 bridge debug pipeline、offboard gate dry-run、static TF 和 RViz2，加载 gate overlay 配置并截取真实 RViz 截图；不启动 Offboard、不 arm，并确认所有 `/fmu/in/*` topic 的 publisher count 为 0。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。

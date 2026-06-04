@@ -46,6 +46,7 @@ depth camera 高空 wire-band ROI offset path 已完成离线连续性、曲率�
 PX4/Gazebo 只读坐标采样 smoke 已完成；该节点启动 PX4/Gazebo 和 Micro XRCE-DDS，只读取 `/fmu/out/vehicle_local_position`、Gazebo P3D pose、dry-run map candidate 和 bridge NED debug point，不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 Offboard 接入前 Phase B gate 设计已写入 `docs/05_cable_phase_b_gate_plan.md`；显式批准前仍不得发布 `/fmu/in/*`。
 `cable_offboard_gate_dry_run` 已完成 headless smoke；输出 `/zcw/cable/offboard_gate/*`，状态达到 `PHASE_B_READY_DRY_RUN`，`phase_b_allowed=false`，所有 `/fmu/in/*` publisher count 为 0。
+Offboard gate dry-run RViz/debug overlay 已完成真实 PX4/Gazebo + Micro XRCE-DDS + RViz 截图审核；截图显示 offset path、lookahead target、dry-run candidate、bridge NED dry-run 和 gate approved NED dry-run debug 点，状态仍为 `phase_b_allowed=false`，所有 `/fmu/in/*` publisher count 为 0。
 
 实测成功标志：
 
@@ -72,6 +73,7 @@ Advancing to waypoint
 10. 传感器验证脚本只启动仿真和采样 ROS2 topic，不发 Offboard setpoint；GUI 里无人机停在地面是预期行为。要验证运动，使用 Offboard/waypoint 脚本。
 11. Phase A bridge RViz 中的 `px4_local_ned_dry_run` static TF 只用于显示 debug 点，不代表 PX4 local frame 闭环坐标对齐已经通过。
 12. 启动 PX4 uXRCE-DDS 后，`/fmu/in/*` 会作为 PX4 订阅 topic 出现在 ROS 图中；只读验收应检查 `Publisher count: 0`，不能简单用 topic 名存在与否判断是否发布了 setpoint。
+13. Offboard gate RViz overlay 继续使用 identity `map -> px4_local_ned_dry_run` static TF 只做 debug 叠加；NED debug 点可能在 RViz 高度方向偏离 map path，不能把该截图解释为真实控制坐标闭环已完成。
 
 ## 本地第三方仓库
 
@@ -98,8 +100,8 @@ scripts/setup_px4_venv.sh
 构建 PX4 和 Gazebo Classic 插件：
 
 ```bash
-cd third_party/PX4-Autopilot-release-1.14
-env PATH="${PWD}/.venv/px4_venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" PYTHON_EXECUTABLE="${PWD}/.venv/px4_venv/bin/python" make px4_sitl_default sitl_gazebo-classic
+PX4_VENV="${PWD}/.venv/px4_venv"
+env PATH="${PX4_VENV}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" PYTHON_EXECUTABLE="${PX4_VENV}/bin/python" make -C third_party/PX4-Autopilot-release-1.14 px4_sitl_default sitl_gazebo-classic
 ```
 
 headless 启动验证：

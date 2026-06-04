@@ -145,9 +145,7 @@ At that time, the implementation must:
 5. log arming state, nav state, publisher count, and abort state.
 6. provide a kill/abort path that returns to hold.
 
-## 10. Next Implementation Node
-
-The next implementation node should create a dry-run gate executable and verification script:
+## 10. Implemented Dry-run Gate
 
 - executable: `cable_offboard_gate_dry_run`
 - script: `scripts/verify_cable_offboard_gate_dry_run.sh`
@@ -168,3 +166,22 @@ Latest result:
 - `phase_b_allowed=false`
 - `publishes_fmu_in=false`
 - every `/fmu/in/*` topic had `Publisher count: 0`
+
+RViz/debug overlay evidence:
+
+- script: `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+- RViz config: `ros2_ws/src/zcw_cable_perception/rviz/offboard_gate_dry_run_overlay.rviz`
+- summary: `data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt`
+- screenshot: `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260604_090442.png`
+- gate state: `data/logs/cable_offboard_gate_rviz_state_echo_20260604_090442.log`
+- phase B allowed: `data/logs/cable_offboard_gate_rviz_allowed_echo_20260604_090442.log`
+- forbidden publishers: `data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260604_090442.log`
+
+RViz result:
+
+- `decision=accepted_cable_offboard_gate_rviz_overlay_capture`
+- `PHASE_B_READY_DRY_RUN`
+- `phase_b_allowed=false`
+- `publishes_fmu_in=false`
+- every `/fmu/in/*` topic had `Publisher count: 0`
+- the screenshot is a debug overlay only; identity `map -> px4_local_ned_dry_run` TF does not prove active PX4 coordinate-loop closure.

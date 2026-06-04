@@ -362,10 +362,27 @@
      - `publishes_fmu_in=false`
      - 所有 `/fmu/in/*` topic 的 `Publisher count` 均为 0
    - 审核结论：Offboard gate dry-run 通过；仍未启动 Offboard、未 arm、未发布 PX4 input topic。
+34. Offboard gate dry-run RViz/debug overlay：
+   - 工具：`scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+   - RViz 配置：`ros2_ws/src/zcw_cable_perception/rviz/offboard_gate_dry_run_overlay.rviz`
+   - 最新 summary：`data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt`
+   - 最新截图：`data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260604_090442.png`
+   - 最新日志：
+     - gate state：`data/logs/cable_offboard_gate_rviz_state_echo_20260604_090442.log`
+     - phase B allowed：`data/logs/cable_offboard_gate_rviz_allowed_echo_20260604_090442.log`
+     - approved NED dry-run：`data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260604_090442.log`
+     - forbidden publishers：`data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260604_090442.log`
+   - 结果：
+     - `decision=accepted_cable_offboard_gate_rviz_overlay_capture`
+     - `PHASE_B_READY_DRY_RUN`
+     - `phase_b_allowed=false`
+     - `publishes_fmu_in=false`
+     - 所有 `/fmu/in/*` topic 的 `Publisher count` 均为 0
+   - 审核结论：Offboard gate RViz/debug overlay 通过；截图只证明 debug topic 与 gate 状态可视化正常，不代表已进入 active Offboard 控制。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay、PX4 隔离审计、Phase A bridge dry-run isolation、Phase A bridge RViz overlay、PX4/Gazebo 只读坐标采样和 Offboard gate dry-run 均已通过。下一步仍不能直接发布 PX4 setpoint；应先做 gate RViz/debug overlay 或 Phase B active bridge 方案评审。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay、PX4 隔离审计、Phase A bridge dry-run isolation、Phase A bridge RViz overlay、PX4/Gazebo 只读坐标采样、Offboard gate dry-run 和 gate RViz/debug overlay 均已通过。下一步仍不能直接发布 PX4 setpoint；应先做 Phase B active bridge 方案评审并获得显式批准。
 
 ## 2. 采用的成熟开源组件
 
