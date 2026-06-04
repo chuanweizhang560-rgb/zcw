@@ -3933,6 +3933,32 @@
   - 提交并推送 GUI 截图脚本、文档和 PROCESS_LOG
 - 阻塞项：无
 
+### 2026-06-04 13:54:08 CST
+
+- 节点：风机 multilevel orbit GUI capture 提交与推送
+- 用户反馈：
+  - 用户确认已经看到仿真画面
+  - 用户说明如果只是为了验证与风机同框，则不需要继续补目标同框截图
+- 执行动作：
+  - 提交：`13e9b5f Add wind turbine GUI capture`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `60c7043` 更新到 `13e9b5f`
+  - 本次提交包含：
+    - `scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+    - `docs/11_wind_turbine_geometry_baseline.md` GUI 运动证据记录
+    - `RUNBOOK.md` GUI 截图入口和证据路径
+    - `scripts/README.md` 脚本索引
+    - `PROCESS_LOG.md` 失败、修正、验证过程记录
+  - `.venv/`、`data/`、`third_party/` 仍未提交
+- 结论：
+  - 风机 multilevel orbit 的真实 Gazebo GUI 运动证据已获得
+  - 按用户最新反馈，不再继续追求风机目标同框截图
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 继续后续节点
+- 阻塞项：无
+
 ### 2026-06-04 09:15:25 CST
 
 - 节点：Phase B active bridge 前置评审与边界审计提交与推送
