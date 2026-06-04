@@ -4993,6 +4993,20 @@
   - 仍不接 PX4 active control
 - 阻塞项：无
 
+### 2026-06-04 15:54:00 CST
+
+- 节点：RTAB-Map Gazebo 传感器输入候选审计推送完成
+- 执行动作：
+  - 运行 `git diff --check`
+  - 提交 `Record RTAB-Map sensor input risk`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - commit: `94abe63`
+  - 推送成功
+- 下一步：
+  - 准备 RTAB-Map + Gazebo sensor read-only smoke 的 TF/frame 方案
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
