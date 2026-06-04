@@ -185,3 +185,32 @@ RViz result:
 - `publishes_fmu_in=false`
 - every `/fmu/in/*` topic had `Publisher count: 0`
 - the screenshot is a debug overlay only; identity `map -> px4_local_ned_dry_run` TF does not prove active PX4 coordinate-loop closure.
+
+## 11. Active Preflight Boundary
+
+The active bridge preflight boundary is documented in:
+
+```bash
+docs/06_cable_phase_b_active_bridge_preflight.md
+```
+
+Implemented audit:
+
+```bash
+scripts/audit_phase_b_active_preflight_boundary.sh
+```
+
+Latest evidence:
+
+- summary: `data/results/phase_b_active_preflight_boundary_20260604_091412/phase_b_active_preflight_boundary_20260604_091412.txt`
+- static checks: `data/results/phase_b_active_preflight_boundary_20260604_091412/static_checks_20260604_091412.log`
+- evidence checks: `data/results/phase_b_active_preflight_boundary_20260604_091412/evidence_checks_20260604_091412.log`
+
+Latest result:
+
+- `decision=accepted_phase_b_active_preflight_boundary`
+- `phase_b_approved=false`
+- `active_bridge_present=false`
+- `publishes_fmu_in=false`
+
+This audit does not approve Phase B. It only proves the current repository boundary remains dry-run-only and that the local evidence needed before future active work is present.

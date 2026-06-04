@@ -3480,3 +3480,73 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 继续下一个节点：Phase B active bridge 方案评审或更严格的 Offboard active 前置审计
 - 阻塞项：无
+
+### 2026-06-04 09:09:50 CST
+
+- 节点：Phase B active bridge 前置评审与边界审计开始
+- 执行动作：
+  - 确认工作区干净并已推送到 `ea7d7d6`
+  - 读取：
+    - `docs/05_cable_phase_b_gate_plan.md`
+    - `docs/04_cable_px4_bridge_interface_plan.md`
+  - 搜索：
+    - `OffboardControlMode`
+    - `TrajectorySetpoint`
+    - `VehicleCommand`
+    - `/fmu/in/*`
+    - `phase_b_user_approved`
+- 发现：
+  - 当前 cable gate 和 bridge 仍为 dry-run
+  - 旧文档仍有 “next implementation node should create gate” 的过时表述
+  - 旧文档部分验收口径仍写成 `/fmu/in/*` topic 不存在，需要统一改为 `Publisher count: 0`
+- 硬边界：
+  - 本节点不创建 active publisher
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 新增 Phase B active bridge 前置评审文档
+  - 新增只读边界审计脚本
+  - 修正文档中过时的 Phase A/Phase B 状态描述
+- 阻塞项：无
+
+### 2026-06-04 09:12:48 CST
+
+- 节点：Phase B active bridge 前置评审与边界审计通过
+- 执行动作：
+  - 新增 `docs/06_cable_phase_b_active_bridge_preflight.md`
+  - 新增 `scripts/audit_phase_b_active_preflight_boundary.sh`
+  - 运行 `bash -n scripts/audit_phase_b_active_preflight_boundary.sh`
+  - 第一次运行审计失败：
+    - 原因：审计脚本匹配到自己的 `phase_b_user_approved:=true` 检查正则
+    - 处理：从该检查中排除自身脚本
+  - 第二次运行审计失败：
+    - 原因：审计脚本匹配到 `scripts/audit_px4_isolation.sh` 中的 `/fmu/in/*` 检查正则
+    - 处理：从 direct publish 检查中排除 `audit_px4_isolation.sh`
+  - 第三次运行 `scripts/audit_phase_b_active_preflight_boundary.sh` 通过
+  - 文档更新后再次运行 `scripts/audit_phase_b_active_preflight_boundary.sh` 通过
+  - 读取：
+    - `data/results/phase_b_active_preflight_boundary_20260604_091412/phase_b_active_preflight_boundary_20260604_091412.txt`
+    - `data/results/phase_b_active_preflight_boundary_20260604_091412/static_checks_20260604_091412.log`
+    - `data/results/phase_b_active_preflight_boundary_20260604_091412/evidence_checks_20260604_091412.log`
+  - 更新：
+    - `scripts/README.md`
+    - `RUNBOOK.md`
+    - `docs/04_cable_px4_bridge_interface_plan.md`
+    - `docs/05_cable_phase_b_gate_plan.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - `decision=accepted_phase_b_active_preflight_boundary`
+  - `phase_b_approved=false`
+  - `active_bridge_present=false`
+  - `publishes_fmu_in=false`
+  - 静态检查确认没有 cable active bridge、没有 cable-specific `/fmu/in/*` publisher、脚本没有开启 `phase_b_user_approved`
+  - 本地 dry-run 证据文件均存在且内容通过
+- 结论：
+  - 当前仓库边界仍为 dry-run-only
+  - Phase B 仍未获批准
+  - 不得创建 active publisher，不得启动 Offboard，不得 arm
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本阶段文档、审计脚本和进程记录
+- 阻塞项：无

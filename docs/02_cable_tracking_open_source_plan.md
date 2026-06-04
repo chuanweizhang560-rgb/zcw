@@ -379,10 +379,23 @@
      - `publishes_fmu_in=false`
      - 所有 `/fmu/in/*` topic 的 `Publisher count` 均为 0
    - 审核结论：Offboard gate RViz/debug overlay 通过；截图只证明 debug topic 与 gate 状态可视化正常，不代表已进入 active Offboard 控制。
+35. Phase B active bridge 前置边界审计：
+   - 文档：`docs/06_cable_phase_b_active_bridge_preflight.md`
+   - 工具：`scripts/audit_phase_b_active_preflight_boundary.sh`
+   - 最新 summary：`data/results/phase_b_active_preflight_boundary_20260604_091412/phase_b_active_preflight_boundary_20260604_091412.txt`
+   - 最新日志：
+     - static checks：`data/results/phase_b_active_preflight_boundary_20260604_091412/static_checks_20260604_091412.log`
+     - evidence checks：`data/results/phase_b_active_preflight_boundary_20260604_091412/evidence_checks_20260604_091412.log`
+   - 结果：
+     - `decision=accepted_phase_b_active_preflight_boundary`
+     - `phase_b_approved=false`
+     - `active_bridge_present=false`
+     - `publishes_fmu_in=false`
+   - 审核结论：当前仓库边界仍是 dry-run-only；没有 cable active bridge，没有 cable-specific `/fmu/in/*` publisher，脚本没有开启 `phase_b_user_approved`。这不是 Phase B 批准。
 
 当前 baseline 只证明 PX4 Offboard setpoint 链路和电塔导线场景可跑，不代表已经具备导线感知和追踪能力。
 当前 RANSAC smoke test 只证明真实仿真 PointCloud2 能进入成熟 PCL 线模型并产生候选线，不代表已经完成导线实例识别、悬链线拟合或闭环跟踪。
-当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay、PX4 隔离审计、Phase A bridge dry-run isolation、Phase A bridge RViz overlay、PX4/Gazebo 只读坐标采样、Offboard gate dry-run 和 gate RViz/debug overlay 均已通过。下一步仍不能直接发布 PX4 setpoint；应先做 Phase B active bridge 方案评审并获得显式批准。
+当前 batch smoke test 进一步证明线模型在短时多帧中稳定存在；PCL Viewer 截图证明可视化链路可复跑；foggy lidar pose/topic 验证补齐了世界坐标基础。world-frame 审核已经证明 foggy lidar 线候选基本处于地面高度，不应视为导线。PX4 官方 depth camera 已输出 `/camera/points` 和 `/zcw/depth_camera/pose`；静态 world-frame RANSAC 不通过导线可见性验收，但运动状态组合验证已经显示塔架/导线状结构进入点云视场。宽 ROI 多线候选被一致性门限拒绝，高空 wire-band ROI 多线候选已通过一致性、高度层分组、Ceres/Eigen 拟合输入烟测，并生成通过连续性和 lookahead 审核的离线中心线/offset path。只读 ROS topic、RViz overlay、只读安全状态机、dry-run candidate setpoint、dry-run RViz overlay、PX4 隔离审计、Phase A bridge dry-run isolation、Phase A bridge RViz overlay、PX4/Gazebo 只读坐标采样、Offboard gate dry-run、gate RViz/debug overlay 和 Phase B active preflight boundary 均已通过。下一步仍不能直接发布 PX4 setpoint；必须获得显式批准后才能创建 active bridge。
 
 ## 2. 采用的成熟开源组件
 

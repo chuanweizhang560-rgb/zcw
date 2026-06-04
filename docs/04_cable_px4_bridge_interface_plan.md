@@ -14,7 +14,7 @@ Current Phase A status:
   - bridge state: `DRY_RUN_READY`
   - `publishes_fmu_in=false`
   - NED frame: `px4_local_ned_dry_run`
-  - forbidden `/fmu/in/*` topics: none
+  - no local `/fmu/in/*` publisher; when PX4 is running, every `/fmu/in/*` topic has `Publisher count: 0`
 
 ## 1. Package Boundary
 
@@ -129,9 +129,9 @@ Required behavior:
 4. Start the future bridge in Phase A only.
 5. Echo `/zcw/cable/px4_bridge/state`.
 6. Echo `/zcw/cable/px4_bridge/ned_setpoint_dry_run`.
-7. Confirm `/fmu/in/trajectory_setpoint` is absent.
-8. Confirm `/fmu/in/offboard_control_mode` is absent.
-9. Confirm `/fmu/in/vehicle_command` is absent.
+7. Confirm `/fmu/in/trajectory_setpoint` has no local publisher if present.
+8. Confirm `/fmu/in/offboard_control_mode` has no local publisher if present.
+9. Confirm `/fmu/in/vehicle_command` has no local publisher if present.
 10. Confirm no Gazebo/PX4 process is required for this Phase A isolation test.
 
 Latest Phase A evidence:
@@ -153,7 +153,7 @@ Phase A passes only if:
 1. bridge state reaches `DRY_RUN_READY`.
 2. NED dry-run setpoint is finite.
 3. NED dry-run jump remains within limits.
-4. no `/fmu/in/*` topics exist.
+4. no local `/fmu/in/*` publishers exist; if PX4 uXRCE-DDS is running, every `/fmu/in/*` topic has `Publisher count: 0`.
 5. `scripts/audit_px4_isolation.sh` still passes for `zcw_cable_perception`.
 6. PROCESS_LOG records all evidence paths.
 
@@ -189,7 +189,7 @@ Latest result:
 - bridge state: `DRY_RUN_READY`
 - `publishes_fmu_in=false`
 - NED frame: `px4_local_ned_dry_run`
-- forbidden `/fmu/in/*` topics: none
+- no local `/fmu/in/*` publishers
 
 The RViz static transform for `px4_local_ned_dry_run` is debug-only. It is used to render the point and does not prove PX4 local-frame alignment.
 
@@ -213,12 +213,31 @@ Latest result:
 
 PX4 uXRCE-DDS creates `/fmu/in/*` subscriptions, so those topic names can appear even when this project publishes nothing into them.
 
-## 11. Next Node
+## 11. Implemented Gate and Active Preflight
 
-The Phase B gate design is documented in:
+The Phase B gate design and dry-run evidence are documented in:
 
 ```bash
 docs/05_cable_phase_b_gate_plan.md
 ```
 
-The next implementation node should create `cable_offboard_gate_dry_run` and `scripts/verify_cable_offboard_gate_dry_run.sh`. It must not directly connect the dry-run candidate to `/fmu/in/trajectory_setpoint` without an explicit user-approved transition and a logged publisher audit.
+The active bridge preflight boundary is documented in:
+
+```bash
+docs/06_cable_phase_b_active_bridge_preflight.md
+```
+
+Implemented preflight audit:
+
+```bash
+scripts/audit_phase_b_active_preflight_boundary.sh
+```
+
+Latest result:
+
+- `decision=accepted_phase_b_active_preflight_boundary`
+- `phase_b_approved=false`
+- `active_bridge_present=false`
+- `publishes_fmu_in=false`
+
+The next implementation node must not directly connect the dry-run candidate to `/fmu/in/trajectory_setpoint` without an explicit user-approved transition and a logged publisher audit.
