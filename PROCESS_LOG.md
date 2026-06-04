@@ -4837,6 +4837,21 @@
   - 提交并推送 SLAM 审计和 RTAB-Map 安装记录
 - 阻塞项：无
 
+### 2026-06-04 15:31:00 CST
+
+- 节点：SLAM 开源审计与 RTAB-Map 安装记录推送完成
+- 执行动作：
+  - 运行 `bash -n scripts/audit_rtabmap_installation.sh`
+  - 运行 `git diff --check`
+  - 提交 `Add SLAM open-source readiness audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - commit: `2cc44f3`
+  - 推送成功
+- 下一步：
+  - 准备 RTAB-Map read-only node smoke，不接 PX4 active control
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
