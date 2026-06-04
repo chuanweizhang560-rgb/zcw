@@ -4617,6 +4617,115 @@
   - 继续推进两机 headless 只读 topic 审计准备
 - 阻塞项：无
 
+### 2026-06-04 14:52:00 CST
+
+- 节点：两机 headless 只读 topic 审计脚本准备
+- 背景：
+  - PX4 上游多实例静态审计已通过
+  - 下一步只能做两机只读 topic 审计，不能做多机 Offboard 或 RL
+- 执行动作：
+  - 读取现有单机 clean env 启动脚本
+  - 读取现有 Micro XRCE-DDS + ROS 2 topic 验证脚本
+  - 新增 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 更新 `docs/12_multi_vehicle_readiness.md`
+  - 更新 `scripts/README.md`
+- 脚本边界：
+  - 启动两台 PX4 SITL `iris` 和 Gazebo Classic headless
+  - 启动 Micro XRCE-DDS Agent
+  - 只验证 `/px4_1/fmu/out/vehicle_status` 和 `/px4_2/fmu/out/vehicle_status`
+  - 检查 `/fmu/in/*`、`/px4_1/fmu/in/*`、`/px4_2/fmu/in/*` publisher count 为 0
+  - 不启动 Offboard
+  - 不 arm
+- 下一步：
+  - 运行 `bash -n scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 尝试运行两机只读 smoke；如受 sandbox UDP/Gazebo 限制失败，再用已批准流程请求非 sandbox 执行
+- 阻塞项：无
+
+### 2026-06-04 14:58:00 CST
+
+- 节点：两机 headless 只读 topic 审计首次运行失败并修正
+- 执行动作：
+  - 运行 `chmod +x scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 运行 `bash -n scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - sandbox 内运行 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 非 sandbox 运行 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+- 失败现象：
+  - sandbox 内：Micro XRCE-DDS UDP 8888 `socket error errno: 1`
+  - 非 sandbox：PX4 `setup_gazebo.bash` 在 `set -u` 下读取未绑定 `GAZEBO_PLUGIN_PATH`
+- 处理：
+  - sandbox UDP 失败确认为执行环境限制
+  - 用户已批准 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh` 非 sandbox 前缀
+  - 脚本修正为 source `setup_gazebo.bash` 前初始化 `GAZEBO_PLUGIN_PATH`、`GAZEBO_MODEL_PATH`、`GAZEBO_RESOURCE_PATH`、`LD_LIBRARY_PATH`
+- 下一步：
+  - 重新运行 `bash -n`
+  - 重新运行两机只读 smoke
+- 阻塞项：无
+
+### 2026-06-04 15:02:00 CST
+
+- 节点：两机 headless 只读 topic 审计首次通过但证据不采纳为最终
+- 执行动作：
+  - 非 sandbox 重新运行 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 读取 `data/results/multi_vehicle_readonly_20260604_141509/multi_vehicle_readonly_20260604_141509.txt`
+  - 读取 `data/logs/multi_vehicle_topics_20260604_141509.log`
+  - 读取 `data/logs/multi_vehicle_forbidden_publishers_20260604_141509.log`
+- 结果：
+  - `decision=accepted_multi_vehicle_readonly_smoke`
+  - `/px4_1/fmu/out/vehicle_status` 已出现
+  - `/px4_2/fmu/out/vehicle_status` 已出现
+  - `/px4_1/fmu/in/*` 和 `/px4_2/fmu/in/*` 关键 setpoint topic publisher count 均为 0
+- 不采纳为最终证据的原因：
+  - 脚本输出显示继承了旧 `BS`/`UAV` 的 `GAZEBO_MODEL_PATH` 和 `LD_LIBRARY_PATH`
+  - 这违反 clean env 要求
+- 修正：
+  - 脚本改为 source PX4 `setup_gazebo.bash` 前强制清空 `GAZEBO_PLUGIN_PATH`、`GAZEBO_MODEL_PATH`、`LD_LIBRARY_PATH`
+  - `GAZEBO_RESOURCE_PATH` 固定为 `/usr/share/gazebo-11`
+  - summary 增加 `clean_gazebo_env=true`
+- 下一步：
+  - 重新运行语法检查
+  - 重新运行两机只读 smoke，采纳 clean env 结果
+- 阻塞项：无
+
+### 2026-06-04 15:06:00 CST
+
+- 节点：两机 headless 只读 topic 审计 clean env 通过
+- 执行动作：
+  - 重新运行 `bash -n scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 非 sandbox 重新运行 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 读取 `data/results/multi_vehicle_readonly_20260604_141601/multi_vehicle_readonly_20260604_141601.txt`
+  - 读取 `data/logs/multi_vehicle_topics_20260604_141601.log`
+  - 读取 `data/logs/multi_vehicle_forbidden_publishers_20260604_141601.log`
+  - 更新 `docs/12_multi_vehicle_readiness.md`
+  - 更新 `RUNBOOK.md`
+- 证据：
+  - summary: `data/results/multi_vehicle_readonly_20260604_141601/multi_vehicle_readonly_20260604_141601.txt`
+  - topics: `data/logs/multi_vehicle_topics_20260604_141601.log`
+  - forbidden publishers: `data/logs/multi_vehicle_forbidden_publishers_20260604_141601.log`
+  - agent log: `data/logs/multi_vehicle_agent_20260604_141601.log`
+  - Gazebo log: `data/logs/multi_vehicle_gzserver_20260604_141601.log`
+- 结果：
+  - `decision=accepted_multi_vehicle_readonly_smoke`
+  - `starts_ros=true`
+  - `starts_px4=true`
+  - `starts_gazebo=true`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `num_vehicles=2`
+  - `observed_px4_1_vehicle_status=true`
+  - `observed_px4_2_vehicle_status=true`
+  - `forbidden_publishers_zero=true`
+  - `clean_gazebo_env=true`
+- 结论：
+  - 两机 PX4/Gazebo Classic + Micro XRCE-DDS + ROS 2 namespace 输出链路已跑通
+  - 关键 setpoint 输入 topic publisher count 为 0
+  - 仍未启动 Offboard，未 arm，未进入多机控制或 RL
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本节点
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始

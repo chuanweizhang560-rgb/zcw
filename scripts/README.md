@@ -50,6 +50,7 @@
 - `audit_dry_run_readiness.sh`：总 dry-run readiness 审计，串行运行 PX4 隔离、Phase B preflight、阈值和 review template 审计，并检查 ignored 产物目录；不启动 ROS/PX4/Gazebo，不发布 `/fmu/in/*`。
 - `audit_evidence_inventory.sh`：只读检查当前 dry-run 边界依赖的本地 ignored 证据文件是否存在、是否仍被 git 忽略，并输出再生成入口清单；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_multi_vehicle_upstream_readiness.sh`：只读检查 PX4 release/1.14 的 Gazebo Classic 多实例脚本、实例 MAVLink 端口、`MAV_SYS_ID`、`UXRCE_DDS_KEY` 和 DDS namespace 支持；不启动 ROS/PX4/Gazebo/RViz。
+- `verify_px4_gazebo_classic_multi_vehicle_readonly.sh`：按 PX4 官方 Gazebo Classic 多实例机制启动两台 `iris`、Micro XRCE-DDS 和 Gazebo headless，只验证 `/px4_1/fmu/out/*`、`/px4_2/fmu/out/*` 输出 topic 与 `/fmu/in/*` publisher count 为 0；不启动 Offboard、不 arm。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。

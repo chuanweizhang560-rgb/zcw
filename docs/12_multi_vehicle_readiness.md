@@ -9,8 +9,8 @@ It does not approve multi-vehicle Offboard control.
 The project may proceed toward multi-vehicle simulation only through official PX4 multi-instance entry points and staged read-only verification:
 
 1. static upstream audit.
-2. two-vehicle headless read-only startup.
-3. two-vehicle ROS 2 topic namespace audit.
+2. two-vehicle headless read-only startup. Accepted.
+3. two-vehicle ROS 2 topic namespace audit. Accepted.
 4. two-vehicle rule baseline only after read-only topics are isolated.
 5. four-vehicle startup only after two-vehicle evidence is accepted.
 
@@ -94,14 +94,57 @@ Latest accepted result:
 
 ## 5. Next Allowed Work
 
+Two-vehicle read-only smoke:
+
+```bash
+scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh
+```
+
+Latest evidence:
+
+- summary: `data/results/multi_vehicle_readonly_20260604_141601/multi_vehicle_readonly_20260604_141601.txt`
+- topics: `data/logs/multi_vehicle_topics_20260604_141601.log`
+- forbidden publishers: `data/logs/multi_vehicle_forbidden_publishers_20260604_141601.log`
+- agent log: `data/logs/multi_vehicle_agent_20260604_141601.log`
+- Gazebo log: `data/logs/multi_vehicle_gzserver_20260604_141601.log`
+
+Observed result:
+
+```text
+decision=accepted_multi_vehicle_readonly_smoke
+starts_ros=true
+starts_px4=true
+starts_gazebo=true
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+num_vehicles=2
+observed_px4_1_vehicle_status=true
+observed_px4_2_vehicle_status=true
+forbidden_publishers_zero=true
+clean_gazebo_env=true
+```
+
+Topic evidence:
+
+- `/px4_1/fmu/out/vehicle_status` observed.
+- `/px4_2/fmu/out/vehicle_status` observed.
+- `/px4_1/fmu/in/offboard_control_mode` publisher count: `0`.
+- `/px4_1/fmu/in/trajectory_setpoint` publisher count: `0`.
+- `/px4_1/fmu/in/vehicle_command` publisher count: `0`.
+- `/px4_2/fmu/in/offboard_control_mode` publisher count: `0`.
+- `/px4_2/fmu/in/trajectory_setpoint` publisher count: `0`.
+- `/px4_2/fmu/in/vehicle_command` publisher count: `0`.
+
 Allowed next:
 
-1. add a two-vehicle headless read-only smoke wrapper.
-2. start only PX4/Gazebo/Micro XRCE-DDS.
-3. verify `/fmu/out/*` and namespaced `/px4_1/fmu/out/*` topics.
-4. confirm no project code publishes `/fmu/in/*` or `/px4_1/fmu/in/*`.
+1. document the two-vehicle read-only evidence in the main runbook.
+2. add a two-vehicle rule-baseline design document.
+3. keep two-vehicle Offboard disabled until the rule-baseline design is reviewed.
+4. keep four-vehicle startup disabled until two-vehicle rule-baseline evidence is accepted.
 
-Forbidden until the read-only two-vehicle audit passes:
+Still forbidden until the two-vehicle rule-baseline design and evidence are accepted:
 
 1. two-vehicle Offboard.
 2. two-vehicle arming from project code.
