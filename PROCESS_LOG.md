@@ -4496,6 +4496,21 @@
   - 提交并推送本节点
 - 阻塞项：无
 
+### 2026-06-04 14:33:00 CST
+
+- 节点：风机证据纳入 ignored evidence inventory 推送完成
+- 执行动作：
+  - 运行 `bash -n scripts/audit_evidence_inventory.sh`
+  - 运行 `git diff --check`
+  - 提交 `Track wind turbine evidence inventory`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - commit: `45a7367`
+  - 推送成功
+- 下一步：
+  - 继续推进下一个不触碰电缆 Phase B active 的可验证节点
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
