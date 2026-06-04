@@ -114,6 +114,23 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 - `marlbenchmark/on-policy` 默认环境较旧，不能直接假设可在当前 Python/ROS 2 环境运行。
 - 第一版先规则 baseline，再 PPO，再 MAPPO。
 
+### 3.5.1 SLAM / 建图候选
+
+| 候选 | 来源 | 许可证 | 用途 | 初步判断 |
+|---|---|---|---|---|
+| RTAB-Map ROS | https://github.com/introlab/rtabmap_ros | BSD-3-Clause | ROS 2 RGB-D/3D LiDAR SLAM、建图、回环和数据库 | ROS 2 Humble 支持最明确，作为第一优先 SLAM smoke 候选 |
+| MIT-SPARK `spark-fast-lio` | https://github.com/MIT-SPARK/spark-fast-lio | 克隆后复核 | ROS 2 FAST-LIO2 LiDAR-inertial mapping | 适合后续 LIO；先审计 IMU/LiDAR topic 字段和外参 |
+| LIO-SAM ROS2 | https://github.com/TixiaoShan/LIO-SAM / https://github.com/pixwyh/LIO-SAM-ROS2 | BSD-3-Clause 候选，克隆后复核 | LiDAR-inertial odometry、factor graph、loop closure | 输入字段要求严格，Gazebo LiDAR 必须提供 ring/time 或适配 |
+| LVI-SAM | https://arxiv.org/abs/2104.10831 | 实现许可证待复核 | LiDAR-visual-inertial SLAM | 科学方案贴合，但 ROS 2/Gazebo 接入成本高，暂缓 |
+| OctoMap / occupancy mapping | ROS 2/系统包待本机复核 | 待复核 | 占据图与后续地图熵 | 只在有可信 pose/map 输出后接入 |
+
+结论：
+
+1. SLAM 当前尚未完成，已有点云/RANSAC/坐标调试不等同于 SLAM。
+2. 第一阶段优先做 RTAB-Map ROS 2 read-only smoke，不接 PX4 active control。
+3. FAST-LIO/LIO-SAM/LVI-SAM 只能在传感器字段、外参和 ROS 2 构建通过后进入后续阶段。
+4. 不允许自研 SLAM 核心，只允许做 topic remap、launch、参数和证据审计。
+
 ### 3.6 模型与场景资产
 
 | 候选 | 来源 | 许可证 | 用途 | 初步判断 |

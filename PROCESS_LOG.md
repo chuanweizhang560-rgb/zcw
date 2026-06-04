@@ -4741,6 +4741,102 @@
   - 继续推进两机规则 baseline 设计文档，仍不进入多机 Offboard 或 RL
 - 阻塞项：无
 
+### 2026-06-04 15:18:00 CST
+
+- 节点：SLAM/建图开源方案审计开始
+- 背景：
+  - 用户询问 SLAM 是否完成
+  - 当前仓库已有点云、RANSAC、dry-run `map` frame 和 RViz overlay，但没有真实 SLAM
+- 执行动作：
+  - 检索 RTAB-Map ROS、spark-fast-lio、LIO-SAM ROS2、LVI-SAM、FAST-LIO2 相关开源/论文来源
+  - 读取 `OPEN_SOURCE_AUDIT.md`
+  - 读取 `docs/00_workflow.md`
+  - 新增 `docs/13_slam_open_source_readiness.md`
+  - 更新 `OPEN_SOURCE_AUDIT.md`
+  - 更新 `RUNBOOK.md`
+- 结论：
+  - SLAM 尚未完成
+  - 当前 PCL RANSAC/点云提取不能等同于 SLAM
+  - RTAB-Map ROS 2 是第一优先 read-only mapping smoke 候选
+  - spark-fast-lio 是后续 LIO 候选
+  - LIO-SAM ROS2 对 point cloud `ring/time` 字段要求严格，需先做传感器字段审计
+  - LVI-SAM 科学上贴合，但 ROS 2/Gazebo 接入成本高，暂缓
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不接 active control
+  - 不自研 SLAM 核心
+- 下一步：
+  - 检查 RTAB-Map ROS 2 是否已通过 apt 安装
+  - 如未安装，再评估克隆 `introlab/rtabmap_ros` 到 `third_party/`
+- 阻塞项：无
+
+### 2026-06-04 15:25:00 CST
+
+- 节点：RTAB-Map ROS 2 安装与只读审计入口建立
+- 执行动作：
+  - 检查本机未安装 RTAB-Map ROS 2 包
+  - 运行 `apt-cache policy ros-humble-rtabmap-ros ros-humble-rtabmap-slam ros-humble-rtabmap-odom ros-humble-rtabmap-util`
+  - 确认 apt 源存在 `ros-humble-rtabmap-ros 0.22.1`
+  - 运行 `sudo apt-get install -y ros-humble-rtabmap-ros`
+  - 验证 `dpkg -l` 中 RTAB-Map 关键包已安装
+  - 验证 `ros2 pkg list` 中出现 `rtabmap_*` 包
+  - 验证 `ros2 pkg executables` 中出现 `rtabmap_slam rtabmap`、`rtabmap_odom icp_odometry`、`rtabmap_odom rgbd_odometry` 等节点
+  - 新增 `scripts/audit_rtabmap_installation.sh`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `scripts/README.md`
+  - 更新 `RUNBOOK.md`
+- 安装结果：
+  - `ros-humble-rtabmap=0.22.1-1jammy.20260414.170043`
+  - `ros-humble-rtabmap-ros=0.22.1-1jammy.20260427.161203`
+  - `ros-humble-rtabmap-slam=0.22.1-1jammy.20260427.155807`
+  - `ros-humble-rtabmap-odom=0.22.1-1jammy.20260425.083542`
+  - `ros-humble-rtabmap-util=0.22.1-1jammy.20260422.094350`
+- 边界：
+  - 本节点只安装和审计开源 SLAM 包
+  - 不启动 PX4/Gazebo/RViz
+  - 不接 active control
+  - 不自研 SLAM 核心
+- 下一步：
+  - 运行 `bash -n scripts/audit_rtabmap_installation.sh`
+  - 运行 `scripts/audit_rtabmap_installation.sh`
+  - 提交并推送 SLAM 审计与 RTAB-Map 安装记录
+- 阻塞项：无
+
+### 2026-06-04 15:28:00 CST
+
+- 节点：RTAB-Map ROS 2 安装审计通过
+- 执行动作：
+  - 运行 `chmod +x scripts/audit_rtabmap_installation.sh`
+  - 运行 `bash -n scripts/audit_rtabmap_installation.sh`
+  - 运行 `scripts/audit_rtabmap_installation.sh`
+  - 读取 `data/results/rtabmap_installation_20260604_142246/rtabmap_installation_20260604_142246.txt`
+  - 读取 `data/results/rtabmap_installation_20260604_142246/rtabmap_executables_20260604_142246.log`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 证据：
+  - summary: `data/results/rtabmap_installation_20260604_142246/rtabmap_installation_20260604_142246.txt`
+  - dpkg log: `data/results/rtabmap_installation_20260604_142246/rtabmap_dpkg_20260604_142246.log`
+  - ROS 2 package log: `data/results/rtabmap_installation_20260604_142246/rtabmap_ros2_packages_20260604_142246.log`
+  - executable log: `data/results/rtabmap_installation_20260604_142246/rtabmap_executables_20260604_142246.log`
+- 结果：
+  - `decision=accepted_rtabmap_installation`
+  - `reason=rtabmap_ros2_packages_and_required_executables_present`
+  - `missing_count=0`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+- 结论：
+  - RTAB-Map ROS 2 Humble 依赖已具备
+  - 下一步可以做 read-only RTAB-Map node smoke
+  - 仍不能声称 SLAM 已完成，仍不能接 PX4 active control
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送 SLAM 审计和 RTAB-Map 安装记录
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
