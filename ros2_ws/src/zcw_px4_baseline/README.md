@@ -8,7 +8,7 @@ Current node:
 - `offboard_hover_retry`: keeps publishing a fixed NED position setpoint and retries
   Offboard/arm commands until PX4 reports armed Offboard state.
 - `offboard_waypoint_sequence`: publishes a fixed NED waypoint sequence through PX4
-  Offboard position setpoints and advances using PX4 local-position feedback.
+  Offboard position/yaw setpoints and advances using PX4 local-position feedback.
 - `cable_px4_bridge_dry_run`: Phase A cable bridge dry-run node. It converts
   `/zcw/cable/dry_run/candidate_setpoint` into a debug NED setpoint under
   `/zcw/cable/px4_bridge/*`; it does not publish `/fmu/in/*`.

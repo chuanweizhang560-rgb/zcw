@@ -15,6 +15,7 @@
 - `verify_px4_offboard_waypoints.sh`：通过 `zcw_bringup/single_vehicle_waypoint_sequence.launch.py` 运行 waypoint baseline，验证单机可按位置 setpoint 前进。
 - `verify_wind_turbine_waypoints.sh`：加载 AerialCore 风机 world，并运行最小风机巡检几何 waypoint baseline。
 - `audit_wind_turbine_geometry_baseline.sh`：只读解析 AerialCore 风机 world、DAE 粗边界和当前风机 waypoint launch，输出当前 baseline 几何审计和待审推荐 orbit CSV；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `verify_wind_turbine_multilevel_orbit.sh`：加载 AerialCore 风机 world，并运行独立 multilevel orbit waypoint/yaw baseline；该脚本会启动 PX4 Offboard/arm，仅用于风机规则 baseline 验证，不属于电缆 Phase B active。
 - `verify_cable_waypoints.sh`：加载 AerialCore 两塔导线 world，并运行最小电缆巡检几何 waypoint baseline。
 - `verify_foggy_lidar_pointcloud.sh`：加载 AerialCore 两塔导线 world 和 PX4 `iris_foggy_lidar`，验证 ROS2 `/zcw/foggy_lidar/points` PointCloud2 输出。
 - `verify_foggy_lidar_pose.sh`：验证 foggy lidar PointCloud2 `frame_id=foggy_lidar_link`，以及官方 `gazebo_ros_p3d` 输出 `/zcw/foggy_lidar/pose` Odometry。

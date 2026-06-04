@@ -96,4 +96,38 @@ The recommended CSV is a planning artifact, not an approved active mission.
 
 Keep `single_vehicle_wind_turbine_inspection.launch.py` as the already verified movement smoke baseline.
 
-The next implementation node should create a separate wind turbine multilevel orbit launch after reviewing yaw/frame behavior. It must have its own headless verification and real Gazebo screenshot evidence.
+The next implementation node is a separate wind turbine multilevel orbit launch:
+
+- launch: `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+- verification wrapper: `scripts/verify_wind_turbine_multilevel_orbit.sh`
+- setpoint layer: existing PX4 official-example-derived `offboard_waypoint_sequence`
+- yaw handling: optional `yaws_rad`; old launches keep yaw `0.0` by default
+
+This launch still needs its own headless verification and real Gazebo screenshot evidence before it can replace the old wind turbine smoke baseline in reports.
+
+## 6. Multilevel Orbit Headless Result
+
+Latest headless verification:
+
+- command: `scripts/verify_wind_turbine_multilevel_orbit.sh`
+- agent log: `data/logs/waypoints_agent_20260604_132205.log`
+- PX4 log: `data/logs/waypoints_px4_20260604_132205.log`
+- waypoint log: `data/logs/waypoints_control_20260604_132205.log`
+- vehicle status: `data/logs/waypoints_vehicle_status_20260604_132205.log`
+- vehicle local position: `data/logs/waypoints_vehicle_local_position_20260604_132205.log`
+
+Observed result:
+
+```text
+PX4 Offboard waypoint baseline verified.
+arming_state: 2
+nav_state: 14
+last_observed_advancement: waypoint 29 [-35.00, -7.68, -19.67], yaw -1.05
+last_observed_local_position: x=-31.930338, y=-6.575594, z=-19.689199
+```
+
+The first sandboxed run failed before PX4 startup because Micro XRCE-DDS could not bind UDP `8888`. The same script passed when run outside the restricted network namespace. This should be treated as an execution-environment issue, not a wind launch failure.
+
+Remaining evidence gap:
+
+- Real Gazebo GUI screenshot for the multilevel orbit is still pending.

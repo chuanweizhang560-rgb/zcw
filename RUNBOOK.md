@@ -161,6 +161,28 @@ scripts/verify_px4_offboard_waypoints.sh
 scripts/verify_wind_turbine_waypoints.sh
 ```
 
+风机多高度层 orbit waypoint/yaw 验证：
+
+```bash
+scripts/verify_wind_turbine_multilevel_orbit.sh
+```
+
+该脚本会启动 PX4 Offboard/arm，只用于风机规则 baseline。它不属于电缆 Phase B active gate。
+
+最新审核证据：
+
+```text
+agent_log: data/logs/waypoints_agent_20260604_132205.log
+px4_log: data/logs/waypoints_px4_20260604_132205.log
+waypoint_log: data/logs/waypoints_control_20260604_132205.log
+vehicle_status: data/logs/waypoints_vehicle_status_20260604_132205.log
+vehicle_local_position: data/logs/waypoints_vehicle_local_position_20260604_132205.log
+result: PX4 Offboard waypoint baseline verified
+arming_state: 2
+nav_state: 14
+last_observed_advancement: waypoint 29
+```
+
 风机几何 baseline 只读审计：
 
 ```bash

@@ -72,11 +72,15 @@ public:
     const auto flat_waypoints = declare_parameter<std::vector<double>>(
       "waypoints_ned",
       std::vector<double>{0.0, 0.0, -5.0, 8.0, 0.0, -5.0, 8.0, 8.0, -5.0, 0.0, 8.0, -5.0, 0.0, 0.0, -5.0});
+    const auto yaws = declare_parameter<std::vector<double>>("yaws_rad", std::vector<double>{});
     acceptance_radius_m_ = declare_parameter<double>("acceptance_radius_m", 1.0);
     hold_ticks_required_ = declare_parameter<int>("hold_ticks_required", 15);
 
     if (flat_waypoints.size() < 3 || flat_waypoints.size() % 3 != 0) {
       throw std::runtime_error("waypoints_ned must contain triples: x y z");
+    }
+    if (!yaws.empty() && yaws.size() != flat_waypoints.size() / 3) {
+      throw std::runtime_error("yaws_rad must be empty or contain one yaw per waypoint");
     }
 
     for (std::size_t i = 0; i < flat_waypoints.size(); i += 3) {
@@ -84,6 +88,12 @@ public:
         static_cast<float>(flat_waypoints[i]),
         static_cast<float>(flat_waypoints[i + 1]),
         static_cast<float>(flat_waypoints[i + 2])});
+    }
+    for (const auto yaw : yaws) {
+      yaws_.push_back(static_cast<float>(yaw));
+    }
+    if (yaws_.empty()) {
+      yaws_.assign(waypoints_.size(), 0.0F);
     }
 
     offboard_control_mode_publisher_ =
@@ -126,6 +136,7 @@ private:
   uint64_t setpoint_counter_{0};
 
   std::vector<std::array<float, 3>> waypoints_;
+  std::vector<float> yaws_;
   std::size_t waypoint_index_{0};
   double acceptance_radius_m_{1.0};
   int hold_ticks_required_{15};
@@ -181,8 +192,8 @@ private:
       hold_ticks_ = 0;
       const auto & next_target = waypoints_[waypoint_index_];
       RCLCPP_INFO(
-        get_logger(), "Advancing to waypoint %zu: [%.2f, %.2f, %.2f]",
-        waypoint_index_, next_target[0], next_target[1], next_target[2]);
+        get_logger(), "Advancing to waypoint %zu: [%.2f, %.2f, %.2f], yaw %.2f",
+        waypoint_index_, next_target[0], next_target[1], next_target[2], yaws_[waypoint_index_]);
     } else if (waypoint_index_ + 1 == waypoints_.size()) {
       RCLCPP_INFO_THROTTLE(
         get_logger(), *get_clock(), 5000, "Holding final waypoint %zu", waypoint_index_);
@@ -206,7 +217,7 @@ private:
     const auto & target = waypoints_[waypoint_index_];
     TrajectorySetpoint msg{};
     msg.position = {target[0], target[1], target[2]};
-    msg.yaw = 0.0F;
+    msg.yaw = yaws_[waypoint_index_];
     msg.timestamp = now_us();
     trajectory_setpoint_publisher_->publish(msg);
   }

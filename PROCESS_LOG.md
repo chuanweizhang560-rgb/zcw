@@ -3698,6 +3698,89 @@
   - 继续下一个节点：基于风机几何审计结果，准备独立 multilevel orbit launch 的 dry-run/审查入口，或继续电缆 dry-run-only 证据再生成能力
 - 阻塞项：无
 
+### 2026-06-04 13:15:27 CST
+
+- 节点：风机 multilevel orbit launch 实现开始
+- 执行动作：
+  - 读取：
+    - `scripts/verify_px4_offboard_waypoints.sh`
+    - `ros2_ws/src/zcw_bringup/CMakeLists.txt`
+    - `ros2_ws/src/zcw_bringup/launch/README.md`
+    - `scripts/verify_wind_turbine_waypoints.sh`
+  - 确认 `zcw_bringup` 会安装整个 `launch/` 目录
+  - 修改：
+    - `ros2_ws/src/zcw_px4_baseline/src/offboard_waypoint_sequence.cpp`
+      - 增加可选 `yaws_rad` 参数
+      - 不传 `yaws_rad` 时旧 launch 仍默认 yaw `0.0`
+    - `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+      - 新增独立风机多高度层 orbit launch
+      - 不覆盖旧风机 smoke launch
+    - `scripts/verify_wind_turbine_multilevel_orbit.sh`
+      - 新增专用验证 wrapper
+    - 文档索引和 RUNBOOK
+- 设计边界：
+  - 复用 PX4 官方 Offboard position/yaw setpoint 层
+  - 不写低层控制器
+  - 不触碰电缆 Phase B active bridge
+  - 新 wrapper 会启动风机 PX4 Offboard/arm，仅用于风机规则 baseline
+- 下一步：
+  - 运行语法检查
+  - 构建 ROS 2 工作空间
+  - 如构建通过，再运行风机 multilevel orbit headless 验证
+- 阻塞项：无
+
+### 2026-06-04 13:22:05 CST
+
+- 节点：风机 multilevel orbit headless 验证通过
+- 执行动作：
+  - 运行 `chmod +x scripts/verify_wind_turbine_multilevel_orbit.sh`
+  - 运行 `bash -n scripts/verify_wind_turbine_multilevel_orbit.sh scripts/verify_wind_turbine_waypoints.sh`
+  - 运行 `python3 -m py_compile` 检查新旧风机 launch
+  - 运行 `git diff --check`
+  - 第一次构建命令失败：
+    - 命令：`colcon build --merge-install --packages-select zcw_px4_baseline zcw_bringup`
+    - 原因：当前 `install/` 是 isolated layout，不能混用 `--merge-install`
+    - 处理：改用现有布局 `colcon build --packages-select zcw_px4_baseline zcw_bringup`
+  - 第二次构建通过：
+    - `zcw_bringup`
+    - `zcw_px4_baseline`
+  - 第一次运行 `scripts/verify_wind_turbine_multilevel_orbit.sh` 失败：
+    - 原因：Micro XRCE-DDS Agent 在 sandbox 网络命名空间中绑定 UDP `8888` 失败，`errno: 1`
+    - 处理：按权限规则提权，在正常网络命名空间中重跑同一脚本
+  - 运行 `ros2 launch zcw_bringup single_vehicle_wind_turbine_multilevel_orbit.launch.py --show-args` 第一次失败：
+    - 原因：ROS 2 想写 `/home/travis/.ros/log`，当前 sandbox 中该路径只读
+    - 处理：设置 `ROS_LOG_DIR=$PWD/data/logs/ros2_launch_check` 后重跑
+  - launch 加载检查通过：
+    - `No arguments.`
+  - 提权运行 `scripts/verify_wind_turbine_multilevel_orbit.sh` 通过
+  - 读取：
+    - `data/logs/waypoints_control_20260604_132205.log`
+    - `data/logs/waypoints_vehicle_status_20260604_132205.log`
+    - `data/logs/waypoints_vehicle_local_position_20260604_132205.log`
+  - 更新：
+    - `.gitignore`
+    - `docs/11_wind_turbine_geometry_baseline.md`
+    - `RUNBOOK.md`
+- 结果：
+  - `PX4 Offboard waypoint baseline verified.`
+  - `arming_state: 2`
+  - `nav_state: 14`
+  - waypoint advancement 已推进到至少 waypoint 29：
+    - `[-35.00, -7.68, -19.67], yaw -1.05`
+  - 最后读取 local position：
+    - `x=-31.93033790588379`
+    - `y=-6.575593948364258`
+    - `z=-19.689199447631836`
+- 结论：
+  - 风机 multilevel orbit 规则 baseline 的 headless PX4/Gazebo/Offboard 链路已跑通
+  - 当前仍缺少真实 Gazebo GUI 截图审核
+  - 本节点不属于电缆 Phase B active，也没有创建 cable active bridge
+- 下一步：
+  - 做最终静态检查
+  - 提交并推送风机 multilevel orbit 代码、文档和日志记录
+  - 后续补真实 Gazebo GUI 截图审核
+- 阻塞项：无
+
 ### 2026-06-04 09:15:25 CST
 
 - 节点：Phase B active bridge 前置评审与边界审计提交与推送
