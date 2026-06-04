@@ -209,3 +209,38 @@ Important limitation:
 - This is not mapping evidence.
 - It proves only that the RTAB-Map upstream ROS 2 node can start and register in the ROS graph.
 - The next accepted SLAM milestone must use real Gazebo sensor topics.
+
+## 8. Gazebo Sensor Input Candidate
+
+Existing depth-camera evidence provides the first RTAB-Map input candidate:
+
+| Topic | Type | Observed frame |
+|---|---|---|
+| `/camera/points` | `sensor_msgs/msg/PointCloud2` | `camera_link` |
+| `/zcw/depth_camera/pose` | `nav_msgs/msg/Odometry` | `frame_id=world`, `child_frame_id=depth_camera::link` |
+
+Evidence from previous sensor smoke:
+
+- point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
+- pose sample: `data/logs/depth_camera_pose_pose_sample_20260602_204840.log`
+
+Integration risk:
+
+- The point cloud uses `camera_link`.
+- The odometry child frame uses `depth_camera::link`.
+- RTAB-Map needs consistent frame/TF semantics.
+- A direct RTAB-Map hookup may fail until a read-only TF/frame bridge is added.
+
+Next accepted milestone:
+
+1. start Gazebo depth camera.
+2. start RTAB-Map in scan-cloud mode or an RTAB-Map utility path using `/camera/points`.
+3. provide only read-only static/dynamic TF needed for frame consistency.
+4. verify map/cloud topics appear.
+5. capture RViz evidence if map/cloud topics render.
+
+Still forbidden:
+
+- using Gazebo ground-truth pose as claimed SLAM output.
+- feeding RTAB-Map output into PX4 active control.
+- treating a static TF workaround as real localization.

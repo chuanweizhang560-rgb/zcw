@@ -4968,6 +4968,31 @@
   - 准备 RTAB-Map + Gazebo sensor topic read-only smoke
 - 阻塞项：无
 
+### 2026-06-04 15:52:00 CST
+
+- 节点：RTAB-Map Gazebo 传感器输入候选审计
+- 执行动作：
+  - 读取 `scripts/verify_depth_camera_pose_pointcloud.sh`
+  - 读取 `scripts/verify_depth_camera_pointcloud.sh`
+  - 读取 `assets/gazebo/models/iris_depth_camera/iris_depth_camera.sdf`
+  - 搜索历史 depth camera PointCloud2 / Odometry 样本
+  - 搜索 RTAB-Map 本机安装包中的可执行节点和参数线索
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 发现：
+  - `/camera/points` 类型为 `sensor_msgs/msg/PointCloud2`
+  - 历史样本中 `/camera/points` 的 `frame_id=camera_link`
+  - `/zcw/depth_camera/pose` 类型为 `nav_msgs/msg/Odometry`
+  - 历史样本中 pose `frame_id=world`
+  - 历史样本中 pose `child_frame_id=depth_camera::link`
+- 风险：
+  - 点云 frame 和 odom child frame 不一致
+  - 直接接 RTAB-Map 可能会遇到 TF/frame 对齐问题
+  - 不能把 Gazebo ground-truth pose 当作真实 SLAM 输出
+- 结论：
+  - 下一步应做 read-only TF/frame bridge 或配置审计，再启动 RTAB-Map + Gazebo sensor smoke
+  - 仍不接 PX4 active control
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
