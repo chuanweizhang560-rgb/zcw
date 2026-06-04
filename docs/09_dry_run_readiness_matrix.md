@@ -48,6 +48,7 @@ The audit is not allowed to:
 | setpoint threshold review | `scripts/audit_cable_setpoint_thresholds.sh` | accepted |
 | active bridge review template | `scripts/audit_active_bridge_review_template.sh` | accepted |
 | total dry-run readiness | `scripts/audit_dry_run_readiness.sh` | accepted |
+| ignored evidence inventory | `scripts/audit_evidence_inventory.sh` | accepted |
 | active bridge implementation | `cable_offboard_active_bridge` | not present |
 | Phase B approval | explicit user approval | not granted |
 
@@ -61,13 +62,17 @@ Latest evidence:
 - Phase B preflight: `data/results/dry_run_readiness_20260604_100331/phase_b_preflight_20260604_100331.log`
 - thresholds: `data/results/dry_run_readiness_20260604_100331/thresholds_20260604_100331.log`
 - review template: `data/results/dry_run_readiness_20260604_100331/review_template_20260604_100331.log`
+- evidence inventory: `data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.txt`
 
 Latest result:
 
 - `decision=accepted_dry_run_readiness`
+- `decision=accepted_evidence_inventory`
 - `phase_b_approved=false`
 - `active_bridge_present=false`
 - `publishes_fmu_in=false`
+- `evidence_present_count=11`
+- `evidence_missing_count=0`
 
 ## 5. Next Allowed Work
 
@@ -77,6 +82,7 @@ Allowed without Phase B approval:
 2. regenerate missing ignored evidence files.
 3. add documentation and review templates.
 4. add non-PX4 debug visualizations.
+5. run `scripts/audit_evidence_inventory.sh` to confirm local evidence is still present.
 
 Forbidden without Phase B approval:
 

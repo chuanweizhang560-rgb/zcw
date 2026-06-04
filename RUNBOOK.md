@@ -51,6 +51,7 @@ Phase B active bridge 前置边界审计已完成；当前没有 `cable_offboard
 电缆 active 前置坐标/安全阈值复核已完成；offset path 和 lookahead target 间隔约 `10.0005m`，但 gate 前 dry-run 实际水平跳变约 `0.999m`、垂直跳变约 `0.004m`，未来 active bridge 必须消费 gate-approved NED dry-run 输出，不能直接发布 raw lookahead target。
 active bridge 代码审查模板已建立并通过只读模板审计；当前没有 `cable_offboard_active_bridge`，没有 cable active `/fmu/in/*` publisher，Phase B 仍未获批准。
 dry-run readiness 总审计已完成；静态仓库边界、PX4 隔离、Phase B preflight、setpoint threshold 和 active bridge review template 均通过，当前仍没有 active bridge，Phase B 仍未获批准。
+本地 ignored 证据清单审计已建立；用于确认 `data/logs/`、`data/results/`、`data/screenshots/` 下的关键 dry-run 证据仍存在且不会被提交进 git。
 
 实测成功标志：
 
@@ -631,6 +632,27 @@ map_to_ned: debug_x_y_neg_z
 ned_frame: px4_local_ned_dry_run
 ned_sample: x=-48.8198330876827, y=11.7591, z=-41.4620108793388
 forbidden_fmu_in_topics: none
+```
+
+本地 ignored 证据清单审计：
+
+```bash
+scripts/audit_evidence_inventory.sh
+```
+
+该审计只检查文件，不启动 ROS/PX4/Gazebo/RViz。若缺少历史截图或 topic echo，应按 `data/results/evidence_inventory_*/evidence_regeneration_*.txt` 中列出的脚本只重跑对应证据组。
+
+最新审核证据：
+
+```text
+summary: data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.txt
+inventory_csv: data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.csv
+regeneration_file: data/results/evidence_inventory_20260604_130911/evidence_regeneration_20260604_130911.txt
+decision: accepted_evidence_inventory
+required_evidence_count: 11
+present_count: 11
+missing_count: 0
+not_ignored_count: 0
 ```
 
 电缆点云 PCL Viewer 截图审核：

@@ -3551,6 +3551,25 @@
   - 提交并推送本阶段文档、审计脚本和进程记录
 - 阻塞项：无
 
+### 2026-06-04 13:09:11 CST
+
+- 节点：本地 ignored 证据清单最终复核
+- 执行动作：
+  - 运行 `bash -n scripts/audit_evidence_inventory.sh scripts/audit_dry_run_readiness.sh scripts/audit_phase_b_active_preflight_boundary.sh`
+  - 运行 `git diff --check`
+  - 复跑 `scripts/audit_evidence_inventory.sh`
+  - 更新文档中的最新 evidence inventory 路径到复跑结果
+- 结果：
+  - 最新 summary：`data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.txt`
+  - 最新 inventory CSV：`data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.csv`
+  - 最新 regeneration list：`data/results/evidence_inventory_20260604_130911/evidence_regeneration_20260604_130911.txt`
+  - 静态检查通过
+  - 复跑结果仍为 `accepted_evidence_inventory`
+- 下一步：
+  - 查看 diff
+  - 提交并推送本阶段变更
+- 阻塞项：无
+
 ### 2026-06-04 09:15:25 CST
 
 - 节点：Phase B active bridge 前置评审与边界审计提交与推送
@@ -3840,4 +3859,77 @@
 - 下一步：
   - 提交并推送本条 PROCESS_LOG 记录
   - 继续下一个节点：继续 dry-run-only 安全审计，或等待显式 Phase B active 批准
+- 阻塞项：无
+
+### 2026-06-04 13:06:20 CST
+
+- 节点：本地 ignored 证据清单审计开始
+- 执行动作：
+  - 确认当前分支干净并同步到 `origin/codex/initial-workflow`
+  - 读取：
+    - `docs/09_dry_run_readiness_matrix.md`
+    - `scripts/README.md`
+    - `scripts/audit_phase_b_active_preflight_boundary.sh`
+    - `scripts/audit_cable_setpoint_thresholds.sh`
+    - `RUNBOOK.md`
+    - `.gitignore`
+  - 新增：
+    - `scripts/audit_evidence_inventory.sh`
+    - `docs/10_evidence_inventory.md`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/09_dry_run_readiness_matrix.md`
+    - `RUNBOOK.md`
+- 目标：
+  - 明确当前 dry-run 边界依赖哪些本地证据文件
+  - 检查这些证据是否仍在 `data/` 下且被 git ignore
+  - 记录缺失证据的再生成入口，便于后续 agent 继续执行
+- 硬边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不创建 active bridge
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 运行 `bash -n`、`git diff --check` 和新证据清单审计
+  - 根据结果更新文档和 PROCESS_LOG
+- 阻塞项：无
+
+### 2026-06-04 13:08:30 CST
+
+- 节点：本地 ignored 证据清单审计通过
+- 执行动作：
+  - 运行 `chmod +x scripts/audit_evidence_inventory.sh`
+  - 运行 `bash -n scripts/audit_evidence_inventory.sh`
+  - 运行 `git diff --check`
+  - 运行 `scripts/audit_evidence_inventory.sh`
+  - 读取：
+    - `data/results/evidence_inventory_20260604_130830/evidence_inventory_20260604_130830.txt`
+    - `data/results/evidence_inventory_20260604_130830/evidence_inventory_20260604_130830.csv`
+    - `data/results/evidence_inventory_20260604_130830/evidence_regeneration_20260604_130830.txt`
+  - 更新：
+    - `docs/10_evidence_inventory.md`
+    - `docs/09_dry_run_readiness_matrix.md`
+    - `RUNBOOK.md`
+- 结果：
+  - `decision=accepted_evidence_inventory`
+  - `reason=all_required_evidence_present_and_ignored`
+  - `required_evidence_count=11`
+  - `present_count=11`
+  - `missing_count=0`
+  - `not_ignored_count=0`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+- 结论：
+  - 当前 dry-run readiness 依赖的本地历史证据仍完整
+  - 这些证据仍在 `data/` ignored 路径下，不会进入 git
+  - Phase B 仍未获批准
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本阶段文档、审计脚本和进程记录
 - 阻塞项：无
