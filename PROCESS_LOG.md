@@ -4953,6 +4953,21 @@
   - 提交并推送 RTAB-Map node smoke 记录
 - 阻塞项：无
 
+### 2026-06-04 15:47:00 CST
+
+- 节点：RTAB-Map read-only node smoke 推送完成
+- 执行动作：
+  - 运行 `bash -n scripts/audit_rtabmap_installation.sh scripts/verify_rtabmap_node_smoke.sh`
+  - 运行 `git diff --check`
+  - 提交 `Add RTAB-Map node smoke`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - commit: `2add341`
+  - 推送成功
+- 下一步：
+  - 准备 RTAB-Map + Gazebo sensor topic read-only smoke
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
