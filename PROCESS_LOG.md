@@ -4726,6 +4726,21 @@
   - 提交并推送本节点
 - 阻塞项：无
 
+### 2026-06-04 15:10:00 CST
+
+- 节点：两机 headless 只读 topic 审计推送完成
+- 执行动作：
+  - 运行 `bash -n scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 运行 `git diff --check`
+  - 提交 `Add multi-vehicle readonly smoke`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - commit: `9673e7f`
+  - 推送成功
+- 下一步：
+  - 继续推进两机规则 baseline 设计文档，仍不进入多机 Offboard 或 RL
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
