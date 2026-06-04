@@ -62,7 +62,7 @@ Latest evidence:
 - Phase B preflight: `data/results/dry_run_readiness_20260604_140153/phase_b_preflight_20260604_140153.log`
 - thresholds: `data/results/dry_run_readiness_20260604_140153/thresholds_20260604_140153.log`
 - review template: `data/results/dry_run_readiness_20260604_140153/review_template_20260604_140153.log`
-- evidence inventory: `data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.txt`
+- evidence inventory: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.txt`
 
 Latest result:
 
@@ -71,7 +71,7 @@ Latest result:
 - `phase_b_approved=false`
 - `active_bridge_present=false`
 - `publishes_fmu_in=false`
-- `evidence_present_count=11`
+- `evidence_present_count=21`
 - `evidence_missing_count=0`
 
 This latest run was executed after the wind turbine multilevel orbit baseline work. It confirms those wind-turbine Offboard/GUI verification nodes did not create a cable active bridge and did not approve cable Phase B execution.

@@ -25,6 +25,16 @@ required_evidence=(
   "lookahead_targets_csv|data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv|scripts/audit_lookahead_target.sh"
   "gate_rviz_state_echo|data/logs/cable_offboard_gate_rviz_state_echo_20260604_090442.log|scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh"
   "gate_rviz_approved_ned_echo|data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260604_090442.log|scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh"
+  "wind_multilevel_static_summary|data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.txt|scripts/audit_wind_turbine_multilevel_orbit_launch.sh"
+  "wind_multilevel_static_csv|data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.csv|scripts/audit_wind_turbine_multilevel_orbit_launch.sh"
+  "wind_multilevel_headless_control_log|data/logs/waypoints_control_20260604_132205.log|scripts/verify_wind_turbine_multilevel_orbit.sh"
+  "wind_multilevel_headless_status|data/logs/waypoints_vehicle_status_20260604_132205.log|scripts/verify_wind_turbine_multilevel_orbit.sh"
+  "wind_multilevel_headless_position|data/logs/waypoints_vehicle_local_position_20260604_132205.log|scripts/verify_wind_turbine_multilevel_orbit.sh"
+  "wind_multilevel_gui_screenshot|data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
+  "wind_multilevel_gui_window_id|data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png.window_id.txt|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
+  "wind_multilevel_gui_offboard_log|data/logs/wind_multilevel_gui_offboard_20260604_134640.log|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
+  "wind_multilevel_gui_status|data/logs/wind_multilevel_gui_vehicle_status_20260604_134640.log|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
+  "wind_multilevel_gui_position|data/logs/wind_multilevel_gui_vehicle_local_position_20260604_134640.log|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
 )
 
 regeneration_commands=(
@@ -37,6 +47,9 @@ regeneration_commands=(
   "scripts/audit_phase_b_active_preflight_boundary.sh"
   "scripts/audit_active_bridge_review_template.sh"
   "scripts/audit_dry_run_readiness.sh"
+  "scripts/audit_wind_turbine_multilevel_orbit_launch.sh"
+  "scripts/verify_wind_turbine_multilevel_orbit.sh"
+  "scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
 )
 
 missing_count=0

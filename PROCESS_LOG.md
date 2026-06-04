@@ -4433,6 +4433,69 @@
   - 继续推进不触碰电缆 Phase B active 的可验证节点
 - 阻塞项：无
 
+### 2026-06-04 14:28:00 CST
+
+- 节点：风机证据纳入 ignored evidence inventory 开始
+- 背景：
+  - 现有 `audit_evidence_inventory.sh` 只覆盖电缆 dry-run 边界证据
+  - 风机 multilevel orbit 已有静态、headless 和 GUI 证据，也需要可复核的本地清单
+- 执行动作：
+  - 读取现有风机证据文件路径
+  - 读取 `scripts/audit_evidence_inventory.sh`
+  - 读取 `docs/10_evidence_inventory.md`
+  - 更新 `scripts/audit_evidence_inventory.sh`
+  - 更新 `docs/10_evidence_inventory.md`
+- 审计边界：
+  - inventory 脚本仍只检查文件存在与 git ignore 状态
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 新增证据组：
+  - 风机 multilevel 静态 geometry summary/CSV
+  - 风机 multilevel headless Offboard 日志
+  - 风机 multilevel GUI 截图和日志
+- 下一步：
+  - 运行 `bash -n scripts/audit_evidence_inventory.sh`
+  - 运行 `scripts/audit_evidence_inventory.sh`
+  - 根据结果更新文档和 PROCESS_LOG
+- 阻塞项：无
+
+### 2026-06-04 14:31:00 CST
+
+- 节点：风机证据纳入 ignored evidence inventory 通过
+- 执行动作：
+  - 运行 `bash -n scripts/audit_evidence_inventory.sh`
+  - 运行 `scripts/audit_evidence_inventory.sh`
+  - 读取 `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.txt`
+  - 更新 `docs/10_evidence_inventory.md`
+  - 更新 `docs/09_dry_run_readiness_matrix.md`
+  - 更新 `RUNBOOK.md`
+- 证据：
+  - summary: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.txt`
+  - inventory CSV: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.csv`
+  - regeneration file: `data/results/evidence_inventory_20260604_140426/evidence_regeneration_20260604_140426.txt`
+- 结果：
+  - `decision=accepted_evidence_inventory`
+  - `required_evidence_count=21`
+  - `present_count=21`
+  - `missing_count=0`
+  - `not_ignored_count=0`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+- 结论：
+  - 电缆 dry-run 边界证据仍完整
+  - 风机 multilevel 静态、headless 和 GUI 证据也已纳入本地 ignored evidence inventory
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本节点
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始

@@ -51,7 +51,7 @@ Phase B active bridge 前置边界审计已完成；当前没有 `cable_offboard
 电缆 active 前置坐标/安全阈值复核已完成；offset path 和 lookahead target 间隔约 `10.0005m`，但 gate 前 dry-run 实际水平跳变约 `0.999m`、垂直跳变约 `0.004m`，未来 active bridge 必须消费 gate-approved NED dry-run 输出，不能直接发布 raw lookahead target。
 active bridge 代码审查模板已建立并通过只读模板审计；当前没有 `cable_offboard_active_bridge`，没有 cable active `/fmu/in/*` publisher，Phase B 仍未获批准。
 dry-run readiness 总审计已完成；静态仓库边界、PX4 隔离、Phase B preflight、setpoint threshold 和 active bridge review template 均通过，当前仍没有 active bridge，Phase B 仍未获批准。风机 multilevel orbit 变更后已重新复核，电缆 active 边界仍保持关闭。
-本地 ignored 证据清单审计已建立；用于确认 `data/logs/`、`data/results/`、`data/screenshots/` 下的关键 dry-run 证据仍存在且不会被提交进 git。
+本地 ignored 证据清单审计已建立；用于确认 `data/logs/`、`data/results/`、`data/screenshots/` 下的关键 dry-run 和风机规则 baseline 证据仍存在且不会被提交进 git。最新清单为 21 项，全部存在且被 git ignore。
 风机几何 baseline 只读审计已建立；用于解析 AerialCore 风机 pose、DAE 粗边界和当前风机 waypoint launch，并输出 multilevel orbit 推荐 CSV 供后续人工/agent 审查，当前不接 PX4。
 
 实测成功标志：

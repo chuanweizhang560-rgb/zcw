@@ -14,6 +14,8 @@ Most runtime evidence is intentionally ignored by git:
 
 That keeps the repository small, but it means a fresh checkout does not contain screenshots, ROS topic echoes, PX4 logs or audit result files. The inventory audit checks whether the required local proof files for the current dry-run boundary are still present on this machine.
 
+The same audit also tracks the current wind turbine rule-baseline proof files. Those wind evidence files may include Offboard/GUI artifacts, but the inventory audit itself only checks local file presence and git-ignore status.
+
 ## 2. Audit Command
 
 ```bash
@@ -43,14 +45,17 @@ The audit is not allowed to:
 | Offboard gate dry-run | gate summary, forbidden publisher log, RViz summary, RViz screenshot | `scripts/verify_cable_offboard_gate_dry_run.sh`, `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Cable path inputs | offset path CSV and lookahead target CSV | `scripts/audit_catenary_fit.sh`, `scripts/audit_offset_path.sh`, `scripts/audit_lookahead_target.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
+| Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
+| Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
+| Wind turbine multilevel GUI motion evidence | Gazebo screenshot, window id, Offboard log, vehicle status and local position echo | `scripts/capture_wind_turbine_multilevel_orbit_gui.sh` |
 
 ## 4. Latest Result
 
 Latest evidence:
 
-- summary: `data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.txt`
-- inventory CSV: `data/results/evidence_inventory_20260604_130911/evidence_inventory_20260604_130911.csv`
-- regeneration list: `data/results/evidence_inventory_20260604_130911/evidence_regeneration_20260604_130911.txt`
+- summary: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.txt`
+- inventory CSV: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.csv`
+- regeneration list: `data/results/evidence_inventory_20260604_140426/evidence_regeneration_20260604_140426.txt`
 
 Expected accepted fields:
 
@@ -69,8 +74,8 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=11`
-- `present_count=11`
+- `required_evidence_count=21`
+- `present_count=21`
 - `missing_count=0`
 - `not_ignored_count=0`
 
