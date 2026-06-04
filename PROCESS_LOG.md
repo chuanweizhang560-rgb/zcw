@@ -4363,6 +4363,62 @@
   - 继续选择不触碰电缆 Phase B active 的节点推进
 - 阻塞项：无
 
+### 2026-06-04 14:20:00 CST
+
+- 节点：风机变更后的 dry-run readiness 总审计开始
+- 背景：
+  - 风机 multilevel orbit 已通过静态几何验收、headless Offboard 验证和真实 Gazebo GUI 运动证据
+  - 需要确认这些风机节点没有误打开电缆 Phase B active 边界
+- 执行动作：
+  - 读取 `scripts/audit_dry_run_readiness.sh`
+  - 读取 `docs/09_dry_run_readiness_matrix.md`
+  - 确认当前分支干净并同步 `origin/codex/initial-workflow`
+- 审计边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+  - 不创建 `cable_offboard_active_bridge`
+- 下一步：
+  - 运行 `bash -n scripts/audit_dry_run_readiness.sh`
+  - 运行 `scripts/audit_dry_run_readiness.sh`
+  - 根据结果更新 readiness 文档
+- 阻塞项：无
+
+### 2026-06-04 14:22:00 CST
+
+- 节点：风机变更后的 dry-run readiness 总审计通过
+- 执行动作：
+  - 运行 `bash -n scripts/audit_dry_run_readiness.sh`
+  - 运行 `scripts/audit_dry_run_readiness.sh`
+  - 读取 `data/results/dry_run_readiness_20260604_140153/dry_run_readiness_20260604_140153.txt`
+  - 更新 `docs/09_dry_run_readiness_matrix.md`
+  - 更新 `RUNBOOK.md`
+- 证据：
+  - summary: `data/results/dry_run_readiness_20260604_140153/dry_run_readiness_20260604_140153.txt`
+  - static checks: `data/results/dry_run_readiness_20260604_140153/static_repo_checks_20260604_140153.log`
+  - PX4 isolation: `data/results/dry_run_readiness_20260604_140153/px4_isolation_20260604_140153.log`
+  - Phase B preflight: `data/results/dry_run_readiness_20260604_140153/phase_b_preflight_20260604_140153.log`
+  - thresholds: `data/results/dry_run_readiness_20260604_140153/thresholds_20260604_140153.log`
+  - review template: `data/results/dry_run_readiness_20260604_140153/review_template_20260604_140153.log`
+- 结果：
+  - `decision=accepted_dry_run_readiness`
+  - `phase_b_approved=false`
+  - `active_bridge_present=false`
+  - `publishes_fmu_in=false`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_offboard=false`
+  - `arms=false`
+- 结论：
+  - 风机 multilevel orbit 相关 Offboard/GUI 验证没有误创建电缆 active bridge
+  - 电缆 Phase B active 仍未获批准
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本节点
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
