@@ -183,6 +183,28 @@ nav_state: 14
 last_observed_advancement: waypoint 29
 ```
 
+风机多高度层 orbit launch 静态验收：
+
+```bash
+scripts/audit_wind_turbine_multilevel_orbit_launch.sh
+```
+
+该脚本不启动 ROS/PX4/Gazebo/RViz，只读取 launch 中的 `_orbit_waypoints()` 并验收 waypoint/yaw 几何约束。
+
+最新审核证据：
+
+```text
+summary: data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.txt
+waypoint_csv: data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.csv
+decision: accepted_wind_turbine_multilevel_orbit_static_audit
+waypoint_count: 49
+orbit_waypoint_count: 48
+unique_orbit_z_levels: 4
+orbit_z_levels: -35.000000,-27.333333,-19.666667,-12.000000
+max_radius_error_m: 0.000000
+max_yaw_error_rad: 0.000000
+```
+
 风机多高度层 orbit 真实 Gazebo GUI 截图：
 
 ```bash

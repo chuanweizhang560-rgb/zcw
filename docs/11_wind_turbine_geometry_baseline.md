@@ -103,7 +103,7 @@ The next implementation node is a separate wind turbine multilevel orbit launch:
 - setpoint layer: existing PX4 official-example-derived `offboard_waypoint_sequence`
 - yaw handling: optional `yaws_rad`; old launches keep yaw `0.0` by default
 
-This launch still needs its own headless verification and real Gazebo screenshot evidence before it can replace the old wind turbine smoke baseline in reports.
+This launch now has static geometry audit, headless Offboard verification and real Gazebo GUI motion evidence. The old wind turbine smoke launch remains useful as a minimal movement check, but the multilevel launch is the current wind turbine rule baseline for geometry-oriented reporting.
 
 ## 6. Multilevel Orbit Headless Result
 
@@ -164,3 +164,44 @@ Visual audit:
 
 - accepted as real Gazebo GUI motion evidence.
 - target same-frame evidence is not pursued further per user confirmation.
+
+## 8. Multilevel Orbit Static Geometry Acceptance
+
+Command:
+
+```bash
+scripts/audit_wind_turbine_multilevel_orbit_launch.sh
+```
+
+This audit is read-only. It parses `single_vehicle_wind_turbine_multilevel_orbit.launch.py` and does not start ROS, PX4, Gazebo, RViz, Offboard, arm, or publish `/fmu/in/*`.
+
+Latest evidence:
+
+- summary: `data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.txt`
+- waypoint CSV: `data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.csv`
+
+Observed result:
+
+```text
+decision=accepted_wind_turbine_multilevel_orbit_static_audit
+reason=orbit_launch_matches_static_geometry_contract
+waypoint_count=49
+orbit_waypoint_count=48
+yaw_count=49
+unique_orbit_z_levels=4
+orbit_z_levels=-35.000000,-27.333333,-19.666667,-12.000000
+max_radius_error_m=0.000000
+max_yaw_error_rad=0.000000
+waypoint_count_ok=true
+yaw_count_ok=true
+level_count_ok=true
+orbit_count_ok=true
+radius_ok=true
+yaw_ok=true
+```
+
+Decision:
+
+- accepted as the current wind turbine static geometry baseline.
+- still a rule baseline, not a learned policy.
+- does not change any cable Phase B active boundary.

@@ -4282,6 +4282,72 @@
   - 继续推进下一节点，优先选择不触碰 Phase B active 边界的可验证内容
 - 阻塞项：无
 
+### 2026-06-04 14:08:00 CST
+
+- 节点：风机 multilevel orbit 静态验收审计开始
+- 背景：
+  - 用户已确认不需要继续补风机同框截图
+  - 下一步需要验证已经能运动的风机规则 baseline 是否满足几何巡检轨迹约束
+- 执行动作：
+  - 新增 `scripts/audit_wind_turbine_multilevel_orbit_launch.sh`
+- 审计边界：
+  - 只读解析 `single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+  - 不新增核心控制算法
+- 验收目标：
+  - 4 个高度层
+  - 每层 12 个巡检点
+  - 1 个起飞/进入点
+  - 总 waypoint 49 个
+  - orbit 半径约 `20m`
+  - yaw 指向风机中心
+- 下一步：
+  - 运行 `bash -n`、`git diff --check` 和新增审计脚本
+  - 根据审计结果更新文档
+- 阻塞项：无
+
+### 2026-06-04 14:11:00 CST
+
+- 节点：风机 multilevel orbit 静态验收审计通过
+- 执行动作：
+  - 运行 `chmod +x scripts/audit_wind_turbine_multilevel_orbit_launch.sh`
+  - 运行 `bash -n scripts/audit_wind_turbine_multilevel_orbit_launch.sh`
+  - 运行 `scripts/audit_wind_turbine_multilevel_orbit_launch.sh`
+  - 读取审计 summary
+  - 更新 `scripts/README.md`
+  - 更新 `RUNBOOK.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+- 证据：
+  - summary: `data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.txt`
+  - waypoint CSV: `data/results/wind_turbine_multilevel_orbit_launch_20260604_135831/wind_turbine_multilevel_orbit_launch_20260604_135831.csv`
+- 结果：
+  - `decision=accepted_wind_turbine_multilevel_orbit_static_audit`
+  - `waypoint_count=49`
+  - `orbit_waypoint_count=48`
+  - `yaw_count=49`
+  - `unique_orbit_z_levels=4`
+  - `orbit_z_levels=-35.000000,-27.333333,-19.666667,-12.000000`
+  - `max_radius_error_m=0.000000`
+  - `max_yaw_error_rad=0.000000`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+- 结论：
+  - 风机 multilevel launch 已具备静态几何验收、headless Offboard 验证和真实 Gazebo GUI 运动证据
+  - 该节点仍是规则 baseline，不是学习策略
+  - 不改变电缆 Phase B active 边界
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本节点
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
