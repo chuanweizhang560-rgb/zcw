@@ -24,7 +24,7 @@ Current status:
   - `candidate_vertical_jump_m=0.0105846`
   - `candidate_speed_mps=5`
   - `publishes_px4=false`
-  - forbidden `/fmu/in/*` topics: none
+  - no local `/fmu/in/*` publisher in dry-run checks
 - Latest dry-run RViz evidence:
   - screenshot: `data/screenshots/lookahead_dry_run_rviz_overlay_20260603_175512.png`
   - Global Status: OK
@@ -32,7 +32,7 @@ Current status:
   - Lookahead Target: OK
   - Dry Run Path: OK
   - Dry Run Candidate: OK
-  - forbidden `/fmu/in/*` topics: none
+  - no local `/fmu/in/*` publisher in dry-run checks
 - Latest PX4 isolation evidence:
   - summary: `data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
   - `package.xml` has no `px4_msgs` dependency

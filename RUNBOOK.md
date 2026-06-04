@@ -49,6 +49,7 @@ Offboard 接入前 Phase B gate 设计已写入 `docs/05_cable_phase_b_gate_plan
 Offboard gate dry-run RViz/debug overlay 已完成真实 PX4/Gazebo + Micro XRCE-DDS + RViz 截图审核；截图显示 offset path、lookahead target、dry-run candidate、bridge NED dry-run 和 gate approved NED dry-run debug 点，状态仍为 `phase_b_allowed=false`，所有 `/fmu/in/*` publisher count 为 0。
 Phase B active bridge 前置边界审计已完成；当前没有 `cable_offboard_active_bridge`，没有 cable-specific `/fmu/in/*` publisher，脚本没有开启 `phase_b_user_approved`，本地 dry-run 证据完整。Phase B 仍未获批准。
 电缆 active 前置坐标/安全阈值复核已完成；offset path 和 lookahead target 间隔约 `10.0005m`，但 gate 前 dry-run 实际水平跳变约 `0.999m`、垂直跳变约 `0.004m`，未来 active bridge 必须消费 gate-approved NED dry-run 输出，不能直接发布 raw lookahead target。
+active bridge 代码审查模板已建立并通过只读模板审计；当前没有 `cable_offboard_active_bridge`，没有 cable active `/fmu/in/*` publisher，Phase B 仍未获批准。
 
 实测成功标志：
 

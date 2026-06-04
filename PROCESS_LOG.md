@@ -3657,3 +3657,69 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 继续下一个节点：active bridge 代码审查模板，或在继续 dry-run-only 前提下做更严格的 frame/threshold 复核
 - 阻塞项：无
+
+### 2026-06-04 09:44:30 CST
+
+- 节点：active bridge 代码审查模板与旧文档口径修正开始
+- 执行动作：
+  - 确认工作区干净并已推送到 `0f64af8`
+  - 读取：
+    - `docs/03_cable_px4_dry_run_gate.md`
+    - `docs/06_cable_phase_b_active_bridge_preflight.md`
+    - `docs/07_cable_active_threshold_review.md`
+  - 搜索 active bridge、Phase B、`/fmu/in/*`、review/checklist 相关引用
+- 发现：
+  - `docs/03_cable_px4_dry_run_gate.md` 仍有早期 `forbidden /fmu/in/* topics: none` 表述
+  - 当前还没有 active bridge code review 模板
+- 硬边界：
+  - 本节点只新增审查模板和只读审计脚本
+  - 不创建 `cable_offboard_active_bridge`
+  - 不创建 active publisher
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 新增 active bridge code review 文档
+  - 新增只读模板审计脚本
+  - 修正旧文档中的 `/fmu/in/*` 口径为 publisher count 审计
+- 阻塞项：无
+
+### 2026-06-04 09:46:33 CST
+
+- 节点：active bridge 代码审查模板与旧文档口径修正通过
+- 执行动作：
+  - 新增 `docs/08_cable_active_bridge_code_review.md`
+  - 新增 `scripts/audit_active_bridge_review_template.sh`
+  - 修正 `docs/03_cable_px4_dry_run_gate.md` 中早期 `forbidden /fmu/in/* topics: none` 表述，统一为 dry-run 无本地 `/fmu/in/*` publisher
+  - 更新：
+    - `RUNBOOK.md`
+    - `docs/06_cable_phase_b_active_bridge_preflight.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `scripts/README.md`
+  - 运行：
+    - `bash -n scripts/audit_active_bridge_review_template.sh`
+    - `git diff --check`
+    - `scripts/audit_active_bridge_review_template.sh`
+    - 文档更新后再次运行 `scripts/audit_active_bridge_review_template.sh`
+  - 读取：
+    - `data/results/active_bridge_review_template_20260604_094724/active_bridge_review_template_20260604_094724.txt`
+    - `data/results/active_bridge_review_template_20260604_094724/template_checks_20260604_094724.log`
+    - `data/results/active_bridge_review_template_20260604_094724/boundary_checks_20260604_094724.log`
+- 结果：
+  - `decision=accepted_active_bridge_review_template_audit`
+  - `phase_b_approved=false`
+  - `active_bridge_present=false`
+  - `publishes_fmu_in=false`
+  - `starts_px4=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - 审计确认当前没有 `cable_offboard_active_bridge` source/CMake/launch target
+  - 审计复用并通过 Phase B preflight boundary 与 cable setpoint threshold checks
+- 结论：
+  - active bridge 代码审查模板已建立
+  - 当前仍未创建 active bridge
+  - Phase B 仍未获批准
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本阶段文档、审计脚本和进程记录
+- 阻塞项：无

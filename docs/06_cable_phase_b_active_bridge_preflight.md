@@ -193,3 +193,24 @@ Latest result:
 - `publishes_fmu_in=false`
 
 This confirms that the future active bridge must consume the gate-approved dry-run NED output after speed limiting. It must not publish raw lookahead target jumps directly to PX4.
+
+## 10. Code Review Template
+
+The future active bridge review template is documented in:
+
+```bash
+docs/08_cable_active_bridge_code_review.md
+```
+
+Implemented audit:
+
+```bash
+scripts/audit_active_bridge_review_template.sh
+```
+
+Current review decision:
+
+- `decision=accepted_active_bridge_review_template_audit`
+- `phase_b_approved=false`
+- `active_bridge_present=false`
+- `publishes_fmu_in=false`
