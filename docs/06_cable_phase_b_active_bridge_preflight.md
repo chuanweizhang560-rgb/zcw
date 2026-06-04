@@ -168,3 +168,28 @@ The audit is not allowed to:
 - create active bridge source code.
 
 Passing this audit means the repository boundary is ready for a future explicit approval step. It does not mean active Phase B is approved.
+
+## 9. Threshold Review
+
+The current active-threshold evidence is documented in:
+
+```bash
+docs/07_cable_active_threshold_review.md
+```
+
+Implemented audit:
+
+```bash
+scripts/audit_cable_setpoint_thresholds.sh
+```
+
+Latest result:
+
+- `decision=accepted_cable_setpoint_threshold_audit`
+- `max_offset_step_m=10.000504`
+- `max_target_jump_m=10.000504`
+- `observed_gate_horizontal_jump_m=0.999247`
+- `observed_gate_vertical_jump_m=0.004447`
+- `publishes_fmu_in=false`
+
+This confirms that the future active bridge must consume the gate-approved dry-run NED output after speed limiting. It must not publish raw lookahead target jumps directly to PX4.

@@ -3569,3 +3569,72 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 继续下一个节点：在不发布 `/fmu/in/*` 的前提下，准备 active bridge 代码审查模板或进一步做坐标/安全阈值复核
 - 阻塞项：无
+
+### 2026-06-04 09:38:18 CST
+
+- 节点：电缆 active 前置坐标/安全阈值复核开始
+- 执行动作：
+  - 确认工作区干净并已推送到 `1c677cc`
+  - 读取：
+    - `docs/06_cable_phase_b_active_bridge_preflight.md`
+    - offset path CSV：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_offset_path_20260603_125948.csv`
+    - lookahead target CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv`
+    - gate approved NED echo：`data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260604_090442.log`
+    - `lookahead_dry_run_setpoint.cpp`
+- 初步发现：
+  - offset path 采样步长约 `10m`
+  - lookahead target 相邻目标约 `10m`
+  - dry-run setpoint 节点通过速度门限把实际候选跳变限幅到约 `1m`
+  - gate RViz 日志中实际 horizontal jump 为约 `0.999m`
+- 硬边界：
+  - 本节点只做离线 CSV/log 审计和文档固化
+  - 不创建 active publisher
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 新增阈值复核文档
+  - 新增只读阈值审计脚本
+  - 运行审计并记录结果
+- 阻塞项：无
+
+### 2026-06-04 09:40:08 CST
+
+- 节点：电缆 active 前置坐标/安全阈值复核通过
+- 执行动作：
+  - 新增 `scripts/audit_cable_setpoint_thresholds.sh`
+  - 新增 `docs/07_cable_active_threshold_review.md`
+  - 运行 `bash -n scripts/audit_cable_setpoint_thresholds.sh`
+  - 运行 `git diff --check`
+  - 运行 `scripts/audit_cable_setpoint_thresholds.sh`
+  - 文档更新后再次运行 `scripts/audit_cable_setpoint_thresholds.sh`
+  - 读取：
+    - `data/results/cable_setpoint_thresholds_20260604_094125/cable_setpoint_thresholds_20260604_094125.txt`
+    - `data/results/cable_setpoint_thresholds_20260604_094125/offset_path_stats_20260604_094125.txt`
+    - `data/results/cable_setpoint_thresholds_20260604_094125/lookahead_target_stats_20260604_094125.txt`
+    - `data/results/cable_setpoint_thresholds_20260604_094125/gate_state_stats_20260604_094125.txt`
+    - `data/results/cable_setpoint_thresholds_20260604_094125/approved_ned_stats_20260604_094125.txt`
+  - 更新：
+    - `docs/06_cable_phase_b_active_bridge_preflight.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `RUNBOOK.md`
+    - `scripts/README.md`
+- 结果：
+  - `decision=accepted_cable_setpoint_threshold_audit`
+  - `max_offset_step_m=10.000504`
+  - `max_target_jump_m=10.000504`
+  - `observed_gate_horizontal_jump_m=0.999247`
+  - `observed_gate_vertical_jump_m=0.004447`
+  - `approved NED frame=px4_local_ned_dry_run`
+  - `publishes_fmu_in=false`
+  - `starts_px4=false`
+  - `starts_offboard=false`
+  - `arms=false`
+- 结论：
+  - raw lookahead target 约 `10m` 间隔，不能直接发布给 PX4
+  - gate-approved dry-run NED 输出经过速度/跳变限制，当前实测水平跳变约 `1m`
+  - 未来 active bridge 必须消费 gate-approved NED 输出，并保留 active horizontal jump `<=2.5m`、vertical jump `<=0.5m`
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本阶段文档、审计脚本和进程记录
+- 阻塞项：无
