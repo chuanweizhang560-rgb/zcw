@@ -150,3 +150,62 @@ arms=false
 publishes_fmu_in=false
 missing_count=0
 ```
+
+## 7. RTAB-Map Node Smoke
+
+Command:
+
+```bash
+scripts/verify_rtabmap_node_smoke.sh
+```
+
+This smoke starts only the `rtabmap_slam/rtabmap` ROS 2 node with sensor subscriptions disabled. It proves the installed upstream node can start in this environment. It does not prove mapping quality and does not use Gazebo sensor data yet.
+
+Expected boundaries:
+
+- starts ROS: true
+- starts PX4: false
+- starts Gazebo: false
+- starts RViz: false
+- starts Offboard: false
+- arms: false
+- publishes `/fmu/in/*`: false
+
+Next mapping evidence must connect this node or an RTAB-Map odometry/mapping launch to real Gazebo sensor topics.
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_node_smoke_20260604_142712/rtabmap_node_smoke_20260604_142712.txt`
+- RTAB-Map log: `data/logs/rtabmap_node_smoke_20260604_142712.log`
+- node list: `data/logs/rtabmap_node_list_20260604_142712.log`
+- topic list: `data/logs/rtabmap_topic_list_20260604_142712.log`
+- database: `data/results/rtabmap_node_smoke_20260604_142712/rtabmap_node_smoke_20260604_142712.db`
+
+Observed result:
+
+```text
+decision=accepted_rtabmap_node_smoke
+reason=rtabmap_slam_node_started_in_readonly_no_sensor_smoke
+starts_ros=true
+starts_px4=false
+starts_gazebo=false
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+node_ok=true
+slam_mode_ok=true
+topic_list_ok=true
+```
+
+Observed node:
+
+```text
+/rtabmap
+```
+
+Important limitation:
+
+- This is not mapping evidence.
+- It proves only that the RTAB-Map upstream ROS 2 node can start and register in the ROS graph.
+- The next accepted SLAM milestone must use real Gazebo sensor topics.

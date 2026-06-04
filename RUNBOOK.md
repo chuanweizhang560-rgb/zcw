@@ -56,6 +56,7 @@ dry-run readiness 总审计已完成；静态仓库边界、PX4 隔离、Phase B
 多机前置上游能力静态审计已建立；PX4 release/1.14 官方 Gazebo Classic 多实例脚本、实例 MAVLink 端口、`MAV_SYS_ID`、`UXRCE_DDS_KEY` 和 DDS namespace 支持均已确认。两机 headless 只读 topic 审计已通过，`/px4_1/fmu/out/vehicle_status` 和 `/px4_2/fmu/out/vehicle_status` 均可见，关键 `/fmu/in/*` publisher count 为 0。下一步仍只能设计两机规则 baseline，不能直接进入多机 Offboard 或 RL。
 SLAM/建图模块尚未完成；当前点云、PCL RANSAC、电缆路径和 `map` frame debug 只能算感知/几何/dry-run 证据，不能当作 SLAM。SLAM 下一步限定为 RTAB-Map ROS 2 read-only smoke 或开源 LIO 候选审计，禁止自研 SLAM 核心。
 RTAB-Map ROS 2 Humble 已通过 apt 安装，`rtabmap_slam rtabmap`、`rtabmap_odom icp_odometry`、`rtabmap_odom rgbd_odometry` 等关键节点可见。下一步是 read-only smoke，不接 PX4 active control。
+RTAB-Map read-only node smoke 已通过，`/rtabmap` 节点可见并进入 SLAM mode，但尚未接入 Gazebo 传感器输入，不能视为建图完成。
 
 实测成功标志：
 

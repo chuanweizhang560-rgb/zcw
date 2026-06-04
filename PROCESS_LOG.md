@@ -4852,6 +4852,107 @@
   - 准备 RTAB-Map read-only node smoke，不接 PX4 active control
 - 阻塞项：无
 
+### 2026-06-04 15:35:00 CST
+
+- 节点：RTAB-Map read-only node smoke 脚本准备
+- 执行动作：
+  - 手动运行 `timeout 8s ros2 run rtabmap_slam rtabmap ...`
+  - 观察到 RTAB-Map 进入 `SLAM mode`、`Setup callbacks`，订阅 `/odom`
+  - 新增 `scripts/verify_rtabmap_node_smoke.sh`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `scripts/README.md`
+- 手动 smoke 结果：
+  - 节点能启动
+  - 因没有输入传感器，5 秒后提示未收到数据
+  - timeout 退出是预期，不代表 mapping 完成
+- 脚本边界：
+  - 启动 ROS 2 RTAB-Map 节点
+  - 不启动 PX4/Gazebo/RViz
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 运行 `bash -n scripts/verify_rtabmap_node_smoke.sh`
+  - 运行 `scripts/verify_rtabmap_node_smoke.sh`
+  - 根据结果更新文档和 PROCESS_LOG
+- 阻塞项：无
+
+### 2026-06-04 15:38:00 CST
+
+- 节点：RTAB-Map read-only node smoke 首次脚本运行失败并修正
+- 执行动作：
+  - 并行运行 `chmod +x`、`bash -n`、`scripts/verify_rtabmap_node_smoke.sh`
+  - 由于并行竞态，首次执行失败：`权限不够`
+  - 顺序运行 `chmod +x && bash -n && scripts/verify_rtabmap_node_smoke.sh`
+- 失败现象：
+  - RTAB-Map 抛出 `spdlog::spdlog_ex`
+  - 原因是默认尝试写 `/home/travis/.ros/log/...`，当前 sandbox 下该路径只读
+- 处理：
+  - 脚本创建 `${LOG_DIR}/ros`
+  - 启动 RTAB-Map 时设置 `ROS_LOG_DIR` 和 `RCUTILS_LOGGING_DIRECTORY` 指向仓库 `data/logs/ros`
+- 下一步：
+  - 重新运行 `bash -n`
+  - 重新运行 RTAB-Map node smoke
+- 阻塞项：无
+
+### 2026-06-04 15:41:00 CST
+
+- 节点：RTAB-Map read-only node smoke 非 sandbox 运行暴露时序问题并修正
+- 执行动作：
+  - 非 sandbox 运行 `scripts/verify_rtabmap_node_smoke.sh`
+- 结果：
+  - RTAB-Map 日志显示已进入 `SLAM mode`、`Setup callbacks`
+  - `node_ok=true`
+  - 但 summary 为 `rejected_rtabmap_node_smoke`
+- 原因：
+  - 脚本在发现 `/rtabmap` 节点后立即跳出循环
+  - 此时 `slam_mode_ok` 可能尚未根据最终日志重新计算
+- 修正：
+  - loop 结束后再次检查 RTAB-Map 日志中的 `SLAM mode` 和 `Setup callbacks`
+- 下一步：
+  - 重新运行 `bash -n`
+  - 非 sandbox 重新运行 RTAB-Map node smoke
+- 阻塞项：无
+
+### 2026-06-04 15:44:00 CST
+
+- 节点：RTAB-Map read-only node smoke 通过
+- 执行动作：
+  - 重新运行 `bash -n scripts/verify_rtabmap_node_smoke.sh`
+  - 非 sandbox 重新运行 `scripts/verify_rtabmap_node_smoke.sh`
+  - 读取 `data/results/rtabmap_node_smoke_20260604_142712/rtabmap_node_smoke_20260604_142712.txt`
+  - 读取 `data/logs/rtabmap_node_list_20260604_142712.log`
+  - 读取 `data/logs/rtabmap_node_smoke_20260604_142712.log`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `RUNBOOK.md`
+- 证据：
+  - summary: `data/results/rtabmap_node_smoke_20260604_142712/rtabmap_node_smoke_20260604_142712.txt`
+  - RTAB-Map log: `data/logs/rtabmap_node_smoke_20260604_142712.log`
+  - node list: `data/logs/rtabmap_node_list_20260604_142712.log`
+  - topic list: `data/logs/rtabmap_topic_list_20260604_142712.log`
+  - database: `data/results/rtabmap_node_smoke_20260604_142712/rtabmap_node_smoke_20260604_142712.db`
+- 结果：
+  - `decision=accepted_rtabmap_node_smoke`
+  - `starts_ros=true`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `node_ok=true`
+  - `slam_mode_ok=true`
+  - `topic_list_ok=true`
+  - ROS graph 中观察到 `/rtabmap`
+- 结论：
+  - RTAB-Map ROS 2 节点可启动并注册
+  - 这不是建图完成证据，因为还没有接入 Gazebo 传感器输入
+  - 下一步必须接真实 Gazebo sensor topics 才能算 SLAM smoke
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送 RTAB-Map node smoke 记录
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
