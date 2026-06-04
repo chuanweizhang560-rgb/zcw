@@ -183,6 +183,32 @@ nav_state: 14
 last_observed_advancement: waypoint 29
 ```
 
+风机多高度层 orbit 真实 Gazebo GUI 截图：
+
+```bash
+scripts/capture_wind_turbine_multilevel_orbit_gui.sh
+```
+
+该脚本需要可用 `DISPLAY`，会启动 Gazebo GUI 和风机 multilevel orbit launch，等待真实 waypoint advancement 后截图。
+
+最新审核证据：
+
+```text
+screenshot: data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png
+window_id: data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png.window_id.txt
+agent_log: data/logs/wind_multilevel_gui_agent_20260604_134640.log
+px4_log: data/logs/wind_multilevel_gui_px4_20260604_134640.log
+offboard_log: data/logs/wind_multilevel_gui_offboard_20260604_134640.log
+vehicle_status: data/logs/wind_multilevel_gui_vehicle_status_20260604_134640.log
+vehicle_local_position: data/logs/wind_multilevel_gui_vehicle_local_position_20260604_134640.log
+gazebo_window_id: 0x5c00010
+screenshot_size: 2560x1403
+advancements: 8
+arming_state: 2
+nav_state: 14
+visual_audit: accepted as real Gazebo GUI motion evidence; target-framed screenshot still pending
+```
+
 风机几何 baseline 只读审计：
 
 ```bash

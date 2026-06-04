@@ -130,4 +130,36 @@ The first sandboxed run failed before PX4 startup because Micro XRCE-DDS could n
 
 Remaining evidence gap:
 
-- Real Gazebo GUI screenshot for the multilevel orbit is still pending.
+- Target-framed Gazebo GUI screenshot for the multilevel orbit is still pending.
+
+GUI capture entry:
+
+```bash
+scripts/capture_wind_turbine_multilevel_orbit_gui.sh
+```
+
+Latest GUI motion evidence:
+
+- screenshot: `data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png`
+- window id: `data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png.window_id.txt`
+- agent log: `data/logs/wind_multilevel_gui_agent_20260604_134640.log`
+- PX4 log: `data/logs/wind_multilevel_gui_px4_20260604_134640.log`
+- offboard log: `data/logs/wind_multilevel_gui_offboard_20260604_134640.log`
+- vehicle status: `data/logs/wind_multilevel_gui_vehicle_status_20260604_134640.log`
+- vehicle local position: `data/logs/wind_multilevel_gui_vehicle_local_position_20260604_134640.log`
+
+Observed:
+
+```text
+gazebo_window_id=0x5c00010
+screenshot_size=2560x1403
+advancements=8
+arming_state: 2
+nav_state: 14
+local_position: x=-42.167988, y=-35.401360, z=-35.040619
+```
+
+Visual audit:
+
+- accepted as real Gazebo GUI motion evidence.
+- not accepted as target-framed inspection evidence because the wind turbine target is not visible in the screenshot.

@@ -3801,6 +3801,138 @@
   - 继续下一个节点：补风机 multilevel orbit 真实 Gazebo GUI 截图审核
 - 阻塞项：无
 
+### 2026-06-04 13:27:10 CST
+
+- 节点：风机 multilevel orbit 真实 Gazebo GUI 截图脚本开始
+- 执行动作：
+  - 读取：
+    - `scripts/capture_px4_aerialcore_world_gui.sh`
+    - `scripts/capture_px4_gazebo_classic_gui.sh`
+    - `scripts/run_px4_aerialcore_world_headless.sh`
+  - 新增：
+    - `scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `RUNBOOK.md`
+    - `docs/11_wind_turbine_geometry_baseline.md`
+- 脚本设计：
+  - 启动 Micro XRCE-DDS Agent
+  - 使用 `PX4_HEADLESS=0` 启动 AerialCore 风机 world 的 Gazebo GUI
+  - 启动 `single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+  - 等待至少 8 次 `Advancing to waypoint`
+  - 采集 `vehicle_status`、`vehicle_local_position`
+  - 截取真实 GUI screenshot 到 `data/screenshots/`
+- 硬边界：
+  - 复用现有 PX4/Gazebo/ROS 2 基线
+  - 不触碰电缆 Phase B active
+  - 不写低层控制器
+- 下一步：
+  - 运行 shell 语法检查
+  - 提权执行 GUI 截图脚本
+  - 根据截图和日志更新文档
+- 阻塞项：无
+
+### 2026-06-04 13:29:10 CST
+
+- 节点：风机 multilevel orbit GUI 截图第一次审核不通过
+- 执行动作：
+  - 运行 `chmod +x scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+  - 运行 `bash -n scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+  - 运行 `git diff --check`
+  - 提权运行 `scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+  - 读取：
+    - `data/logs/wind_multilevel_gui_offboard_20260604_132910.log`
+    - `data/logs/wind_multilevel_gui_vehicle_status_20260604_132910.log`
+    - `data/logs/wind_multilevel_gui_vehicle_local_position_20260604_132910.log`
+  - 查看截图：
+    - `data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_132910.png`
+- 结果：
+  - 脚本层面成功：
+    - `advancements=8`
+    - `arming_state: 2`
+    - `nav_state: 14`
+    - local position 约为 `x=-42.687580, y=-33.730358, z=-35.013939`
+  - 视觉审核失败：
+    - 截图是整个桌面/终端背景，不是 Gazebo 窗口
+    - 原因：脚本允许 `gnome-screenshot` 全屏 fallback，没有强制锁定 `gzclient/Gazebo` window id
+  - 处理：
+    - 修改 `scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+    - 新逻辑要求先用 `xwininfo` 找到 `"Gazebo"` window id
+    - 找不到 Gazebo window 时直接失败，不再保存桌面 fallback
+- 下一步：
+  - 重跑 GUI 截图脚本
+  - 只有真实 Gazebo 窗口截图通过后，才更新文档为截图成功
+- 阻塞项：无
+
+### 2026-06-04 13:45:52 CST
+
+- 节点：风机 multilevel orbit GUI 未弹窗问题继续处理
+- 用户反馈：
+  - 用户观察到 Gazebo 窗口没有启动起来
+- 执行动作：
+  - 读取第二次 GUI 截图脚本日志：
+    - `data/logs/wind_multilevel_gui_offboard_20260604_133120.log`
+    - `data/logs/wind_multilevel_gui_px4_20260604_133120.log`
+    - `data/logs/wind_multilevel_gui_vehicle_status_20260604_133120.log`
+    - `data/logs/wind_multilevel_gui_vehicle_local_position_20260604_133120.log`
+  - 确认：
+    - Offboard/arm 链路仍正常
+    - waypoint advancement 推进到至少 waypoint 19
+    - `arming_state: 2`
+    - `nav_state: 14`
+    - 但 `xwininfo` 没有找到 `"Gazebo"` 窗口
+  - 结论：
+    - 用户侧未看到 Gazebo 窗口与脚本侧观察一致
+    - 之前的全屏桌面截图不能作为 Gazebo GUI 证据
+  - 修改：
+    - `scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+    - 不再调用 `run_px4_aerialcore_world_headless.sh` 启动 GUI
+    - 改为复用已有静态 GUI 截图脚本同类方式：直接用 `make -C third_party/PX4-Autopilot-release-1.14 px4_sitl gazebo-classic`，并显式传入 AerialCore wind turbine world、Gazebo model/resource path、DISPLAY、PX4 venv
+- 下一步：
+  - 运行 shell 语法检查
+  - 重跑 GUI 截图脚本
+  - 只有真实 Gazebo window id 存在并截图成功才更新文档为 GUI 证据通过
+- 阻塞项：无
+
+### 2026-06-04 13:46:40 CST
+
+- 节点：风机 multilevel orbit 真实 Gazebo GUI 截图获得
+- 执行动作：
+  - 运行 `bash -n scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+  - 运行 `git diff --check`
+  - 提权运行 `scripts/capture_wind_turbine_multilevel_orbit_gui.sh`
+  - 读取：
+    - `data/logs/wind_multilevel_gui_offboard_20260604_134640.log`
+    - `data/logs/wind_multilevel_gui_vehicle_status_20260604_134640.log`
+    - `data/logs/wind_multilevel_gui_vehicle_local_position_20260604_134640.log`
+    - `data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png.window_id.txt`
+  - 查看截图：
+    - `data/screenshots/wind_turbine_multilevel_orbit_gui_20260604_134640.png`
+- 结果：
+  - GUI 截图脚本成功：
+    - `advancements=8`
+    - `Gazebo window id: 0x5c00010`
+    - screenshot：`2560x1403`
+  - PX4 状态：
+    - `arming_state: 2`
+    - `nav_state: 14`
+  - local position：
+    - `x=-42.16798782348633`
+    - `y=-35.40135955810547`
+    - `z=-35.040618896484375`
+  - 视觉审核：
+    - 通过：截图是真实 Gazebo 窗口，能看到无人机处于空中运动状态
+    - 未通过：风机目标没有进入画面，因此不能作为 target-framed inspection screenshot
+- 结论：
+  - 当前截图可作为风机 multilevel orbit 的真实 Gazebo GUI 运动证据
+  - 仍需后续补一个风机目标同框/更好相机视角截图
+  - 不再把 `20260604_132910` 那张桌面 fallback 截图作为证据
+- 下一步：
+  - 更新文档和 RUNBOOK 中的 GUI 证据路径
+  - 做最终静态检查
+  - 提交并推送 GUI 截图脚本、文档和 PROCESS_LOG
+- 阻塞项：无
+
 ### 2026-06-04 09:15:25 CST
 
 - 节点：Phase B active bridge 前置评审与边界审计提交与推送
