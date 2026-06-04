@@ -51,6 +51,7 @@ pass() {
   echo "[check] cable scripts never set phase_b_user_approved true"
   if rg -n 'phase_b_user_approved:=true|phase_b_user_approved:=[Tt]rue' scripts \
     --glob '!audit_phase_b_active_preflight_boundary.sh' \
+    --glob '!audit_dry_run_readiness.sh' \
     >"${RESULT_DIR}/phase_b_true_scripts_${STAMP}.log"; then
     cat "${RESULT_DIR}/phase_b_true_scripts_${STAMP}.log"
     fail "script enables phase_b_user_approved before approval"
@@ -61,6 +62,7 @@ pass() {
   if rg -n 'ros2 topic pub.*/fmu/in|/fmu/in/(trajectory_setpoint|offboard_control_mode|vehicle_command).*pub' scripts \
     --glob '!audit_phase_b_active_preflight_boundary.sh' \
     --glob '!audit_px4_isolation.sh' \
+    --glob '!audit_dry_run_readiness.sh' \
     >"${RESULT_DIR}/script_direct_fmu_publish_${STAMP}.log"; then
     cat "${RESULT_DIR}/script_direct_fmu_publish_${STAMP}.log"
     fail "script directly publishes PX4 input topic before approval"

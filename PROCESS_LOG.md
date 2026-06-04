@@ -3742,3 +3742,83 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 继续下一个节点：继续 dry-run-only 安全审计，或等待显式 Phase B active 批准
 - 阻塞项：无
+
+### 2026-06-04 10:00:12 CST
+
+- 节点：dry-run readiness 总审计入口开始
+- 执行动作：
+  - 确认工作区干净并已推送到 `f879484`
+  - 读取：
+    - `scripts/audit_phase_b_active_preflight_boundary.sh`
+    - `scripts/audit_active_bridge_review_template.sh`
+    - `RUNBOOK.md`
+    - `docs/08_cable_active_bridge_code_review.md`
+  - 搜索 dry-run、Phase B、active bridge、`/fmu/in/*` 相关引用
+- 目标：
+  - 新增一个总审计脚本，串行运行当前所有 dry-run-only 安全审计
+  - 输出统一 summary，便于每次继续执行前快速确认当前仓库边界
+  - 新增当前状态矩阵文档，明确哪些已完成、哪些仍未批准
+- 硬边界：
+  - 总审计脚本不得启动 ROS/PX4/Gazebo/RViz
+  - 不创建 active bridge
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 新增 `scripts/audit_dry_run_readiness.sh`
+  - 新增 `docs/09_dry_run_readiness_matrix.md`
+  - 运行总审计并记录结果
+- 阻塞项：无
+
+### 2026-06-04 10:03:46 CST
+
+- 节点：dry-run readiness 总审计通过
+- 执行动作：
+  - 新增 `scripts/audit_dry_run_readiness.sh`
+  - 新增 `docs/09_dry_run_readiness_matrix.md`
+  - 运行 `bash -n scripts/audit_dry_run_readiness.sh`
+  - 运行 `git diff --check`
+  - 第一次运行 `scripts/audit_dry_run_readiness.sh` 失败：
+    - 原因：脚本用 `git check-ignore data` 检查目录本身，未命中；实际忽略规则作用于 `data/logs/*`、`data/results/*` 等产物路径
+    - 处理：改为检查 `data/logs/__probe__`、`data/results/__probe__`、`data/screenshots/__probe__` 等具体产物路径
+  - 第二次运行失败：
+    - 原因：`audit_px4_isolation.sh` 将 decision 写入自己的 summary 文件，stdout 只打印路径，总脚本 grep stdout 过严
+    - 处理：总脚本对该子审计以退出码为准
+  - 第三次运行失败：
+    - 原因：`audit_phase_b_active_preflight_boundary.sh` 将新总审计脚本中的检查正则误判为 `phase_b_user_approved:=true`
+    - 处理：preflight 审计排除 `audit_dry_run_readiness.sh`
+  - 第四次运行失败：
+    - 原因：preflight/threshold/review 子脚本均将 decision 写入各自 summary，stdout 只打印路径，总脚本 grep stdout 过严
+    - 处理：总脚本对这些子审计以退出码为准
+  - 最终运行 `scripts/audit_dry_run_readiness.sh` 通过
+  - 读取：
+    - `data/results/dry_run_readiness_20260604_100331/dry_run_readiness_20260604_100331.txt`
+    - `data/results/dry_run_readiness_20260604_100331/static_repo_checks_20260604_100331.log`
+    - `data/results/dry_run_readiness_20260604_100331/px4_isolation_20260604_100331.log`
+    - `data/results/dry_run_readiness_20260604_100331/phase_b_preflight_20260604_100331.log`
+    - `data/results/dry_run_readiness_20260604_100331/thresholds_20260604_100331.log`
+    - `data/results/dry_run_readiness_20260604_100331/review_template_20260604_100331.log`
+  - 更新：
+    - `docs/09_dry_run_readiness_matrix.md`
+    - `RUNBOOK.md`
+    - `scripts/README.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - `decision=accepted_dry_run_readiness`
+  - `phase_b_approved=false`
+  - `active_bridge_present=false`
+  - `publishes_fmu_in=false`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - 静态仓库边界、PX4 隔离、Phase B preflight、setpoint threshold、review template 均通过
+- 结论：
+  - 当前 dry-run-only 仓库边界通过总审计
+  - Phase B 仍未获批准
+  - 仍不得创建 active bridge、启动 Offboard、arm 或发布 `/fmu/in/*`
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本阶段文档、审计脚本和进程记录
+- 阻塞项：无

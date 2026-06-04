@@ -50,6 +50,7 @@ Offboard gate dry-run RViz/debug overlay 已完成真实 PX4/Gazebo + Micro XRCE
 Phase B active bridge 前置边界审计已完成；当前没有 `cable_offboard_active_bridge`，没有 cable-specific `/fmu/in/*` publisher，脚本没有开启 `phase_b_user_approved`，本地 dry-run 证据完整。Phase B 仍未获批准。
 电缆 active 前置坐标/安全阈值复核已完成；offset path 和 lookahead target 间隔约 `10.0005m`，但 gate 前 dry-run 实际水平跳变约 `0.999m`、垂直跳变约 `0.004m`，未来 active bridge 必须消费 gate-approved NED dry-run 输出，不能直接发布 raw lookahead target。
 active bridge 代码审查模板已建立并通过只读模板审计；当前没有 `cable_offboard_active_bridge`，没有 cable active `/fmu/in/*` publisher，Phase B 仍未获批准。
+dry-run readiness 总审计已完成；静态仓库边界、PX4 隔离、Phase B preflight、setpoint threshold 和 active bridge review template 均通过，当前仍没有 active bridge，Phase B 仍未获批准。
 
 实测成功标志：
 
