@@ -3781,6 +3781,26 @@
   - 后续补真实 Gazebo GUI 截图审核
 - 阻塞项：无
 
+### 2026-06-04 13:25:43 CST
+
+- 节点：风机 multilevel orbit baseline 提交与推送
+- 执行动作：
+  - 提交：`ac28629 Add wind turbine multilevel orbit baseline`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `9e0722c` 更新到 `ac28629`
+  - 本次提交包含：
+    - `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+    - `scripts/verify_wind_turbine_multilevel_orbit.sh`
+    - `ros2_ws/src/zcw_px4_baseline/src/offboard_waypoint_sequence.cpp` 可选 yaw 参数
+    - `.gitignore` 忽略 `__pycache__/`
+    - wind turbine baseline 文档、RUNBOOK、脚本索引和 PROCESS_LOG 更新
+  - `.venv/`、`data/`、`third_party/` 仍未提交
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 继续下一个节点：补风机 multilevel orbit 真实 Gazebo GUI 截图审核
+- 阻塞项：无
+
 ### 2026-06-04 09:15:25 CST
 
 - 节点：Phase B active bridge 前置评审与边界审计提交与推送
