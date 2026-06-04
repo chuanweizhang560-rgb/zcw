@@ -52,6 +52,7 @@ Phase B active bridge 前置边界审计已完成；当前没有 `cable_offboard
 active bridge 代码审查模板已建立并通过只读模板审计；当前没有 `cable_offboard_active_bridge`，没有 cable active `/fmu/in/*` publisher，Phase B 仍未获批准。
 dry-run readiness 总审计已完成；静态仓库边界、PX4 隔离、Phase B preflight、setpoint threshold 和 active bridge review template 均通过，当前仍没有 active bridge，Phase B 仍未获批准。
 本地 ignored 证据清单审计已建立；用于确认 `data/logs/`、`data/results/`、`data/screenshots/` 下的关键 dry-run 证据仍存在且不会被提交进 git。
+风机几何 baseline 只读审计已建立；用于解析 AerialCore 风机 pose、DAE 粗边界和当前风机 waypoint launch，并输出 multilevel orbit 推荐 CSV 供后续人工/agent 审查，当前不接 PX4。
 
 实测成功标志：
 
@@ -158,6 +159,26 @@ scripts/verify_px4_offboard_waypoints.sh
 
 ```bash
 scripts/verify_wind_turbine_waypoints.sh
+```
+
+风机几何 baseline 只读审计：
+
+```bash
+scripts/audit_wind_turbine_geometry_baseline.sh
+```
+
+该审计不启动仿真，只生成当前航点几何统计和待审推荐 orbit CSV。推荐 CSV 不是已批准飞行任务。
+
+最新审核证据：
+
+```text
+summary: data/results/wind_turbine_geometry_baseline_20260604_131304/wind_turbine_geometry_baseline_20260604_131304.txt
+current_waypoint_csv: data/results/wind_turbine_geometry_baseline_20260604_131304/wind_turbine_waypoints_20260604_131304.csv
+recommended_orbit_csv: data/results/wind_turbine_geometry_baseline_20260604_131304/wind_turbine_recommended_orbit_20260604_131304.csv
+decision: accepted_wind_turbine_geometry_asset_audit
+current_waypoint_decision: rejected_current_wind_waypoints_for_coverage_baseline
+current_unique_orbit_z_levels: 1
+recommended_waypoints: 48
 ```
 
 最小电缆巡检几何 waypoint 验证：

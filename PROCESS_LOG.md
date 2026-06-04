@@ -3591,6 +3591,93 @@
   - 继续下一个节点：在不批准 Phase B active 的前提下，推进 dry-run-only 证据再生成能力或风机几何覆盖 baseline 细化
 - 阻塞项：无
 
+### 2026-06-04 13:11:29 CST
+
+- 节点：风机几何 baseline 只读审计开始
+- 执行动作：
+  - 确认当前分支干净并同步到 `origin/codex/initial-workflow`
+  - 读取：
+    - `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_inspection.launch.py`
+    - `ros2_ws/src/zcw_px4_baseline/src/offboard_waypoint_sequence.cpp`
+    - `ros2_ws/src/zcw_bringup/README.md`
+    - `ros2_ws/src/zcw_px4_baseline/README.md`
+    - `ros2_ws/src/zcw_sim_assets/config/open_source_assets.yaml`
+    - `third_party/aerialcore_simulation/worlds/wind_turbine_autospawn.world`
+    - `third_party/aerialcore_simulation/models/wind_turbine/wind_turbine_scaled.dae`
+  - 发现：
+    - AerialCore 风机 world 中 `wind_turbine` pose 为 `-25 -25 0 0 0 0.2618`
+    - 当前风机 launch 只是单高度十字绕飞 smoke baseline
+    - 本机没有 `assimp` 或 `meshlabserver` 命令，资产粗边界审计需要直接解析 DAE XML 顶点
+  - 新增：
+    - `scripts/audit_wind_turbine_geometry_baseline.sh`
+    - `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新：
+    - `scripts/README.md`
+    - `RUNBOOK.md`
+- 目标：
+  - 在不启动仿真、不接 PX4 的前提下审计当前风机 waypoint baseline 是否足够作为覆盖 baseline
+  - 输出待审 multilevel orbit CSV，作为后续独立 launch 的参数依据
+- 硬边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不改现有风机飞行 launch
+  - 不自研低层控制
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 运行 shell 语法检查和风机几何审计
+  - 根据输出更新风机文档和 PROCESS_LOG
+- 阻塞项：无
+
+### 2026-06-04 13:13:04 CST
+
+- 节点：风机几何 baseline 只读审计通过
+- 执行动作：
+  - 运行 `chmod +x scripts/audit_wind_turbine_geometry_baseline.sh`
+  - 运行 `bash -n scripts/audit_wind_turbine_geometry_baseline.sh`
+  - 运行 `git diff --check`
+  - 运行 `scripts/audit_wind_turbine_geometry_baseline.sh`
+  - 读取：
+    - `data/results/wind_turbine_geometry_baseline_20260604_131304/wind_turbine_geometry_baseline_20260604_131304.txt`
+    - `data/results/wind_turbine_geometry_baseline_20260604_131304/wind_turbine_waypoints_20260604_131304.csv`
+    - `data/results/wind_turbine_geometry_baseline_20260604_131304/wind_turbine_recommended_orbit_20260604_131304.csv`
+  - 更新：
+    - `docs/11_wind_turbine_geometry_baseline.md`
+    - `RUNBOOK.md`
+- 结果：
+  - `decision=accepted_wind_turbine_geometry_asset_audit`
+  - `current_waypoint_decision=rejected_current_wind_waypoints_for_coverage_baseline`
+  - `current_waypoint_reason=current_waypoints_are_smoke_test_only_not_multilevel_orbit`
+  - 风机 world pose：`x=-25.000000, y=-25.000000, yaw=0.261800`
+  - DAE 顶点数：`4802`
+  - DAE 粗范围：
+    - `x=[-0.847701, 1.883050]`
+    - `y=[-6.377210, 6.446130]`
+    - `z=[0.351190, 11.803300]`
+  - 当前风机 orbit：
+    - `current_orbit_waypoint_count=5`
+    - `current_radius_mean_m=20.000000`
+    - `current_unique_orbit_z_levels=1`
+  - 推荐待审 orbit：
+    - `recommended_levels=4`
+    - `recommended_points_per_level=12`
+    - `recommended_waypoints=48`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+- 结论：
+  - 当前风机 launch 只能保留为运动 smoke baseline
+  - 后续应新增独立 multilevel orbit launch，并单独做 headless 与真实 Gazebo 截图验证
+  - 本节点没有改 PX4 控制行为
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送风机几何审计脚本、文档和进程记录
+- 阻塞项：无
+
 ### 2026-06-04 09:15:25 CST
 
 - 节点：Phase B active bridge 前置评审与边界审计提交与推送
