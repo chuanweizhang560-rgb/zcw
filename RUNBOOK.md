@@ -45,6 +45,7 @@ depth camera 高空 wire-band ROI offset path 已完成离线连续性、曲率�
 电缆 lookahead/dry-run/Phase A PX4 bridge debug pipeline 已完成只读 topic、safety gate、dry-run candidate、bridge NED dry-run topic 和 RViz overlay 截图审核；当前仍未发布 `/fmu/in/*`。
 PX4/Gazebo 只读坐标采样 smoke 已完成；该节点启动 PX4/Gazebo 和 Micro XRCE-DDS，只读取 `/fmu/out/vehicle_local_position`、Gazebo P3D pose、dry-run map candidate 和 bridge NED debug point，不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 Offboard 接入前 Phase B gate 设计已写入 `docs/05_cable_phase_b_gate_plan.md`；显式批准前仍不得发布 `/fmu/in/*`。
+`cable_offboard_gate_dry_run` 已完成 headless smoke；输出 `/zcw/cable/offboard_gate/*`，状态达到 `PHASE_B_READY_DRY_RUN`，`phase_b_allowed=false`，所有 `/fmu/in/*` publisher count 为 0。
 
 实测成功标志：
 
@@ -98,7 +99,7 @@ scripts/setup_px4_venv.sh
 
 ```bash
 cd third_party/PX4-Autopilot-release-1.14
-env PATH=/tmp/codex_zcw_px4_venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin PYTHON_EXECUTABLE=/tmp/codex_zcw_px4_venv/bin/python make px4_sitl_default sitl_gazebo-classic
+env PATH="${PWD}/.venv/px4_venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" PYTHON_EXECUTABLE="${PWD}/.venv/px4_venv/bin/python" make px4_sitl_default sitl_gazebo-classic
 ```
 
 headless 启动验证：

@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PX4_DIR="${PX4_DIR:-${ROOT_DIR}/third_party/PX4-Autopilot-release-1.14}"
-VENV_DIR="${PX4_VENV:-/tmp/codex_zcw_px4_venv}"
+VENV_DIR="${PX4_VENV:-${ROOT_DIR}/.venv/px4_venv}"
 TIMEOUT_SEC="${TIMEOUT_SEC:-45}"
 LOG_DIR="${LOG_DIR:-${ROOT_DIR}/data/logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/px4_gazebo_classic_headless_$(date +%Y%m%d_%H%M%S).log}"

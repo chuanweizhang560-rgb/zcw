@@ -16,6 +16,9 @@ Current node:
   position, Gazebo P3D pose, dry-run candidate and bridge NED debug point in one
   time window, writes a summary file, and does not publish any topic. It is a
   smoke test for data availability, not a closed-loop tracking proof.
+- `cable_offboard_gate_dry_run`: dry-run Phase B gate node. It reads bridge
+  debug outputs plus PX4/Gazebo read-only state and publishes only
+  `/zcw/cable/offboard_gate/*`; it never publishes `/fmu/in/*`.
 
 This package is engineering glue for simulation verification. It must not contain wind
 turbine or cable inspection algorithms.

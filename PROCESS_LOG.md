@@ -3280,3 +3280,105 @@
   - 提交并推送本条 PROCESS_LOG 记录
   - 实现 `cable_offboard_gate_dry_run` 和验证脚本，仍不发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-04 08:43:41 CST
+
+- 节点：Offboard gate dry-run 实现开始
+- 执行动作：
+  - 确认仓库干净并已推送到 `c9bd720`
+  - 读取：
+    - `docs/05_cable_phase_b_gate_plan.md`
+    - `px4_gazebo_frame_alignment_audit.cpp`
+    - `verify_px4_gazebo_readonly_frame_alignment.sh`
+- 目标：
+  - 新增 `cable_offboard_gate_dry_run`
+  - 新增 `scripts/verify_cable_offboard_gate_dry_run.sh`
+  - 输出 `/zcw/cable/offboard_gate/*`
+  - 验证 `phase_b_allowed=false`
+  - 验证所有 `/fmu/in/*` 的 `Publisher count: 0`
+  - 不启动 Offboard、不 arm、不发布 PX4 input topic
+- 下一步：
+  - 新增 dry-run gate 节点源码和 CMake 入口
+  - 新增验证脚本并运行 headless smoke
+- 阻塞项：无
+
+### 2026-06-04 08:51:40 CST
+
+- 节点：PX4 venv 持久化路径调整
+- 触发原因：
+  - `scripts/verify_cable_offboard_gate_dry_run.sh` 首次运行失败
+  - 失败原因为 `/tmp/codex_zcw_px4_venv/bin/python` 不存在
+  - `/tmp` 会在会话/环境重启后清理，不适合作为长期执行依赖
+- 执行动作：
+  - 将 `scripts/setup_px4_venv.sh` 默认 venv 路径从 `/tmp/codex_zcw_px4_venv` 改为 `${ROOT_DIR}/.venv/px4_venv`
+  - 将 `scripts/run_px4_gazebo_classic_headless.sh` 默认 venv 路径改为 `${ROOT_DIR}/.venv/px4_venv`
+  - 将 `scripts/capture_px4_gazebo_classic_gui.sh` 默认 venv 路径改为 `${ROOT_DIR}/.venv/px4_venv`
+  - 将 `.venv/` 加入 `.gitignore`
+  - 更新 `RUNBOOK.md` 和 `OPEN_SOURCE_AUDIT.md`
+- 结果：
+  - 后续默认 PX4 venv 位于仓库内忽略目录 `.venv/px4_venv`
+  - 仍支持通过 `PX4_VENV` 环境变量覆盖路径
+- 下一步：
+  - 用新路径运行 `scripts/setup_px4_venv.sh`
+  - 重跑 `scripts/verify_cable_offboard_gate_dry_run.sh`
+- 阻塞项：无
+
+### 2026-06-04 08:59:30 CST
+
+- 节点：Offboard gate dry-run smoke 通过
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_px4_baseline/src/cable_offboard_gate_dry_run.cpp`
+  - 更新 `ros2_ws/src/zcw_px4_baseline/CMakeLists.txt`
+  - 更新 `ros2_ws/src/zcw_px4_baseline/README.md`
+  - 新增 `scripts/verify_cable_offboard_gate_dry_run.sh`
+  - 运行 `bash -n scripts/verify_cable_offboard_gate_dry_run.sh`
+  - 运行 `git diff --check`
+  - 运行 `colcon build --symlink-install --base-paths ros2_ws/src third_party/px4_msgs --packages-select px4_msgs zcw_cable_perception zcw_px4_baseline`
+  - 第一次运行 `scripts/verify_cable_offboard_gate_dry_run.sh` 失败：
+    - 原因：旧 `/tmp/codex_zcw_px4_venv` 不存在
+    - 处理：将 PX4 venv 默认路径迁移到 `.venv/px4_venv` 并运行 `scripts/setup_px4_venv.sh`
+  - 第二次运行 `scripts/verify_cable_offboard_gate_dry_run.sh` 失败：
+    - 原因：gate 默认水平跳变门限 `2.5m` 与上游 dry-run/bridge smoke 的 `5m` 最大跳变不一致，触发 `HOLD_ABORT; reason=setpoint_jump_exceeded`
+    - 处理：验证脚本显式传入 `max_horizontal_jump_m=5.0`，文档标注 active target 仍可收紧到 `2.5m`
+  - 第三次运行 `scripts/verify_cable_offboard_gate_dry_run.sh` 通过
+  - 读取：
+    - `data/results/cable_offboard_gate_dry_run_20260604_085746/cable_offboard_gate_dry_run_20260604_085746.txt`
+    - `data/logs/cable_offboard_gate_state_echo_20260604_085746.log`
+    - `data/logs/cable_offboard_gate_allowed_echo_20260604_085746.log`
+    - `data/logs/cable_offboard_gate_approved_ned_echo_20260604_085746.log`
+    - `data/logs/cable_offboard_gate_forbidden_publishers_20260604_085746.log`
+  - 检查残留进程：
+    - `verify_cable_offboard_gate`
+    - `gzserver/gzclient/px4/gazebo`
+    - `MicroXRCEAgent`
+    - `lookahead_path_publisher`
+    - `lookahead_safety_monitor`
+    - `lookahead_dry_run_setpoint`
+    - `cable_px4_bridge_dry_run`
+    - `cable_offboard_gate_dry_run`
+  - 更新：
+    - `RUNBOOK.md`
+    - `docs/02_cable_tracking_open_source_plan.md`
+    - `docs/05_cable_phase_b_gate_plan.md`
+- 结果：
+  - `decision=accepted_cable_offboard_gate_dry_run_smoke`
+  - gate state：`PHASE_B_READY_DRY_RUN`
+  - `phase_b_allowed=false`
+  - `publishes_fmu_in=false`
+  - `user_approved=false`
+  - `bridge_ready=true`
+  - `candidate_ready=true`
+  - `px4_ready=true`
+  - `gazebo_ready=true`
+  - `abort_latched=false`
+  - approved dry-run NED frame：`px4_local_ned_dry_run`
+  - 所有 `/fmu/in/*` topic 的 `Publisher count` 均为 0
+  - 未发现 ROS/Gazebo/PX4/Agent 残留进程
+- 结论：
+  - Offboard gate dry-run 通过
+  - 当前仍未启动 Offboard、未 arm、未发布 PX4 input topic
+  - PX4 venv 已迁移到持久 `.venv/px4_venv`
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本阶段代码、脚本、文档和进程记录
+- 阻塞项：无

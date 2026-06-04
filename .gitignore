@@ -2,6 +2,7 @@ build/
 install/
 log/
 .ros/
+.venv/
 *.bag
 *.db3
 *.ulg

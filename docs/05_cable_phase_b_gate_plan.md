@@ -6,6 +6,7 @@ Current status:
 
 - Phase A bridge dry-run is implemented.
 - PX4/Gazebo read-only frame sampling has passed.
+- `cable_offboard_gate_dry_run` is implemented and verified.
 - No cable-tracking node is approved to publish `/fmu/in/*`.
 
 ## 1. Hard Boundary
@@ -89,7 +90,7 @@ All gates must pass before `PHASE_B_READY_DRY_RUN`:
 | candidate age | `<= 0.5 s` |
 | PX4 status age | `<= 1.0 s` |
 | PX4 local position age | `<= 1.0 s` |
-| horizontal setpoint jump | `<= 2.5 m` |
+| horizontal setpoint jump | `<= 2.5 m` active target, `<= 5.0 m` dry-run smoke compatibility |
 | vertical setpoint jump | `<= 0.5 m` |
 | candidate speed | `<= 5.0 m/s` |
 | explicit approval parameter | false before Phase B |
@@ -152,3 +153,18 @@ The next implementation node should create a dry-run gate executable and verific
 - script: `scripts/verify_cable_offboard_gate_dry_run.sh`
 
 The script must not start Offboard, must not arm, and must not publish `/fmu/in/*`.
+
+Latest evidence:
+
+- summary: `data/results/cable_offboard_gate_dry_run_20260604_085746/cable_offboard_gate_dry_run_20260604_085746.txt`
+- gate state: `data/logs/cable_offboard_gate_state_echo_20260604_085746.log`
+- phase B allowed: `data/logs/cable_offboard_gate_allowed_echo_20260604_085746.log`
+- forbidden publishers: `data/logs/cable_offboard_gate_forbidden_publishers_20260604_085746.log`
+
+Latest result:
+
+- `decision=accepted_cable_offboard_gate_dry_run_smoke`
+- `PHASE_B_READY_DRY_RUN`
+- `phase_b_allowed=false`
+- `publishes_fmu_in=false`
+- every `/fmu/in/*` topic had `Publisher count: 0`

@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PX4_DIR="${PX4_DIR:-${ROOT_DIR}/third_party/PX4-Autopilot-release-1.14}"
-VENV_DIR="${PX4_VENV:-/tmp/codex_zcw_px4_venv}"
+VENV_DIR="${PX4_VENV:-${ROOT_DIR}/.venv/px4_venv}"
 
 if [[ ! -d "${PX4_DIR}" ]]; then
   echo "PX4 directory not found: ${PX4_DIR}" >&2

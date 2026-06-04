@@ -194,7 +194,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 |---|---|
 | PX4-Autopilot | `release/1.14`, commit `1555f2b` |
 | Gazebo Classic plugin submodule | `Tools/simulation/gazebo-classic/sitl_gazebo-classic`, commit `2e3ed9b` |
-| Python venv | `/tmp/codex_zcw_px4_venv` |
+| Python venv | `${repo}/.venv/px4_venv` |
 | Python | system Python 3.10 venv |
 | empy | fixed to `3.3.4` |
 
