@@ -3462,3 +3462,21 @@
   - 更新脚本索引、RUNBOOK、电缆计划和 Phase B gate 文档
   - 提交并推送本阶段代码、脚本、文档和进程记录
 - 阻塞项：无
+
+### 2026-06-04 09:08:45 CST
+
+- 节点：Offboard gate dry-run RViz/debug overlay 提交与推送
+- 执行动作：
+  - 提交：`296f040 Add cable offboard gate RViz overlay`
+  - 推送：`git push origin codex/initial-workflow`
+- 结果：
+  - GitHub 分支 `codex/initial-workflow` 已从 `43ecf40` 更新到 `296f040`
+  - 本次提交包含：
+    - `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+    - `ros2_ws/src/zcw_cable_perception/rviz/offboard_gate_dry_run_overlay.rviz`
+    - RUNBOOK、电缆计划、Phase B gate 计划、脚本索引和 PROCESS_LOG 更新
+  - `.venv/`、`data/`、`third_party/` 仍未提交
+- 下一步：
+  - 提交并推送本条 PROCESS_LOG 记录
+  - 继续下一个节点：Phase B active bridge 方案评审或更严格的 Offboard active 前置审计
+- 阻塞项：无
