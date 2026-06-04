@@ -4511,6 +4511,97 @@
   - 继续推进下一个不触碰电缆 Phase B active 的可验证节点
 - 阻塞项：无
 
+### 2026-06-04 14:38:00 CST
+
+- 节点：多机前置上游能力静态审计开始
+- 背景：
+  - 单机风机规则 baseline 已具备静态、headless 和 GUI 证据
+  - 电缆 active 仍禁止，不能通过电缆进入多机 active
+  - 后续多机必须先确认 PX4/Gazebo Classic 官方多实例入口和 ROS 2 namespace 隔离
+- 执行动作：
+  - 读取 PX4 release/1.14 `sitl_multiple_run.sh`
+  - 读取 PX4 release/1.14 `rcS` 和 `px4-rc.mavlink` 中的多实例/uXRCE/MAVLink 配置
+  - 新增 `scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 新增 `docs/12_multi_vehicle_readiness.md`
+  - 更新 `scripts/README.md`
+- 审计边界：
+  - 只读本地上游文件
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+  - 不创建多机控制器
+- 初步发现：
+  - PX4 上游提供 `Tools/simulation/gazebo-classic/sitl_multiple_run.sh`
+  - `rcS` 设置 `MAV_SYS_ID=px4_instance+1`
+  - `rcS` 设置 `UXRCE_DDS_KEY=px4_instance+1`
+  - 非 0 实例使用 DDS namespace `px4_<instance>`
+- 下一步：
+  - 运行 `bash -n scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 运行 `scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 根据结果更新 `docs/12_multi_vehicle_readiness.md`
+- 阻塞项：无
+
+### 2026-06-04 14:41:00 CST
+
+- 节点：多机前置上游能力静态审计脚本首次运行失败并修正
+- 执行动作：
+  - 运行 `chmod +x scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 运行 `bash -n scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 运行 `scripts/audit_multi_vehicle_upstream_readiness.sh`
+- 失败现象：
+  - `scripts/audit_multi_vehicle_upstream_readiness.sh: 行 66: px4_instance: 未绑定的变量`
+- 原因：
+  - grep pattern 中的 `$px4_instance` 在 bash 双引号内被提前展开
+  - 这是审计脚本转义问题，不是 PX4 多机能力缺失
+- 修正：
+  - 将 DDS namespace pattern 改为单引号字面匹配
+- 下一步：
+  - 重新运行 `bash -n`
+  - 重新运行 `scripts/audit_multi_vehicle_upstream_readiness.sh`
+- 阻塞项：无
+
+### 2026-06-04 14:44:00 CST
+
+- 节点：多机前置上游能力静态审计通过
+- 执行动作：
+  - 重新运行 `bash -n scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 重新运行 `scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 读取 `data/results/multi_vehicle_upstream_readiness_20260604_140726/multi_vehicle_upstream_readiness_20260604_140726.txt`
+  - 更新 `docs/12_multi_vehicle_readiness.md`
+  - 更新 `RUNBOOK.md`
+- 证据：
+  - summary: `data/results/multi_vehicle_upstream_readiness_20260604_140726/multi_vehicle_upstream_readiness_20260604_140726.txt`
+- 结果：
+  - `decision=accepted_multi_vehicle_upstream_static_audit`
+  - `has_gazebo_classic_multi_script=true`
+  - `has_spawn_model_function=true`
+  - `has_instance_tcp_port_offset=true`
+  - `has_instance_udp_port_offset=true`
+  - `has_supported_iris_model=true`
+  - `has_mav_sys_id_per_instance=true`
+  - `has_uxrce_key_per_instance=true`
+  - `has_nonzero_px4_namespace=true`
+  - `has_uxrce_udp_default_port=true`
+  - `has_uxrce_start_udp=true`
+  - `has_mavlink_offboard_local_port_offset=true`
+  - `has_mavlink_offboard_remote_port_offset=true`
+  - `has_mavlink_gcs_local_port_offset=true`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+- 结论：
+  - 可以准备两机 headless 只读 topic 审计
+  - 仍不能启动多机 Offboard、arming、角色分配或 RL
+- 下一步：
+  - 运行最终静态检查
+  - 提交并推送本节点
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始

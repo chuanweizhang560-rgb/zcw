@@ -53,6 +53,7 @@ active bridge 代码审查模板已建立并通过只读模板审计；当前没
 dry-run readiness 总审计已完成；静态仓库边界、PX4 隔离、Phase B preflight、setpoint threshold 和 active bridge review template 均通过，当前仍没有 active bridge，Phase B 仍未获批准。风机 multilevel orbit 变更后已重新复核，电缆 active 边界仍保持关闭。
 本地 ignored 证据清单审计已建立；用于确认 `data/logs/`、`data/results/`、`data/screenshots/` 下的关键 dry-run 和风机规则 baseline 证据仍存在且不会被提交进 git。最新清单为 21 项，全部存在且被 git ignore。
 风机几何 baseline 只读审计已建立；用于解析 AerialCore 风机 pose、DAE 粗边界和当前风机 waypoint launch，并输出 multilevel orbit 推荐 CSV 供后续人工/agent 审查，当前不接 PX4。
+多机前置上游能力静态审计已建立；PX4 release/1.14 官方 Gazebo Classic 多实例脚本、实例 MAVLink 端口、`MAV_SYS_ID`、`UXRCE_DDS_KEY` 和 DDS namespace 支持均已确认。下一步只允许做两机 headless 只读 topic 审计，仍不能做多机 Offboard 或 RL。
 
 实测成功标志：
 
