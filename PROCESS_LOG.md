@@ -5390,3 +5390,50 @@
   - 提交并推送 LIO 输入审计与上游审计文档
   - 后续继续筛查是否存在更合适的 LiDAR/IMU 输入源或更稳妥的 LIO 候选
 - 阻塞项：无
+
+### 2026-06-05 09:39:22 CST
+
+- 节点：foggy lidar 原生 IMU 暴露审计完成
+- 执行动作：
+  - 新增 `scripts/verify_foggy_lidar_imu_bridge.sh`
+  - 启动 `iris_foggy_lidar` + AerialCore `danube_wires` 只读仿真
+  - 审计 ROS 2 图中是否存在原生 `/imu` 以及 `/fmu/out/sensor_combined`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - ROS 2 图中只看到 `/zcw/foggy_lidar/points` 和 `/zcw/foggy_lidar/pose`
+  - `imu_topic=/imu`
+  - `imu_topic_present=false`
+  - `sensor_combined_topic=/fmu/out/sensor_combined`
+  - `sensor_combined_present=false`
+  - `decision=rejected_foggy_lidar_native_imu_bridge`
+- 结论：
+  - 当前 foggy lidar 的 Gazebo ROS 导出链路是 pointcloud+pose only，不提供原生 `sensor_msgs/msg/Imu`
+  - 结合前一节点的 Micro XRCE 审计，可确认当前栈不存在“现成可直接喂成熟 LIO”的 LiDAR+原生 IMU 组合
+- 下一步：
+  - 继续筛查 PX4 官方现成模型和传感器插件，找更合适的上游 LiDAR/IMU 输入源
+  - 若仍无合格输入，再转向更适配 RGB-D 的成熟 SLAM 主线
+- 阻塞项：无
+
+### 2026-06-05 09:48:05 CST
+
+- 节点：`px4vision` 现成传感器合同审计完成
+- 执行动作：
+  - 新增 `scripts/verify_px4vision_ros_contract.sh`
+  - 在 AerialCore 两塔导线 world 中启动 PX4 官方 `px4vision`
+  - 审计 ROS 2 图中的 `/imu`、深度相机和 PointCloud2 话题
+  - 复核本机 ROS 2 Humble 下相关 Gazebo ROS 插件库是否存在
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `native_imu_present=false`
+  - `pointcloud_topics_count=0`
+  - Gazebo 日志报错：`Failed to load plugin libgazebo_ros_openni_kinect.so`
+  - 本机存在 `libgazebo_ros_camera.so`，不存在 `libgazebo_ros_openni_kinect.so`
+  - `decision=rejected_px4vision_ros_contract`
+- 结论：
+  - `px4vision` 在当前锁定环境下不是可直接复用的上游深度/视觉基线
+  - 阻塞点不是调参，而是上游模型依赖的 Gazebo ROS 插件缺失
+  - 现阶段更稳的 SLAM 主线仍是已跑通的 `iris_depth_camera` + RTAB-Map
+- 下一步：
+  - 整理当前 SLAM 候选的实际可用性结论
+  - 继续在现有锁定环境内筛查剩余官方视觉/深度模型是否存在更稳妥的只读接入链路
+- 阻塞项：无

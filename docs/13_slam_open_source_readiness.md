@@ -219,6 +219,114 @@ Existing depth-camera evidence provides the first RTAB-Map input candidate:
 | `/camera/points` | `sensor_msgs/msg/PointCloud2` | `camera_link` |
 | `/zcw/depth_camera/pose` | `nav_msgs/msg/Odometry` | `frame_id=world`, `child_frame_id=depth_camera::link` |
 
+## 9. Foggy LiDAR ROS IMU Bridge Audit
+
+Command:
+
+```bash
+scripts/verify_foggy_lidar_imu_bridge.sh
+```
+
+Purpose:
+
+- Start the existing upstream `iris_foggy_lidar` plus AerialCore `danube_wires` world.
+- Inspect the ROS 2 graph exposed by the current Gazebo ROS path.
+- Verify whether a native ROS 2 IMU topic exists for direct reuse by mature LIO candidates.
+
+Observed result:
+
+- The ROS 2 graph exposed only:
+  - `/zcw/foggy_lidar/points`
+  - `/zcw/foggy_lidar/pose`
+- No native `/imu` topic appeared.
+- No `/fmu/out/sensor_combined` topic appeared in this Gazebo ROS-only path.
+
+Latest evidence:
+
+- summary: `data/results/foggy_lidar_imu_bridge_20260605_093722/foggy_lidar_imu_bridge_20260605_093722.txt`
+- topic list: `data/logs/foggy_lidar_imu_bridge_topics_20260605_093722.log`
+- PX4/Gazebo log: `data/logs/foggy_lidar_imu_bridge_px4_20260605_093722.log`
+
+Observed summary:
+
+```text
+decision=rejected_foggy_lidar_native_imu_bridge
+reason=native_ros_imu_topic_missing
+imu_topic=/imu
+imu_topic_present=false
+sensor_combined_topic=/fmu/out/sensor_combined
+sensor_combined_present=false
+```
+
+Interpretation:
+
+- The current foggy-lidar Gazebo ROS export path is pointcloud-plus-pose only.
+- It does not provide a native ROS 2 `sensor_msgs/msg/Imu` contract.
+- Combined with the earlier Micro XRCE audit, the stack now has two separate limitations:
+  - Gazebo ROS path: has pointcloud and pose, but no IMU.
+  - PX4 ROS 2 bridge path: exposes `px4_msgs/msg/SensorCombined`, not `sensor_msgs/msg/Imu`.
+
+Decision:
+
+- Reject direct use of mature LIO packages on the current foggy-lidar path.
+- Continue asset search for an upstream-compatible sensor chain that exposes:
+  - `sensor_msgs/msg/PointCloud2`
+  - `sensor_msgs/msg/Imu`
+  - and preferably lidar per-point timing fields where required.
+
+## 10. PX4Vision Upstream Sensor Contract Audit
+
+Command:
+
+```bash
+scripts/verify_px4vision_ros_contract.sh
+```
+
+Purpose:
+
+- Start the upstream PX4 `px4vision` model in the existing Gazebo Classic + AerialCore cable world.
+- Verify whether this model can expose a better ROS 2 sensor contract than `iris_foggy_lidar`.
+- Check for native ROS 2 IMU and depth-pointcloud topics in the real running graph.
+
+Observed result:
+
+- No native `/imu` topic appeared in the ROS 2 graph.
+- No depth camera or pointcloud topic appeared in the ROS 2 graph.
+- Gazebo log showed the real blocker:
+  - `Failed to load plugin libgazebo_ros_openni_kinect.so`
+
+Local environment check:
+
+- Present: `/opt/ros/humble/lib/libgazebo_ros_camera.so`
+- Missing: `/opt/ros/humble/lib/libgazebo_ros_openni_kinect.so`
+
+Latest evidence:
+
+- summary: `data/results/px4vision_ros_contract_20260605_094630/px4vision_ros_contract_20260605_094630.txt`
+- topic list: `data/logs/px4vision_ros_contract_topics_20260605_094630.log`
+- filtered topics: `data/logs/px4vision_ros_contract_topics_filtered_20260605_094630.log`
+- PX4/Gazebo log: `data/logs/px4vision_ros_contract_px4_20260605_094630.log`
+
+Observed summary:
+
+```text
+decision=rejected_px4vision_ros_contract
+reason=native_ros_imu_missing_or_no_pointcloud
+native_imu_present=false
+pointcloud_topics_count=0
+```
+
+Interpretation:
+
+- `px4vision` is not a drop-in upgrade path in the current locked environment.
+- The rejection is not just a topic mismatch. The upstream model references a ROS-Gazebo plugin that is unavailable in the present ROS 2 Humble installation.
+- This makes `px4vision` a blocked candidate for immediate reuse under the current stack lock.
+
+Decision:
+
+- Reject `px4vision` as the immediate SLAM sensor-contract baseline in the current environment.
+- Keep `iris_depth_camera` plus RTAB-Map as the primary visual/depth SLAM path already proven to start.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

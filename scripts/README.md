@@ -21,12 +21,14 @@
 - `verify_cable_waypoints.sh`：加载 AerialCore 两塔导线 world，并运行最小电缆巡检几何 waypoint baseline。
 - `verify_foggy_lidar_pointcloud.sh`：加载 AerialCore 两塔导线 world 和 PX4 `iris_foggy_lidar`，验证 ROS2 `/zcw/foggy_lidar/points` PointCloud2 输出。
 - `verify_foggy_lidar_pose.sh`：验证 foggy lidar PointCloud2 `frame_id=foggy_lidar_link`，以及官方 `gazebo_ros_p3d` 输出 `/zcw/foggy_lidar/pose` Odometry。
+- `verify_foggy_lidar_imu_bridge.sh`：验证 foggy lidar 现成仿真在 ROS 2 图中是否暴露原生 `/imu` `sensor_msgs/msg/Imu`，并同时记录 `/fmu/out/sensor_combined` 的存在与类型。
 - `verify_foggy_lidar_ransac.sh`：加载同一电缆场景和 foggy lidar，运行 `zcw_cable_perception` 的 PCL `SACMODEL_LINE` RANSAC 线模型烟测。
 - `verify_foggy_lidar_ransac_batch.sh`：运行 5 帧 PCL RANSAC 批量烟测，输出每帧 CSV、filtered PCD、line-inlier PCD 和汇总结果。
 - `verify_foggy_lidar_world_ransac.sh`：订阅 foggy lidar PointCloud2 与 P3D pose，输出 sensor/world-frame PCD 并检查 world 坐标 RANSAC 结果。
 - `verify_depth_camera_pointcloud.sh`：用 PX4 官方 `iris_depth_camera` + Gazebo ROS camera plugin 验证 `/camera/points` PointCloud2；默认需要 GUI 渲染和可用 `DISPLAY`。
 - `verify_depth_camera_pose_pointcloud.sh`：验证 depth camera `/camera/points` PointCloud2 和官方 `gazebo_ros_p3d` 输出 `/zcw/depth_camera/pose` Odometry。
 - `verify_depth_camera_world_ransac.sh`：订阅 depth camera PointCloud2 与 P3D pose，输出 sensor/world-frame PCD 并审核静态 world-frame RANSAC 结果。
+- `verify_px4vision_ros_contract.sh`：启动 PX4 官方 `px4vision` + AerialCore 两塔导线场景，审计 ROS 2 图中是否同时存在原生 `/imu` 与深度点云 topic，用于筛查更适合成熟视觉/深度 SLAM 的现成上游链路。
 - `verify_depth_camera_cable_motion_ransac.sh`：运行电缆 waypoint baseline，并在无人机运动到 corridor 后采集 depth camera world-frame RANSAC 证据。
 - `verify_depth_camera_cable_motion_multiline_ransac.sh`：复用电缆 waypoint motion 链路，切换到 PCL 多线候选节点，在 world-frame corridor ROI 内抽取多条线候选。
 - `audit_depth_camera_multiline_consistency.sh`：读取多线候选 CSV，按方向、跨度和跨帧分组做离线一致性审核；支持 `GROUP_MODE=y|z|yz`，用于判断候选是否可进入 catenary/spline 输入烟测。
