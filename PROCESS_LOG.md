@@ -5743,3 +5743,16 @@
   - 提交并推送多层 orbit 证据脚本改动和文档
   - 后续优先做风机有效深度返回/视锥覆盖量化，而不是更换 SLAM 算法
 - 阻塞项：无
+
+### 2026-06-05 14:20:41 CST
+
+- 节点：风机多层 orbit RGB-D motion RViz 证据已推送远端
+- 执行动作：
+  - 提交 `5a88edc Add wind multilevel orbit RGB-D evidence`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含风机多层 orbit RTAB-Map RGB-D 证据、脚本参数化和文档记录
+- 下一步：
+  - 继续推进风机有效深度返回/视锥覆盖量化
+  - 或继续回到电缆中心线追踪与 lookahead baseline 的几何质量细化
+- 阻塞项：无
