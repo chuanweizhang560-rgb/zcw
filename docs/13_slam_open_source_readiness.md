@@ -819,6 +819,66 @@ Decision:
 - Keep the multilevel orbit as the current best wind baseline, but mark wind observation geometry as still open.
 - Next wind work should tune orbit radius, altitude bands and camera orientation, then rerun this depth audit before claiming coverage progress.
 
+## 20. Wind 15m Orbit Useful Depth Comparison
+
+Command:
+
+```bash
+OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py \
+scripts/audit_wind_depth_image_stats.sh
+```
+
+Purpose:
+
+- Compare a closer 15m wind multilevel orbit candidate against the accepted 20m rule baseline.
+- Use the same useful-depth metric and thresholding from the wind depth audit.
+- Keep the comparison as an observation-quality audit, not a final coverage claim.
+
+Static geometry evidence:
+
+- summary: `data/results/wind_turbine_multilevel_orbit_launch_20260605_143524/wind_turbine_multilevel_orbit_launch_20260605_143524.txt`
+- result: `decision=accepted_wind_turbine_multilevel_orbit_static_audit`
+- radius: `15.000000m`
+- waypoint count: `49`
+- yaw errors: `0`
+
+Depth evidence:
+
+- summary: `data/results/wind_depth_image_stats_20260605_143754/wind_depth_image_stats_20260605_143754.txt`
+- depth stats summary: `data/results/wind_depth_image_stats_20260605_143754/depth_image_stats_20260605_143837.txt`
+- frame CSV: `data/results/wind_depth_image_stats_20260605_143754/depth_image_stats_frames_20260605_143837.csv`
+
+Observed summary:
+
+```text
+decision=accepted_wind_depth_image_stats
+launch=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py
+waypoint_advancements=24
+mean_valid_ratio=1
+mean_useful_ratio=0.11667
+max_useful_ratio=0.225683
+```
+
+Comparison:
+
+- 20m multilevel orbit:
+  - `mean_useful_ratio=0.0947751`
+  - `max_useful_ratio=0.207139`
+- 15m candidate:
+  - `mean_useful_ratio=0.11667`
+  - `max_useful_ratio=0.225683`
+
+Interpretation:
+
+- Moving from 20m to 15m improves useful depth return, but only modestly.
+- The candidate should stay available for later wind SLAM/RViz and coverage checks.
+- This is not enough to claim turbine coverage readiness because useful depth is still low and no clearance/coverage audit has been completed.
+
+Decision:
+
+- Keep 20m as the accepted default rule baseline for now.
+- Keep 15m as the preferred next candidate for wind-side observation-quality experiments.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

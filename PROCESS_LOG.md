@@ -5816,3 +5816,42 @@
   - 继续根据 useful depth 审计结果优化风机观测几何
   - 后续每次调整轨迹/姿态后复跑 `scripts/audit_wind_depth_image_stats.sh`
 - 阻塞项：无
+
+### 2026-06-05 14:34:45 CST
+
+- 节点：启动风机 15m 近距多层 orbit 候选验证
+- 执行动作：
+  - 新增 `single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+  - 保持原 20m `single_vehicle_wind_turbine_multilevel_orbit.launch.py` 不变
+  - Python launch 编译检查通过
+- 结果：
+  - 15m orbit 候选已创建，尚未运行仿真
+- 下一步：
+  - 对 15m 候选做静态 orbit 几何审计
+  - 若静态审计通过，再运行 depth useful return 审计比较观测质量
+- 阻塞项：无
+
+### 2026-06-05 14:39:40 CST
+
+- 节点：风机 15m 近距多层 orbit 候选验证完成
+- 执行动作：
+  - 运行 `LAUNCH_PATH=ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py EXPECTED_RADIUS_M=15.0 scripts/audit_wind_turbine_multilevel_orbit_launch.sh`
+  - 编译安装 `zcw_bringup`
+  - 运行 `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py scripts/audit_wind_depth_image_stats.sh`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `scripts/README.md` 与 `zcw_bringup/README.md`
+- 结果：
+  - 15m 静态审计通过：49 个 waypoint、4 层高度、yaw 指向中心、半径误差 0、yaw 误差 0
+  - 15m depth 审计通过：`waypoint_advancements=24`
+  - 15m `mean_useful_ratio=0.11667`
+  - 15m `max_useful_ratio=0.225683`
+  - 对比 20m：`mean_useful_ratio=0.0947751`，`max_useful_ratio=0.207139`
+- 结论：
+  - 15m 候选比 20m 默认 baseline 的 useful depth return 有小幅提升
+  - 仍不能证明风机覆盖完成，也暂不替代 20m 默认 baseline
+  - 后续可优先用 15m 候选做风机 SLAM/RViz 和覆盖质量实验
+- 下一步：
+  - 提交并推送 15m 候选 launch、文档和审计记录
+  - 后续若继续风机方向，应对 15m 候选做 RTAB-Map RViz 截图或 clearance/coverage 审计
+- 阻塞项：无

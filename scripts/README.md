@@ -15,7 +15,7 @@
 - `verify_px4_offboard_waypoints.sh`：通过 `zcw_bringup/single_vehicle_waypoint_sequence.launch.py` 运行 waypoint baseline，验证单机可按位置 setpoint 前进。
 - `verify_wind_turbine_waypoints.sh`：加载 AerialCore 风机 world，并运行最小风机巡检几何 waypoint baseline。
 - `audit_wind_turbine_geometry_baseline.sh`：只读解析 AerialCore 风机 world、DAE 粗边界和当前风机 waypoint launch，输出当前 baseline 几何审计和待审推荐 orbit CSV；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
-- `audit_wind_turbine_multilevel_orbit_launch.sh`：只读解析风机 multilevel orbit launch，检查 4 层、每层 12 点、总 49 个 waypoint、20m 半径和 yaw 指向风机中心；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_wind_turbine_multilevel_orbit_launch.sh`：只读解析风机 multilevel orbit launch，检查 4 层、每层 12 点、总 49 个 waypoint、指定半径和 yaw 指向风机中心；默认审计 20m baseline，也可用 `LAUNCH_PATH` 与 `EXPECTED_RADIUS_M` 审计 15m 候选；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_wind_turbine_multilevel_orbit.sh`：加载 AerialCore 风机 world，并运行独立 multilevel orbit waypoint/yaw baseline；该脚本会启动 PX4 Offboard/arm，仅用于风机规则 baseline 验证，不属于电缆 Phase B active。
 - `capture_wind_turbine_multilevel_orbit_gui.sh`：启动 AerialCore 风机 world 的 Gazebo GUI、Micro XRCE-DDS 和 multilevel orbit launch，等待真实 waypoint advancement 后截取 Gazebo GUI 截图。
 - `verify_cable_waypoints.sh`：加载 AerialCore 两塔导线 world，并运行最小电缆巡检几何 waypoint baseline。
@@ -64,7 +64,7 @@
 - `capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map RGB-D mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RGB-D map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`：在 cable waypoint baseline 真实运动过程中启动 RTAB-Map RGB-D mode 和 RViz2，截取运动场景下的 RGB-D map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 motion-backed SLAM 可视化验证。
 - `capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`：在 AerialCore 风机场景和风机 waypoint baseline 真实运动过程中启动 RTAB-Map RGB-D mode 和 RViz2，截取风机任务下的 RGB-D map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 wind motion-backed SLAM 可视化验证。可通过 `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit.launch.py` 切换到多层 orbit baseline，并用 `MIN_WAYPOINT_ADVANCEMENTS` 设定最低 waypoint 推进数量。
-- `audit_wind_depth_image_stats.sh`：启动 AerialCore 风机场景、PX4 `iris_depth_camera` 和风机 waypoint baseline，运行 `depth_image_stats_audit` 统计 `/camera/depth/image_raw` 的有限深度与非饱和 useful depth 像素比例；用于量化 wind RTAB-Map 日志中的 depth NaN/远端饱和风险。
+- `audit_wind_depth_image_stats.sh`：启动 AerialCore 风机场景、PX4 `iris_depth_camera` 和风机 waypoint baseline，运行 `depth_image_stats_audit` 统计 `/camera/depth/image_raw` 的有限深度与非饱和 useful depth 像素比例；用于量化 wind RTAB-Map 日志中的 depth NaN/远端饱和风险，可通过 `OFFBOARD_LAUNCH_FILE` 对比 20m baseline 和 15m 候选。
 - `capture_rtabmap_depth_camera_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map scan-cloud mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RTAB-Map map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_motion_rviz_overlay.sh`：启动 depth camera + 电缆 waypoint baseline + RTAB-Map + RViz2，在真实运动中截取 RTAB-Map map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 SLAM 运动可视化验证，不属于电缆 Phase B active bridge。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。

@@ -205,3 +205,71 @@ Decision:
 - accepted as the current wind turbine static geometry baseline.
 - still a rule baseline, not a learned policy.
 - does not change any cable Phase B active boundary.
+
+## 9. 15m Close-Orbit Candidate
+
+Motivation:
+
+- The 20m multilevel orbit is safe and accepted as the default rule baseline.
+- Depth useful-return audit shows many wind frames are dominated by far/saturated depth values.
+- A closer orbit may improve observation quality, but it should be introduced as a separate candidate rather than replacing the accepted 20m baseline.
+
+Candidate launch:
+
+- `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+
+Static audit command:
+
+```bash
+LAUNCH_PATH=ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py \
+EXPECTED_RADIUS_M=15.0 \
+scripts/audit_wind_turbine_multilevel_orbit_launch.sh
+```
+
+Static evidence:
+
+- summary: `data/results/wind_turbine_multilevel_orbit_launch_20260605_143524/wind_turbine_multilevel_orbit_launch_20260605_143524.txt`
+- waypoint CSV: `data/results/wind_turbine_multilevel_orbit_launch_20260605_143524/wind_turbine_multilevel_orbit_launch_20260605_143524.csv`
+
+Observed static result:
+
+```text
+decision=accepted_wind_turbine_multilevel_orbit_static_audit
+expected_radius_m=15.000000
+waypoint_count=49
+orbit_waypoint_count=48
+yaw_count=49
+unique_orbit_z_levels=4
+max_radius_error_m=0.000000
+max_yaw_error_rad=0.000000
+```
+
+Depth useful-return evidence:
+
+- summary: `data/results/wind_depth_image_stats_20260605_143754/wind_depth_image_stats_20260605_143754.txt`
+- frame CSV: `data/results/wind_depth_image_stats_20260605_143754/depth_image_stats_frames_20260605_143837.csv`
+
+Observed depth result:
+
+```text
+decision=accepted_wind_depth_image_stats
+launch=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py
+waypoint_advancements=24
+mean_useful_ratio=0.11667
+max_useful_ratio=0.225683
+```
+
+Comparison against 20m baseline:
+
+- 20m multilevel orbit useful depth:
+  - `mean_useful_ratio=0.0947751`
+  - `max_useful_ratio=0.207139`
+- 15m candidate useful depth:
+  - `mean_useful_ratio=0.11667`
+  - `max_useful_ratio=0.225683`
+
+Decision:
+
+- The 15m candidate improves useful depth return modestly and is worth keeping for further wind observation tests.
+- It is not promoted as the default wind baseline yet.
+- Before promotion, it still needs visual/RViz review and a more explicit coverage or clearance audit.
