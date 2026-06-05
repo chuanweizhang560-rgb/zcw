@@ -6048,3 +6048,31 @@
 - 下一步：
   - 如继续电缆方向，可转向更细的几何审计或非 PX4 debug 可视化
 - 阻塞项：无
+
+### 2026-06-05 15:58:09 CST
+
+- 节点：电缆路径几何一致性审计完成
+- 执行动作：
+  - 新增 `scripts/audit_cable_path_geometry.sh`
+  - 运行 `scripts/audit_cable_path_geometry.sh`
+  - 更新 `scripts/README.md`
+  - 更新 `docs/10_evidence_inventory.md`
+- 结果：
+  - `decision=accepted_cable_path_geometry_audit`
+  - `group_count=5`
+  - `accepted_group_count=5`
+  - `min_expected_lookahead_m=19.500000`
+  - `max_expected_lookahead_m=20.500000`
+  - `max_step_m=10.500000`
+  - `max_lateral_step_m=0.500000`
+  - 每组 `path_points=13`
+  - 每组 `target_points=11`
+  - 每组 `mean_target_distance_m` 约 `20.0003-20.0004`
+  - 输出：`data/results/cable_path_geometry_20260605_155809/cable_path_geometry_20260605_155809.txt`
+- 结论：
+  - 现有 offset path 与 lookahead target 组内几何是一致的
+  - 这进一步确认当前电缆主线停留在只读几何与 dry-run 边界内
+- 下一步：
+  - 如果继续电缆方向，可以围绕这个离线几何链路做更细的可视化或新增只读审计
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无

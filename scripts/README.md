@@ -37,6 +37,7 @@
 - `audit_catenary_fit.sh`：读取高空 wire-band ROI 多线候选 CSV，调用 Ceres 做 catenary 拟合、调用 Eigen 做二次曲线残差对照，并输出离线中心线/offset path 烟测证据。
 - `audit_offset_path.sh`：读取离线 offset path CSV，检查步长、曲率、x 单调性和偏移一致性。
 - `audit_lookahead_target.sh`：读取已审核的 offset path CSV，生成只读 lookahead target CSV，并检查前视距离窗口和 target index 单调性。
+- `audit_cable_path_geometry.sh`：只读解析已审核的 offset path CSV 和 lookahead target CSV，检查组内连续性、前视距离和目标索引单调性；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_lookahead_topic_publish.sh`：启动只读 `lookahead_path_publisher`，验证 `/zcw/cable/offset_path` 和 `/zcw/cable/lookahead_target` ROS topic 可发布；不接 PX4 setpoint。
 - `capture_lookahead_rviz_overlay.sh`：启动只读 lookahead publisher、static TF 和 RViz2，加载 overlay 配置并截取真实 RViz 截图；不启动 Gazebo/PX4。
 - `verify_lookahead_safety_monitor.sh`：启动只读 lookahead publisher 和 safety monitor，验证 `/zcw/cable/tracking_state` 与 `/zcw/cable/safety_gate`；不接 PX4 setpoint。

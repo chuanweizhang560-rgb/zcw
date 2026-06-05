@@ -44,6 +44,7 @@ The audit is not allowed to:
 | PX4/Gazebo read-only frame sample | frame alignment summary | `scripts/verify_px4_gazebo_readonly_frame_alignment.sh` |
 | Offboard gate dry-run | gate summary, forbidden publisher log, RViz summary, RViz screenshot | `scripts/verify_cable_offboard_gate_dry_run.sh`, `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Cable path inputs | offset path CSV and lookahead target CSV | `scripts/audit_catenary_fit.sh`, `scripts/audit_offset_path.sh`, `scripts/audit_lookahead_target.sh` |
+| Cable path geometry audit | offset path and lookahead target consistency summary | `scripts/audit_cable_path_geometry.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
