@@ -5855,3 +5855,16 @@
   - 提交并推送 15m 候选 launch、文档和审计记录
   - 后续若继续风机方向，应对 15m 候选做 RTAB-Map RViz 截图或 clearance/coverage 审计
 - 阻塞项：无
+
+### 2026-06-05 14:44:07 CST
+
+- 节点：风机 15m 近距 orbit 候选已推送远端
+- 执行动作：
+  - 提交 `2a99d0f Add wind close orbit depth comparison`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含 15m 近距 orbit 候选 launch、静态审计记录和 depth useful return 对比文档
+- 下一步：
+  - 继续做 15m 候选 RTAB-Map RViz 截图验证
+  - 或补风机 clearance/coverage 审计，避免只用 depth ratio 判断轨迹好坏
+- 阻塞项：无
