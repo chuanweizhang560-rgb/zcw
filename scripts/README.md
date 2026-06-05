@@ -59,8 +59,10 @@
 - `verify_rtabmap_node_smoke.sh`：启动 `rtabmap_slam/rtabmap` ROS 2 节点的无传感器 read-only smoke，验证节点可启动并出现在 ROS 图中；不启动 PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_rtabmap_depth_camera_smoke.sh`：启动 Gazebo depth camera、只读 odom child-frame bridge 和 RTAB-Map scan-cloud mode，验证 `/camera/points`、桥接 odom 和 RTAB-Map 输出 topic；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `verify_rtabmap_depth_camera_rgbd_smoke.sh`：启动 Gazebo depth camera、只读 odom child-frame bridge 和 RTAB-Map RGB-D mode，验证 `/camera/image_raw`、`/camera/depth/image_raw`、桥接 odom 和 RTAB-Map 输出 topic；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
+- `verify_rtabmap_depth_camera_rgbd_motion_smoke.sh`：在 PX4 Offboard 电缆 waypoint baseline 运动过程中运行 RTAB-Map RGB-D mode，验证规则运动期间 RGB-D SLAM 主线仍能输出 `/map`、`/cloud_map`、`/octomap_*`。
 - `audit_rtabmap_depth_camera_rgbd_consistency.sh`：重复运行 `verify_rtabmap_depth_camera_rgbd_smoke.sh`，统计 RGB-D smoke 是否稳定通过，用于单机 SLAM 主线的可重复性审计。
 - `capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map RGB-D mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RGB-D map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
+- `capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`：在 cable waypoint baseline 真实运动过程中启动 RTAB-Map RGB-D mode 和 RViz2，截取运动场景下的 RGB-D map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 motion-backed SLAM 可视化验证。
 - `capture_rtabmap_depth_camera_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map scan-cloud mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RTAB-Map map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_motion_rviz_overlay.sh`：启动 depth camera + 电缆 waypoint baseline + RTAB-Map + RViz2，在真实运动中截取 RTAB-Map map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 SLAM 运动可视化验证，不属于电缆 Phase B active bridge。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。

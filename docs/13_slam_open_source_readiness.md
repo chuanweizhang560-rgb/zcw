@@ -589,6 +589,64 @@ Decision:
 - Treat RTAB-Map RGB-D as the repository's primary single-vehicle SLAM smoke baseline.
 - Keep scan-cloud mode as fallback and comparison path only.
 
+## 16. RTAB-Map RGB-D Motion RViz Evidence
+
+Command:
+
+```bash
+scripts/capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh
+```
+
+Purpose:
+
+- Verify the promoted RGB-D baseline under real cable-waypoint flight motion.
+- Require both:
+  - actual PX4 Offboard motion evidence
+  - actual RViz rendering evidence
+
+Observed result:
+
+- The run was accepted.
+- PX4 entered armed Offboard flight.
+- Cable waypoint baseline advanced through multiple waypoints and held the final waypoint.
+- RTAB-Map RGB-D mode stayed active.
+- RViz rendered:
+  - `/cloud_map`
+  - `/map`
+  - `/octomap_occupied_space`
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260605_102654/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260605_102654.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260605_102654.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_rtabmap_20260605_102654.log`
+- waypoint motion log: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_offboard_20260605_102654.log`
+- topic list: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_topics_20260605_102654.log`
+
+Observed summary:
+
+```text
+decision=accepted_rtabmap_depth_camera_rgbd_motion_rviz_overlay
+reason=rtabmap_rgbd_motion_backed_rviz_capture_completed
+starts_offboard=true
+arms=true
+rtabmap_ok=true
+outputs_ok=true
+motion_ok=true
+screenshot_ok=1
+```
+
+Visual assessment:
+
+- Accepted as motion-backed visual evidence.
+- The screenshot shows a more extended, trajectory-linked structure than the static RGB-D RViz capture.
+- It is still not a production-grade global map. It is a stronger smoke artifact proving that the RGB-D baseline remains externally visible during real baseline motion.
+
+Decision:
+
+- Promote this as the strongest current single-vehicle SLAM evidence in the repository.
+- Use it as the default reference when evaluating later coupling between inspection trajectory and mapping coverage.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

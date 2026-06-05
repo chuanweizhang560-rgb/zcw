@@ -5572,3 +5572,63 @@
   - 继续基于这条稳定主线推进后续单机巡检轨迹与观测覆盖耦合验证
   - scan-cloud 只保留为后备和对照路径
 - 阻塞项：无
+
+### 2026-06-05 10:19:34 CST
+
+- 节点：RTAB-Map RGB-D 一致性审计已推送远端
+- 执行动作：
+  - 提交 `a0632cc Audit RTAB-Map RGB-D baseline consistency`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含 RGB-D 可重复性审计结论
+- 下一步：
+  - 继续基于默认 RGB-D 主线推进单机巡检相关验证
+  - 将 scan-cloud 保持为后备路径，不再当主线投入
+- 阻塞项：无
+
+### 2026-06-05 10:24:34 CST
+
+- 节点：RTAB-Map RGB-D 运动 smoke 首轮失败
+- 执行动作：
+  - 新增 `scripts/verify_rtabmap_depth_camera_rgbd_motion_smoke.sh`
+  - 在 cable waypoint baseline 运动中运行 RTAB-Map RGB-D mode
+  - 审计运动期间的飞行状态、RTAB-Map 订阅模式和外部输出 topic
+- 结果：
+  - `rtabmap_ok=true`
+  - `motion_ok=true`
+  - `outputs_ok=false`
+  - offboard 日志确认 waypoint 1 到 waypoint 5 按序推进并保持最终点
+  - RTAB-Map 日志确认 RGB-D 模式持续工作，局部地图计数增大到 30 以上
+  - 但本轮 topic 审计未观察到稳定的 `/map`、`/cloud_map`、`/octomap_*` 外显输出
+- 结论：
+  - 当前不能把 RGB-D 运动 smoke 记为通过
+  - 更准确的表述是：运动期间 RTAB-Map 内部仍在工作，但外部 map 证据不足
+- 下一步：
+  - 直接补 RGB-D motion RViz 证据链
+  - 通过真实 RViz 订阅和截图判断运动期间 map/cloud 是否稳定外显
+- 阻塞项：无
+
+### 2026-06-05 10:28:41 CST
+
+- 节点：RTAB-Map RGB-D motion RViz 证据完成
+- 执行动作：
+  - 新增 `scripts/capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`
+  - 在 cable waypoint baseline 真实运动过程中运行 RTAB-Map RGB-D mode
+  - 启动 RViz2 订阅 map/cloud/octomap 并截取真实截图
+  - 人工查看截图内容
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_rgbd_motion_rviz_overlay`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `motion_ok=true`
+  - `screenshot_ok=1`
+  - topic 图中可见 `/cloud_map`、`/map`、`/octomap_occupied_space`
+  - 截图 `data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260605_102654.png` 可见沿运动轨迹拉开的条带状结构和局部深度扇形云
+- 结论：
+  - 当前仓库最强的单机 SLAM 证据已经从“静态 smoke”升级到“motion-backed RGB-D RViz evidence”
+  - 仍然只能算强 smoke，不应表述为高质量全局地图
+- 下一步：
+  - 以这条 motion-backed RGB-D 主线作为后续轨迹-观测覆盖耦合验证的默认参考
+  - 优先复核观测覆盖与轨迹设计，而不是再回退到不兼容的传感器候选
+- 阻塞项：无
