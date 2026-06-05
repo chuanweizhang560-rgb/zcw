@@ -5303,3 +5303,16 @@
   - 提交并推送 RTAB-Map RViz 两条脚本、RViz 配置、文档和进程记录
   - 然后转入 LiDAR/IMU 字段审计，为 LIO 候选做准备
 - 阻塞项：无
+
+### 2026-06-05 09:17:52 CST
+
+- 节点：RTAB-Map RViz 证据提交已推送
+- 执行动作：
+  - 提交 `5297486`：`Add RTAB-Map RViz evidence captures`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含 RTAB-Map 静态/运动 RViz capture 脚本、RTAB-Map RViz 配置、SLAM 文档更新和进程记录
+- 下一步：
+  - 提交这条 push 记录
+  - 转入 LiDAR/IMU 字段审计，为 `spark-fast-lio` 等 LIO 候选做输入兼容性检查
+- 阻塞项：无
