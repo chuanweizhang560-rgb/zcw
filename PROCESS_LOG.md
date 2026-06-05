@@ -5803,3 +5803,16 @@
   - 提交并推送 depth useful return 审计节点、脚本和文档
   - 后续优先调整风机 orbit 半径、高度层或相机姿态，再复跑该审计
 - 阻塞项：无
+
+### 2026-06-05 14:33:17 CST
+
+- 节点：风机 depth useful return 审计已推送远端
+- 执行动作：
+  - 提交 `abac4a1 Add wind depth useful return audit`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含 depth image useful return 审计节点、风机审计脚本和文档记录
+- 下一步：
+  - 继续根据 useful depth 审计结果优化风机观测几何
+  - 后续每次调整轨迹/姿态后复跑 `scripts/audit_wind_depth_image_stats.sh`
+- 阻塞项：无
