@@ -5756,3 +5756,50 @@
   - 继续推进风机有效深度返回/视锥覆盖量化
   - 或继续回到电缆中心线追踪与 lookahead baseline 的几何质量细化
 - 阻塞项：无
+
+### 2026-06-05 14:25:28 CST
+
+- 节点：启动风机深度图有效返回量化
+- 执行动作：
+  - 新增 `zcw_cable_perception/depth_image_stats_audit` 节点，订阅 `sensor_msgs/Image` 并统计有效深度像素比例
+  - 更新 `zcw_cable_perception` CMake 安装目标
+  - 编译 `zcw_cable_perception`
+  - 新增 `scripts/audit_wind_depth_image_stats.sh`
+  - 更新 `scripts/README.md`
+- 结果：
+  - `colcon build --packages-select zcw_cable_perception` 通过
+  - 构建只出现既有 PCL/miniconda runtime path 警告
+  - 审计脚本静态语法检查通过
+- 下一步：
+  - 运行风机多层 orbit 深度统计审计
+  - 用有效深度比例判断后续是否需要调整风机 orbit 半径、高度、yaw/camera 姿态或深度相机参数
+- 阻塞项：无
+
+### 2026-06-05 14:32:01 CST
+
+- 节点：风机多层 orbit 深度图 useful return 审计完成
+- 执行动作：
+  - 先运行有限正深度统计，发现 `mean_valid_ratio=1`，但深度大多接近 `65.535m`，不能直接视为有效观测
+  - 修改 `depth_image_stats_audit`，新增 `useful_depth_pixels`、`far_or_saturated_pixels`、`mean_useful_ratio`、`max_useful_ratio`
+  - 默认 `saturation_depth_m=65.0`
+  - 重新编译 `zcw_cable_perception`
+  - 重新运行 `scripts/audit_wind_depth_image_stats.sh`
+  - 更新 `docs/13_slam_open_source_readiness.md`、`scripts/README.md`、`zcw_cable_perception/README.md`
+- 结果：
+  - `decision=accepted_wind_depth_image_stats`
+  - `launch=single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+  - `waypoint_advancements=20`
+  - `mean_valid_ratio=1`
+  - `max_valid_ratio=1`
+  - `mean_useful_ratio=0.0947751`
+  - `max_useful_ratio=0.207139`
+  - summary：`data/results/wind_depth_image_stats_20260605_142952/wind_depth_image_stats_20260605_142952.txt`
+  - CSV：`data/results/wind_depth_image_stats_20260605_142952/depth_image_stats_frames_20260605_143034.csv`
+- 结论：
+  - 风机 depth stream 不是空的，但大部分像素处在远端/饱和深度
+  - 当前多层 orbit 平均只有约 9.5% 非饱和 useful depth，最好帧约 20.7%
+  - 这解释了 RTAB-Map 的 depth NaN/远端告警，也说明风机观测几何仍需继续调
+- 下一步：
+  - 提交并推送 depth useful return 审计节点、脚本和文档
+  - 后续优先调整风机 orbit 半径、高度层或相机姿态，再复跑该审计
+- 阻塞项：无

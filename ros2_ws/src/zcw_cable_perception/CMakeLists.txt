@@ -55,6 +55,12 @@ ament_target_dependencies(pointcloud_pose_multiline_ransac_world_smoke
   pcl_conversions
 )
 
+add_executable(depth_image_stats_audit src/depth_image_stats_audit.cpp)
+ament_target_dependencies(depth_image_stats_audit
+  rclcpp
+  sensor_msgs
+)
+
 add_executable(multiline_candidate_consistency_audit src/multiline_candidate_consistency_audit.cpp)
 
 add_executable(catenary_fit_audit src/catenary_fit_audit.cpp)
@@ -100,6 +106,7 @@ install(TARGETS
   pointcloud_line_ransac_batch_smoke
   pointcloud_pose_line_ransac_world_smoke
   pointcloud_pose_multiline_ransac_world_smoke
+  depth_image_stats_audit
   multiline_candidate_consistency_audit
   catenary_fit_audit
   offset_path_audit

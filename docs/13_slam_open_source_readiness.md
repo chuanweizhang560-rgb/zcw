@@ -763,6 +763,62 @@ Decision:
 - Prefer the multilevel orbit launch for later wind-side SLAM visual checks.
 - Next wind-side work should quantify useful depth returns and view/frustum coverage around the turbine before moving to any learning policy.
 
+## 19. Wind Depth Image Useful Return Audit
+
+Command:
+
+```bash
+scripts/audit_wind_depth_image_stats.sh
+```
+
+Purpose:
+
+- Quantify whether wind-task depth images contain useful, non-saturated returns during multilevel orbit motion.
+- Avoid over-reading RTAB-Map screenshots when the depth stream may be dominated by far-range values.
+- Keep this as a sensor audit only. It does not change SLAM, trajectory generation or control.
+
+Implementation:
+
+- `zcw_cable_perception/depth_image_stats_audit` subscribes to `/camera/depth/image_raw`.
+- It records per-frame CSV statistics:
+  - finite positive depth pixels
+  - useful depth pixels below `saturation_depth_m`
+  - far or saturated pixels
+  - mean and max useful ratios
+- The current wind audit defaults to `saturation_depth_m=65.0` because the depth camera frequently reports values around `65.535m`.
+
+Latest evidence:
+
+- summary: `data/results/wind_depth_image_stats_20260605_142952/wind_depth_image_stats_20260605_142952.txt`
+- depth stats summary: `data/results/wind_depth_image_stats_20260605_142952/depth_image_stats_20260605_143034.txt`
+- frame CSV: `data/results/wind_depth_image_stats_20260605_142952/depth_image_stats_frames_20260605_143034.csv`
+- Offboard log: `data/logs/wind_depth_stats_offboard_20260605_142952.log`
+
+Observed summary:
+
+```text
+decision=accepted_wind_depth_image_stats
+launch=single_vehicle_wind_turbine_multilevel_orbit.launch.py
+waypoint_advancements=20
+mean_valid_ratio=1
+max_valid_ratio=1
+mean_useful_ratio=0.0947751
+max_useful_ratio=0.207139
+saturation_depth_m=65.0
+```
+
+Interpretation:
+
+- The wind depth stream is not blank.
+- Counting only finite positive pixels is misleading because many pixels sit at far/saturation range.
+- With a `65.0m` useful-depth cutoff, the current multilevel orbit produces about 9.5% useful pixels on average and about 20.7% in the best sampled frame.
+- This supports the earlier visual evidence, but it also explains why RTAB-Map still logs depth NaN/far-depth warnings and why the current path is not a finished turbine coverage solution.
+
+Decision:
+
+- Keep the multilevel orbit as the current best wind baseline, but mark wind observation geometry as still open.
+- Next wind work should tune orbit radius, altitude bands and camera orientation, then rerun this depth audit before claiming coverage progress.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
