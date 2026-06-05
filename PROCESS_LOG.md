@@ -5868,3 +5868,31 @@
   - 继续做 15m 候选 RTAB-Map RViz 截图验证
   - 或补风机 clearance/coverage 审计，避免只用 depth ratio 判断轨迹好坏
 - 阻塞项：无
+
+### 2026-06-05 14:47:27 CST
+
+- 节点：风机 15m 近距 orbit RTAB-Map RGB-D motion RViz 证据完成
+- 执行动作：
+  - 运行 `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py MIN_WAYPOINT_ADVANCEMENTS=8 MOTION_SETTLE_SEC=115 scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 启动 AerialCore 风机场景、PX4 官方 `iris_depth_camera`、RTAB-Map RGB-D mode、RViz2 和 15m 多层 orbit baseline
+  - 人工查看 RViz 截图
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+  - `launch=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+  - `waypoint_advancements=46`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `motion_ok=true`
+  - `screenshot_ok=1`
+  - summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.txt`
+  - 截图：`data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.png`
+- 结论：
+  - 15m 候选是当前最强的风机侧 RTAB-Map RGB-D RViz smoke 证据
+  - 截图局部 cloud/octomap 结构比 20m 多层 orbit 更清楚
+  - 仍有 RTAB-Map depth NaN/远端告警，不能声明风机覆盖完成
+- 下一步：
+  - 提交并推送 15m RTAB-Map/RViz 证据文档
+  - 后续风机方向应补 clearance/coverage 审计
+- 阻塞项：无

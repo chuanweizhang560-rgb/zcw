@@ -271,5 +271,9 @@ Comparison against 20m baseline:
 Decision:
 
 - The 15m candidate improves useful depth return modestly and is worth keeping for further wind observation tests.
-- It is not promoted as the default wind baseline yet.
-- Before promotion, it still needs visual/RViz review and a more explicit coverage or clearance audit.
+- It also has accepted RTAB-Map RGB-D RViz smoke evidence:
+  - summary: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.txt`
+  - screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.png`
+  - `waypoint_advancements=46`
+- It is now the preferred wind-side observation-quality candidate.
+- It is not promoted as a final coverage baseline because it still needs a more explicit clearance or coverage audit.

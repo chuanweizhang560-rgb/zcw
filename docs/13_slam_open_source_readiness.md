@@ -879,6 +879,52 @@ Decision:
 - Keep 20m as the accepted default rule baseline for now.
 - Keep 15m as the preferred next candidate for wind-side observation-quality experiments.
 
+## 21. Wind 15m Orbit RTAB-Map RGB-D RViz Evidence
+
+Command:
+
+```bash
+OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py \
+MIN_WAYPOINT_ADVANCEMENTS=8 \
+MOTION_SETTLE_SEC=115 \
+scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh
+```
+
+Purpose:
+
+- Verify that the 15m close-orbit candidate also produces RTAB-Map RGB-D RViz evidence.
+- Compare it qualitatively against the 20m wind multilevel RTAB-Map screenshot.
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260605_144439.log`
+- waypoint motion log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_offboard_20260605_144439.log`
+
+Observed summary:
+
+```text
+decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay
+launch=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py
+waypoint_advancements=46
+rtabmap_ok=true
+outputs_ok=true
+motion_ok=true
+screenshot_ok=1
+```
+
+Visual assessment:
+
+- Accepted as the current strongest wind-side RTAB-Map RGB-D RViz smoke evidence.
+- The screenshot shows a clearer localized cloud/octomap structure than the earlier 20m multilevel run.
+- RTAB-Map still reports depth NaN/far-depth warnings, so this does not close the wind coverage problem.
+
+Decision:
+
+- Keep 15m as the preferred wind-side candidate for subsequent observation and coverage experiments.
+- Do not claim final wind turbine coverage until a clearance/coverage audit is added.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
