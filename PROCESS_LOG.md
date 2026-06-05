@@ -5007,6 +5007,53 @@
   - 准备 RTAB-Map + Gazebo sensor read-only smoke 的 TF/frame 方案
 - 阻塞项：无
 
+### 2026-06-04 16:02:00 CST
+
+- 节点：RTAB-Map Gazebo 传感器 read-only smoke 的 frame bridge 开始
+- 背景：
+  - `/camera/points` 历史样本 `frame_id=camera_link`
+  - `/zcw/depth_camera/pose` 历史样本 `child_frame_id=depth_camera::link`
+  - RTAB-Map 接入前需要统一 odom child frame 与点云 frame
+- 执行动作：
+  - 新增 `odom_child_frame_bridge.cpp`
+  - 更新 `zcw_cable_perception` CMake/package 依赖
+- 边界：
+  - 该节点只重写 Odometry `child_frame_id` 并可选发布 TF
+  - 不估计位姿
+  - 不实现 SLAM
+  - 不发布 `/fmu/in/*`
+  - 不启动 Offboard
+  - 不 arm
+- 下一步：
+  - 构建 `zcw_cable_perception`
+  - 编写 RTAB-Map + Gazebo depth camera read-only smoke 脚本
+- 阻塞项：无
+
+### 2026-06-04 16:10:00 CST
+
+- 节点：RTAB-Map + Gazebo depth camera read-only smoke 脚本准备
+- 执行动作：
+  - 新增 `scripts/verify_rtabmap_depth_camera_smoke.sh`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `scripts/README.md`
+- 脚本行为：
+  - 启动 Gazebo depth camera 场景
+  - 启动 `odom_child_frame_bridge`
+  - 启动 RTAB-Map scan-cloud mode
+  - 验证 `/camera/points`
+  - 验证 `/zcw/rtabmap/odom_camera_link`
+  - 验证 RTAB-Map 输出 topic 出现
+- 边界：
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+  - 使用 Gazebo pose 仅作为 debug odom 检查 RTAB-Map plumbing
+  - 不声称 SLAM 质量或定位精度
+- 下一步：
+  - 运行 `bash -n`
+  - 尝试运行 smoke；如果 GUI/网络受 sandbox 限制，则请求非 sandbox 执行
+- 阻塞项：无
+
 ### 2026-06-04 13:06:20 CST
 
 - 节点：本地 ignored 证据清单审计开始
@@ -5078,4 +5125,79 @@
 - 下一步：
   - 运行最终静态检查
   - 提交并推送本阶段文档、审计脚本和进程记录
+- 阻塞项：无
+
+### 2026-06-04 14:40:04 CST
+
+- 节点：RTAB-Map 深度相机 smoke 沙箱内首测失败记录
+- 执行动作：
+  - 继续 SLAM Phase S0：RTAB-Map 接真实 Gazebo 深度点云的只读 smoke
+  - 检查当前工作区，仅存在 SLAM smoke 相关未提交改动
+  - 复核 `scripts/verify_rtabmap_depth_camera_smoke.sh`
+  - 在沙箱内尝试运行该脚本
+- 结果：
+  - 脚本在 PX4/Gazebo ready 前失败
+  - 失败日志包含 `getifaddres: Operation not permitted`
+  - 失败日志包含 PX4 socket bind/connect `Operation not permitted`
+  - 判断为沙箱网络/socket 权限限制，不是 RTAB-Map 或深度相机链路的功能结论
+- 边界：
+  - 未启动 Offboard
+  - 未 arm
+  - 未发布 `/fmu/in/*`
+  - 本节点仍只允许使用 Gazebo 传感器 topic 和 debug odom 做 plumbing smoke
+- 下一步：
+  - 用非沙箱权限重跑 `scripts/verify_rtabmap_depth_camera_smoke.sh`
+  - 根据真实结果更新 `docs/13_slam_open_source_readiness.md`
+  - 再决定是否提交本节点脚本与文档
+- 阻塞项：
+  - PX4/Gazebo 在当前沙箱内无法绑定/连接所需 socket
+
+### 2026-06-04 14:42:21 CST
+
+- 节点：RTAB-Map 深度相机 smoke 脚本修复
+- 执行动作：
+  - 运行 `colcon build --packages-select zcw_cable_perception`
+  - 使用非沙箱权限运行 `scripts/verify_rtabmap_depth_camera_smoke.sh`
+  - 首次非沙箱运行在 source ROS 2 setup 阶段失败
+  - 修复脚本：在 `source /opt/ros/humble/setup.bash` 和工作空间 `install/setup.bash` 前临时关闭 `set -u`
+- 结果：
+  - `zcw_cable_perception` 构建成功
+  - 失败原因为 `/opt/ros/humble/setup.bash` 读取未定义 `AMENT_TRACE_SETUP_FILES`
+  - 已完成脚本级修复，尚未形成 SLAM sensor smoke 结论
+- 下一步：
+  - 重跑 `bash -n scripts/verify_rtabmap_depth_camera_smoke.sh`
+  - 重跑 `scripts/verify_rtabmap_depth_camera_smoke.sh`
+- 阻塞项：无
+
+### 2026-06-04 14:43:20 CST
+
+- 节点：RTAB-Map 深度相机 read-only smoke 通过
+- 执行动作：
+  - 运行 `bash -n scripts/verify_rtabmap_depth_camera_smoke.sh`
+  - 使用非沙箱权限运行 `scripts/verify_rtabmap_depth_camera_smoke.sh`
+  - 读取 smoke summary、RTAB-Map 日志、topic list、点云样本和桥接 odom 样本
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - 证据目录：`data/results/rtabmap_depth_camera_smoke_20260604_144241/`
+  - `decision=accepted_rtabmap_depth_camera_smoke`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `points_ok=true`
+  - `/camera/points` 样本为 `frame_id: camera_link`，尺寸 `height: 480`、`width: 848`
+  - `/zcw/rtabmap/odom_camera_link` 样本为 `frame_id: world`、`child_frame_id: camera_link`
+  - RTAB-Map topic list 出现 `/map`、`/mapData`、`/mapGraph`、`/cloud_map`、`/octomap_binary`、`/octomap_full`、`/octomap_grid`
+- 边界：
+  - 启动 ROS/PX4/Gazebo 仅用于传感器输入
+  - 未启动 RViz
+  - 未启动 Offboard
+  - 未 arm
+  - 未发布 `/fmu/in/*`
+  - 使用 Gazebo pose 仅作为 debug odom 检查 RTAB-Map plumbing
+  - 不声称 SLAM 质量或定位精度
+- 结论：
+  - SLAM Phase S0 开源管线接入 smoke 通过
+  - SLAM 仍未完全完成；下一步需要 LiDAR/IMU 字段审计、LIO 候选实测或 RViz 真实 map/cloud 截图
+- 下一步：
+  - 运行静态检查
+  - 提交并推送本阶段脚本、桥接节点、文档和进程记录
 - 阻塞项：无

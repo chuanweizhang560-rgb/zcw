@@ -53,6 +53,7 @@
 - `verify_px4_gazebo_classic_multi_vehicle_readonly.sh`：按 PX4 官方 Gazebo Classic 多实例机制启动两台 `iris`、Micro XRCE-DDS 和 Gazebo headless，只验证 `/px4_1/fmu/out/*`、`/px4_2/fmu/out/*` 输出 topic 与 `/fmu/in/*` publisher count 为 0；不启动 Offboard、不 arm。
 - `audit_rtabmap_installation.sh`：只读检查 `ros-humble-rtabmap-ros` 及 `rtabmap_slam`、`rtabmap_odom`、`rtabmap_util` 关键可执行节点是否可见；不启动 ROS/PX4/Gazebo/RViz。
 - `verify_rtabmap_node_smoke.sh`：启动 `rtabmap_slam/rtabmap` ROS 2 节点的无传感器 read-only smoke，验证节点可启动并出现在 ROS 图中；不启动 PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `verify_rtabmap_depth_camera_smoke.sh`：启动 Gazebo depth camera、只读 odom child-frame bridge 和 RTAB-Map scan-cloud mode，验证 `/camera/points`、桥接 odom 和 RTAB-Map 输出 topic；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。

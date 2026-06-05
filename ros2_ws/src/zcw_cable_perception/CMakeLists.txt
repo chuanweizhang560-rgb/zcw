@@ -11,6 +11,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common filters io sample_consensus segmentation)
 find_package(Ceres REQUIRED)
@@ -86,6 +87,14 @@ ament_target_dependencies(lookahead_dry_run_setpoint
   std_msgs
 )
 
+add_executable(odom_child_frame_bridge src/odom_child_frame_bridge.cpp)
+ament_target_dependencies(odom_child_frame_bridge
+  rclcpp
+  nav_msgs
+  geometry_msgs
+  tf2_ros
+)
+
 install(TARGETS
   pointcloud_line_ransac_smoke
   pointcloud_line_ransac_batch_smoke
@@ -98,6 +107,7 @@ install(TARGETS
   lookahead_path_publisher
   lookahead_safety_monitor
   lookahead_dry_run_setpoint
+  odom_child_frame_bridge
   DESTINATION lib/${PROJECT_NAME}
 )
 

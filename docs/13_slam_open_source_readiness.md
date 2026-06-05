@@ -244,3 +244,99 @@ Still forbidden:
 - using Gazebo ground-truth pose as claimed SLAM output.
 - feeding RTAB-Map output into PX4 active control.
 - treating a static TF workaround as real localization.
+
+## 9. RTAB-Map Depth Camera Smoke
+
+Command:
+
+```bash
+scripts/verify_rtabmap_depth_camera_smoke.sh
+```
+
+This smoke starts Gazebo depth camera topics, the read-only odometry child-frame bridge and RTAB-Map scan-cloud mode.
+
+Acceptance target:
+
+- `/camera/points` exists and has `frame_id=camera_link`.
+- `/zcw/depth_camera/pose` exists.
+- `/zcw/rtabmap/odom_camera_link` exists and has `child_frame_id=camera_link`.
+- RTAB-Map starts with `subscribe_scan_cloud=true`.
+- RTAB-Map output topics appear in the ROS graph.
+
+Boundary:
+
+- starts PX4/Gazebo only to provide sensor topics.
+- does not start Offboard.
+- does not arm.
+- does not publish `/fmu/in/*`.
+- uses Gazebo pose only as debug odometry to check RTAB-Map plumbing.
+- does not claim SLAM quality or localization accuracy.
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_smoke_20260604_144241/rtabmap_depth_camera_smoke_20260604_144241.txt`
+- database: `data/results/rtabmap_depth_camera_smoke_20260604_144241/rtabmap_depth_camera_20260604_144241.db`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_node_20260604_144241.log`
+- topic list: `data/logs/rtabmap_depth_camera_topics_20260604_144241.log`
+- point cloud sample: `data/logs/rtabmap_depth_camera_points_sample_20260604_144241.log`
+- bridged odom sample: `data/logs/rtabmap_depth_camera_odom_sample_20260604_144241.log`
+
+Observed result:
+
+```text
+decision=accepted_rtabmap_depth_camera_smoke
+reason=rtabmap_started_with_gazebo_depth_camera_topics_and_frame_bridge
+starts_ros=true
+starts_px4=true
+starts_gazebo=true
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+uses_gazebo_sensor_topics=true
+uses_gazebo_pose_as_debug_odom=true
+claims_slam_quality=false
+rtabmap_ok=true
+outputs_ok=true
+points_ok=true
+```
+
+Observed sensor input:
+
+```text
+/camera/points
+frame_id: camera_link
+height: 480
+width: 848
+```
+
+Observed debug odometry bridge:
+
+```text
+/zcw/rtabmap/odom_camera_link
+frame_id: world
+child_frame_id: camera_link
+```
+
+Observed RTAB-Map outputs included:
+
+- `/map`
+- `/mapData`
+- `/mapGraph`
+- `/cloud_map`
+- `/octomap_binary`
+- `/octomap_full`
+- `/octomap_grid`
+- `/local_grid_obstacle`
+
+Interpretation:
+
+- Accepted as a Phase S0 open-source plumbing smoke.
+- RTAB-Map can start in scan-cloud SLAM mode and consume Gazebo depth-camera PointCloud2 with a consistent odometry child frame.
+- This is still not accepted as final SLAM quality evidence because odometry is Gazebo debug pose, loop closure is disabled in scan-cloud-only mode and no independent trajectory/map accuracy metric has been run.
+
+Next SLAM work:
+
+1. Add RViz evidence for RTAB-Map map/cloud topics if visual inspection is needed.
+2. Audit Gazebo LiDAR and IMU topic fields for an open-source LIO candidate.
+3. Prefer `spark-fast-lio` only if required LiDAR/IMU timing and frame assumptions can be satisfied without rewriting the estimator core.
