@@ -5949,6 +5949,44 @@
   - 后续可在 15m 候选上继续补 coverage/frustum 审计
 - 阻塞项：无
 
+### 2026-06-05 15:45:41 CST
+
+- 节点：启动风机视锥覆盖静态审计
+- 执行动作：
+  - 新增 `scripts/audit_wind_orbit_visibility.sh`
+  - 该脚本只读解析风机 orbit launch、world pose、mesh 顶点和 PX4 depth camera FOV
+  - 以相机视锥为上界，统计 orbit 轨迹可见的 mesh 顶点比例
+- 结果：
+  - 脚本已创建
+  - 静态语法检查通过
+- 下一步：
+  - 先跑默认 20m multilevel orbit
+  - 再跑 15m 近距候选
+- 阻塞项：无
+
+### 2026-06-05 15:50:38 CST
+
+- 节点：风机视锥/画面占满度静态审计完成
+- 执行动作：
+  - 运行 `scripts/audit_wind_orbit_visibility.sh` 审计默认 20m multilevel orbit
+  - 运行 `LAUNCH_PATH=ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py scripts/audit_wind_orbit_visibility.sh` 审计 15m 候选
+  - 更新 `scripts/README.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+- 结果：
+  - 20m：`decision=accepted_wind_orbit_visibility_static_audit`
+  - 20m `best_view_frame_fill_ratio=0.092567`
+  - 15m：`decision=accepted_wind_orbit_visibility_static_audit`
+  - 15m `best_view_frame_fill_ratio=0.109478`
+  - 20m / 15m `union_visible_ratio=1.000000`
+  - 15m 的画面占满度高于 20m baseline
+- 结论：
+  - 该审计说明 15m 候选在静态视场上优于 20m 默认 baseline
+  - 该指标仍是静态上界，不替代动态碰撞检查或真实覆盖率验证
+- 下一步：
+  - 如继续风机方向，可继续做更严格的 coverage/occlusion 审计
+  - 或切回电缆方向继续中心线提取和 lookahead baseline
+- 阻塞项：无
+
 ### 2026-06-05 14:52:33 CST
 
 - 节点：风机 orbit clearance 审计已推送远端

@@ -283,3 +283,40 @@ Decision:
   - 15m minimum clearance: `3.119593m`
 - It is now the preferred wind-side observation-quality candidate.
 - It is not promoted as a final coverage baseline because static clearance is not the same as dynamic collision checking or surface coverage.
+
+## 10. Static Frustum/Frame-Fill Visibility Audit
+
+Purpose:
+
+- The clearance audit only checks geometry margin.
+- The useful-depth audit shows whether the camera returns non-saturated depth.
+- This visibility audit adds a read-only upper-bound check for how much of the turbine can be framed by the orbit viewpoints.
+- It does not start ROS, PX4, Gazebo, RViz, Offboard, arm, or publish `/fmu/in/*`.
+
+Audit command:
+
+```bash
+scripts/audit_wind_orbit_visibility.sh
+```
+
+Compared candidates:
+
+- default 20m orbit:
+  - summary: `data/results/wind_orbit_visibility_20m/wind_orbit_visibility_20260605_155038/wind_orbit_visibility_20260605_155038.txt`
+- 15m close orbit:
+  - summary: `data/results/wind_orbit_visibility_r15/wind_orbit_visibility_20260605_155038/wind_orbit_visibility_20260605_155038.txt`
+
+Observed result:
+
+```text
+20m best_view_frame_fill_ratio=0.092567
+15m best_view_frame_fill_ratio=0.109478
+20m union_visible_ratio=1.000000
+15m union_visible_ratio=1.000000
+```
+
+Decision:
+
+- The 15m candidate keeps the full-view upper bound and improves frame fill ratio over the 20m baseline.
+- This makes 15m the stronger wind observation candidate for later coverage or SLAM checks.
+- The result is still a static upper bound, not a proof of dynamic collision safety or full inspection coverage.
