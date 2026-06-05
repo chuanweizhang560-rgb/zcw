@@ -541,6 +541,54 @@ Decision:
 - Keep this screenshot as the first accepted RViz evidence for the RGB-D baseline.
 - Use RGB-D mode as the main single-vehicle SLAM smoke path going forward.
 
+## 15. RTAB-Map RGB-D Consistency Audit
+
+Command:
+
+```bash
+RUNS=3 scripts/audit_rtabmap_depth_camera_rgbd_consistency.sh
+```
+
+Purpose:
+
+- Check whether the promoted RGB-D smoke baseline is repeatable.
+- Avoid treating a one-off successful run as a stable mainline.
+
+Observed result:
+
+- All 3 runs succeeded.
+- All 3 runs produced accepted RGB-D smoke summaries.
+- No run required Offboard or arm.
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_rgbd_consistency_20260605_101709/rtabmap_depth_camera_rgbd_consistency_20260605_101709.txt`
+- run 1: `data/results/rtabmap_depth_camera_rgbd_smoke_20260605_101709/rtabmap_depth_camera_rgbd_smoke_20260605_101709.txt`
+- run 2: `data/results/rtabmap_depth_camera_rgbd_smoke_20260605_101737/rtabmap_depth_camera_rgbd_smoke_20260605_101737.txt`
+- run 3: `data/results/rtabmap_depth_camera_rgbd_smoke_20260605_101804/rtabmap_depth_camera_rgbd_smoke_20260605_101804.txt`
+
+Observed summary:
+
+```text
+decision=accepted_rtabmap_depth_camera_rgbd_consistency
+reason=all_rgbd_smoke_runs_succeeded_and_were_accepted
+runs=3
+success_count=3
+failure_count=0
+accepted_count=3
+```
+
+Interpretation:
+
+- The current RGB-D smoke baseline is repeatable enough to serve as the default single-vehicle SLAM mainline in this repository.
+- This does not mean mapping quality is solved.
+- It means the integration path itself is now stable enough for downstream work.
+
+Decision:
+
+- Treat RTAB-Map RGB-D as the repository's primary single-vehicle SLAM smoke baseline.
+- Keep scan-cloud mode as fallback and comparison path only.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

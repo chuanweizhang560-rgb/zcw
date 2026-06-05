@@ -5550,3 +5550,25 @@
   - 将这条 RGB-D 主线继续作为单机 SLAM 默认基线
   - 后续若要提升质量，应优先改进采样轨迹和观测覆盖，而不是回退去做不兼容的传感器候选
 - 阻塞项：无
+
+### 2026-06-05 10:18:12 CST
+
+- 节点：RTAB-Map RGB-D 一致性审计完成
+- 执行动作：
+  - 新增 `scripts/audit_rtabmap_depth_camera_rgbd_consistency.sh`
+  - 连续运行 3 次 `verify_rtabmap_depth_camera_rgbd_smoke.sh`
+  - 统计每次 smoke 是否成功并被 summary 接受
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_rgbd_consistency`
+  - `runs=3`
+  - `success_count=3`
+  - `failure_count=0`
+  - `accepted_count=3`
+- 结论：
+  - 当前 RGB-D smoke 主线具备可重复性，不再是单次偶发通过
+  - 可以把 RTAB-Map RGB-D 明确视为仓库里的默认单机 SLAM smoke baseline
+- 下一步：
+  - 继续基于这条稳定主线推进后续单机巡检轨迹与观测覆盖耦合验证
+  - scan-cloud 只保留为后备和对照路径
+- 阻塞项：无
