@@ -5316,3 +5316,77 @@
   - 提交这条 push 记录
   - 转入 LiDAR/IMU 字段审计，为 `spark-fast-lio` 等 LIO 候选做输入兼容性检查
 - 阻塞项：无
+
+### 2026-06-05 09:22:52 CST
+
+- 节点：LIO 输入审计入口开始
+- 执行动作：
+  - 读取 foggy lidar 历史点云/pose 样本
+  - 短时探测当前 foggy lidar 仿真 ROS 图和 PX4 ROS2 bridge 话题
+  - 确认 `/zcw/foggy_lidar/points` 存在
+  - 确认 bridge 下存在 `/fmu/out/sensor_combined`
+  - 新增 `scripts/audit_lio_input_readiness.sh`
+  - 更新 `scripts/README.md`
+- 已确认的事实：
+  - foggy lidar PointCloud2 字段当前仅见 `x,y,z,intensity`
+  - 未见 `ring`
+  - 未见 `time`
+  - IMU 候选是 `px4_msgs/msg/SensorCombined`，不是 `sensor_msgs/msg/Imu`
+- 边界：
+  - 该节点只做成熟 LIO 候选的输入兼容性审计
+  - 不实现 LIO
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+- 下一步：
+  - 运行脚本语法检查
+  - 运行 `scripts/audit_lio_input_readiness.sh`
+  - 将结论写入 `docs/13_slam_open_source_readiness.md`
+- 阻塞项：无
+
+### 2026-06-05 09:24:27 CST
+
+- 节点：LIO 输入审计完成
+- 执行动作：
+  - 运行 `scripts/audit_lio_input_readiness.sh`
+  - 读取 summary、point cloud 样本、`sensor_combined` 样本和 topic list
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `decision=rejected_lio_input_readiness`
+  - `pointcloud_fields=x,y,z,intensity`
+  - `pointcloud_has_ring=false`
+  - `pointcloud_has_time=false`
+  - `imu_topic=/fmu/out/sensor_combined`
+  - `imu_topic_type=px4_msgs/msg/SensorCombined`
+  - `imu_is_native_ros_imu=false`
+  - `spark_fast_lio_direct_ready=false`
+  - `lio_sam_direct_ready=false`
+- 结论：
+  - 当前 foggy lidar 输入不满足成熟 LIO 候选的直接接入条件
+  - 阻塞点是输入契约不匹配，不是算法本身
+- 下一步：
+  - 复核 `spark-fast-lio` 上游仓库的许可证和 ROS 2 接入方式
+  - 继续审计现有栈里是否存在更适合 LIO 的 LiDAR/IMU 输入源
+- 阻塞项：无
+
+### 2026-06-05 09:26:55 CST
+
+- 节点：`spark-fast-lio` 上游审计完成
+- 执行动作：
+  - 克隆 `https://github.com/MIT-SPARK/spark-fast-lio.git` 到 `third_party/spark-fast-lio`
+  - 记录 commit `17b36d293a14df37d57e1751a337a32e2f164692`
+  - 读取 README、`spark_fast_lio/package.xml`、`spark_fast_lio/LICENSE`
+  - 更新 `OPEN_SOURCE_AUDIT.md` 与 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - 包源码直接订阅 `sensor_msgs/msg/PointCloud2` 和 `sensor_msgs/msg/Imu`
+  - `spark_fast_lio/package.xml` 标注 `GPL`
+  - `spark_fast_lio/LICENSE` 为 GNU GPL v2
+  - 当前仓库根目录未见独立顶层 `LICENSE` 文件
+- 结论：
+  - `spark-fast-lio` 技术方向适合 ROS 2，但当前不能直接进入主线
+  - 阻塞项有两个：当前 foggy lidar 输入契约不满足，以及 GPL v2 许可边界需要单独审慎处理
+- 下一步：
+  - 运行静态检查
+  - 提交并推送 LIO 输入审计与上游审计文档
+  - 后续继续筛查是否存在更合适的 LiDAR/IMU 输入源或更稳妥的 LIO 候选
+- 阻塞项：无

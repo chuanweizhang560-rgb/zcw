@@ -52,6 +52,7 @@
 - `audit_multi_vehicle_upstream_readiness.sh`：只读检查 PX4 release/1.14 的 Gazebo Classic 多实例脚本、实例 MAVLink 端口、`MAV_SYS_ID`、`UXRCE_DDS_KEY` 和 DDS namespace 支持；不启动 ROS/PX4/Gazebo/RViz。
 - `verify_px4_gazebo_classic_multi_vehicle_readonly.sh`：按 PX4 官方 Gazebo Classic 多实例机制启动两台 `iris`、Micro XRCE-DDS 和 Gazebo headless，只验证 `/px4_1/fmu/out/*`、`/px4_2/fmu/out/*` 输出 topic 与 `/fmu/in/*` publisher count 为 0；不启动 Offboard、不 arm。
 - `audit_rtabmap_installation.sh`：只读检查 `ros-humble-rtabmap-ros` 及 `rtabmap_slam`、`rtabmap_odom`、`rtabmap_util` 关键可执行节点是否可见；不启动 ROS/PX4/Gazebo/RViz。
+- `audit_lio_input_readiness.sh`：启动 foggy lidar + MicroXRCE，只读审计 `/zcw/foggy_lidar/points` 的字段以及 `/fmu/out/sensor_combined` 的类型，判断当前输入是否能直接喂给成熟 LIO 候选；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `verify_rtabmap_node_smoke.sh`：启动 `rtabmap_slam/rtabmap` ROS 2 节点的无传感器 read-only smoke，验证节点可启动并出现在 ROS 图中；不启动 PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_rtabmap_depth_camera_smoke.sh`：启动 Gazebo depth camera、只读 odom child-frame bridge 和 RTAB-Map scan-cloud mode，验证 `/camera/points`、桥接 odom 和 RTAB-Map 输出 topic；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map scan-cloud mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RTAB-Map map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。

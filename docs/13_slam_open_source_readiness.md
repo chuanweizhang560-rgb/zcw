@@ -36,7 +36,7 @@ The project must reuse mature open-source SLAM/mapping packages where practical.
 | Candidate | Source | License | ROS 2 Humble fit | Project fit | Decision |
 |---|---|---|---|---|---|
 | RTAB-Map ROS | https://github.com/introlab/rtabmap_ros | BSD-3-Clause | Strong. Upstream states ROS 2 Humble support and ROS binaries. | Best first mapping candidate for RGB-D/depth camera and 3D LiDAR examples. | Primary Phase S0 candidate. |
-| spark-fast-lio | https://github.com/MIT-SPARK/spark-fast-lio | Needs local clone/license verification before use. | Strong ROS 2 focus; README provides ROS 2 launch/config flow. | Best LIO candidate after IMU/LiDAR topics are stable. | Phase S1 candidate. |
+| spark-fast-lio | https://github.com/MIT-SPARK/spark-fast-lio | Local clone shows `spark_fast_lio/package.xml` license `GPL` and package-level `LICENSE` is GNU GPL v2. | Strong ROS 2 focus; README and source show direct `sensor_msgs/msg::Imu` + `sensor_msgs/msg::PointCloud2` subscriptions. | Technically the best ROS 2-oriented LIO candidate, but current project input contract and license boundary both block direct adoption. | Audit-only hold. |
 | LIO-SAM ROS2 branch/fork | https://github.com/TixiaoShan/LIO-SAM, https://github.com/pixwyh/LIO-SAM-ROS2 | BSD-3-Clause reported by GitHub fork page; verify before use. | Community ROS 2/Humble support exists, but input requirements are strict. | Useful later only if lidar fields include ring/time and IMU extrinsics are credible. | Hold until sensor fields pass audit. |
 | LVI-SAM | https://arxiv.org/abs/2104.10831 | Verify implementation license before use. | Original implementation is ROS 1-oriented; ROS 2/Gazebo integration cost is high. | Scientifically aligned with the proposal, but too heavy for first integration. | Defer. |
 | OctoMap / occupancy mapping | ROS 2 packages/system packages, exact package to verify locally. | BSD-family upstream; verify package license before use. | Likely available through ROS 2 ecosystem. | Needed after pose source exists; not a pose estimator by itself. | Phase S2 candidate. |
@@ -429,3 +429,94 @@ Interpretation:
 - RTAB-Map plus real Gazebo depth-camera input plus a mature waypoint baseline can produce non-empty mapping evidence in motion.
 - This is the first acceptable visual proof that the open-source mapping chain is alive in a moving inspection scenario.
 - It is still not a final SLAM completion milestone because odometry is debug pose, the rendered structure is sparse and no quantitative map or trajectory accuracy metric has been run.
+
+## 12. LIO Input Readiness Audit
+
+Command:
+
+```bash
+scripts/audit_lio_input_readiness.sh
+```
+
+This audit checks whether the current foggy-lidar simulation inputs are already compatible with mature open-source LIO candidates without rewriting their estimator cores.
+
+Audit scope:
+
+- starts PX4/Gazebo and MicroXRCE.
+- inspects `/zcw/foggy_lidar/points`.
+- inspects `/fmu/out/sensor_combined`.
+- does not start Offboard.
+- does not arm.
+- does not publish `/fmu/in/*`.
+
+Latest evidence:
+
+- summary: `data/results/lio_input_readiness_20260605_092427/lio_input_readiness_20260605_092427.txt`
+- topics: `data/logs/lio_input_topics_20260605_092427.log`
+- point cloud sample: `data/logs/lio_input_points_sample_20260605_092427.log`
+- IMU candidate sample: `data/logs/lio_input_sensor_combined_sample_20260605_092427.log`
+
+Observed result:
+
+```text
+decision=rejected_lio_input_readiness
+reason=foggy_lidar_pointcloud_missing_ring_time_and_only_px4_sensor_combined_imu
+pointcloud_fields=x,y,z,intensity
+pointcloud_has_ring=false
+pointcloud_has_time=false
+imu_topic=/fmu/out/sensor_combined
+imu_topic_type=px4_msgs/msg/SensorCombined
+imu_is_native_ros_imu=false
+spark_fast_lio_direct_ready=false
+lio_sam_direct_ready=false
+```
+
+Observed input facts:
+
+- `sensor_msgs/msg/PointCloud2` exists on `/zcw/foggy_lidar/points`.
+- The point cloud fields are only `x,y,z,intensity`.
+- No `ring` field was observed.
+- No `time` field was observed.
+- The only IMU-like bridge output found for this audit path is `/fmu/out/sensor_combined`.
+- That topic is `px4_msgs/msg/SensorCombined`, not `sensor_msgs/msg/Imu`.
+
+Interpretation:
+
+- Current foggy-lidar ROS inputs are not accepted as direct-feed inputs for `spark-fast-lio`.
+- Current foggy-lidar ROS inputs are not accepted as direct-feed inputs for `LIO-SAM`.
+- The immediate blocker is not algorithm quality. It is input contract mismatch.
+- `spark-fast-lio` remains the better later candidate because it is more ROS 2 native, but it still needs a credible IMU path and likely a clearer point timestamp story before adoption.
+- `LIO-SAM` stays on hold because the current point cloud does not expose the `ring/time` style fields that LIO-SAM class integrations typically depend on.
+
+Next allowed work:
+
+1. Audit whether a mature ROS-side IMU bridge to `sensor_msgs/Imu` can be introduced without inventing estimator logic.
+2. Audit whether another existing PX4/Gazebo lidar model in the current stack exposes timestamp or ring-like fields.
+3. Clone and license-review `spark-fast-lio` locally in `third_party/` before any build attempt.
+
+## 13. SPARK-FAST-LIO Upstream Audit
+
+Local clone:
+
+- path: `third_party/spark-fast-lio`
+- commit: `17b36d293a14df37d57e1751a337a32e2f164692`
+
+Observed upstream facts:
+
+- README presents a ROS 2 workflow and custom config files for Velodyne/Ouster-style setups.
+- `spark_fast_lio/src/spark_fast_lio.cpp` subscribes directly to `sensor_msgs/msg/PointCloud2` and `sensor_msgs/msg/Imu`.
+- `spark_fast_lio/package.xml` declares `<license>GPL</license>`.
+- `spark_fast_lio/LICENSE` is GNU GPL version 2.
+- The repository root does not currently expose a separate top-level `LICENSE` file in this clone.
+
+Interpretation:
+
+- From a technical integration perspective, `spark-fast-lio` is aligned with ROS 2 and cleaner than LIO-SAM.
+- From a project-governance perspective, it is not a drop-in default choice here because:
+  - current foggy-lidar inputs do not meet the direct subscription contract, and
+  - package licensing is GPL v2, so it must be treated as a separately reviewed candidate rather than an automatically acceptable dependency.
+
+Current decision:
+
+- keep `spark-fast-lio` in `third_party/` for audit only.
+- do not build or wire it into the main repository flow yet.

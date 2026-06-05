@@ -119,7 +119,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | 候选 | 来源 | 许可证 | 用途 | 初步判断 |
 |---|---|---|---|---|
 | RTAB-Map ROS | https://github.com/introlab/rtabmap_ros | BSD-3-Clause | ROS 2 RGB-D/3D LiDAR SLAM、建图、回环和数据库 | ROS 2 Humble 支持最明确，作为第一优先 SLAM smoke 候选 |
-| MIT-SPARK `spark-fast-lio` | https://github.com/MIT-SPARK/spark-fast-lio | 克隆后复核 | ROS 2 FAST-LIO2 LiDAR-inertial mapping | 适合后续 LIO；先审计 IMU/LiDAR topic 字段和外参 |
+| MIT-SPARK `spark-fast-lio` | https://github.com/MIT-SPARK/spark-fast-lio | 包级 `LICENSE` 为 GPL v2，`package.xml` 标注 `GPL`，根目录未见独立 `LICENSE` | ROS 2 FAST-LIO2 LiDAR-inertial mapping | 仅作上游审计候选；当前既有许可约束，也有输入契约阻塞，暂不进入主线 |
 | LIO-SAM ROS2 | https://github.com/TixiaoShan/LIO-SAM / https://github.com/pixwyh/LIO-SAM-ROS2 | BSD-3-Clause 候选，克隆后复核 | LiDAR-inertial odometry、factor graph、loop closure | 输入字段要求严格，Gazebo LiDAR 必须提供 ring/time 或适配 |
 | LVI-SAM | https://arxiv.org/abs/2104.10831 | 实现许可证待复核 | LiDAR-visual-inertial SLAM | 科学方案贴合，但 ROS 2/Gazebo 接入成本高，暂缓 |
 | OctoMap / occupancy mapping | ROS 2/系统包待本机复核 | 待复核 | 占据图与后续地图熵 | 只在有可信 pose/map 输出后接入 |
@@ -187,6 +187,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 | `third_party/Micro-XRCE-DDS-Agent-v2.2.1` | tag `v2.2.1` | `f984380` | Apache-2.0 | 已用系统 FastDDS/FastCDR 构建成功，并完成 PX4 ROS 2 bridge 验证 |
 | `third_party/aerialcore_simulation` | `master` | `edd912e` | `package.xml` 标注 BSD 3-Clause | 包含风机、电塔、两塔带导线等 Gazebo 资产；已完成 Gazebo 11 headless world 加载验证 |
 | `third_party/navigation2-humble` | `humble` | `e9caa42` | `nav2_regulated_pure_pursuit_controller/package.xml` 标注 Apache-2.0 | sparse clone 仅用于 RPP 路径跟踪参考；不直接作为 PX4 控制器 |
+| `third_party/spark-fast-lio` | `main` | `17b36d2` | `spark_fast_lio/package.xml` 标注 `GPL`，`spark_fast_lio/LICENSE` 为 GNU GPL v2，根目录未见独立 `LICENSE` | ROS 2 原生程度较好，但当前 foggy lidar 输入不满足其直接接入条件，且许可边界需谨慎处理 |
 
 立即可用结论：
 
@@ -194,6 +195,7 @@ PX4 官方文档显示，Gazebo Classic 在 PX4 v1.15 文档中只支持到 Ubun
 2. PX4 Classic 插件库已克隆，但必须先做 Gazebo 11 实测，不能假设已稳定。
 3. `mav_trajectory_generation` 不适合直接进 ROS 2 Humble 主链路，第一版轨迹层应先保留为可选候选。
 4. MAPPO 和电力线检测仓库都不应直接嵌入实时仿真主链路，应先作为离线参考和实验基线。
+5. `spark-fast-lio` 当前只保留为上游审计对象：一方面包许可为 GPL v2，另一方面当前项目的 foggy lidar 输入缺少 `ring/time` 且 IMU 仅有 `px4_msgs/msg/SensorCombined`，不满足直接接入条件。
 
 ## 7. PX4 Classic / Gazebo 11 实测记录
 
