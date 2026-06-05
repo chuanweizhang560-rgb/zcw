@@ -26,6 +26,7 @@
 - `verify_foggy_lidar_ransac_batch.sh`：运行 5 帧 PCL RANSAC 批量烟测，输出每帧 CSV、filtered PCD、line-inlier PCD 和汇总结果。
 - `verify_foggy_lidar_world_ransac.sh`：订阅 foggy lidar PointCloud2 与 P3D pose，输出 sensor/world-frame PCD 并检查 world 坐标 RANSAC 结果。
 - `verify_depth_camera_pointcloud.sh`：用 PX4 官方 `iris_depth_camera` + Gazebo ROS camera plugin 验证 `/camera/points` PointCloud2；默认需要 GUI 渲染和可用 `DISPLAY`。
+- `verify_depth_camera_rgbd_imu_contract.sh`：在可用 `DISPLAY` 下启动 `iris_depth_camera` GUI 仿真，审计 RGB image、depth image、camera_info、PointCloud2 和原生 `/imu` 话题是否同时存在，用于确认标准 RGB-D SLAM 输入合同。
 - `verify_depth_camera_pose_pointcloud.sh`：验证 depth camera `/camera/points` PointCloud2 和官方 `gazebo_ros_p3d` 输出 `/zcw/depth_camera/pose` Odometry。
 - `verify_depth_camera_world_ransac.sh`：订阅 depth camera PointCloud2 与 P3D pose，输出 sensor/world-frame PCD 并审核静态 world-frame RANSAC 结果。
 - `verify_px4vision_ros_contract.sh`：启动 PX4 官方 `px4vision` + AerialCore 两塔导线场景，审计 ROS 2 图中是否同时存在原生 `/imu` 与深度点云 topic，用于筛查更适合成熟视觉/深度 SLAM 的现成上游链路。
@@ -57,6 +58,7 @@
 - `audit_lio_input_readiness.sh`：启动 foggy lidar + MicroXRCE，只读审计 `/zcw/foggy_lidar/points` 的字段以及 `/fmu/out/sensor_combined` 的类型，判断当前输入是否能直接喂给成熟 LIO 候选；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `verify_rtabmap_node_smoke.sh`：启动 `rtabmap_slam/rtabmap` ROS 2 节点的无传感器 read-only smoke，验证节点可启动并出现在 ROS 图中；不启动 PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_rtabmap_depth_camera_smoke.sh`：启动 Gazebo depth camera、只读 odom child-frame bridge 和 RTAB-Map scan-cloud mode，验证 `/camera/points`、桥接 odom 和 RTAB-Map 输出 topic；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
+- `verify_rtabmap_depth_camera_rgbd_smoke.sh`：启动 Gazebo depth camera、只读 odom child-frame bridge 和 RTAB-Map RGB-D mode，验证 `/camera/image_raw`、`/camera/depth/image_raw`、桥接 odom 和 RTAB-Map 输出 topic；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map scan-cloud mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RTAB-Map map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_motion_rviz_overlay.sh`：启动 depth camera + 电缆 waypoint baseline + RTAB-Map + RViz2，在真实运动中截取 RTAB-Map map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 SLAM 运动可视化验证，不属于电缆 Phase B active bridge。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。

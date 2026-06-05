@@ -5450,3 +5450,69 @@
   - 继续筛查剩余官方视觉/深度模型
   - 收敛当前锁定环境下真正可走通的单机 SLAM 主线
 - 阻塞项：无
+
+### 2026-06-05 09:54:18 CST
+
+- 节点：官方视觉/深度模型兼容性分层完成
+- 执行动作：
+  - 静态审计 PX4 官方 `iris_depth_camera`、`iris_downward_depth_camera`、`iris_stereo_camera`、`iris_triple_depth_camera`、`px4vision`
+  - 对照本机 `/opt/ros/humble/lib` 中已安装的 Gazebo ROS 插件库
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `iris_depth_camera` / `iris_downward_depth_camera` 依赖 `libgazebo_ros_camera.so`，本机存在
+  - `iris_stereo_camera` 依赖 `libgazebo_ros_multicamera.so`，本机缺失
+  - `iris_triple_depth_camera` / `px4vision` 依赖 `libgazebo_ros_openni_kinect.so`，本机缺失
+- 结论：
+  - 在当前锁定环境里，唯一已证明与本机插件栈兼容的官方视觉主线是 `depth_camera` 系列
+  - 单机 SLAM 主线继续锁定 `iris_depth_camera` + RTAB-Map
+- 下一步：
+  - 继续把 `iris_depth_camera` 路线往更稳定的单机 SLAM 证据推进
+  - 需要时再审 `iris_downward_depth_camera` 是否值得作为面向下视覆盖的补充分支
+- 阻塞项：无
+
+### 2026-06-05 09:57:44 CST
+
+- 节点：`iris_depth_camera` RGB-D 合同审计完成
+- 执行动作：
+  - 新增 `scripts/verify_depth_camera_rgbd_imu_contract.sh`
+  - 用已验证的 `PX4_DIRECT_MODEL=1 + PX4_SYS_AUTOSTART=10015` 路径启动 `iris_depth_camera`
+  - 审计 RGB image、depth image、camera_info、PointCloud2 和 `/imu`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `/camera/image_raw` 存在，类型 `sensor_msgs/msg/Image`
+  - `/camera/camera_info` 存在，类型 `sensor_msgs/msg/CameraInfo`
+  - `/camera/depth/image_raw` 存在，类型 `sensor_msgs/msg/Image`
+  - `/camera/depth/camera_info` 存在，类型 `sensor_msgs/msg/CameraInfo`
+  - `/camera/points` 存在，类型 `sensor_msgs/msg/PointCloud2`
+  - `/imu` 缺失
+  - `decision=rejected_depth_camera_rgbd_imu_contract`
+- 结论：
+  - 当前 `iris_depth_camera` 是稳定的 RGB-D 输入链路，但不是 RGB-D+IMU 链路
+  - 单机 SLAM 主线应继续收敛到不依赖 IMU 的成熟 RGB-D 路线，例如 RTAB-Map RGB-D 或现有 scan-cloud 模式
+- 下一步：
+  - 将 RTAB-Map 路线从“scan-cloud smoke”推进到“标准 RGB-D 输入审计/烟测”
+  - 不再假设当前环境存在可直接复用的原生 IMU
+- 阻塞项：无
+
+### 2026-06-05 10:03:34 CST
+
+- 节点：RTAB-Map RGB-D 烟测完成
+- 执行动作：
+  - 新增 `scripts/verify_rtabmap_depth_camera_rgbd_smoke.sh`
+  - 复用 `iris_depth_camera` 直接模型启动路径和 `odom_child_frame_bridge`
+  - 启动 upstream `rtabmap_slam/rtabmap` 的标准 RGB-D 模式
+  - 采集 RGB、depth、桥接 odom、RTAB-Map 输出 topic 和数据库证据
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_rgbd_smoke`
+  - `rtabmap_rgbd_mode=true`
+  - RTAB-Map 日志确认 `subscribe_depth = true`、`subscribe_rgb = true`、`subscribe_scan_cloud = false`
+  - 输出 topic 包含 `/map`、`/mapData`、`/mapGraph`、`/cloud_map`、`/octomap_*`
+  - 全程 `starts_offboard=false`、`arms=false`、`publishes_fmu_in=false`
+- 结论：
+  - 当前仓库已经具备“基于成熟上游 RTAB-Map 的单机 RGB-D SLAM smoke 基线”
+  - 在当前锁定环境下，这条路比 foggy-lidar LIO 和 `px4vision` 更稳，应该提升为单机 SLAM 主线
+- 下一步：
+  - 将 RGB-D 模式提升为主 smoke baseline，并保留 scan-cloud 作为后备
+  - 继续用真实 RViz/Gazebo 证据审视这条主线的可视化质量和稳定性
+- 阻塞项：无

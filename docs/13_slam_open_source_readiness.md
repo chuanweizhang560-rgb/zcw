@@ -327,6 +327,166 @@ Decision:
 - Reject `px4vision` as the immediate SLAM sensor-contract baseline in the current environment.
 - Keep `iris_depth_camera` plus RTAB-Map as the primary visual/depth SLAM path already proven to start.
 
+## 11. Official Camera Model Compatibility Triage
+
+Static audit basis:
+
+- `models/depth_camera/depth_camera.sdf`
+- `models/iris_depth_camera/iris_depth_camera.sdf`
+- `models/iris_downward_depth_camera/iris_downward_depth_camera.sdf`
+- `models/stereo_camera/stereo_camera.sdf`
+- `models/iris_stereo_camera/iris_stereo_camera.sdf`
+- `models/iris_triple_depth_camera/iris_triple_depth_camera.sdf`
+- local plugin inventory under `/opt/ros/humble/lib`
+
+Observed plugin dependencies:
+
+| Model | Upstream sensor plugin path | Local plugin availability | Current decision |
+|---|---|---|---|
+| `iris_depth_camera` | inherits `depth_camera`, which uses `libgazebo_ros_camera.so` | Present | Keep |
+| `iris_downward_depth_camera` | inherits `depth_camera`, which uses `libgazebo_ros_camera.so` | Present | Keep |
+| `iris_stereo_camera` | inherits `stereo_camera`, which uses `libgazebo_ros_multicamera.so` | Missing | Reject for now |
+| `iris_triple_depth_camera` | embeds three depth sensors using `libgazebo_ros_openni_kinect.so` | Missing | Reject for now |
+| `px4vision` | embeds depth sensor using `libgazebo_ros_openni_kinect.so` | Missing | Reject for now |
+
+Implication:
+
+- Under the current stack lock, the only official PX4 camera family already aligned with installed Gazebo ROS plugins is the `depth_camera` line.
+- This reinforces the current single-vehicle SLAM priority:
+  - `iris_depth_camera` first
+  - `iris_downward_depth_camera` optional follow-up variant
+  - RTAB-Map as the first mature upstream mapping package
+
+Non-priority candidates:
+
+- `px4vision`
+- `iris_triple_depth_camera`
+- `iris_stereo_camera`
+
+They are not rejected because the idea is bad. They are rejected because the required Gazebo ROS plugins are absent in the current locked environment, and the project rules do not allow drifting into custom sensor/plugin work just to resurrect them.
+
+## 12. Depth Camera RGB-D Contract Audit
+
+Command:
+
+```bash
+scripts/verify_depth_camera_rgbd_imu_contract.sh
+```
+
+Purpose:
+
+- Re-check the `iris_depth_camera` line using the already proven direct-model launch path.
+- Verify whether the current environment exposes a standard RGB-D input contract.
+- Verify whether a native ROS 2 `/imu` topic is part of that contract.
+
+Observed result:
+
+- Present:
+  - `/camera/image_raw` as `sensor_msgs/msg/Image`
+  - `/camera/camera_info` as `sensor_msgs/msg/CameraInfo`
+  - `/camera/depth/image_raw` as `sensor_msgs/msg/Image`
+  - `/camera/depth/camera_info` as `sensor_msgs/msg/CameraInfo`
+  - `/camera/points` as `sensor_msgs/msg/PointCloud2`
+- Missing:
+  - `/imu`
+
+Latest evidence:
+
+- summary: `data/results/depth_camera_rgbd_imu_contract_20260605_095527/depth_camera_rgbd_imu_contract_20260605_095527.txt`
+- topic list: `data/logs/depth_camera_rgbd_imu_contract_topics_20260605_095527.log`
+- PX4/Gazebo log: `data/logs/depth_camera_rgbd_imu_contract_px4_20260605_095527.log`
+
+Observed summary:
+
+```text
+decision=rejected_depth_camera_rgbd_imu_contract
+reason=required_rgbd_or_imu_topics_missing
+/camera/image_raw=[sensor_msgs/msg/Image]
+/camera/camera_info=[sensor_msgs/msg/CameraInfo]
+/camera/depth/image_raw=[sensor_msgs/msg/Image]
+/camera/depth/camera_info=[sensor_msgs/msg/CameraInfo]
+/camera/points=[sensor_msgs/msg/PointCloud2]
+/imu=missing
+```
+
+Interpretation:
+
+- The `iris_depth_camera` line is a strong RGB-D contract.
+- It is not a stable RGB-D-plus-IMU contract in the current environment.
+- This means the immediate mapping path should prefer mature RGB-D SLAM modes that do not require IMU input.
+
+Decision:
+
+- Keep `iris_depth_camera` as the primary sensor baseline.
+- Narrow the next SLAM path to RTAB-Map RGB-D or scan-cloud modes, without assuming IMU availability.
+
+## 13. RTAB-Map RGB-D Smoke
+
+Command:
+
+```bash
+scripts/verify_rtabmap_depth_camera_rgbd_smoke.sh
+```
+
+Purpose:
+
+- Use the already accepted `iris_depth_camera` RGB-D contract.
+- Reuse the existing odom child-frame bridge.
+- Start upstream RTAB-Map in standard RGB-D subscription mode, not scan-cloud mode.
+
+Observed result:
+
+- RTAB-Map started in SLAM mode.
+- RTAB-Map reported:
+  - `subscribe_depth = true`
+  - `subscribe_rgb = true`
+  - `subscribe_scan_cloud = false`
+- RTAB-Map subscribed to:
+  - `/zcw/rtabmap/odom_camera_link`
+  - `/camera/image_raw`
+  - `/camera/depth/image_raw`
+  - `/camera/camera_info`
+- Output topics appeared, including:
+  - `/map`
+  - `/mapData`
+  - `/mapGraph`
+  - `/cloud_map`
+  - `/octomap_*`
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_rgbd_smoke_20260605_100320/rtabmap_depth_camera_rgbd_smoke_20260605_100320.txt`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_node_20260605_100320.log`
+- topic list: `data/logs/rtabmap_depth_camera_rgbd_topics_20260605_100320.log`
+- RGB sample: `data/logs/rtabmap_depth_camera_rgbd_rgb_sample_20260605_100320.log`
+- depth sample: `data/logs/rtabmap_depth_camera_rgbd_depth_sample_20260605_100320.log`
+- odom sample: `data/logs/rtabmap_depth_camera_rgbd_odom_sample_20260605_100320.log`
+- database: `data/results/rtabmap_depth_camera_rgbd_smoke_20260605_100320/rtabmap_depth_camera_rgbd_20260605_100320.db`
+
+Observed summary:
+
+```text
+decision=accepted_rtabmap_depth_camera_rgbd_smoke
+reason=rtabmap_rgbd_mode_started_with_depth_camera_contract
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+rtabmap_rgbd_mode=true
+```
+
+Interpretation:
+
+- The project now has two accepted single-vehicle RTAB-Map entry paths on mature upstream code:
+  - scan-cloud mode
+  - RGB-D mode
+- Under the current locked environment, RGB-D mode is the cleaner primary path because its sensor contract is explicit and already validated.
+- `/imu` may appear in broader topic graphs during some runs, but it has not passed a stable standalone contract audit and must not be assumed as a required input.
+
+Decision:
+
+- Promote RTAB-Map RGB-D to the primary single-vehicle SLAM smoke baseline.
+- Keep RTAB-Map scan-cloud as a secondary fallback path.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
