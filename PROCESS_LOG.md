@@ -5516,3 +5516,37 @@
   - 将 RGB-D 模式提升为主 smoke baseline，并保留 scan-cloud 作为后备
   - 继续用真实 RViz/Gazebo 证据审视这条主线的可视化质量和稳定性
 - 阻塞项：无
+
+### 2026-06-05 10:05:27 CST
+
+- 节点：RTAB-Map RGB-D 基线已推送远端
+- 执行动作：
+  - 提交 `7e14bdb Promote RTAB-Map RGB-D smoke baseline`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含 RGB-D 合同审计和 RTAB-Map RGB-D smoke 基线
+- 下一步：
+  - 继续用真实 RViz/Gazebo 证据复核 RGB-D 主线的可视化质量
+  - 需要时再决定是否补 `iris_downward_depth_camera` 分支
+- 阻塞项：无
+
+### 2026-06-05 10:08:12 CST
+
+- 节点：RTAB-Map RGB-D RViz 截图证据完成
+- 执行动作：
+  - 新增 `scripts/capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh`
+  - 启动 `iris_depth_camera`、只读 odom bridge、RTAB-Map RGB-D mode 和 RViz2
+  - 截取真实 RViz 截图并人工查看截图内容
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_rgbd_rviz_overlay`
+  - 成功生成截图 `data/screenshots/rtabmap_depth_camera_rgbd_rviz_overlay_20260605_100717.png`
+  - RViz 中可见 `/cloud_map`、`/octomap_occupied_space`、`/map`
+  - 视觉上能辨认出线状上方结构和局部扇形深度点云
+- 结论：
+  - 该截图可作为 RGB-D 主线的首份有效 RViz 视觉证据
+  - 证据级别仍是 smoke，不应夸大为高质量全局地图
+- 下一步：
+  - 将这条 RGB-D 主线继续作为单机 SLAM 默认基线
+  - 后续若要提升质量，应优先改进采样轨迹和观测覆盖，而不是回退去做不兼容的传感器候选
+- 阻塞项：无

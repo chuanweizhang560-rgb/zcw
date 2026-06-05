@@ -487,6 +487,60 @@ Decision:
 - Promote RTAB-Map RGB-D to the primary single-vehicle SLAM smoke baseline.
 - Keep RTAB-Map scan-cloud as a secondary fallback path.
 
+## 14. RTAB-Map RGB-D RViz Evidence
+
+Command:
+
+```bash
+scripts/capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh
+```
+
+Purpose:
+
+- Capture a real RViz screenshot for the promoted RGB-D baseline.
+- Verify that map/cloud/octomap topics are not only present in the graph, but also render with meaningful visible structure.
+
+Observed result:
+
+- The capture succeeded.
+- RTAB-Map ran in RGB-D mode.
+- RViz rendered:
+  - `/cloud_map`
+  - `/octomap_occupied_space`
+  - `/map`
+- The screenshot shows visible line-like overhead structure plus a localized fan-shaped depth-derived cloud near the camera pose.
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_rgbd_rviz_overlay_20260605_100717/rtabmap_depth_camera_rgbd_rviz_overlay_20260605_100717.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_rviz_overlay_20260605_100717.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_rviz_node_20260605_100717.log`
+- topic list: `data/logs/rtabmap_depth_camera_rgbd_rviz_topics_20260605_100717.log`
+
+Observed summary:
+
+```text
+decision=accepted_rtabmap_depth_camera_rgbd_rviz_overlay
+reason=rtabmap_rgbd_map_cloud_octomap_rendered_in_rviz_capture
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+```
+
+Visual assessment:
+
+- Accepted as real visual evidence.
+- Better than the earlier static scan-cloud capture because the rendered structure is easier to interpret.
+- Still smoke-grade only:
+  - the mapped structure is sparse
+  - the visible geometry is local
+  - this is not yet a high-quality persistent global inspection map
+
+Decision:
+
+- Keep this screenshot as the first accepted RViz evidence for the RGB-D baseline.
+- Use RGB-D mode as the main single-vehicle SLAM smoke path going forward.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
