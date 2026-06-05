@@ -706,6 +706,63 @@ Decision:
 - Keep RTAB-Map RGB-D as the shared single-vehicle SLAM smoke baseline for both cable and wind tasks.
 - Treat the wind evidence as integration readiness, not final inspection coverage readiness.
 
+## 18. RTAB-Map RGB-D Wind Multilevel Orbit RViz Evidence
+
+Command:
+
+```bash
+OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit.launch.py \
+MIN_WAYPOINT_ADVANCEMENTS=8 \
+MOTION_SETTLE_SEC=115 \
+scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh
+```
+
+Purpose:
+
+- Re-run the wind RGB-D mapping evidence with the more inspection-like wind multilevel orbit baseline.
+- Prefer a mature rule baseline that keeps yaw pointed at the turbine center instead of the earlier simple waypoint baseline with fixed yaw.
+- Keep this as SLAM/visualization evidence only, not a turbine surface coverage certificate.
+
+Observed result:
+
+- The run was accepted.
+- PX4 entered armed Offboard flight.
+- The multilevel orbit baseline advanced through 41 waypoints before capture, exceeding the threshold of 8.
+- RTAB-Map RGB-D mode stayed active.
+- RViz rendered `/cloud_map`, `/map` and `/octomap_occupied_space`.
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141641/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141641.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141641.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260605_141641.log`
+- waypoint motion log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_offboard_20260605_141641.log`
+- topic list: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_topics_20260605_141641.log`
+
+Observed summary:
+
+```text
+decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay
+launch=single_vehicle_wind_turbine_multilevel_orbit.launch.py
+min_waypoint_advancements=8
+waypoint_advancements=41
+rtabmap_ok=true
+outputs_ok=true
+motion_ok=true
+screenshot_ok=1
+```
+
+Visual assessment:
+
+- Accepted as the current best wind-task motion-backed SLAM smoke evidence.
+- Compared with the simple wind waypoint screenshot, this view shows a larger and more coherent local cloud/octomap structure.
+- RTAB-Map still reports repeated depth NaN warnings, so this does not close the wind coverage problem.
+
+Decision:
+
+- Prefer the multilevel orbit launch for later wind-side SLAM visual checks.
+- Next wind-side work should quantify useful depth returns and view/frustum coverage around the turbine before moving to any learning policy.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

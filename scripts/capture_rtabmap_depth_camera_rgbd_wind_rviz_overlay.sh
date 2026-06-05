@@ -29,6 +29,8 @@ VERIFY_TIMEOUT_SEC="${VERIFY_TIMEOUT_SEC:-95}"
 PX4_TIMEOUT_SEC="${PX4_TIMEOUT_SEC:-190}"
 MOTION_SETTLE_SEC="${MOTION_SETTLE_SEC:-70}"
 GUI_SETTLE_SEC="${GUI_SETTLE_SEC:-10}"
+OFFBOARD_LAUNCH_FILE="${OFFBOARD_LAUNCH_FILE:-single_vehicle_wind_turbine_inspection.launch.py}"
+MIN_WAYPOINT_ADVANCEMENTS="${MIN_WAYPOINT_ADVANCEMENTS:-1}"
 
 agent_pid=""
 px4_pid=""
@@ -56,7 +58,7 @@ cleanup() {
   pkill -TERM -f "rtabmap_slam.*rtabmap" >/dev/null 2>&1 || true
   pkill -TERM -f "odom_child_frame_bridge" >/dev/null 2>&1 || true
   pkill -TERM -f "static_transform_publisher 0 0 0 0 0 0 world map" >/dev/null 2>&1 || true
-  pkill -TERM -f "single_vehicle_wind_turbine_inspection.launch.py" >/dev/null 2>&1 || true
+  pkill -TERM -f "${OFFBOARD_LAUNCH_FILE}" >/dev/null 2>&1 || true
   pkill -TERM -f "${ROOT_DIR}.*/wind_turbine_autospawn.world" >/dev/null 2>&1 || true
   pkill -TERM -f "${ROOT_DIR}.*/build/px4_sitl_default/bin/px4" >/dev/null 2>&1 || true
   sleep 2
@@ -64,7 +66,7 @@ cleanup() {
   pkill -KILL -f "rtabmap_slam.*rtabmap" >/dev/null 2>&1 || true
   pkill -KILL -f "odom_child_frame_bridge" >/dev/null 2>&1 || true
   pkill -KILL -f "static_transform_publisher 0 0 0 0 0 0 world map" >/dev/null 2>&1 || true
-  pkill -KILL -f "single_vehicle_wind_turbine_inspection.launch.py" >/dev/null 2>&1 || true
+  pkill -KILL -f "${OFFBOARD_LAUNCH_FILE}" >/dev/null 2>&1 || true
   pkill -KILL -f "${ROOT_DIR}.*/wind_turbine_autospawn.world" >/dev/null 2>&1 || true
   pkill -KILL -f "${ROOT_DIR}.*/build/px4_sitl_default/bin/px4" >/dev/null 2>&1 || true
 }
@@ -160,7 +162,7 @@ done
 setsid env \
   ROS_LOG_DIR="${LOG_DIR}/ros" \
   RCUTILS_LOGGING_DIRECTORY="${LOG_DIR}/ros" \
-  bash -lc "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 launch zcw_bringup single_vehicle_wind_turbine_inspection.launch.py" >"${OFFBOARD_LOG}" 2>&1 &
+  bash -lc "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 launch zcw_bringup '${OFFBOARD_LAUNCH_FILE}'" >"${OFFBOARD_LOG}" 2>&1 &
 offboard_pid=$!
 
 setsid env \
@@ -227,6 +229,7 @@ fi
 rtabmap_ok=false
 outputs_ok=false
 motion_ok=false
+waypoint_advancements=0
 if grep -q "SLAM mode" "${RTABMAP_LOG}" &&
    grep -q "subscribe_depth = true" "${RTABMAP_LOG}" &&
    grep -q "subscribe_rgb = true" "${RTABMAP_LOG}" &&
@@ -239,9 +242,12 @@ if grep -q '^/cloud_map$' "${TOPICS_LOG}" &&
    grep -q '^/octomap_occupied_space$' "${TOPICS_LOG}"; then
   outputs_ok=true
 fi
+if [[ -f "${OFFBOARD_LOG}" ]]; then
+  waypoint_advancements="$(grep -c "Advancing to waypoint" "${OFFBOARD_LOG}" || true)"
+fi
 if grep -q "arming_state: 2" "${STATUS_LOG}" &&
    grep -q "nav_state: 14" "${STATUS_LOG}" &&
-   grep -q "Advancing to waypoint" "${OFFBOARD_LOG}"; then
+   [[ "${waypoint_advancements}" -ge "${MIN_WAYPOINT_ADVANCEMENTS}" ]]; then
   motion_ok=true
 fi
 
@@ -265,7 +271,9 @@ fi
   echo "publishes_fmu_in=true"
   echo "world=wind_turbine"
   echo "model=iris_depth_camera"
-  echo "launch=single_vehicle_wind_turbine_inspection.launch.py"
+  echo "launch=${OFFBOARD_LAUNCH_FILE}"
+  echo "min_waypoint_advancements=${MIN_WAYPOINT_ADVANCEMENTS}"
+  echo "waypoint_advancements=${waypoint_advancements}"
   echo "rtabmap_ok=${rtabmap_ok}"
   echo "outputs_ok=${outputs_ok}"
   echo "motion_ok=${motion_ok}"

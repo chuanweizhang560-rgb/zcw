@@ -63,7 +63,7 @@
 - `audit_rtabmap_depth_camera_rgbd_consistency.sh`：重复运行 `verify_rtabmap_depth_camera_rgbd_smoke.sh`，统计 RGB-D smoke 是否稳定通过，用于单机 SLAM 主线的可重复性审计。
 - `capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map RGB-D mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RGB-D map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`：在 cable waypoint baseline 真实运动过程中启动 RTAB-Map RGB-D mode 和 RViz2，截取运动场景下的 RGB-D map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 motion-backed SLAM 可视化验证。
-- `capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`：在 AerialCore 风机场景和风机 waypoint baseline 真实运动过程中启动 RTAB-Map RGB-D mode 和 RViz2，截取风机任务下的 RGB-D map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 wind motion-backed SLAM 可视化验证。
+- `capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`：在 AerialCore 风机场景和风机 waypoint baseline 真实运动过程中启动 RTAB-Map RGB-D mode 和 RViz2，截取风机任务下的 RGB-D map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 wind motion-backed SLAM 可视化验证。可通过 `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit.launch.py` 切换到多层 orbit baseline，并用 `MIN_WAYPOINT_ADVANCEMENTS` 设定最低 waypoint 推进数量。
 - `capture_rtabmap_depth_camera_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map scan-cloud mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RTAB-Map map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_motion_rviz_overlay.sh`：启动 depth camera + 电缆 waypoint baseline + RTAB-Map + RViz2，在真实运动中截取 RTAB-Map map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 SLAM 运动可视化验证，不属于电缆 Phase B active bridge。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。

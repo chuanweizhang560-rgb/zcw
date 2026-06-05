@@ -5701,3 +5701,45 @@
   - 继续基于 RTAB-Map RGB-D 主线推进观测几何和覆盖验收
   - 风机方向优先处理有效深度返回、yaw/camera 姿态和多层 orbit 观测质量
 - 阻塞项：无
+
+### 2026-06-05 14:16:19 CST
+
+- 节点：启动风机多层 orbit RTAB-Map RGB-D 运动截图证据
+- 执行动作：
+  - 修改 `scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`，支持通过 `OFFBOARD_LAUNCH_FILE` 切换风机 launch
+  - 增加 `MIN_WAYPOINT_ADVANCEMENTS` 和实际 waypoint advancement 记录
+  - 目标 launch：`single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+- 结果：
+  - 静态语法检查通过
+  - 尚未运行多层 orbit 截图
+- 下一步：
+  - 启动真实 PX4/Gazebo/RTAB-Map/RViz 多层 orbit 截图验证
+  - 比较该证据是否优于简单 waypoint 风机 smoke
+- 阻塞项：无
+
+### 2026-06-05 14:19:24 CST
+
+- 节点：风机多层 orbit RTAB-Map RGB-D motion RViz 证据完成
+- 执行动作：
+  - 运行 `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit.launch.py MIN_WAYPOINT_ADVANCEMENTS=8 MOTION_SETTLE_SEC=115 scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 启动 AerialCore 风机场景、PX4 官方 `iris_depth_camera`、RTAB-Map RGB-D mode、RViz2 和多层 orbit waypoint baseline
+  - 人工查看 RViz 截图
+  - 更新 `docs/13_slam_open_source_readiness.md` 与 `scripts/README.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+  - `launch=single_vehicle_wind_turbine_multilevel_orbit.launch.py`
+  - `min_waypoint_advancements=8`
+  - `waypoint_advancements=41`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `motion_ok=true`
+  - `screenshot_ok=1`
+  - summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141641/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141641.txt`
+  - 截图：`data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141641.png`
+- 结论：
+  - 多层 orbit 版本比简单 waypoint 的风机 SLAM 可视证据更充分，当前应作为风机侧默认视觉检查入口
+  - 仍有 RTAB-Map depth NaN 警告，说明风机表面有效深度返回和覆盖验收仍未完成
+- 下一步：
+  - 提交并推送多层 orbit 证据脚本改动和文档
+  - 后续优先做风机有效深度返回/视锥覆盖量化，而不是更换 SLAM 算法
+- 阻塞项：无
