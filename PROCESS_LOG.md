@@ -5999,3 +5999,52 @@
   - 后续风机方向可继续补 coverage/frustum 审计
   - 或切回电缆方向继续细化中心线追踪与 lookahead baseline
 - 阻塞项：无
+
+### 2026-06-05 15:53:02 CST
+
+- 节点：电缆 dry-run readiness 总审计刷新
+- 执行动作：
+  - 运行 `scripts/audit_dry_run_readiness.sh`
+  - 重新执行 `scripts/audit_px4_isolation.sh`
+  - 重新执行 `scripts/audit_phase_b_active_preflight_boundary.sh`
+  - 重新执行 `scripts/audit_cable_setpoint_thresholds.sh`
+  - 重新执行 `scripts/audit_active_bridge_review_template.sh`
+  - 更新 `docs/07_cable_active_threshold_review.md`
+  - 更新 `docs/09_dry_run_readiness_matrix.md`
+- 结果：
+  - `decision=accepted_dry_run_readiness`
+  - `phase_b_approved=false`
+  - `active_bridge_present=false`
+  - `publishes_fmu_in=false`
+  - `max_offset_step_m=10.000504`
+  - `max_target_jump_m=10.000504`
+  - `observed_gate_horizontal_jump_m=0.999247`
+  - `observed_gate_vertical_jump_m=0.004447`
+  - 总审计输出：`data/results/dry_run_readiness_20260605_155302/dry_run_readiness_20260605_155302.txt`
+- 结论：
+  - 电缆干跑链路和阈值链路仍保持在 Phase B 之外
+  - 当前阈值结论没有变化，active bridge 仍然禁止
+- 下一步：
+  - 如果继续电缆方向，下一节点应是更多只读几何审计或非 PX4 debug 可视化
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无
+
+### 2026-06-05 15:54:19 CST
+
+- 节点：电缆证据清单刷新完成
+- 执行动作：
+  - 运行 `scripts/audit_evidence_inventory.sh`
+  - 更新 `docs/09_dry_run_readiness_matrix.md`
+- 结果：
+  - `decision=accepted_evidence_inventory`
+  - `required_evidence_count=21`
+  - `present_count=21`
+  - `missing_count=0`
+  - `not_ignored_count=0`
+  - 证据清单输出：`data/results/evidence_inventory_20260605_155419/evidence_inventory_20260605_155419.txt`
+- 结论：
+  - 当前必需证据仍完整且保持忽略状态
+  - 这只是盘点，不改变 Phase B 边界
+- 下一步：
+  - 如继续电缆方向，可转向更细的几何审计或非 PX4 debug 可视化
+- 阻塞项：无

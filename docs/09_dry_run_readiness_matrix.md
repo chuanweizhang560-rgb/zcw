@@ -56,13 +56,13 @@ The audit is not allowed to:
 
 Latest evidence:
 
-- summary: `data/results/dry_run_readiness_20260604_140153/dry_run_readiness_20260604_140153.txt`
-- static checks: `data/results/dry_run_readiness_20260604_140153/static_repo_checks_20260604_140153.log`
-- PX4 isolation: `data/results/dry_run_readiness_20260604_140153/px4_isolation_20260604_140153.log`
-- Phase B preflight: `data/results/dry_run_readiness_20260604_140153/phase_b_preflight_20260604_140153.log`
-- thresholds: `data/results/dry_run_readiness_20260604_140153/thresholds_20260604_140153.log`
-- review template: `data/results/dry_run_readiness_20260604_140153/review_template_20260604_140153.log`
-- evidence inventory: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.txt`
+- summary: `data/results/dry_run_readiness_20260605_155302/dry_run_readiness_20260605_155302.txt`
+- static checks: `data/results/dry_run_readiness_20260605_155302/static_repo_checks_20260605_155302.log`
+- PX4 isolation: `data/results/dry_run_readiness_20260605_155302/px4_isolation_20260605_155302.log`
+- Phase B preflight: `data/results/dry_run_readiness_20260605_155302/phase_b_preflight_20260605_155302.log`
+- thresholds: `data/results/dry_run_readiness_20260605_155302/thresholds_20260605_155302.log`
+- review template: `data/results/dry_run_readiness_20260605_155302/review_template_20260605_155302.log`
+- evidence inventory: `data/results/evidence_inventory_20260605_155419/evidence_inventory_20260605_155419.txt`
 
 Latest result:
 
@@ -74,7 +74,7 @@ Latest result:
 - `evidence_present_count=21`
 - `evidence_missing_count=0`
 
-This latest run was executed after the wind turbine multilevel orbit baseline work. It confirms those wind-turbine Offboard/GUI verification nodes did not create a cable active bridge and did not approve cable Phase B execution.
+This latest run was executed after the wind turbine multilevel orbit baseline work and the wind orbit visibility audit. It confirms those wind-turbine Offboard/GUI verification nodes did not create a cable active bridge and did not approve cable Phase B execution.
 
 ## 5. Next Allowed Work
 

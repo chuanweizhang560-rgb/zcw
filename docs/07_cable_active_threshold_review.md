@@ -53,11 +53,11 @@ The active bridge must never use raw lookahead target spacing as direct PX4 setp
 
 Latest audit evidence:
 
-- summary: `data/results/cable_setpoint_thresholds_20260604_094125/cable_setpoint_thresholds_20260604_094125.txt`
-- offset path stats: `data/results/cable_setpoint_thresholds_20260604_094125/offset_path_stats_20260604_094125.txt`
-- lookahead target stats: `data/results/cable_setpoint_thresholds_20260604_094125/lookahead_target_stats_20260604_094125.txt`
-- gate state stats: `data/results/cable_setpoint_thresholds_20260604_094125/gate_state_stats_20260604_094125.txt`
-- approved NED stats: `data/results/cable_setpoint_thresholds_20260604_094125/approved_ned_stats_20260604_094125.txt`
+- summary: `data/results/cable_setpoint_thresholds_20260605_155302/cable_setpoint_thresholds_20260605_155302.txt`
+- offset path stats: `data/results/cable_setpoint_thresholds_20260605_155302/offset_path_stats_20260605_155302.txt`
+- lookahead target stats: `data/results/cable_setpoint_thresholds_20260605_155302/lookahead_target_stats_20260605_155302.txt`
+- gate state stats: `data/results/cable_setpoint_thresholds_20260605_155302/gate_state_stats_20260605_155302.txt`
+- approved NED stats: `data/results/cable_setpoint_thresholds_20260605_155302/approved_ned_stats_20260605_155302.txt`
 
 Latest result:
 
