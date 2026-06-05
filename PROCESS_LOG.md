@@ -6076,3 +6076,32 @@
   - 如果继续电缆方向，可以围绕这个离线几何链路做更细的可视化或新增只读审计
   - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-05 16:03:21 CST
+
+- 节点：电缆 Frenet 一致性审计完成
+- 执行动作：
+  - 新增 `scripts/audit_cable_frenet_consistency.sh`
+  - 运行 `scripts/audit_cable_frenet_consistency.sh`
+  - 更新 `scripts/README.md`
+  - 更新 `docs/10_evidence_inventory.md`
+- 结果：
+  - `decision=accepted_cable_frenet_consistency_audit`
+  - `group_count=5`
+  - `accepted_group_count=5`
+  - `expected_offset_y_m=-5.000000`
+  - `expected_offset_z_m=0.000000`
+  - `min_path_tangent_dot=0.999500`
+  - `min_target_tangent_dot=0.999500`
+  - 每组 `offset_y_error_m=0.000000`
+  - 每组 `offset_z_error_m=0.000000`
+  - 每组 `mean_path_tangent_dot` 约 `1.000000`
+  - 每组 `mean_target_tangent_dot` 约 `0.999999-1.000000`
+  - 输出：`data/results/cable_frenet_consistency_20260605_160321/cable_frenet_consistency_20260605_160321.txt`
+- 结论：
+  - 现有电缆 offset path 和 lookahead target 在 Frenet 方向上是一致的
+  - 这进一步证明现有主线仍是稳定的离线几何链路，不是 active bridge
+- 下一步：
+  - 若继续电缆方向，可继续做离线几何可视化、分组稳定性或不同 lookahead 参数审计
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无
