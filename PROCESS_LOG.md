@@ -5688,3 +5688,16 @@
   - 提交并推送本轮风机 SLAM 证据脚本和文档
   - 后续进入风机观测几何/覆盖验收或电缆中心线追踪细化时，继续保留规则 baseline 优先
 - 阻塞项：无
+
+### 2026-06-05 14:15:13 CST
+
+- 节点：风机场景 RTAB-Map RGB-D motion RViz 证据已推送远端
+- 执行动作：
+  - 提交 `da93f31 Add wind RTAB-Map RGB-D motion evidence`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含风机场景 RGB-D motion RViz 证据脚本与文档记录
+- 下一步：
+  - 继续基于 RTAB-Map RGB-D 主线推进观测几何和覆盖验收
+  - 风机方向优先处理有效深度返回、yaw/camera 姿态和多层 orbit 观测质量
+- 阻塞项：无
