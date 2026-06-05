@@ -5909,3 +5909,42 @@
   - 后续风机方向优先补 clearance/coverage 审计
   - 若切回电缆方向，继续细化中心线追踪和 lookahead baseline 的几何质量
 - 阻塞项：无
+
+### 2026-06-05 14:50:17 CST
+
+- 节点：启动风机 orbit 静态 clearance 审计
+- 执行动作：
+  - 新增 `scripts/audit_wind_orbit_clearance.sh`
+  - 该脚本只读解析 wind turbine mesh 与 orbit launch，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`
+  - 使用 Collada 三个坐标平面最大半径作为保守 mesh 包围半径，计算 orbit 半径余量
+- 结果：
+  - 脚本已创建
+  - 静态语法检查通过
+- 下一步：
+  - 先审计默认 20m multilevel orbit
+  - 再审计 15m close-orbit 候选
+- 阻塞项：无
+
+### 2026-06-05 14:51:42 CST
+
+- 节点：风机 orbit 静态 clearance 审计完成
+- 执行动作：
+  - 运行 `scripts/audit_wind_orbit_clearance.sh` 审计默认 20m multilevel orbit
+  - 运行 `LAUNCH_PATH=ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py scripts/audit_wind_orbit_clearance.sh` 审计 15m 候选
+  - 更新 `scripts/README.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - 20m：`decision=accepted_wind_orbit_clearance_static_audit`
+  - 20m `min_clearance_m=8.119593`
+  - 15m：`decision=accepted_wind_orbit_clearance_static_audit`
+  - 15m `min_clearance_m=3.119593`
+  - 保守 mesh 半径：`11.880407m`
+  - 阈值：`required_min_clearance_m=1.000000`
+- 结论：
+  - 15m 候选通过当前保守静态 clearance 审计
+  - 该结果不能替代动态碰撞检查或覆盖率验收
+- 下一步：
+  - 提交并推送 wind orbit clearance 审计脚本和文档
+  - 后续可在 15m 候选上继续补 coverage/frustum 审计
+- 阻塞项：无

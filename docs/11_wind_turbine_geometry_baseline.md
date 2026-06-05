@@ -275,5 +275,11 @@ Decision:
   - summary: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.txt`
   - screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_144439.png`
   - `waypoint_advancements=46`
+- It has accepted conservative static clearance evidence:
+  - 20m summary: `data/results/wind_orbit_clearance_20260605_145036/wind_orbit_clearance_20260605_145036.txt`
+  - 15m summary: `data/results/wind_orbit_clearance_20260605_145042/wind_orbit_clearance_20260605_145042.txt`
+  - conservative mesh radius: `11.880407m`
+  - 20m minimum clearance: `8.119593m`
+  - 15m minimum clearance: `3.119593m`
 - It is now the preferred wind-side observation-quality candidate.
-- It is not promoted as a final coverage baseline because it still needs a more explicit clearance or coverage audit.
+- It is not promoted as a final coverage baseline because static clearance is not the same as dynamic collision checking or surface coverage.

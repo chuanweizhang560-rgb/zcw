@@ -925,6 +925,21 @@ Decision:
 - Keep 15m as the preferred wind-side candidate for subsequent observation and coverage experiments.
 - Do not claim final wind turbine coverage until a clearance/coverage audit is added.
 
+Static clearance follow-up:
+
+- script: `scripts/audit_wind_orbit_clearance.sh`
+- 20m baseline summary: `data/results/wind_orbit_clearance_20260605_145036/wind_orbit_clearance_20260605_145036.txt`
+- 15m candidate summary: `data/results/wind_orbit_clearance_20260605_145042/wind_orbit_clearance_20260605_145042.txt`
+- conservative mesh radius: `11.880407m`
+- 20m minimum clearance: `8.119593m`
+- 15m minimum clearance: `3.119593m`
+- both pass the static `1.0m` clearance threshold.
+
+Interpretation:
+
+- The 15m candidate is not obviously invalid under the conservative static mesh-radius check.
+- This still does not prove dynamic collision safety or coverage completeness.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
