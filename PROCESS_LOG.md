@@ -5645,3 +5645,46 @@
   - 继续用这条 motion-backed RGB-D 主线作为后续单机验证默认参考
   - 下一阶段优先审视观测覆盖和轨迹几何是否还需要细化
 - 阻塞项：无
+
+### 2026-06-05 14:08:44 CST
+
+- 节点：启动风机场景 RTAB-Map RGB-D 运动截图证据补齐
+- 执行动作：
+  - 新增 `scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 复用 PX4 官方 `iris_depth_camera`、AerialCore `wind_turbine_autospawn.world`、RTAB-Map RGB-D mode 和现有风机 waypoint baseline
+- 结果：
+  - 脚本已创建，尚未运行
+- 下一步：
+  - 做静态检查与执行权限设置
+  - 启动真实 PX4/Gazebo/RTAB-Map/RViz 截图验证
+- 阻塞项：无
+
+### 2026-06-05 14:14:21 CST
+
+- 节点：风机场景 RTAB-Map RGB-D motion RViz 证据完成
+- 执行动作：
+  - 运行 `scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 启动 AerialCore `wind_turbine_autospawn.world`
+  - 使用 PX4 官方 `iris_depth_camera`
+  - 启动 `single_vehicle_wind_turbine_inspection.launch.py` 风机 waypoint baseline
+  - 启动 RTAB-Map RGB-D mode 与 RViz2 并截取真实截图
+  - 人工查看截图
+  - 更新 `docs/13_slam_open_source_readiness.md` 与 `scripts/README.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `motion_ok=true`
+  - `screenshot_ok=1`
+  - summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141134/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141134.txt`
+  - 截图：`data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260605_141134.png`
+  - Offboard 日志显示风机 waypoint baseline 从 waypoint 1 推进到 waypoint 5 并保持终点
+  - RViz 截图非空，可见 cloud map、octomap 和运动轨迹相关条带结构
+- 结论：
+  - RTAB-Map RGB-D 单机 SLAM smoke 主线现在同时有电缆运动和风机运动证据
+  - 本证据只证明风机场景的 SLAM 集成链路可运行，不证明风机表面几何覆盖完成
+  - RTAB-Map 日志有 depth NaN 警告，后续应优先优化风机轨迹视角、yaw/camera 姿态和有效深度返回
+- 下一步：
+  - 提交并推送本轮风机 SLAM 证据脚本和文档
+  - 后续进入风机观测几何/覆盖验收或电缆中心线追踪细化时，继续保留规则 baseline 优先
+- 阻塞项：无
