@@ -340,3 +340,92 @@ Next SLAM work:
 1. Add RViz evidence for RTAB-Map map/cloud topics if visual inspection is needed.
 2. Audit Gazebo LiDAR and IMU topic fields for an open-source LIO candidate.
 3. Prefer `spark-fast-lio` only if required LiDAR/IMU timing and frame assumptions can be satisfied without rewriting the estimator core.
+
+## 10. RTAB-Map RViz Overlay Review
+
+Static read-only RViz capture was attempted first with no active motion baseline.
+
+Observed result:
+
+- screenshot: `data/screenshots/rtabmap_depth_camera_rviz_overlay_20260605_090748.png`
+- issue: RViz showed `Fixed Frame [map] does not...`
+- decision: rejected as visual evidence
+
+Interpretation:
+
+- Topic and node startup were valid.
+- The screenshot was not valid evidence because the fixed frame was unresolved and the view was effectively empty.
+
+Corrective action:
+
+- RViz fixed frame changed from `map` to `world`.
+- Added a read-only static TF `world -> map`.
+
+Second static capture after the fix:
+
+- screenshot: `data/screenshots/rtabmap_depth_camera_rviz_overlay_20260605_090935.png`
+- review result: TF issue removed, but the view still contained only sparse TF-scale content and no useful map/cloud structure.
+
+Interpretation:
+
+- Static depth-camera RTAB-Map startup is not enough to produce a useful visual map review in this scenario.
+- The missing ingredient is motion, not another custom mapping algorithm.
+
+## 11. RTAB-Map Motion RViz Overlay
+
+Command:
+
+```bash
+scripts/capture_rtabmap_depth_camera_motion_rviz_overlay.sh
+```
+
+This capture reuses the existing open-source PX4 cable waypoint baseline to create motion while RTAB-Map runs in scan-cloud mode.
+
+Important boundary:
+
+- starts PX4/Gazebo/ROS/RViz.
+- starts Offboard and arms through the existing waypoint baseline.
+- does not start the cable Phase B active bridge.
+- does not use RTAB-Map output for control.
+- still uses Gazebo pose only as debug odometry for plumbing.
+- does not claim SLAM accuracy or final mapping quality.
+
+Latest evidence:
+
+- summary: `data/results/rtabmap_depth_camera_motion_rviz_overlay_20260605_091350/rtabmap_depth_camera_motion_rviz_overlay_20260605_091350.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_motion_rviz_overlay_20260605_091350.png`
+- vehicle status: `data/logs/rtabmap_depth_camera_motion_vehicle_status_20260605_091350.log`
+- Offboard log: `data/logs/rtabmap_depth_camera_motion_offboard_20260605_091350.log`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_motion_rtabmap_20260605_091350.log`
+
+Observed result:
+
+```text
+decision=accepted_rtabmap_depth_camera_motion_rviz_overlay
+starts_rviz=true
+starts_offboard=true
+arms=true
+publishes_fmu_in=true
+rtabmap_ok=true
+outputs_ok=true
+motion_ok=true
+screenshot_ok=1
+```
+
+Observed motion evidence:
+
+- `arming_state: 2`
+- `nav_state: 14`
+- waypoint log advanced through waypoints 1 to 5 and then held the final waypoint
+
+Screenshot review:
+
+- The RViz frame is no longer blank.
+- A sparse line-like structure is visible in the main view, aligned with the cable corridor.
+- This is acceptable as a motion-backed visual smoke, but it is still sparse and not a dense final map product.
+
+Interpretation:
+
+- RTAB-Map plus real Gazebo depth-camera input plus a mature waypoint baseline can produce non-empty mapping evidence in motion.
+- This is the first acceptable visual proof that the open-source mapping chain is alive in a moving inspection scenario.
+- It is still not a final SLAM completion milestone because odometry is debug pose, the rendered structure is sparse and no quantitative map or trajectory accuracy metric has been run.

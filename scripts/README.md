@@ -54,6 +54,8 @@
 - `audit_rtabmap_installation.sh`：只读检查 `ros-humble-rtabmap-ros` 及 `rtabmap_slam`、`rtabmap_odom`、`rtabmap_util` 关键可执行节点是否可见；不启动 ROS/PX4/Gazebo/RViz。
 - `verify_rtabmap_node_smoke.sh`：启动 `rtabmap_slam/rtabmap` ROS 2 节点的无传感器 read-only smoke，验证节点可启动并出现在 ROS 图中；不启动 PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_rtabmap_depth_camera_smoke.sh`：启动 Gazebo depth camera、只读 odom child-frame bridge 和 RTAB-Map scan-cloud mode，验证 `/camera/points`、桥接 odom 和 RTAB-Map 输出 topic；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
+- `capture_rtabmap_depth_camera_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map scan-cloud mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RTAB-Map map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
+- `capture_rtabmap_depth_camera_motion_rviz_overlay.sh`：启动 depth camera + 电缆 waypoint baseline + RTAB-Map + RViz2，在真实运动中截取 RTAB-Map map/cloud/octomap 证据；该脚本会进入 Offboard/arm，用于 SLAM 运动可视化验证，不属于电缆 Phase B active bridge。
 - `capture_pcd_ransac_viewer.sh`：用 PCL Viewer 打开 filtered/inlier PCD，并截取真实点云可视化截图；可通过 `FILTERED_PCD` 和 `INLIERS_PCD` 指定文件。
 - `capture_px4_gazebo_classic_gui.sh`：启动 PX4 SITL + Gazebo Classic GUI，在可用 `DISPLAY` 上截取真实 Gazebo 截图，并清理仿真进程。
 - `capture_px4_aerialcore_world_gui.sh`：启动 PX4 `iris` + AerialCore 风机或两塔导线 GUI 场景，并截取真实 Gazebo 截图。

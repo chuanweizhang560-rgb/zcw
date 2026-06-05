@@ -5213,3 +5213,93 @@
 - 下一步：
   - 继续 SLAM 下一阶段：RViz 真实截图或 LiDAR/IMU 候选审计
 - 阻塞项：无
+
+### 2026-06-05 09:05:21 CST
+
+- 节点：RTAB-Map RViz 真实证据入口开始
+- 执行动作：
+  - 审查现有 RViz 截图脚本模式
+  - 确认仓库中尚无 RTAB-Map 专用 RViz capture 入口
+  - 新增 RTAB-Map depth camera RViz 配置
+  - 新增 RTAB-Map depth camera RViz 截图脚本
+  - 更新脚本说明和包说明
+- 边界：
+  - 该节点只做真实 RViz 可视化证据
+  - 复用已通过的 depth camera + RTAB-Map read-only plumbing
+  - 不启动 Offboard
+  - 不 arm
+  - 不发布 `/fmu/in/*`
+  - 不将 Gazebo pose 声称为 SLAM 结果
+- 下一步：
+  - 运行脚本语法检查
+  - 运行真实 RViz overlay capture
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 阻塞项：无
+
+### 2026-06-05 09:08:58 CST
+
+- 节点：RTAB-Map RViz 首次截图失败定位
+- 执行动作：
+  - 运行 `scripts/capture_rtabmap_depth_camera_rviz_overlay.sh`
+  - 读取 summary、topic list、RViz log
+  - 人工检查真实截图
+- 结果：
+  - 脚本级 summary 为 accepted，但人工审核截图不通过
+  - 截图文件存在：`data/screenshots/rtabmap_depth_camera_rviz_overlay_20260605_090748.png`
+  - RViz 窗口不是空白进程问题，而是 fixed frame 报错：`Fixed Frame [map] does not...`
+  - 当前脚本的 topic 证据有效，但视觉证据无效，不能作为最终 RTAB-Map RViz 结果
+- 修正：
+  - 将 RViz fixed frame 从 `map` 改为 `world`
+  - 在截图脚本中补充只读 `world -> map` static TF
+- 下一步：
+  - 重跑 RTAB-Map RViz overlay capture
+  - 再次人工审核截图
+- 阻塞项：无
+
+### 2026-06-05 09:10:41 CST
+
+- 节点：RTAB-Map 运动型 RViz 证据入口开始
+- 原因：
+  - 静态 depth camera + RTAB-Map read-only 链路虽然可启动，但真实截图仅表现出 TF，缺乏有审查价值的 map/cloud 内容
+  - RTAB-Map 需要真实视差和位姿变化，静止状态下的 RViz 证据不足
+- 执行动作：
+  - 复核 `single_vehicle_cable_inspection.launch.py`
+  - 新增 `scripts/capture_rtabmap_depth_camera_motion_rviz_overlay.sh`
+  - 更新 `scripts/README.md`
+- 边界：
+  - 复用已有成熟 waypoint baseline，不自研控制器
+  - 该节点会启动 Offboard/arm，但只用于运动下的 RTAB-Map 可视化验证
+  - 不启动 cable Phase B active bridge
+  - 不把 Gazebo pose 声称为真实 SLAM 结果
+- 下一步：
+  - 运行脚本语法检查
+  - 运行 motion-backed RTAB-Map RViz capture
+  - 人工审核截图是否出现有效 map/cloud
+- 阻塞项：无
+
+### 2026-06-05 09:15:57 CST
+
+- 节点：RTAB-Map 运动型 RViz 截图完成并人工审核
+- 执行动作：
+  - 运行 `scripts/capture_rtabmap_depth_camera_motion_rviz_overlay.sh`
+  - 读取 summary、vehicle status、waypoint advancement 日志
+  - 人工审核真实截图 `data/screenshots/rtabmap_depth_camera_motion_rviz_overlay_20260605_091350.png`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - `decision=accepted_rtabmap_depth_camera_motion_rviz_overlay`
+  - `starts_offboard=true`
+  - `arms=true`
+  - `motion_ok=true`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - PX4 状态样本包含 `arming_state: 2`、`nav_state: 14`
+  - waypoint baseline 已推进到 waypoint 5 并保持最终点
+  - 截图不再空白，主视图出现稀疏线状结构，方向与电缆走廊一致
+- 结论：
+  - 这是第一份在真实运动下可接受的 RTAB-Map 视觉 smoke 证据
+  - 证据仍然偏稀疏，不能夸大为高质量稠密地图或完整 SLAM 完成
+- 下一步：
+  - 运行静态检查
+  - 提交并推送 RTAB-Map RViz 两条脚本、RViz 配置、文档和进程记录
+  - 然后转入 LiDAR/IMU 字段审计，为 LIO 候选做准备
+- 阻塞项：无
