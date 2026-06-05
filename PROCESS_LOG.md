@@ -5632,3 +5632,16 @@
   - 以这条 motion-backed RGB-D 主线作为后续轨迹-观测覆盖耦合验证的默认参考
   - 优先复核观测覆盖与轨迹设计，而不是再回退到不兼容的传感器候选
 - 阻塞项：无
+
+### 2026-06-05 10:29:58 CST
+
+- 节点：motion-backed RTAB-Map RGB-D 证据已推送远端
+- 执行动作：
+  - 提交 `47ba1a1 Add motion-backed RTAB-Map RGB-D evidence`
+  - 推送到 `origin/codex/initial-workflow`
+- 结果：
+  - 远端分支已包含 RGB-D 运动 smoke 与 motion RViz 证据链
+- 下一步：
+  - 继续用这条 motion-backed RGB-D 主线作为后续单机验证默认参考
+  - 下一阶段优先审视观测覆盖和轨迹几何是否还需要细化
+- 阻塞项：无
