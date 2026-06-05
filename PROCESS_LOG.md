@@ -6105,3 +6105,27 @@
   - 若继续电缆方向，可继续做离线几何可视化、分组稳定性或不同 lookahead 参数审计
   - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-05 16:11:00 CST
+
+- 节点：电缆 lookahead 距离 sweep 完成
+- 执行动作：
+  - 新增 `scripts/audit_lookahead_distance_sweep.sh`
+  - 运行 `scripts/audit_lookahead_distance_sweep.sh`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+  - 更新 `scripts/README.md`
+  - 更新 `docs/10_evidence_inventory.md`
+- 结果：
+  - `decision=accepted_lookahead_distance_sweep`
+  - `LOOKAHEAD_M=15.0`：`accepted_groups=5`，`targets=60`，`mean_distance=19.16706`
+  - `LOOKAHEAD_M=20.0`：`accepted_groups=5`，`targets=60`，`mean_distance=19.16706`
+  - `LOOKAHEAD_M=25.0`：`accepted_groups=5`，`targets=60`，`mean_distance=27.50058`
+  - 15m 与 20m 在当前 10m 采样路径下几乎落在同一离散目标档位
+  - 输出：`data/results/lookahead_distance_sweep_20260605_161100/lookahead_distance_sweep_20260605_161100.txt`
+- 结论：
+  - 当前 lookahead 分辨率受 offset path 采样密度限制
+  - 若需要 lookahead 参数产生更细差异，需要更密路径采样或更高分辨率中心线更新
+- 下一步：
+  - 可继续做更密采样的离线几何对比，或转向非 PX4 debug 可视化
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无

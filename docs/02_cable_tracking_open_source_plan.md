@@ -187,6 +187,15 @@
    - groups CSV：`data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_groups_20260603_165501.csv`
    - 结果：`groups=5`，`accepted_groups=5`，`targets=55`，`decision=accepted_lookahead_target_smoke`
    - 审核结论：每个导线高度组都能从 offset path 生成连续、索引单调的前视目标点；该结果仍不接 PX4，不发布 ROS topic。
+21.1. lookahead 距离离线 sweep：
+   - 工具：`audit_lookahead_distance_sweep`
+   - 验证：`scripts/audit_lookahead_distance_sweep.sh`
+   - 输入：`data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_offset_path_20260603_125948.csv`
+   - sweep 值：`LOOKAHEAD_M=15.0`、`20.0`、`25.0`
+   - summary：`data/results/lookahead_distance_sweep_20260605_161100/lookahead_distance_sweep_20260605_161100.txt`
+   - sweep CSV：`data/results/lookahead_distance_sweep_20260605_161100/lookahead_distance_sweep_20260605_161100.csv`
+   - 结果：`15m` 和 `20m` 的组级 mean distance 都约 `19.1671m`，`25m` 的组级 mean distance 约 `27.5006m`
+   - 审核结论：当前 10m 采样的 offset path 会让 `15m` 与 `20m` lookahead 落到几乎相同的离散目标档位；若希望 lookahead 参数产生更细分的几何差异，需要更密的路径采样或更高分辨率的中心线更新。
 22. 只读 ROS topic 发布烟测：
    - 工具：`lookahead_path_publisher`
    - 验证：`scripts/verify_lookahead_topic_publish.sh`
