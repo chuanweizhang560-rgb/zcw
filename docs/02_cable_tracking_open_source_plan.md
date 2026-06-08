@@ -273,6 +273,67 @@
      - dry-run：`publishes_px4=false`
      - forbidden `/fmu/in/*` log size：`0`
    - 审核结论：5m strict 20m 候选已通过只读 safety monitor 和 dry-run candidate setpoint 复核；该节点不启动 Gazebo/PX4，不发布 `/fmu/in/*`。
+21.6. 5m strict 20m PX4 Phase A bridge dry-run isolation 复核：
+   - 工具：`verify_px4_bridge_dry_run_isolation.sh`
+   - 输入 offset path：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+   - 输入 targets：`data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+   - group：`y8_z20`
+   - 日志：
+     - publisher：`data/logs/px4_bridge_dry_run_publisher_20260608_091305.log`
+     - safety：`data/logs/px4_bridge_dry_run_safety_20260608_091305.log`
+     - dry-run candidate：`data/logs/px4_bridge_dry_run_candidate_20260608_091305.log`
+     - bridge：`data/logs/px4_bridge_dry_run_node_20260608_091305.log`
+     - state echo：`data/logs/px4_bridge_dry_run_state_echo_20260608_091305.log`
+     - NED echo：`data/logs/px4_bridge_dry_run_ned_echo_20260608_091305.log`
+     - forbidden topic log：`data/logs/px4_bridge_dry_run_forbidden_topics_20260608_091305.log`
+   - 结果：
+     - bridge state：`DRY_RUN_READY`
+     - phase：`PHASE_A_DRY_RUN`
+     - `publishes_fmu_in=false`
+     - transform 标记：`map_to_ned=debug_x_y_neg_z`
+     - horizontal jump：`0.999889m`
+     - vertical jump：`0.00574049m`
+     - NED dry-run frame：`px4_local_ned_dry_run`
+     - forbidden `/fmu/in/*` log size：`0`
+   - 审核结论：5m strict 20m 候选通过 Phase A bridge dry-run isolation；该节点不启动 Gazebo/PX4，不发布 `/fmu/in/*`。
+21.7. 5m strict 20m cable offboard gate dry-run 复核：
+   - 工具：`verify_cable_offboard_gate_dry_run.sh`
+   - 输入 offset path：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+   - 输入 targets：`data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+   - group：`y8_z20`
+   - 运行边界：
+     - 启动 PX4/Gazebo headless + Micro XRCE-DDS Agent
+     - `phase_b_user_approved=false`
+     - gate 只发布 dry-run debug topic
+     - 不 arm，不切 Offboard，不发布 `/fmu/in/*`
+   - summary：`data/results/cable_offboard_gate_dry_run_20260608_101325/cable_offboard_gate_dry_run_20260608_101325.txt`
+   - 日志：
+     - PX4/Gazebo：`data/logs/cable_offboard_gate_px4_20260608_101325.log`
+     - bridge：`data/logs/cable_offboard_gate_bridge_20260608_101325.log`
+     - gate：`data/logs/cable_offboard_gate_node_20260608_101325.log`
+     - gate state echo：`data/logs/cable_offboard_gate_state_echo_20260608_101325.log`
+     - phase allowed echo：`data/logs/cable_offboard_gate_allowed_echo_20260608_101325.log`
+     - approved NED echo：`data/logs/cable_offboard_gate_approved_ned_echo_20260608_101325.log`
+     - forbidden topic log：`data/logs/cable_offboard_gate_forbidden_topics_20260608_101325.log`
+     - forbidden publisher log：`data/logs/cable_offboard_gate_forbidden_publishers_20260608_101325.log`
+   - 结果：
+     - summary：`decision=accepted_cable_offboard_gate_dry_run_smoke`
+     - gate state：`PHASE_B_READY_DRY_RUN`
+     - reason：`user_not_approved_dry_run_only`
+     - `phase_b_allowed=false`
+     - `publishes_fmu_in=false`
+     - `user_approved=false`
+     - `bridge_ready=true`
+     - `candidate_ready=true`
+     - `px4_ready=true`
+     - `gazebo_ready=true`
+     - `abort_latched=false`
+     - horizontal jump：`1.00001m`
+     - vertical jump：`0.00561302m`
+     - approved NED dry-run frame：`px4_local_ned_dry_run`
+     - `/fmu/in/*` topics 出现是 PX4 uXRCE-DDS 订阅端，forbidden publisher log 中 publisher count 均为 `0`
+     - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+   - 审核结论：5m strict 20m 候选在真实 PX4/Gazebo headless 环境下通过 offboard gate dry-run；当前仍没有发布 PX4 输入 setpoint，没有进入主动飞行闭环。
 22. 只读 ROS topic 发布烟测：
    - 工具：`lookahead_path_publisher`
    - 验证：`scripts/verify_lookahead_topic_publish.sh`

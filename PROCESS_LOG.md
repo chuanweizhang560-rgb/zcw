@@ -6244,3 +6244,65 @@
   - 可继续用该候选做 dry-run RViz overlay 或 Phase A bridge dry-run 复核
   - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-08 09:13:05 CST
+
+- 节点：电缆 5m strict 20m PX4 Phase A bridge dry-run isolation 复核完成
+- 执行动作：
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 scripts/verify_px4_bridge_dry_run_isolation.sh`
+  - 读取 bridge state echo、NED dry-run echo、forbidden topic log
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - bridge state：`DRY_RUN_READY`
+  - phase：`PHASE_A_DRY_RUN`
+  - `publishes_fmu_in=false`
+  - transform 标记：`map_to_ned=debug_x_y_neg_z`
+  - horizontal jump：`0.999889m`
+  - vertical jump：`0.00574049m`
+  - NED dry-run frame：`px4_local_ned_dry_run`
+  - forbidden `/fmu/in/*` log size：`0`
+  - state echo：`data/logs/px4_bridge_dry_run_state_echo_20260608_091305.log`
+  - NED echo：`data/logs/px4_bridge_dry_run_ned_echo_20260608_091305.log`
+- 结论：
+  - 5m strict 20m 候选通过 Phase A bridge dry-run isolation
+  - 该节点未启动 Gazebo/PX4，未发布 `/fmu/in/*`
+- 下一步：
+  - 可继续在 PX4/Gazebo headless 环境下运行 offboard gate dry-run
+  - 仍不得创建 cable active bridge 或发布 PX4 输入 setpoint
+- 阻塞项：无
+
+### 2026-06-08 10:14:55 CST
+
+- 节点：电缆 5m strict 20m cable offboard gate dry-run 复核完成
+- 执行动作：
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 scripts/verify_cable_offboard_gate_dry_run.sh`
+  - 启动 PX4/Gazebo headless + Micro XRCE-DDS Agent
+  - 固定 `phase_b_user_approved=false`
+  - 读取 summary、gate state、phase allowed、approved NED、forbidden publisher log
+  - 检查仿真相关进程清理状态
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - summary：`data/results/cable_offboard_gate_dry_run_20260608_101325/cable_offboard_gate_dry_run_20260608_101325.txt`
+  - `decision=accepted_cable_offboard_gate_dry_run_smoke`
+  - gate state：`PHASE_B_READY_DRY_RUN`
+  - reason：`user_not_approved_dry_run_only`
+  - `phase_b_allowed=false`
+  - `publishes_fmu_in=false`
+  - `user_approved=false`
+  - `bridge_ready=true`
+  - `candidate_ready=true`
+  - `px4_ready=true`
+  - `gazebo_ready=true`
+  - `abort_latched=false`
+  - horizontal jump：`1.00001m`
+  - vertical jump：`0.00561302m`
+  - approved NED dry-run frame：`px4_local_ned_dry_run`
+  - `/fmu/in/*` topics 由 PX4 uXRCE-DDS 暴露为订阅端，forbidden publisher log 中 publisher count 均为 `0`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+- 结论：
+  - 5m strict 20m 候选在真实 PX4/Gazebo headless 环境下通过 offboard gate dry-run
+  - 当前仍没有发布 PX4 输入 setpoint，没有进入主动飞行闭环
+- 下一步：
+  - 可继续补充 offboard gate RViz/debug overlay 截图，或进入 Phase B active preflight boundary 的复核文档
+  - 未获显式批准前仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无
