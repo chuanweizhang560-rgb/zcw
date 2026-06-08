@@ -196,6 +196,38 @@
    - sweep CSV：`data/results/lookahead_distance_sweep_20260605_161100/lookahead_distance_sweep_20260605_161100.csv`
    - 结果：`15m` 和 `20m` 的组级 mean distance 都约 `19.1671m`，`25m` 的组级 mean distance 约 `27.5006m`
    - 审核结论：当前 10m 采样的 offset path 会让 `15m` 与 `20m` lookahead 落到几乎相同的离散目标档位；若希望 lookahead 参数产生更细分的几何差异，需要更密的路径采样或更高分辨率的中心线更新。
+21.2. 5m offset path 采样与 lookahead sweep 复核：
+   - 工具：`audit_catenary_fit.sh` + `audit_offset_path.sh` + `audit_lookahead_distance_sweep.sh`
+   - 采样参数：`PATH_STEP_M=5.0`，`Z_BIN_SIZE=2.0`，`OFFSET_Y_M=-5.0`，`OFFSET_Z_M=0.0`
+   - 5m offset path summary：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_20260608_085655.txt`
+   - 5m offset path CSV：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+   - 5m offset path audit：`data/results/offset_path_audit_step5_20260608_085655/depth_camera_motion_offset_path_step5_audit_20260608_085708.txt`
+   - 5m lookahead sweep：`data/results/lookahead_distance_sweep_20260608_085707/lookahead_distance_sweep_20260608_085707.txt`
+   - 结果：
+     - `decision=accepted_offset_path_smoke`
+     - `points=125`
+     - `accepted_groups=5`
+     - `LOOKAHEAD_M=10.0`：`targets=120`，`mean_distance=9.791864`
+     - `LOOKAHEAD_M=15.0`：`targets=120`，`mean_distance=14.375300`
+     - `LOOKAHEAD_M=20.0`：`targets=120`，`mean_distance=18.750380`
+     - `LOOKAHEAD_M=25.0`：`targets=120`，`mean_distance=22.917160`
+   - 审核结论：5m 采样能让 lookahead 参数形成更细的离散档位，比 10m 采样更适合作为后续 pure-pursuit / dry-run setpoint 的几何输入候选；该结果仍是离线几何审计，不接 PX4。
+21.3. 5m offset path + 严格 20m lookahead 几何复核：
+   - 工具：`audit_lookahead_target.sh` + `audit_cable_path_geometry.sh` + `audit_cable_frenet_consistency.sh`
+   - 目标：过滤末端短前视点，只保留 `18.0-20.5m` 的有效 20m lookahead 目标
+   - strict target summary：`data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_20260608_085945.txt`
+   - path geometry summary：`data/results/cable_path_geometry_20260608_085959/cable_path_geometry_20260608_085959.txt`
+   - Frenet summary：`data/results/cable_frenet_consistency_20260608_085959/cable_frenet_consistency_20260608_085959.txt`
+   - 结果：
+     - strict target：`accepted_groups=5`，`targets=105`
+     - path geometry：`decision=accepted_cable_path_geometry_audit`
+     - Frenet consistency：`decision=accepted_cable_frenet_consistency_audit`
+     - 每组 `path_points=25`
+     - 每组 `target_points=21`
+     - 每组 `mean_target_distance_m` 约 `20.0003-20.0004`
+     - 每组 `mean_path_tangent_dot` 约 `1.000000`
+     - 每组 `mean_target_tangent_dot` 约 `0.999999-1.000000`
+   - 审核结论：5m offset path + 严格 20m lookahead 是当前更合理的电缆离线几何候选；它解决了 10m 采样下 lookahead 分辨率不足的问题，同时避开末端短目标点对几何审计的干扰。
 22. 只读 ROS topic 发布烟测：
    - 工具：`lookahead_path_publisher`
    - 验证：`scripts/verify_lookahead_topic_publish.sh`

@@ -6129,3 +6129,63 @@
   - 可继续做更密采样的离线几何对比，或转向非 PX4 debug 可视化
   - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-08 08:57:10 CST
+
+- 节点：电缆 5m offset path 采样与 lookahead sweep 复核完成
+- 执行动作：
+  - 运行 `PATH_STEP_M=5.0 Z_BIN_SIZE=2.0 OUTPUT_DIR=data/results/catenary_offset_yz_zbin2_step5_20260608_000000 OUTPUT_PREFIX=depth_camera_motion_catenary_offset_yz_zbin2_step5 scripts/audit_catenary_fit.sh`
+  - 运行 `INPUT_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv EXPECTED_STEP_M=5.0 MAX_STEP_ERROR_M=0.6 OUTPUT_DIR=data/results/offset_path_audit_step5_20260608_085655 OUTPUT_PREFIX=depth_camera_motion_offset_path_step5_audit scripts/audit_offset_path.sh`
+  - 运行 `INPUT_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv LOOKAHEAD_VALUES='10.0 15.0 20.0 25.0' MIN_TARGET_DISTANCE_M=5.0 MAX_TARGET_DISTANCE_M=35.0 scripts/audit_lookahead_distance_sweep.sh`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - 5m catenary/offset path：`Accepted fits: 5`
+  - 5m offset path audit：`decision=accepted_offset_path_smoke`
+  - 5m offset path points：`points=125`
+  - 5m offset path groups：`accepted_groups=5`
+  - lookahead sweep：`decision=accepted_lookahead_distance_sweep`
+  - `LOOKAHEAD_M=10.0`：`targets=120`，`mean_distance=9.791864`
+  - `LOOKAHEAD_M=15.0`：`targets=120`，`mean_distance=14.375300`
+  - `LOOKAHEAD_M=20.0`：`targets=120`，`mean_distance=18.750380`
+  - `LOOKAHEAD_M=25.0`：`targets=120`，`mean_distance=22.917160`
+  - 主要输出：`data/results/lookahead_distance_sweep_20260608_085707/lookahead_distance_sweep_20260608_085707.txt`
+- 结论：
+  - 5m 路径采样显著改善 lookahead 参数分辨率
+  - 后续电缆几何候选应优先以 5m 采样进入 pure-pursuit / dry-run setpoint 测试
+  - 该节点仍是离线几何复核，不启动 PX4/Gazebo/RViz，不发布 `/fmu/in/*`
+- 下一步：
+  - 可用 5m offset path 重新跑 path geometry、Frenet consistency、lookahead topic publish 或 RViz debug overlay
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无
+
+### 2026-06-08 09:00:00 CST
+
+- 节点：电缆 5m offset path + 严格 20m lookahead 几何复核完成
+- 执行动作：
+  - 运行 `INPUT_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv LOOKAHEAD_M=20.0 MIN_TARGET_DISTANCE_M=18.0 MAX_TARGET_DISTANCE_M=20.5 OUTPUT_DIR=data/results/lookahead_target_step5_20m_strict_20260608_090000 OUTPUT_PREFIX=depth_camera_motion_lookahead_step5_20m_strict scripts/audit_lookahead_target.sh`
+  - 运行 `audit_cable_path_geometry.sh` 复核 5m offset path 与 strict 20m target
+  - 运行 `audit_cable_frenet_consistency.sh` 复核 5m offset path 与 strict 20m target
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - strict target：`decision=accepted_lookahead_target_smoke`
+  - strict target：`accepted_groups=5`
+  - strict target：`targets=105`
+  - path geometry：`decision=accepted_cable_path_geometry_audit`
+  - Frenet consistency：`decision=accepted_cable_frenet_consistency_audit`
+  - 每组 `path_points=25`
+  - 每组 `target_points=21`
+  - 每组 `mean_target_distance_m` 约 `20.0003-20.0004`
+  - 每组 `mean_path_tangent_dot` 约 `1.000000`
+  - 每组 `mean_target_tangent_dot` 约 `0.999999-1.000000`
+  - 输出：
+    - `data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_20260608_085945.txt`
+    - `data/results/cable_path_geometry_20260608_085959/cable_path_geometry_20260608_085959.txt`
+    - `data/results/cable_frenet_consistency_20260608_085959/cable_frenet_consistency_20260608_085959.txt`
+- 结论：
+  - 5m offset path + 严格 20m lookahead 是当前更合理的电缆离线几何候选
+  - 它解决了 10m 采样下 lookahead 分辨率不足的问题，并过滤了末端短目标点
+  - 该节点仍是离线几何复核，不启动 PX4/Gazebo/RViz，不发布 `/fmu/in/*`
+- 下一步：
+  - 可用 strict 20m target 进入只读 ROS topic publish / RViz debug overlay 复核
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无
