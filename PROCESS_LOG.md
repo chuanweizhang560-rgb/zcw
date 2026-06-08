@@ -6534,3 +6534,43 @@
 - 下一步：
   - 可继续补 wind 15m motion/RViz 最新截图，或设计规则 baseline 的 frustum coverage 审计
 - 阻塞项：无
+
+### 2026-06-08 11:01:25 CST
+
+- 节点：风机 15m orbit RTAB-Map RGB-D motion-backed RViz 补充复核完成
+- 执行动作：
+  - 运行 `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py MIN_WAYPOINT_ADVANCEMENTS=8 MOTION_SETTLE_SEC=115 scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 读取 wind RTAB-Map RGB-D RViz summary
+  - 打开真实 RViz 截图进行人工视觉审核
+  - 检查仿真相关进程清理状态
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840.txt`
+  - screenshot：`data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840.png`
+  - RTAB-Map log：`data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260608_105840.log`
+  - waypoint motion log：`data/logs/rtabmap_depth_camera_rgbd_wind_rviz_offboard_20260608_105840.log`
+  - vehicle status log：`data/logs/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_status_20260608_105840.log`
+  - local position log：`data/logs/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_local_position_20260608_105840.log`
+  - topics log：`data/logs/rtabmap_depth_camera_rgbd_wind_rviz_topics_20260608_105840.log`
+  - `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+  - `launch=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+  - `waypoint_advancements=46`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `motion_ok=true`
+  - `screenshot_ok=1`
+  - `starts_offboard=true`
+  - `arms=true`
+  - `publishes_fmu_in=true`
+  - RViz Global Status 为 OK
+  - `Cloud Map` 与 `Octomap Occupied Space` displays 为 OK
+  - 截图非空，显示 localized cloud/octomap 结构
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+- 结论：
+  - 风机 15m orbit 仍是当前更强的风机侧观察质量候选
+  - 该节点使用风机规则 baseline 的 Offboard/arm，不是 RL，不是 cable Phase B active bridge
+  - 这仍不是最终风机覆盖验收
+- 下一步：
+  - 可继续设计/实现规则 baseline 的 frustum coverage 离线审计，或整理当前阶段总结
+- 阻塞项：无

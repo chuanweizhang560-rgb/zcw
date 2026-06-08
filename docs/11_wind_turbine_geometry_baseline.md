@@ -297,6 +297,21 @@ Supplemental static re-check on 2026-06-08:
 
 The 2026-06-08 re-check confirms the earlier conclusion: 15m remains the preferred observation-quality candidate, but it is still not final dynamic collision safety or inspection coverage evidence.
 
+Supplemental 15m RTAB-Map RGB-D motion evidence on 2026-06-08:
+
+- command: `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py MIN_WAYPOINT_ADVANCEMENTS=8 MOTION_SETTLE_SEC=115 scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+- summary: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260608_105840.log`
+- waypoint motion log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_offboard_20260608_105840.log`
+- `waypoint_advancements=46`
+- `rtabmap_ok=true`
+- `outputs_ok=true`
+- `motion_ok=true`
+- `screenshot_ok=1`
+
+Manual screenshot review: RViz Global Status is OK; `Cloud Map` and `Octomap Occupied Space` displays are OK; the screenshot is non-empty and shows localized cloud/octomap structure. This supports 15m as the preferred observation candidate, but still does not prove turbine surface coverage completion.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:

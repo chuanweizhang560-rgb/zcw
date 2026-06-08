@@ -975,6 +975,27 @@ Decision:
 - Keep 15m as the preferred wind-side candidate for subsequent observation and coverage experiments.
 - Do not claim final wind turbine coverage until dynamic collision checking and view/frustum coverage auditing are added.
 
+Supplemental 15m motion-backed RGB-D RViz re-check on 2026-06-08:
+
+- command: `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py MIN_WAYPOINT_ADVANCEMENTS=8 MOTION_SETTLE_SEC=115 scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+- summary: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260608_105840.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260608_105840.log`
+- waypoint motion log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_offboard_20260608_105840.log`
+- vehicle status log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_status_20260608_105840.log`
+- local position log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_local_position_20260608_105840.log`
+- topics log: `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_topics_20260608_105840.log`
+- result: `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+- `launch=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+- `waypoint_advancements=46`
+- `rtabmap_ok=true`
+- `outputs_ok=true`
+- `motion_ok=true`
+- `screenshot_ok=1`
+- boundary: this uses the wind rule baseline, so it starts Offboard, arms, and publishes PX4 input topics for that baseline. It does not use RL or a cable active bridge.
+
+Manual screenshot review: RViz Global Status is OK; `Cloud Map` and `Octomap Occupied Space` displays are OK; the screenshot is non-empty and shows localized cloud/octomap structure. It remains wind-task SLAM plumbing evidence, not a final turbine coverage certificate.
+
 Static clearance follow-up:
 
 - script: `scripts/audit_wind_orbit_clearance.sh`
