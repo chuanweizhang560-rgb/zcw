@@ -248,6 +248,31 @@
      - echo frame 为 `map`
      - RViz 截图显示绿色 offset path 和红色 lookahead target，Global Status、Offset Path、Lookahead Target 均为 OK
    - 审核结论：5m strict 20m 候选已通过只读 ROS topic 和 RViz debug overlay 复核；该节点不启动 Gazebo/PX4，不发布 `/fmu/in/*`。
+21.5. 5m strict 20m lookahead safety 与 dry-run candidate 复核：
+   - 工具：`verify_lookahead_safety_monitor.sh` + `verify_lookahead_dry_run_setpoint.sh`
+   - 输入 offset path：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+   - 输入 targets：`data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+   - safety logs：
+     - publisher：`data/logs/lookahead_safety_publisher_20260608_090729.log`
+     - monitor：`data/logs/lookahead_safety_monitor_20260608_090729.log`
+     - state echo：`data/logs/lookahead_tracking_state_echo_20260608_090729.log`
+     - safety gate echo：`data/logs/lookahead_safety_gate_echo_20260608_090729.log`
+   - dry-run logs：
+     - state echo：`data/logs/lookahead_dry_run_state_echo_20260608_090753.log`
+     - candidate echo：`data/logs/lookahead_dry_run_candidate_echo_20260608_090753.log`
+     - forbidden topic log：`data/logs/lookahead_dry_run_forbidden_topics_20260608_090753.log`
+   - 结果：
+     - safety：`TRACK_READY`
+     - safety：`path_points=25`
+     - safety：`last_target_jump_m=5.00007`
+     - safety gate：`true`
+     - dry-run：`TRACK_READY`
+     - dry-run：`candidate_jump_m=0.999917`
+     - dry-run：`candidate_vertical_jump_m=0.00730939`
+     - dry-run：`candidate_speed_mps=5`
+     - dry-run：`publishes_px4=false`
+     - forbidden `/fmu/in/*` log size：`0`
+   - 审核结论：5m strict 20m 候选已通过只读 safety monitor 和 dry-run candidate setpoint 复核；该节点不启动 Gazebo/PX4，不发布 `/fmu/in/*`。
 22. 只读 ROS topic 发布烟测：
    - 工具：`lookahead_path_publisher`
    - 验证：`scripts/verify_lookahead_topic_publish.sh`

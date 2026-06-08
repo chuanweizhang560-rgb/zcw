@@ -6216,3 +6216,31 @@
   - 可基于该候选继续运行只读 safety monitor / dry-run candidate setpoint 复核
   - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-08 09:07:53 CST
+
+- 节点：电缆 5m strict 20m lookahead safety 与 dry-run candidate 复核完成
+- 执行动作：
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 scripts/verify_lookahead_safety_monitor.sh`
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 scripts/verify_lookahead_dry_run_setpoint.sh`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - safety monitor：`TRACK_READY`
+  - safety monitor：`path_points=25`
+  - safety monitor：`last_target_jump_m=5.00007`
+  - safety gate：`data: true`
+  - dry-run：`TRACK_READY`
+  - dry-run：`candidate_jump_m=0.999917`
+  - dry-run：`candidate_vertical_jump_m=0.00730939`
+  - dry-run：`candidate_speed_mps=5`
+  - dry-run：`publishes_px4=false`
+  - forbidden `/fmu/in/*` log size：`0`
+  - state echo：`data/logs/lookahead_dry_run_state_echo_20260608_090753.log`
+  - candidate echo：`data/logs/lookahead_dry_run_candidate_echo_20260608_090753.log`
+- 结论：
+  - 5m strict 20m lookahead 候选已通过只读 safety monitor 和 dry-run candidate setpoint 复核
+  - 当前仍没有 `/fmu/in/*` topic publisher，不启动 PX4/Gazebo，不进入 Offboard，不 arm
+- 下一步：
+  - 可继续用该候选做 dry-run RViz overlay 或 Phase A bridge dry-run 复核
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无
