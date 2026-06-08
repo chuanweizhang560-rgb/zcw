@@ -4,7 +4,7 @@ set -eo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 
-DEFAULT_INPUT="data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_offset_path_20260603_125948.csv"
+DEFAULT_INPUT="data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv"
 INPUT_CSV="${INPUT_CSV:-${DEFAULT_INPUT}}"
 RESULT_ROOT="${RESULT_ROOT:-data/results}"
 STAMP="$(date +%Y%m%d_%H%M%S)"

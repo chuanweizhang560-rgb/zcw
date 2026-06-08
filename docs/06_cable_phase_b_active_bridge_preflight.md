@@ -134,13 +134,13 @@ These evidence files must exist and be referenced in `PROCESS_LOG.md`:
 
 | Evidence | Latest local path |
 |---|---|
-| Phase A bridge dry-run state | `data/logs/px4_bridge_dry_run_state_echo_20260603_190805.log` |
-| Phase A bridge RViz screenshot | `data/screenshots/px4_bridge_dry_run_rviz_overlay_20260603_191816.png` |
-| PX4/Gazebo frame audit summary | `data/results/px4_gazebo_frame_alignment_20260603_194311/px4_gazebo_frame_alignment_20260603_194311.txt` |
-| Offboard gate dry-run summary | `data/results/cable_offboard_gate_dry_run_20260604_085746/cable_offboard_gate_dry_run_20260604_085746.txt` |
-| Offboard gate dry-run forbidden publisher audit | `data/logs/cable_offboard_gate_forbidden_publishers_20260604_085746.log` |
-| Offboard gate RViz summary | `data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt` |
-| Offboard gate RViz screenshot | `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260604_090442.png` |
+| Phase A bridge dry-run state | `data/logs/px4_bridge_dry_run_state_echo_20260608_091305.log` |
+| Phase A bridge RViz screenshot | `data/screenshots/px4_bridge_dry_run_rviz_overlay_20260608_102352.png` |
+| PX4/Gazebo frame audit summary | `data/results/px4_gazebo_frame_alignment_20260608_102532/px4_gazebo_frame_alignment_20260608_102532.txt` |
+| Offboard gate dry-run summary | `data/results/cable_offboard_gate_dry_run_20260608_101325/cable_offboard_gate_dry_run_20260608_101325.txt` |
+| Offboard gate dry-run forbidden publisher audit | `data/logs/cable_offboard_gate_forbidden_publishers_20260608_101325.log` |
+| Offboard gate RViz summary | `data/results/cable_offboard_gate_rviz_overlay_20260608_101949/cable_offboard_gate_rviz_overlay_20260608_101949.txt` |
+| Offboard gate RViz screenshot | `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260608_101949.png` |
 
 Because `data/` is intentionally ignored by git, a fresh clone must regenerate these artifacts before active work.
 
@@ -186,10 +186,10 @@ scripts/audit_cable_setpoint_thresholds.sh
 Latest result:
 
 - `decision=accepted_cable_setpoint_threshold_audit`
-- `max_offset_step_m=10.000504`
-- `max_target_jump_m=10.000504`
-- `observed_gate_horizontal_jump_m=0.999247`
-- `observed_gate_vertical_jump_m=0.004447`
+- `max_offset_step_m=5.000264`
+- `max_target_jump_m=5.000264`
+- `observed_gate_horizontal_jump_m=1.000000`
+- `observed_gate_vertical_jump_m=0.005523`
 - `publishes_fmu_in=false`
 
 This confirms that the future active bridge must consume the gate-approved dry-run NED output after speed limiting. It must not publish raw lookahead target jumps directly to PX4.

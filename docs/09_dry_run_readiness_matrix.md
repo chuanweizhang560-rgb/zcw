@@ -56,13 +56,13 @@ The audit is not allowed to:
 
 Latest evidence:
 
-- summary: `data/results/dry_run_readiness_20260605_155302/dry_run_readiness_20260605_155302.txt`
-- static checks: `data/results/dry_run_readiness_20260605_155302/static_repo_checks_20260605_155302.log`
-- PX4 isolation: `data/results/dry_run_readiness_20260605_155302/px4_isolation_20260605_155302.log`
-- Phase B preflight: `data/results/dry_run_readiness_20260605_155302/phase_b_preflight_20260605_155302.log`
-- thresholds: `data/results/dry_run_readiness_20260605_155302/thresholds_20260605_155302.log`
-- review template: `data/results/dry_run_readiness_20260605_155302/review_template_20260605_155302.log`
-- evidence inventory: `data/results/evidence_inventory_20260605_155419/evidence_inventory_20260605_155419.txt`
+- summary: `data/results/dry_run_readiness_20260608_102758/dry_run_readiness_20260608_102758.txt`
+- static checks: `data/results/dry_run_readiness_20260608_102758/static_repo_checks_20260608_102758.log`
+- PX4 isolation: `data/results/dry_run_readiness_20260608_102758/px4_isolation_20260608_102758.log`
+- Phase B preflight: `data/results/dry_run_readiness_20260608_102758/phase_b_preflight_20260608_102758.log`
+- thresholds: `data/results/dry_run_readiness_20260608_102758/thresholds_20260608_102758.log`
+- review template: `data/results/dry_run_readiness_20260608_102758/review_template_20260608_102758.log`
+- evidence inventory: `data/results/evidence_inventory_20260608_102731/evidence_inventory_20260608_102731.txt`
 
 Latest result:
 

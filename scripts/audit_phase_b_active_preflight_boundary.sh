@@ -79,13 +79,13 @@ pass() {
 pass "static boundary checks accepted"
 
 required_files=(
-  "data/logs/px4_bridge_dry_run_state_echo_20260603_190805.log"
-  "data/screenshots/px4_bridge_dry_run_rviz_overlay_20260603_191816.png"
-  "data/results/px4_gazebo_frame_alignment_20260603_194311/px4_gazebo_frame_alignment_20260603_194311.txt"
-  "data/results/cable_offboard_gate_dry_run_20260604_085746/cable_offboard_gate_dry_run_20260604_085746.txt"
-  "data/logs/cable_offboard_gate_forbidden_publishers_20260604_085746.log"
-  "data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt"
-  "data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260604_090442.png"
+  "data/logs/px4_bridge_dry_run_state_echo_20260608_091305.log"
+  "data/screenshots/px4_bridge_dry_run_rviz_overlay_20260608_102352.png"
+  "data/results/px4_gazebo_frame_alignment_20260608_102532/px4_gazebo_frame_alignment_20260608_102532.txt"
+  "data/results/cable_offboard_gate_dry_run_20260608_101325/cable_offboard_gate_dry_run_20260608_101325.txt"
+  "data/logs/cable_offboard_gate_forbidden_publishers_20260608_101325.log"
+  "data/results/cable_offboard_gate_rviz_overlay_20260608_101949/cable_offboard_gate_rviz_overlay_20260608_101949.txt"
+  "data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260608_101949.png"
 )
 
 : >"${EVIDENCE_LOG}"
@@ -98,19 +98,19 @@ for path in "${required_files[@]}"; do
 done
 pass "required local dry-run evidence files are present"
 
-grep -q 'DRY_RUN_READY' data/logs/px4_bridge_dry_run_state_echo_20260603_190805.log ||
+grep -q 'DRY_RUN_READY' data/logs/px4_bridge_dry_run_state_echo_20260608_091305.log ||
   fail "Phase A bridge state evidence does not contain DRY_RUN_READY"
 grep -q 'decision=accepted_readonly_frame_sample_smoke' \
-  data/results/px4_gazebo_frame_alignment_20260603_194311/px4_gazebo_frame_alignment_20260603_194311.txt ||
+  data/results/px4_gazebo_frame_alignment_20260608_102532/px4_gazebo_frame_alignment_20260608_102532.txt ||
   fail "PX4/Gazebo frame audit evidence is not accepted"
 grep -q 'decision=accepted_cable_offboard_gate_dry_run_smoke' \
-  data/results/cable_offboard_gate_dry_run_20260604_085746/cable_offboard_gate_dry_run_20260604_085746.txt ||
+  data/results/cable_offboard_gate_dry_run_20260608_101325/cable_offboard_gate_dry_run_20260608_101325.txt ||
   fail "Offboard gate dry-run summary is not accepted"
 grep -q 'decision=accepted_cable_offboard_gate_rviz_overlay_capture' \
-  data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt ||
+  data/results/cable_offboard_gate_rviz_overlay_20260608_101949/cable_offboard_gate_rviz_overlay_20260608_101949.txt ||
   fail "Offboard gate RViz overlay summary is not accepted"
 
-if rg -n 'Publisher count: [1-9][0-9]*' data/logs/cable_offboard_gate_forbidden_publishers_20260604_085746.log \
+if rg -n 'Publisher count: [1-9][0-9]*' data/logs/cable_offboard_gate_forbidden_publishers_20260608_101325.log \
   >"${RESULT_DIR}/nonzero_publishers_${STAMP}.log"; then
   cat "${RESULT_DIR}/nonzero_publishers_${STAMP}.log" >&2
   fail "Offboard gate dry-run evidence contains nonzero /fmu/in publisher count"

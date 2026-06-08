@@ -4,10 +4,10 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 
-DEFAULT_OFFSET_PATH="data/results/catenary_offset_yz_zbin2_20260603_135000/depth_camera_motion_catenary_offset_yz_zbin2_offset_path_20260603_125948.csv"
-DEFAULT_TARGETS="data/results/lookahead_target_audit_20260603_165600/depth_camera_motion_lookahead_target_audit_targets_20260603_165501.csv"
-DEFAULT_GATE_STATE="data/logs/cable_offboard_gate_rviz_state_echo_20260604_090442.log"
-DEFAULT_APPROVED_NED="data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260604_090442.log"
+DEFAULT_OFFSET_PATH="data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv"
+DEFAULT_TARGETS="data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv"
+DEFAULT_GATE_STATE="data/logs/cable_offboard_gate_rviz_state_echo_20260608_101949.log"
+DEFAULT_APPROVED_NED="data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260608_101949.log"
 
 OFFSET_PATH_CSV="${OFFSET_PATH_CSV:-${DEFAULT_OFFSET_PATH}}"
 TARGETS_CSV="${TARGETS_CSV:-${DEFAULT_TARGETS}}"
@@ -27,8 +27,8 @@ MAX_ACTIVE_VERTICAL_JUMP_M="${MAX_ACTIVE_VERTICAL_JUMP_M:-0.5}"
 MAX_DRY_RUN_HORIZONTAL_JUMP_M="${MAX_DRY_RUN_HORIZONTAL_JUMP_M:-5.0}"
 MAX_DRY_RUN_VERTICAL_JUMP_M="${MAX_DRY_RUN_VERTICAL_JUMP_M:-2.0}"
 EXPECTED_DRY_RUN_STEP_M="${EXPECTED_DRY_RUN_STEP_M:-1.1}"
-MAX_TARGET_SPACING_M="${MAX_TARGET_SPACING_M:-10.5}"
-MAX_OFFSET_STEP_M="${MAX_OFFSET_STEP_M:-10.5}"
+MAX_TARGET_SPACING_M="${MAX_TARGET_SPACING_M:-5.6}"
+MAX_OFFSET_STEP_M="${MAX_OFFSET_STEP_M:-5.6}"
 
 for path in "${OFFSET_PATH_CSV}" "${TARGETS_CSV}" "${GATE_STATE_LOG}" "${APPROVED_NED_LOG}"; do
   if [[ ! -f "${path}" ]]; then

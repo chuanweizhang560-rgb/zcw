@@ -474,22 +474,22 @@
      - `/zcw/cable/px4_bridge/state`
      - `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
    - 最新日志：
-     - state：`data/logs/px4_bridge_dry_run_state_echo_20260603_190805.log`
-     - NED setpoint：`data/logs/px4_bridge_dry_run_ned_echo_20260603_190805.log`
-     - topic list：`data/logs/px4_bridge_dry_run_topic_list_20260603_190805.log`
-     - forbidden topics：`data/logs/px4_bridge_dry_run_forbidden_topics_20260603_190805.log`
+     - state：`data/logs/px4_bridge_dry_run_state_echo_20260608_091305.log`
+     - NED setpoint：`data/logs/px4_bridge_dry_run_ned_echo_20260608_091305.log`
+     - topic list：`data/logs/px4_bridge_dry_run_topic_list_20260608_091305.log`
+     - forbidden topics：`data/logs/px4_bridge_dry_run_forbidden_topics_20260608_091305.log`
    - 结果：`DRY_RUN_READY`，`publishes_fmu_in=false`，NED frame 为 `px4_local_ned_dry_run`，未发现 `/fmu/in/*`
    - 审核结论：Phase A bridge dry-run isolation 通过；当前仍未启动 Gazebo/PX4。
 30. PX4 Phase A bridge RViz overlay 截图审核：
    - 工具：`rviz2` + `tf2_ros static_transform_publisher` + `cable_px4_bridge_dry_run`
    - 验证：`scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
    - 配置：`ros2_ws/src/zcw_cable_perception/rviz/px4_bridge_dry_run_overlay.rviz`
-   - 输出截图：`data/screenshots/px4_bridge_dry_run_rviz_overlay_20260603_191816.png`
+   - 输出截图：`data/screenshots/px4_bridge_dry_run_rviz_overlay_20260608_102352.png`
    - 最新日志：
-     - bridge state：`data/logs/px4_bridge_dry_run_rviz_state_echo_20260603_191816.log`
-     - bridge NED：`data/logs/px4_bridge_dry_run_rviz_ned_echo_20260603_191816.log`
-     - topic list：`data/logs/px4_bridge_dry_run_rviz_topic_list_20260603_191816.log`
-     - forbidden topics：`data/logs/px4_bridge_dry_run_rviz_forbidden_topics_20260603_191816.log`
+     - bridge state：`data/logs/px4_bridge_dry_run_rviz_state_echo_20260608_102352.log`
+     - bridge NED：`data/logs/px4_bridge_dry_run_rviz_ned_echo_20260608_102352.log`
+     - topic list：`data/logs/px4_bridge_dry_run_rviz_topic_list_20260608_102352.log`
+     - forbidden topics：`data/logs/px4_bridge_dry_run_rviz_forbidden_topics_20260608_102352.log`
    - 结果：`DRY_RUN_READY`，`publishes_fmu_in=false`，NED frame 为 `px4_local_ned_dry_run`，RViz Global Status 为 OK，未发现 `/fmu/in/*`
    - 审核结论：Phase A bridge debug 可视化通过；`px4_local_ned_dry_run` static TF 只用于显示，不代表 PX4 local frame 闭环坐标对齐完成。
 31. PX4/Gazebo 只读坐标采样 smoke：
@@ -502,11 +502,11 @@
      - `/zcw/depth_camera/pose`
      - `/zcw/cable/dry_run/candidate_setpoint`
      - `/zcw/cable/px4_bridge/ned_setpoint_dry_run`
-   - 最新 summary：`data/results/px4_gazebo_frame_alignment_20260603_194311/px4_gazebo_frame_alignment_20260603_194311.txt`
+   - 最新 summary：`data/results/px4_gazebo_frame_alignment_20260608_102532/px4_gazebo_frame_alignment_20260608_102532.txt`
    - 最新日志：
-     - PX4/Gazebo：`data/logs/px4_gazebo_frame_alignment_px4_20260603_194311.log`
-     - forbidden publishers：`data/logs/px4_gazebo_frame_alignment_forbidden_publishers_20260603_194311.log`
-     - topic list：`data/logs/px4_gazebo_frame_alignment_topic_list_20260603_194311.log`
+     - PX4/Gazebo：`data/logs/px4_gazebo_frame_alignment_px4_20260608_102532.log`
+     - forbidden publishers：`data/logs/px4_gazebo_frame_alignment_forbidden_publishers_20260608_102532.log`
+     - topic list：`data/logs/px4_gazebo_frame_alignment_topic_list_20260608_102532.log`
    - 结果：
      - `decision=accepted_readonly_frame_sample_smoke`
      - `px4_local_finite=true`
@@ -532,12 +532,12 @@
      - `/zcw/cable/offboard_gate/state`
      - `/zcw/cable/offboard_gate/phase_b_allowed`
      - `/zcw/cable/offboard_gate/ned_setpoint_approved_dry_run`
-   - 最新 summary：`data/results/cable_offboard_gate_dry_run_20260604_085746/cable_offboard_gate_dry_run_20260604_085746.txt`
+   - 最新 summary：`data/results/cable_offboard_gate_dry_run_20260608_101325/cable_offboard_gate_dry_run_20260608_101325.txt`
    - 最新日志：
-     - gate state：`data/logs/cable_offboard_gate_state_echo_20260604_085746.log`
-     - phase B allowed：`data/logs/cable_offboard_gate_allowed_echo_20260604_085746.log`
-     - approved NED dry-run：`data/logs/cable_offboard_gate_approved_ned_echo_20260604_085746.log`
-     - forbidden publishers：`data/logs/cable_offboard_gate_forbidden_publishers_20260604_085746.log`
+     - gate state：`data/logs/cable_offboard_gate_state_echo_20260608_101325.log`
+     - phase B allowed：`data/logs/cable_offboard_gate_allowed_echo_20260608_101325.log`
+     - approved NED dry-run：`data/logs/cable_offboard_gate_approved_ned_echo_20260608_101325.log`
+     - forbidden publishers：`data/logs/cable_offboard_gate_forbidden_publishers_20260608_101325.log`
    - 结果：
      - `decision=accepted_cable_offboard_gate_dry_run_smoke`
      - `PHASE_B_READY_DRY_RUN`
@@ -548,13 +548,13 @@
 34. Offboard gate dry-run RViz/debug overlay：
    - 工具：`scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
    - RViz 配置：`ros2_ws/src/zcw_cable_perception/rviz/offboard_gate_dry_run_overlay.rviz`
-   - 最新 summary：`data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt`
-   - 最新截图：`data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260604_090442.png`
+   - 最新 summary：`data/results/cable_offboard_gate_rviz_overlay_20260608_101949/cable_offboard_gate_rviz_overlay_20260608_101949.txt`
+   - 最新截图：`data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260608_101949.png`
    - 最新日志：
-     - gate state：`data/logs/cable_offboard_gate_rviz_state_echo_20260604_090442.log`
-     - phase B allowed：`data/logs/cable_offboard_gate_rviz_allowed_echo_20260604_090442.log`
-     - approved NED dry-run：`data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260604_090442.log`
-     - forbidden publishers：`data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260604_090442.log`
+     - gate state：`data/logs/cable_offboard_gate_rviz_state_echo_20260608_101949.log`
+     - phase B allowed：`data/logs/cable_offboard_gate_rviz_allowed_echo_20260608_101949.log`
+     - approved NED dry-run：`data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260608_101949.log`
+     - forbidden publishers：`data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260608_101949.log`
    - 结果：
      - `decision=accepted_cable_offboard_gate_rviz_overlay_capture`
      - `PHASE_B_READY_DRY_RUN`
@@ -565,10 +565,10 @@
 35. Phase B active bridge 前置边界审计：
    - 文档：`docs/06_cable_phase_b_active_bridge_preflight.md`
    - 工具：`scripts/audit_phase_b_active_preflight_boundary.sh`
-   - 最新 summary：`data/results/phase_b_active_preflight_boundary_20260604_091412/phase_b_active_preflight_boundary_20260604_091412.txt`
+   - 最新 summary：`data/results/phase_b_active_preflight_boundary_20260608_102731/phase_b_active_preflight_boundary_20260608_102731.txt`
    - 最新日志：
-     - static checks：`data/results/phase_b_active_preflight_boundary_20260604_091412/static_checks_20260604_091412.log`
-     - evidence checks：`data/results/phase_b_active_preflight_boundary_20260604_091412/evidence_checks_20260604_091412.log`
+     - static checks：`data/results/phase_b_active_preflight_boundary_20260608_102731/static_checks_20260608_102731.log`
+     - evidence checks：`data/results/phase_b_active_preflight_boundary_20260608_102731/evidence_checks_20260608_102731.log`
    - 结果：
      - `decision=accepted_phase_b_active_preflight_boundary`
      - `phase_b_approved=false`
@@ -578,18 +578,18 @@
 36. 电缆 active 前置坐标/安全阈值复核：
    - 文档：`docs/07_cable_active_threshold_review.md`
    - 工具：`scripts/audit_cable_setpoint_thresholds.sh`
-   - 最新 summary：`data/results/cable_setpoint_thresholds_20260604_094125/cable_setpoint_thresholds_20260604_094125.txt`
+   - 最新 summary：`data/results/cable_setpoint_thresholds_20260608_102731/cable_setpoint_thresholds_20260608_102731.txt`
    - 最新日志：
-     - offset path stats：`data/results/cable_setpoint_thresholds_20260604_094125/offset_path_stats_20260604_094125.txt`
-     - lookahead target stats：`data/results/cable_setpoint_thresholds_20260604_094125/lookahead_target_stats_20260604_094125.txt`
-     - gate state stats：`data/results/cable_setpoint_thresholds_20260604_094125/gate_state_stats_20260604_094125.txt`
-     - approved NED stats：`data/results/cable_setpoint_thresholds_20260604_094125/approved_ned_stats_20260604_094125.txt`
+     - offset path stats：`data/results/cable_setpoint_thresholds_20260608_102731/offset_path_stats_20260608_102731.txt`
+     - lookahead target stats：`data/results/cable_setpoint_thresholds_20260608_102731/lookahead_target_stats_20260608_102731.txt`
+     - gate state stats：`data/results/cable_setpoint_thresholds_20260608_102731/gate_state_stats_20260608_102731.txt`
+     - approved NED stats：`data/results/cable_setpoint_thresholds_20260608_102731/approved_ned_stats_20260608_102731.txt`
    - 结果：
      - `decision=accepted_cable_setpoint_threshold_audit`
-     - `max_offset_step_m=10.000504`
-     - `max_target_jump_m=10.000504`
-     - `observed_gate_horizontal_jump_m=0.999247`
-     - `observed_gate_vertical_jump_m=0.004447`
+     - `max_offset_step_m=5.000264`
+     - `max_target_jump_m=5.000264`
+     - `observed_gate_horizontal_jump_m=1.000000`
+     - `observed_gate_vertical_jump_m=0.005523`
      - `publishes_fmu_in=false`
    - 审核结论：raw lookahead target 相邻间隔约 `10m`，不能直接进入 PX4；未来 active bridge 只能消费 gate-approved NED dry-run 输出，并保留 active horizontal jump `<=2.5m`、vertical jump `<=0.5m` 的门限。
 37. active bridge 代码审查模板：

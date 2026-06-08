@@ -6345,3 +6345,53 @@
   - 可继续更新 active preflight boundary / evidence inventory，使其引用 2026-06-08 strict 候选证据
   - 未获显式批准前仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-08 10:30:04 CST
+
+- 节点：电缆 5m strict 20m 证据链纳入 preflight/readiness 审计完成
+- 执行动作：
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 SETTLE_SEC=8 scripts/capture_px4_bridge_dry_run_rviz_overlay.sh`
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 scripts/verify_px4_gazebo_readonly_frame_alignment.sh`
+  - 将电缆 lookahead / bridge / gate 相关脚本默认输入切换为 5m strict 20m 候选
+  - 将 `audit_phase_b_active_preflight_boundary.sh`、`audit_evidence_inventory.sh`、`audit_cable_setpoint_thresholds.sh` 的默认审计证据切换到 2026-06-08 strict 证据链
+  - 将 `audit_cable_setpoint_thresholds.sh` 的 offset path / target spacing 默认阈值从 `10.5m` 收紧为 `5.6m`
+  - 运行 `scripts/audit_cable_setpoint_thresholds.sh`
+  - 运行 `scripts/audit_phase_b_active_preflight_boundary.sh`
+  - 运行 `scripts/audit_evidence_inventory.sh`
+  - 运行 `scripts/audit_dry_run_readiness.sh`
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`、`docs/05_cable_phase_b_gate_plan.md`、`docs/06_cable_phase_b_active_bridge_preflight.md`、`docs/07_cable_active_threshold_review.md`、`docs/09_dry_run_readiness_matrix.md`
+- 结果：
+  - Phase A bridge RViz screenshot：`data/screenshots/px4_bridge_dry_run_rviz_overlay_20260608_102352.png`
+  - Phase A bridge RViz state：`DRY_RUN_READY`
+  - Phase A bridge RViz：`publishes_fmu_in=false`
+  - PX4/Gazebo frame summary：`data/results/px4_gazebo_frame_alignment_20260608_102532/px4_gazebo_frame_alignment_20260608_102532.txt`
+  - PX4/Gazebo frame：`decision=accepted_readonly_frame_sample_smoke`
+  - PX4/Gazebo frame：`publishes_fmu_in=false`
+  - threshold summary：`data/results/cable_setpoint_thresholds_20260608_102731/cable_setpoint_thresholds_20260608_102731.txt`
+  - threshold：`decision=accepted_cable_setpoint_threshold_audit`
+  - threshold：`max_offset_step_m=5.000264`
+  - threshold：`max_target_jump_m=5.000264`
+  - threshold：`observed_gate_horizontal_jump_m=1.000000`
+  - threshold：`observed_gate_vertical_jump_m=0.005523`
+  - active preflight summary：`data/results/phase_b_active_preflight_boundary_20260608_102731/phase_b_active_preflight_boundary_20260608_102731.txt`
+  - active preflight：`decision=accepted_phase_b_active_preflight_boundary`
+  - active preflight：`phase_b_approved=false`
+  - active preflight：`active_bridge_present=false`
+  - active preflight：`publishes_fmu_in=false`
+  - evidence inventory summary：`data/results/evidence_inventory_20260608_102731/evidence_inventory_20260608_102731.txt`
+  - evidence inventory：`decision=accepted_evidence_inventory`
+  - evidence inventory：`present_count=21`
+  - evidence inventory：`missing_count=0`
+  - evidence inventory：`not_ignored_count=0`
+  - dry-run readiness summary：`data/results/dry_run_readiness_20260608_102758/dry_run_readiness_20260608_102758.txt`
+  - dry-run readiness：`decision=accepted_dry_run_readiness`
+  - dry-run readiness：`phase_b_approved=false`
+  - dry-run readiness：`active_bridge_present=false`
+  - dry-run readiness：`publishes_fmu_in=false`
+- 结论：
+  - 5m strict 20m 候选已经成为当前电缆 dry-run/readiness 主证据链
+  - 证据链仍是 dry-run-only：没有 cable active bridge，没有 PX4 输入 topic publisher，没有 Offboard/arm
+- 下一步：
+  - 可继续做 strict 证据链下的文档一致性检查，或推进非 active 的电缆规则 baseline/SLAM 融合证据
+  - 未获显式批准前仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无

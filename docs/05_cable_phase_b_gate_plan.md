@@ -154,10 +154,10 @@ The script must not start Offboard, must not arm, and must not publish `/fmu/in/
 
 Latest evidence:
 
-- summary: `data/results/cable_offboard_gate_dry_run_20260604_085746/cable_offboard_gate_dry_run_20260604_085746.txt`
-- gate state: `data/logs/cable_offboard_gate_state_echo_20260604_085746.log`
-- phase B allowed: `data/logs/cable_offboard_gate_allowed_echo_20260604_085746.log`
-- forbidden publishers: `data/logs/cable_offboard_gate_forbidden_publishers_20260604_085746.log`
+- summary: `data/results/cable_offboard_gate_dry_run_20260608_101325/cable_offboard_gate_dry_run_20260608_101325.txt`
+- gate state: `data/logs/cable_offboard_gate_state_echo_20260608_101325.log`
+- phase B allowed: `data/logs/cable_offboard_gate_allowed_echo_20260608_101325.log`
+- forbidden publishers: `data/logs/cable_offboard_gate_forbidden_publishers_20260608_101325.log`
 
 Latest result:
 
@@ -171,11 +171,11 @@ RViz/debug overlay evidence:
 
 - script: `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
 - RViz config: `ros2_ws/src/zcw_cable_perception/rviz/offboard_gate_dry_run_overlay.rviz`
-- summary: `data/results/cable_offboard_gate_rviz_overlay_20260604_090442/cable_offboard_gate_rviz_overlay_20260604_090442.txt`
-- screenshot: `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260604_090442.png`
-- gate state: `data/logs/cable_offboard_gate_rviz_state_echo_20260604_090442.log`
-- phase B allowed: `data/logs/cable_offboard_gate_rviz_allowed_echo_20260604_090442.log`
-- forbidden publishers: `data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260604_090442.log`
+- summary: `data/results/cable_offboard_gate_rviz_overlay_20260608_101949/cable_offboard_gate_rviz_overlay_20260608_101949.txt`
+- screenshot: `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260608_101949.png`
+- gate state: `data/logs/cable_offboard_gate_rviz_state_echo_20260608_101949.log`
+- phase B allowed: `data/logs/cable_offboard_gate_rviz_allowed_echo_20260608_101949.log`
+- forbidden publishers: `data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260608_101949.log`
 
 RViz result:
 
@@ -202,9 +202,9 @@ scripts/audit_phase_b_active_preflight_boundary.sh
 
 Latest evidence:
 
-- summary: `data/results/phase_b_active_preflight_boundary_20260604_091412/phase_b_active_preflight_boundary_20260604_091412.txt`
-- static checks: `data/results/phase_b_active_preflight_boundary_20260604_091412/static_checks_20260604_091412.log`
-- evidence checks: `data/results/phase_b_active_preflight_boundary_20260604_091412/evidence_checks_20260604_091412.log`
+- summary: `data/results/phase_b_active_preflight_boundary_20260608_102731/phase_b_active_preflight_boundary_20260608_102731.txt`
+- static checks: `data/results/phase_b_active_preflight_boundary_20260608_102731/static_checks_20260608_102731.log`
+- evidence checks: `data/results/phase_b_active_preflight_boundary_20260608_102731/evidence_checks_20260608_102731.log`
 
 Latest result:
 
