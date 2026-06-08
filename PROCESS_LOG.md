@@ -6306,3 +6306,42 @@
   - 可继续补充 offboard gate RViz/debug overlay 截图，或进入 Phase B active preflight boundary 的复核文档
   - 未获显式批准前仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-08 10:20:59 CST
+
+- 节点：电缆 5m strict 20m cable offboard gate RViz/debug overlay 复核完成
+- 执行动作：
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 SETTLE_SEC=10 scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+  - 启动 PX4/Gazebo headless + Micro XRCE-DDS Agent + RViz2
+  - 固定 `phase_b_user_approved=false`
+  - 读取 summary、gate state、approved NED、forbidden publisher log
+  - 打开真实 RViz 截图进行人工视觉审核
+  - 检查仿真相关进程清理状态
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - summary：`data/results/cable_offboard_gate_rviz_overlay_20260608_101949/cable_offboard_gate_rviz_overlay_20260608_101949.txt`
+  - screenshot：`data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260608_101949.png`
+  - summary：`decision=accepted_cable_offboard_gate_rviz_overlay_capture`
+  - gate state：`PHASE_B_READY_DRY_RUN`
+  - `phase_b_allowed=false`
+  - `publishes_fmu_in=false`
+  - `bridge_ready=true`
+  - `candidate_ready=true`
+  - `px4_ready=true`
+  - `gazebo_ready=true`
+  - `abort_latched=false`
+  - horizontal jump：`1m`
+  - vertical jump：`0.00552286m`
+  - approved NED dry-run frame：`px4_local_ned_dry_run`
+  - screenshot 尺寸：`2490 x 1522`
+  - RViz 截图显示 Global Status、Offset Path、Lookahead Target、Dry Run Path 等 display 为 OK
+  - 绿色 offset path、红色 lookahead target、蓝色 dry-run path 和候选点可见
+  - forbidden publisher log 中 `/fmu/in/*` publisher count 均为 `0`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+- 结论：
+  - 5m strict 20m 候选的 offboard gate dry-run 可视化证据达标
+  - 当前仍没有发布 PX4 输入 setpoint，没有进入主动飞行闭环
+- 下一步：
+  - 可继续更新 active preflight boundary / evidence inventory，使其引用 2026-06-08 strict 候选证据
+  - 未获显式批准前仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无

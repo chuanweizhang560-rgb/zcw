@@ -334,6 +334,42 @@
      - `/fmu/in/*` topics 出现是 PX4 uXRCE-DDS 订阅端，forbidden publisher log 中 publisher count 均为 `0`
      - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
    - 审核结论：5m strict 20m 候选在真实 PX4/Gazebo headless 环境下通过 offboard gate dry-run；当前仍没有发布 PX4 输入 setpoint，没有进入主动飞行闭环。
+21.8. 5m strict 20m cable offboard gate RViz/debug overlay 复核：
+   - 工具：`capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+   - 输入 offset path：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+   - 输入 targets：`data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+   - group：`y8_z20`
+   - 运行边界：
+     - 启动 PX4/Gazebo headless + Micro XRCE-DDS Agent + RViz2
+     - `phase_b_user_approved=false`
+     - RViz 使用 identity `map -> px4_local_ned_dry_run` static TF 仅作 debug overlay
+     - 不 arm，不切 Offboard，不发布 `/fmu/in/*`
+   - summary：`data/results/cable_offboard_gate_rviz_overlay_20260608_101949/cable_offboard_gate_rviz_overlay_20260608_101949.txt`
+   - screenshot：`data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260608_101949.png`
+   - 日志：
+     - PX4/Gazebo：`data/logs/cable_offboard_gate_rviz_px4_20260608_101949.log`
+     - RViz：`data/logs/cable_offboard_gate_rviz_20260608_101949.log`
+     - gate state echo：`data/logs/cable_offboard_gate_rviz_state_echo_20260608_101949.log`
+     - phase allowed echo：`data/logs/cable_offboard_gate_rviz_allowed_echo_20260608_101949.log`
+     - approved NED echo：`data/logs/cable_offboard_gate_rviz_approved_ned_echo_20260608_101949.log`
+     - forbidden publisher log：`data/logs/cable_offboard_gate_rviz_forbidden_publishers_20260608_101949.log`
+   - 结果：
+     - summary：`decision=accepted_cable_offboard_gate_rviz_overlay_capture`
+     - `phase_b_allowed=false`
+     - `publishes_fmu_in=false`
+     - gate state：`PHASE_B_READY_DRY_RUN`
+     - `bridge_ready=true`
+     - `candidate_ready=true`
+     - `px4_ready=true`
+     - `gazebo_ready=true`
+     - `abort_latched=false`
+     - horizontal jump：`1m`
+     - vertical jump：`0.00552286m`
+     - screenshot 尺寸：`2490 x 1522`
+     - RViz 截图显示 Global Status、Offset Path、Lookahead Target、Dry Run Path 等 display 为 OK；绿色 offset path、红色 lookahead target、蓝色 dry-run path 和候选点可见
+     - forbidden publisher log 中 `/fmu/in/*` publisher count 均为 `0`
+     - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+   - 审核结论：5m strict 20m 候选的 offboard gate dry-run 可视化证据达标；该截图仍是 dry-run debug，不代表已进入主动 PX4 setpoint 发布。
 22. 只读 ROS topic 发布烟测：
    - 工具：`lookahead_path_publisher`
    - 验证：`scripts/verify_lookahead_topic_publish.sh`
