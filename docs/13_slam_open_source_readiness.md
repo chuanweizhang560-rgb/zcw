@@ -541,6 +541,22 @@ Decision:
 - Keep this screenshot as the first accepted RViz evidence for the RGB-D baseline.
 - Use RGB-D mode as the main single-vehicle SLAM smoke path going forward.
 
+Supplemental re-check on 2026-06-08:
+
+- command: `SETTLE_SEC=10 scripts/capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh`
+- summary: `data/results/rtabmap_depth_camera_rgbd_rviz_overlay_20260608_104629/rtabmap_depth_camera_rgbd_rviz_overlay_20260608_104629.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_rviz_overlay_20260608_104629.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_rviz_node_20260608_104629.log`
+- RViz log: `data/logs/rtabmap_depth_camera_rgbd_rviz_20260608_104629.log`
+- topics log: `data/logs/rtabmap_depth_camera_rgbd_rviz_topics_20260608_104629.log`
+- result: `decision=accepted_rtabmap_depth_camera_rgbd_rviz_overlay`
+- `rtabmap_ok=true`
+- `outputs_ok=true`
+- `screenshot_ok=1`
+- boundary: starts ROS/PX4/Gazebo/RViz for RGB-D mapping visualization, does not start Offboard, does not arm, and publishes no `/fmu/in/*`.
+
+Manual screenshot review: RViz Global Status is OK; `Cloud Map`, `Octomap Occupied Space` and `Map` displays are OK; the screenshot is non-empty and shows visible cloud/octomap/map structure. This is still plumbing and visualization evidence, not a quantitative SLAM accuracy certificate.
+
 ## 15. RTAB-Map RGB-D Consistency Audit
 
 Command:

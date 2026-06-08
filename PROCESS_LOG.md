@@ -6424,3 +6424,36 @@
   - 可继续补 RTAB-Map RGB-D RViz 或 motion-backed SLAM 证据的最新复跑
   - 不得把 RTAB-Map 输出接入 PX4 active control
 - 阻塞项：无
+
+### 2026-06-08 10:47:34 CST
+
+- 节点：RTAB-Map RGB-D RViz overlay 补充复核完成
+- 执行动作：
+  - 运行 `SETTLE_SEC=10 scripts/capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh`
+  - 读取 RViz overlay summary
+  - 打开真实 RViz 截图进行人工视觉审核
+  - 检查仿真相关进程清理状态
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - summary：`data/results/rtabmap_depth_camera_rgbd_rviz_overlay_20260608_104629/rtabmap_depth_camera_rgbd_rviz_overlay_20260608_104629.txt`
+  - screenshot：`data/screenshots/rtabmap_depth_camera_rgbd_rviz_overlay_20260608_104629.png`
+  - RTAB-Map log：`data/logs/rtabmap_depth_camera_rgbd_rviz_node_20260608_104629.log`
+  - RViz log：`data/logs/rtabmap_depth_camera_rgbd_rviz_20260608_104629.log`
+  - topics log：`data/logs/rtabmap_depth_camera_rgbd_rviz_topics_20260608_104629.log`
+  - `decision=accepted_rtabmap_depth_camera_rgbd_rviz_overlay`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `screenshot_ok=1`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - RViz Global Status 为 OK
+  - `Cloud Map`、`Octomap Occupied Space`、`Map` displays 为 OK
+  - 截图非空，显示可见 cloud/octomap/map 结构
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+- 结论：
+  - RTAB-Map RGB-D 主线具备新的可视化 smoke 证据
+  - 这仍不是 SLAM 精度验收，也不允许将 RTAB-Map 输出接入 PX4 active control
+- 下一步：
+  - 可继续复跑 motion-backed RGB-D SLAM 证据，或推进风机 15m orbit 的覆盖/深度可见性审计
+- 阻塞项：无
