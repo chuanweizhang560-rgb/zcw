@@ -589,6 +589,21 @@ Decision:
 - Treat RTAB-Map RGB-D as the repository's primary single-vehicle SLAM smoke baseline.
 - Keep scan-cloud mode as fallback and comparison path only.
 
+Supplemental re-check on 2026-06-08:
+
+- command: `RUNS=2 scripts/audit_rtabmap_depth_camera_rgbd_consistency.sh`
+- summary: `data/results/rtabmap_depth_camera_rgbd_consistency_20260608_104242/rtabmap_depth_camera_rgbd_consistency_20260608_104242.txt`
+- run 1: `data/results/rtabmap_depth_camera_rgbd_smoke_20260608_104242/rtabmap_depth_camera_rgbd_smoke_20260608_104242.txt`
+- run 2: `data/results/rtabmap_depth_camera_rgbd_smoke_20260608_104312/rtabmap_depth_camera_rgbd_smoke_20260608_104312.txt`
+- result: `decision=accepted_rtabmap_depth_camera_rgbd_consistency`
+- `runs=2`
+- `success_count=2`
+- `failure_count=0`
+- `accepted_count=2`
+- boundary: starts ROS/PX4/Gazebo for depth-camera input, does not start RViz, does not start Offboard, does not arm, and publishes no `/fmu/in/*`.
+
+This supplemental run keeps the earlier 3-run evidence valid and confirms that RTAB-Map RGB-D remains the primary single-vehicle SLAM smoke baseline.
+
 ## 16. RTAB-Map RGB-D Motion RViz Evidence
 
 Command:

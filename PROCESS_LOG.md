@@ -6395,3 +6395,32 @@
   - 可继续做 strict 证据链下的文档一致性检查，或推进非 active 的电缆规则 baseline/SLAM 融合证据
   - 未获显式批准前仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-08 10:44:01 CST
+
+- 节点：RTAB-Map RGB-D consistency 补充复核完成
+- 执行动作：
+  - 运行 `RUNS=2 scripts/audit_rtabmap_depth_camera_rgbd_consistency.sh`
+  - 读取 consistency summary 和两个 RGB-D smoke summary
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - consistency summary：`data/results/rtabmap_depth_camera_rgbd_consistency_20260608_104242/rtabmap_depth_camera_rgbd_consistency_20260608_104242.txt`
+  - run 1 summary：`data/results/rtabmap_depth_camera_rgbd_smoke_20260608_104242/rtabmap_depth_camera_rgbd_smoke_20260608_104242.txt`
+  - run 2 summary：`data/results/rtabmap_depth_camera_rgbd_smoke_20260608_104312/rtabmap_depth_camera_rgbd_smoke_20260608_104312.txt`
+  - `decision=accepted_rtabmap_depth_camera_rgbd_consistency`
+  - `runs=2`
+  - `success_count=2`
+  - `failure_count=0`
+  - `accepted_count=2`
+  - each RGB-D smoke：`decision=accepted_rtabmap_depth_camera_rgbd_smoke`
+  - each RGB-D smoke：`rtabmap_rgbd_mode=true`
+  - each RGB-D smoke：`starts_offboard=false`
+  - each RGB-D smoke：`arms=false`
+  - each RGB-D smoke：`publishes_fmu_in=false`
+- 结论：
+  - RTAB-Map RGB-D 仍是当前单机 SLAM smoke 主线
+  - 这不是最终 SLAM 精度验收，只证明成熟 RTAB-Map RGB-D 输入/启动/输出链路可重复
+- 下一步：
+  - 可继续补 RTAB-Map RGB-D RViz 或 motion-backed SLAM 证据的最新复跑
+  - 不得把 RTAB-Map 输出接入 PX4 active control
+- 阻塞项：无
