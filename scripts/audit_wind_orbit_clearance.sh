@@ -6,7 +6,7 @@ cd "${ROOT_DIR}"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
 RESULT_ROOT="${RESULT_ROOT:-${ROOT_DIR}/data/results}"
-RESULT_DIR="${RESULT_ROOT}/wind_orbit_clearance_${STAMP}"
+RESULT_DIR="${OUTPUT_DIR:-${RESULT_ROOT}/wind_orbit_clearance_${STAMP}}"
 SUMMARY_FILE="${RESULT_DIR}/wind_orbit_clearance_${STAMP}.txt"
 WAYPOINT_CSV="${RESULT_DIR}/wind_orbit_clearance_waypoints_${STAMP}.csv"
 

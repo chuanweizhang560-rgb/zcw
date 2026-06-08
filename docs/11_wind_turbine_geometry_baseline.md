@@ -284,6 +284,19 @@ Decision:
 - It is now the preferred wind-side observation-quality candidate.
 - It is not promoted as a final coverage baseline because static clearance is not the same as dynamic collision checking or surface coverage.
 
+Supplemental static re-check on 2026-06-08:
+
+- 20m visibility summary: `data/results/wind_visibility_20m_20260608_105400/wind_orbit_visibility_20260608_105405/wind_orbit_visibility_20260608_105405.txt`
+- 15m visibility summary: `data/results/wind_visibility_r15_20260608_105400/wind_orbit_visibility_20260608_105411/wind_orbit_visibility_20260608_105411.txt`
+- 20m clearance summary: `data/results/wind_clearance_20m_20260608_105400/wind_orbit_clearance_20260608_105417/wind_orbit_clearance_20260608_105417.txt`
+- 15m clearance summary: `data/results/wind_clearance_r15_20260608_105400/wind_orbit_clearance_20260608_105424/wind_orbit_clearance_20260608_105424.txt`
+- 20m best_view_frame_fill_ratio: `0.092567`
+- 15m best_view_frame_fill_ratio: `0.109478`
+- 20m minimum static clearance: `8.119593m`
+- 15m minimum static clearance: `3.119593m`
+
+The 2026-06-08 re-check confirms the earlier conclusion: 15m remains the preferred observation-quality candidate, but it is still not final dynamic collision safety or inspection coverage evidence.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:
@@ -302,9 +315,9 @@ scripts/audit_wind_orbit_visibility.sh
 Compared candidates:
 
 - default 20m orbit:
-  - summary: `data/results/wind_orbit_visibility_20m/wind_orbit_visibility_20260605_155038/wind_orbit_visibility_20260605_155038.txt`
+  - summary: `data/results/wind_visibility_20m_20260608_105400/wind_orbit_visibility_20260608_105405/wind_orbit_visibility_20260608_105405.txt`
 - 15m close orbit:
-  - summary: `data/results/wind_orbit_visibility_r15/wind_orbit_visibility_20260605_155038/wind_orbit_visibility_20260605_155038.txt`
+  - summary: `data/results/wind_visibility_r15_20260608_105400/wind_orbit_visibility_20260608_105411/wind_orbit_visibility_20260608_105411.txt`
 
 Observed result:
 

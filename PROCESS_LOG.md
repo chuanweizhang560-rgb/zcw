@@ -6494,3 +6494,43 @@
 - 下一步：
   - 可继续推进风机 15m orbit 的覆盖/深度可见性审计，或整理 SLAM 当前完成度边界
 - 阻塞项：无
+
+### 2026-06-08 10:54:45 CST
+
+- 节点：风机 20m/15m orbit 静态 visibility 与 clearance 补充复核完成
+- 执行动作：
+  - 首次并行运行 `audit_wind_orbit_visibility.sh` 和 `audit_wind_orbit_clearance.sh` 时发现脚本不读取 `OUTPUT_DIR`，同秒时间戳导致 20m/15m 输出路径撞车
+  - 放弃该次撞车输出作为证据
+  - 使用不同 `RESULT_ROOT` 串行重跑 20m visibility
+  - 使用不同 `RESULT_ROOT` 串行重跑 15m visibility
+  - 使用不同 `RESULT_ROOT` 串行重跑 20m clearance
+  - 使用不同 `RESULT_ROOT` 串行重跑 15m clearance
+  - 修复 `scripts/audit_wind_orbit_visibility.sh` 与 `scripts/audit_wind_orbit_clearance.sh`，支持 `OUTPUT_DIR` 作为直接输出目录，避免后续同秒输出撞车
+  - 运行 `OUTPUT_DIR=data/results/wind_orbit_visibility_output_dir_smoke_20260608_105500 scripts/audit_wind_orbit_visibility.sh`
+  - 运行 `OUTPUT_DIR=data/results/wind_orbit_clearance_output_dir_smoke_20260608_105500 scripts/audit_wind_orbit_clearance.sh`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - 20m visibility summary：`data/results/wind_visibility_20m_20260608_105400/wind_orbit_visibility_20260608_105405/wind_orbit_visibility_20260608_105405.txt`
+  - 15m visibility summary：`data/results/wind_visibility_r15_20260608_105400/wind_orbit_visibility_20260608_105411/wind_orbit_visibility_20260608_105411.txt`
+  - 20m clearance summary：`data/results/wind_clearance_20m_20260608_105400/wind_orbit_clearance_20260608_105417/wind_orbit_clearance_20260608_105417.txt`
+  - 15m clearance summary：`data/results/wind_clearance_r15_20260608_105400/wind_orbit_clearance_20260608_105424/wind_orbit_clearance_20260608_105424.txt`
+  - visibility：20m `decision=accepted_wind_orbit_visibility_static_audit`
+  - visibility：15m `decision=accepted_wind_orbit_visibility_static_audit`
+  - clearance：20m `decision=accepted_wind_orbit_clearance_static_audit`
+  - clearance：15m `decision=accepted_wind_orbit_clearance_static_audit`
+  - 20m best_view_frame_fill_ratio：`0.092567`
+  - 15m best_view_frame_fill_ratio：`0.109478`
+  - 20m union_visible_ratio：`1.000000`
+  - 15m union_visible_ratio：`1.000000`
+  - 20m minimum static clearance：`8.119593m`
+  - 15m minimum static clearance：`3.119593m`
+  - `OUTPUT_DIR` smoke visibility summary：`data/results/wind_orbit_visibility_output_dir_smoke_20260608_105500/wind_orbit_visibility_20260608_105657.txt`
+  - `OUTPUT_DIR` smoke clearance summary：`data/results/wind_orbit_clearance_output_dir_smoke_20260608_105500/wind_orbit_clearance_20260608_105657.txt`
+  - 四个审计均 `starts_ros=false`、`starts_px4=false`、`starts_gazebo=false`、`starts_rviz=false`、`starts_offboard=false`、`arms=false`、`publishes_fmu_in=false`
+- 结论：
+  - 15m orbit 仍是风机侧更强的观察质量候选
+  - 该结论仅来自静态 visibility/clearance 上界，不是动态碰撞安全或最终覆盖验收
+- 下一步：
+  - 可继续补 wind 15m motion/RViz 最新截图，或设计规则 baseline 的 frustum coverage 审计
+- 阻塞项：无

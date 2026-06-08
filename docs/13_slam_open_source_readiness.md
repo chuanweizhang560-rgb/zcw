@@ -922,7 +922,7 @@ Interpretation:
 
 - Moving from 20m to 15m improves useful depth return, but only modestly.
 - The candidate should stay available for later wind SLAM/RViz and coverage checks.
-- This is not enough to claim turbine coverage readiness because useful depth is still low and no clearance/coverage audit has been completed.
+- This is not enough to claim turbine coverage readiness because useful depth is still low and the available clearance/visibility audits are static upper-bound checks, not dynamic collision or full coverage certificates.
 
 Decision:
 
@@ -973,21 +973,32 @@ Visual assessment:
 Decision:
 
 - Keep 15m as the preferred wind-side candidate for subsequent observation and coverage experiments.
-- Do not claim final wind turbine coverage until a clearance/coverage audit is added.
+- Do not claim final wind turbine coverage until dynamic collision checking and view/frustum coverage auditing are added.
 
 Static clearance follow-up:
 
 - script: `scripts/audit_wind_orbit_clearance.sh`
-- 20m baseline summary: `data/results/wind_orbit_clearance_20260605_145036/wind_orbit_clearance_20260605_145036.txt`
-- 15m candidate summary: `data/results/wind_orbit_clearance_20260605_145042/wind_orbit_clearance_20260605_145042.txt`
+- 20m baseline summary: `data/results/wind_clearance_20m_20260608_105400/wind_orbit_clearance_20260608_105417/wind_orbit_clearance_20260608_105417.txt`
+- 15m candidate summary: `data/results/wind_clearance_r15_20260608_105400/wind_orbit_clearance_20260608_105424/wind_orbit_clearance_20260608_105424.txt`
 - conservative mesh radius: `11.880407m`
 - 20m minimum clearance: `8.119593m`
 - 15m minimum clearance: `3.119593m`
 - both pass the static `1.0m` clearance threshold.
 
+Static visibility follow-up:
+
+- script: `scripts/audit_wind_orbit_visibility.sh`
+- 20m baseline summary: `data/results/wind_visibility_20m_20260608_105400/wind_orbit_visibility_20260608_105405/wind_orbit_visibility_20260608_105405.txt`
+- 15m candidate summary: `data/results/wind_visibility_r15_20260608_105400/wind_orbit_visibility_20260608_105411/wind_orbit_visibility_20260608_105411.txt`
+- 20m best_view_frame_fill_ratio: `0.092567`
+- 15m best_view_frame_fill_ratio: `0.109478`
+- 20m union_visible_ratio: `1.000000`
+- 15m union_visible_ratio: `1.000000`
+
 Interpretation:
 
 - The 15m candidate is not obviously invalid under the conservative static mesh-radius check.
+- The 15m candidate keeps the full-view upper bound and improves frame-fill ratio over the 20m baseline.
 - This still does not prove dynamic collision safety or coverage completeness.
 
 Evidence from previous sensor smoke:
