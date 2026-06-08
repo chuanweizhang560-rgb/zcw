@@ -6189,3 +6189,30 @@
   - 可用 strict 20m target 进入只读 ROS topic publish / RViz debug overlay 复核
   - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
 - 阻塞项：无
+
+### 2026-06-08 09:04:37 CST
+
+- 节点：电缆 5m strict 20m lookahead 只读 ROS topic 与 RViz 复核完成
+- 执行动作：
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 scripts/verify_lookahead_topic_publish.sh`
+  - 首次沙箱运行被 ROS CLI socket 权限限制阻断，提权后重跑通过
+  - 运行 `OFFSET_PATH_CSV=data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv TARGETS_CSV=data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv GROUP_ID=y8_z20 SETTLE_SEC=8 scripts/capture_lookahead_rviz_overlay.sh`
+  - 人工查看 RViz 截图
+  - 更新 `docs/02_cable_tracking_open_source_plan.md`
+- 结果：
+  - topic publish smoke 通过
+  - topic list 包含 `/zcw/cable/offset_path`
+  - topic list 包含 `/zcw/cable/lookahead_target`
+  - offset path echo frame：`map`
+  - lookahead target echo frame：`map`
+  - RViz screenshot：`data/screenshots/lookahead_rviz_overlay_20260608_090437.png`
+  - 截图尺寸：`2490 x 1522`
+  - 截图显示 Global Status、Offset Path、Lookahead Target 均为 OK
+  - 截图中绿色 offset path 与红色 lookahead target 可见
+- 结论：
+  - 5m strict 20m lookahead 候选已通过只读 ROS topic 发布和 RViz debug overlay 复核
+  - 该节点不启动 Gazebo/PX4，不启动 Offboard，不 arm，不发布 `/fmu/in/*`
+- 下一步：
+  - 可基于该候选继续运行只读 safety monitor / dry-run candidate setpoint 复核
+  - 仍不得创建 cable active bridge 或发布 `/fmu/in/*`
+- 阻塞项：无

@@ -228,6 +228,26 @@
      - 每组 `mean_path_tangent_dot` 约 `1.000000`
      - 每组 `mean_target_tangent_dot` 约 `0.999999-1.000000`
    - 审核结论：5m offset path + 严格 20m lookahead 是当前更合理的电缆离线几何候选；它解决了 10m 采样下 lookahead 分辨率不足的问题，同时避开末端短目标点对几何审计的干扰。
+21.4. 5m strict 20m lookahead 只读 ROS topic 与 RViz 复核：
+   - 工具：`verify_lookahead_topic_publish.sh` + `capture_lookahead_rviz_overlay.sh`
+   - 输入 offset path：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+   - 输入 targets：`data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+   - topic publish logs：
+     - node：`data/logs/lookahead_path_publisher_20260608_090231.log`
+     - topic list：`data/logs/lookahead_topic_list_20260608_090231.log`
+     - offset path echo：`data/logs/lookahead_offset_path_echo_20260608_090231.log`
+     - target echo：`data/logs/lookahead_target_echo_20260608_090231.log`
+   - RViz screenshot：`data/screenshots/lookahead_rviz_overlay_20260608_090437.png`
+   - RViz logs：
+     - publisher：`data/logs/lookahead_rviz_publisher_20260608_090437.log`
+     - RViz：`data/logs/lookahead_rviz_20260608_090437.log`
+     - static TF：`data/logs/lookahead_rviz_static_tf_20260608_090437.log`
+   - 结果：
+     - `/zcw/cable/offset_path` 发布正常
+     - `/zcw/cable/lookahead_target` 发布正常
+     - echo frame 为 `map`
+     - RViz 截图显示绿色 offset path 和红色 lookahead target，Global Status、Offset Path、Lookahead Target 均为 OK
+   - 审核结论：5m strict 20m 候选已通过只读 ROS topic 和 RViz debug overlay 复核；该节点不启动 Gazebo/PX4，不发布 `/fmu/in/*`。
 22. 只读 ROS topic 发布烟测：
    - 工具：`lookahead_path_publisher`
    - 验证：`scripts/verify_lookahead_topic_publish.sh`
