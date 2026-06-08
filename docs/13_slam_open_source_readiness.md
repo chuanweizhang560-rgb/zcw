@@ -678,6 +678,25 @@ Decision:
 - Promote this as the strongest current single-vehicle SLAM evidence in the repository.
 - Use it as the default reference when evaluating later coupling between inspection trajectory and mapping coverage.
 
+Supplemental re-check on 2026-06-08:
+
+- command: `SETTLE_SEC=10 scripts/capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`
+- summary: `data/results/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260608_104943/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260608_104943.txt`
+- screenshot: `data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260608_104943.png`
+- RTAB-Map log: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_rtabmap_20260608_104943.log`
+- waypoint motion log: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_offboard_20260608_104943.log`
+- vehicle status log: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_vehicle_status_20260608_104943.log`
+- local position log: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_vehicle_local_position_20260608_104943.log`
+- topics log: `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_topics_20260608_104943.log`
+- result: `decision=accepted_rtabmap_depth_camera_rgbd_motion_rviz_overlay`
+- `rtabmap_ok=true`
+- `outputs_ok=true`
+- `motion_ok=true`
+- `screenshot_ok=1`
+- boundary: this uses the existing cable waypoint rule baseline, so it starts Offboard, arms, and publishes PX4 input topics for that baseline; it is not the cable Phase B active bridge and does not consume cable lookahead/gate setpoints.
+
+Manual screenshot review: RViz Global Status is OK, `Cloud Map` is OK, and the screenshot is non-empty with visible motion-backed cloud/map structure. It remains smoke evidence for SLAM plumbing during motion, not a final SLAM accuracy or mapping-quality certificate.
+
 ## 17. RTAB-Map RGB-D Wind Motion RViz Evidence
 
 Command:

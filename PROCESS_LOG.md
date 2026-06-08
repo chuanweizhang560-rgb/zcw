@@ -6457,3 +6457,40 @@
 - 下一步：
   - 可继续复跑 motion-backed RGB-D SLAM 证据，或推进风机 15m orbit 的覆盖/深度可见性审计
 - 阻塞项：无
+
+### 2026-06-08 10:51:44 CST
+
+- 节点：RTAB-Map RGB-D motion-backed RViz overlay 补充复核完成
+- 执行动作：
+  - 运行 `SETTLE_SEC=10 scripts/capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`
+  - 读取 motion RViz overlay summary
+  - 打开真实 RViz 截图进行人工视觉审核
+  - 检查仿真相关进程清理状态
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - summary：`data/results/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260608_104943/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260608_104943.txt`
+  - screenshot：`data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260608_104943.png`
+  - RTAB-Map log：`data/logs/rtabmap_depth_camera_rgbd_motion_rviz_rtabmap_20260608_104943.log`
+  - waypoint motion log：`data/logs/rtabmap_depth_camera_rgbd_motion_rviz_offboard_20260608_104943.log`
+  - vehicle status log：`data/logs/rtabmap_depth_camera_rgbd_motion_rviz_vehicle_status_20260608_104943.log`
+  - local position log：`data/logs/rtabmap_depth_camera_rgbd_motion_rviz_vehicle_local_position_20260608_104943.log`
+  - topics log：`data/logs/rtabmap_depth_camera_rgbd_motion_rviz_topics_20260608_104943.log`
+  - `decision=accepted_rtabmap_depth_camera_rgbd_motion_rviz_overlay`
+  - `rtabmap_ok=true`
+  - `outputs_ok=true`
+  - `motion_ok=true`
+  - `screenshot_ok=1`
+  - `starts_offboard=true`
+  - `arms=true`
+  - `publishes_fmu_in=true`
+  - RViz Global Status 为 OK
+  - `Cloud Map` display 为 OK
+  - 截图非空，显示 motion-backed cloud/map 结构
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`gazebo`、`MicroXRCEAgent` 残留进程
+- 结论：
+  - RTAB-Map RGB-D 在规则 waypoint baseline 运动中仍能输出可视化 smoke 证据
+  - 该节点使用已有规则 baseline 的 Offboard/arm，不是 cable Phase B active bridge，也不消费 cable lookahead/gate setpoint
+  - 这仍不是 SLAM 精度验收
+- 下一步：
+  - 可继续推进风机 15m orbit 的覆盖/深度可见性审计，或整理 SLAM 当前完成度边界
+- 阻塞项：无
