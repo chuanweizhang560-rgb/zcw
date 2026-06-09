@@ -132,6 +132,48 @@ Stage M2: read-only ROS graph smoke.
 - Verify dry-run topics are published.
 - Verify `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` publisher count remains `0`.
 
+Latest M2 evidence:
+
+- smoke script: `scripts/verify_two_vehicle_dry_run_smoke.sh`
+- summary: `data/results/two_vehicle_dry_run_smoke_20260609_105232/two_vehicle_dry_run_smoke_20260609_105232.txt`
+- dry-run samples: `data/logs/two_vehicle_dry_run_samples_20260609_105232.log`
+- forbidden publishers: `data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_105232.log`
+- topics log: `data/logs/two_vehicle_dry_run_topics_20260609_105232.log`
+- planner log: `data/logs/two_vehicle_dry_run_planner_20260609_105232.log`
+
+Observed M2 result:
+
+```text
+decision=accepted_two_vehicle_dry_run_smoke
+starts_ros=true
+starts_px4=true
+starts_gazebo=true
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+dry_topics_ok=true
+forbidden_publishers_zero=true
+observed_px4_1_vehicle_status=true
+observed_px4_2_vehicle_status=true
+```
+
+Observed dry-run topics:
+
+- `/zcw/multi_vehicle/dry_run/vehicle_1_goal`
+- `/zcw/multi_vehicle/dry_run/vehicle_2_goal`
+- `/zcw/multi_vehicle/dry_run/topology_state`
+- `/zcw/multi_vehicle/dry_run/safety_state`
+
+Observed forbidden publisher counts:
+
+- `/px4_1/fmu/in/offboard_control_mode`: `0`
+- `/px4_1/fmu/in/trajectory_setpoint`: `0`
+- `/px4_1/fmu/in/vehicle_command`: `0`
+- `/px4_2/fmu/in/offboard_control_mode`: `0`
+- `/px4_2/fmu/in/trajectory_setpoint`: `0`
+- `/px4_2/fmu/in/vehicle_command`: `0`
+
 Stage M3: RViz overlay.
 
 - Show vehicle poses, candidate goals and relay radius.

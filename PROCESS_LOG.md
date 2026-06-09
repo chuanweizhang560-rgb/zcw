@@ -7016,3 +7016,59 @@
 - 下一步：
   - 实现并运行 M2 read-only smoke：双 PX4 实例 + dry-run planner + 验证 `/px4_*/fmu/in/*` publisher count 仍为 0
 - 阻塞项：无
+
+### 2026-06-09 10:53:06 CST
+
+- 节点：两机 dry-run planner M2 read-only smoke 完成
+- 执行动作：
+  - 新增 `scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 新脚本启动 PX4/Gazebo Classic 双机 read-only、Micro XRCE-DDS 和 `two_vehicle_dry_run_planner`
+  - 新脚本验证 `/zcw/multi_vehicle/dry_run/*` 话题发布
+  - 新脚本验证 `/px4_1/fmu/in/*`、`/px4_2/fmu/in/*` 关键 topic publisher count 保持 `0`
+  - 在沙箱外运行 `scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 读取 summary
+  - 读取 dry-run topic samples
+  - 读取 forbidden publishers log
+  - 检查仿真相关进程清理状态
+  - 更新 `scripts/README.md`
+  - 更新 `docs/15_two_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/two_vehicle_dry_run_smoke_20260609_105232/two_vehicle_dry_run_smoke_20260609_105232.txt`
+  - dry-run samples：`data/logs/two_vehicle_dry_run_samples_20260609_105232.log`
+  - forbidden publishers：`data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_105232.log`
+  - topics log：`data/logs/two_vehicle_dry_run_topics_20260609_105232.log`
+  - planner log：`data/logs/two_vehicle_dry_run_planner_20260609_105232.log`
+  - `decision=accepted_two_vehicle_dry_run_smoke`
+  - `starts_ros=true`
+  - `starts_px4=true`
+  - `starts_gazebo=true`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `num_vehicles=2`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - `observed_px4_1_vehicle_status=true`
+  - `observed_px4_2_vehicle_status=true`
+  - dry-run samples 包含：
+    - `/zcw/multi_vehicle/dry_run/vehicle_1_goal`
+    - `/zcw/multi_vehicle/dry_run/vehicle_2_goal`
+    - `/zcw/multi_vehicle/dry_run/topology_state`
+    - `/zcw/multi_vehicle/dry_run/safety_state`
+  - forbidden publisher check reports publisher count `0` for：
+    - `/px4_1/fmu/in/offboard_control_mode`
+    - `/px4_1/fmu/in/trajectory_setpoint`
+    - `/px4_1/fmu/in/vehicle_command`
+    - `/px4_2/fmu/in/offboard_control_mode`
+    - `/px4_2/fmu/in/trajectory_setpoint`
+    - `/px4_2/fmu/in/vehicle_command`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`two_vehicle_dry_run`、`iris_1_dry_run`、`iris_2_dry_run` 残留进程
+- 结论：
+  - two-vehicle dry-run planner 可以与两台 PX4 read-only 实例同时运行
+  - dry-run planner 发布 dry-run topic，但不发布 PX4 input topic
+  - 该节点不启动 Offboard、不 arm、不批准 multi-vehicle active control
+- 下一步：
+  - 可实现 M3 RViz overlay，显示两机 dry-run goal/topology 状态并截图
+- 阻塞项：无
