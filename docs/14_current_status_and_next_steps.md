@@ -113,6 +113,7 @@ Current status:
 - Two-vehicle read-only smoke was refreshed on 2026-06-09 and accepted with `/px4_1` and `/px4_2` output namespaces observed.
 - Refreshed multi-vehicle forbidden publisher audit confirms key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` project publisher counts are `0`.
 - Two-vehicle rule-baseline design exists at `docs/15_two_vehicle_rule_baseline_design.md`.
+- Two-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Multi-vehicle task planning/RL is not implemented.
 - Current reliable evidence is mostly single-vehicle baseline, mapping, and dry-run control-gate evidence.
 
@@ -126,13 +127,13 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Implement the M1 static contract audit for the two-vehicle dry-run planner.
+1. Implement M2 read-only ROS graph smoke for `two_vehicle_dry_run_planner`.
 
 Reason:
 
 - Wind has strong single-vehicle dynamic/coverage evidence now.
 - Multi-vehicle has refreshed read-only namespace evidence and a dry-run-first rule-baseline design.
-- The next gap is an enforceable static contract audit before adding any dry-run planner node.
+- M1 static contract audit is accepted; the next gap is running the dry-run planner alongside two read-only PX4 instances and proving `/px4_*/fmu/in/*` publisher counts stay `0`.
 
 Safety boundary for that node:
 

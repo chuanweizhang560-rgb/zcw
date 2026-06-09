@@ -98,6 +98,33 @@ Stage M1: static contract audit.
 - Verify launch files do not start Offboard or arm.
 - Verify all output topic names are under `/zcw/multi_vehicle/dry_run/`.
 
+Latest M1 evidence:
+
+- node source: `ros2_ws/src/zcw_px4_baseline/src/two_vehicle_dry_run_planner.cpp`
+- launch: `ros2_ws/src/zcw_bringup/launch/two_vehicle_dry_run_planner.launch.py`
+- audit script: `scripts/audit_two_vehicle_dry_run_contract.sh`
+- summary: `data/results/two_vehicle_dry_run_contract_20260609_104927/two_vehicle_dry_run_contract_20260609_104927.txt`
+- detail log: `data/results/two_vehicle_dry_run_contract_20260609_104927/two_vehicle_dry_run_contract_detail_20260609_104927.log`
+
+Observed M1 result:
+
+```text
+decision=accepted_two_vehicle_dry_run_contract_static_audit
+starts_ros=false
+starts_px4=false
+starts_gazebo=false
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+has_source_target=true
+has_launch_node=true
+has_allowed_outputs=true
+has_allowed_inputs=true
+forbidden_topics=false
+forbidden_active_terms=false
+```
+
 Stage M2: read-only ROS graph smoke.
 
 - Start two-vehicle read-only PX4/Gazebo using `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh` or a derived wrapper.

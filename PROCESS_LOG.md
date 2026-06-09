@@ -6967,3 +6967,52 @@
 - 下一步：
   - 实现 M1 static contract audit，先检查未来 dry-run planner 的 topic/依赖/launch 边界
 - 阻塞项：无
+
+### 2026-06-09 10:50:18 CST
+
+- 节点：两机 dry-run planner 与 M1 static contract audit 完成
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_px4_baseline/src/two_vehicle_dry_run_planner.cpp`
+  - 新节点只读订阅：
+    - `/px4_1/fmu/out/vehicle_local_position`
+    - `/px4_2/fmu/out/vehicle_local_position`
+    - `/px4_1/fmu/out/vehicle_status`
+    - `/px4_2/fmu/out/vehicle_status`
+  - 新节点只发布：
+    - `/zcw/multi_vehicle/dry_run/vehicle_1_goal`
+    - `/zcw/multi_vehicle/dry_run/vehicle_2_goal`
+    - `/zcw/multi_vehicle/dry_run/topology_state`
+    - `/zcw/multi_vehicle/dry_run/safety_state`
+  - 更新 `ros2_ws/src/zcw_px4_baseline/CMakeLists.txt`
+  - 新增 `ros2_ws/src/zcw_bringup/launch/two_vehicle_dry_run_planner.launch.py`
+  - 新增 `scripts/audit_two_vehicle_dry_run_contract.sh`
+  - 执行 `colcon build --packages-select zcw_px4_baseline zcw_bringup --symlink-install`
+  - 首次 M1 审计 detail 阶段出现 `rg` 正则噪声，修复后重跑
+  - 重新运行 `scripts/audit_two_vehicle_dry_run_contract.sh`
+  - 更新 `scripts/README.md`
+  - 更新 `docs/15_two_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/two_vehicle_dry_run_contract_20260609_104927/two_vehicle_dry_run_contract_20260609_104927.txt`
+  - detail log：`data/results/two_vehicle_dry_run_contract_20260609_104927/two_vehicle_dry_run_contract_detail_20260609_104927.log`
+  - `decision=accepted_two_vehicle_dry_run_contract_static_audit`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `has_source_target=true`
+  - `has_launch_node=true`
+  - `has_allowed_outputs=true`
+  - `has_allowed_inputs=true`
+  - `forbidden_topics=false`
+  - `forbidden_active_terms=false`
+- 结论：
+  - two-vehicle dry-run planner 的 M1 静态合同审计通过
+  - 该节点目前只具备 dry-run 规划输出，不允许 Offboard/arm
+  - 尚未运行 M2 two-vehicle read-only ROS graph smoke
+- 下一步：
+  - 实现并运行 M2 read-only smoke：双 PX4 实例 + dry-run planner + 验证 `/px4_*/fmu/in/*` publisher count 仍为 0
+- 阻塞项：无
