@@ -6574,3 +6574,41 @@
 - 下一步：
   - 可继续设计/实现规则 baseline 的 frustum coverage 离线审计，或整理当前阶段总结
 - 阻塞项：无
+
+### 2026-06-09 09:24:27 CST
+
+- 节点：风机 orbit frustum coverage 离线上界审计完成
+- 执行动作：
+  - 新增 `scripts/audit_wind_orbit_frustum_coverage.sh`
+  - 新脚本只读解析 wind turbine multilevel orbit launch、AerialCore world 和 wind turbine Collada mesh
+  - 新脚本输出 mesh 顶点级 frustum coverage 上界、重复观测比例、高度分段覆盖率、逐视角可见顶点统计
+  - 并行执行 `chmod +x` 与 20m 审计时出现权限竞态，20m 首次运行失败为 `权限不够`
+  - 15m 审计先通过
+  - 20m 审计在 chmod 完成后单独重跑通过
+  - 更新 `scripts/README.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+- 结果：
+  - 20m summary：`data/results/wind_frustum_coverage_20m_20260609_000000/wind_orbit_frustum_coverage_20260609_092332.txt`
+  - 15m summary：`data/results/wind_frustum_coverage_r15_20260609_000000/wind_orbit_frustum_coverage_20260609_092324.txt`
+  - 20m vertex CSV：`data/results/wind_frustum_coverage_20m_20260609_000000/wind_orbit_frustum_coverage_vertices_20260609_092332.csv`
+  - 15m vertex CSV：`data/results/wind_frustum_coverage_r15_20260609_000000/wind_orbit_frustum_coverage_vertices_20260609_092324.csv`
+  - 20m band CSV：`data/results/wind_frustum_coverage_20m_20260609_000000/wind_orbit_frustum_coverage_bands_20260609_092332.csv`
+  - 15m band CSV：`data/results/wind_frustum_coverage_r15_20260609_000000/wind_orbit_frustum_coverage_bands_20260609_092324.csv`
+  - 20m view CSV：`data/results/wind_frustum_coverage_20m_20260609_000000/wind_orbit_frustum_coverage_views_20260609_092332.csv`
+  - 15m view CSV：`data/results/wind_frustum_coverage_r15_20260609_000000/wind_orbit_frustum_coverage_views_20260609_092324.csv`
+  - 20m `decision=accepted_wind_orbit_frustum_coverage_static_audit`
+  - 15m `decision=accepted_wind_orbit_frustum_coverage_static_audit`
+  - 20m `vertex_coverage_ratio=1.000000`
+  - 15m `vertex_coverage_ratio=1.000000`
+  - 20m `double_observed_ratio=1.000000`
+  - 15m `double_observed_ratio=1.000000`
+  - 20m `min_band_coverage_ratio_observed=1.000000`
+  - 15m `min_band_coverage_ratio_observed=1.000000`
+  - 两个审计均 `starts_ros=false`、`starts_px4=false`、`starts_gazebo=false`、`starts_rviz=false`、`starts_offboard=false`、`arms=false`、`publishes_fmu_in=false`
+- 结论：
+  - 当前风机 orbit 几何通过静态 mesh 顶点 frustum coverage 上界审计
+  - 该审计不建模遮挡、表面法向、图像纹理质量、动态碰撞安全或 useful-depth 有效性，不能作为最终风机覆盖证书
+- 下一步：
+  - 可继续补 useful-depth 与 frustum coverage 的联合审计，或整理当前阶段完成度总结
+- 阻塞项：无

@@ -17,6 +17,7 @@
 - `audit_wind_turbine_geometry_baseline.sh`：只读解析 AerialCore 风机 world、DAE 粗边界和当前风机 waypoint launch，输出当前 baseline 几何审计和待审推荐 orbit CSV；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_wind_turbine_multilevel_orbit_launch.sh`：只读解析风机 multilevel orbit launch，检查 4 层、每层 12 点、总 49 个 waypoint、指定半径和 yaw 指向风机中心；默认审计 20m baseline，也可用 `LAUNCH_PATH` 与 `EXPECTED_RADIUS_M` 审计 15m 候选；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_wind_orbit_clearance.sh`：只读解析风机 multilevel orbit launch 和 AerialCore wind turbine mesh，用 Collada 三个坐标平面最大半径估计保守静态 clearance；默认审计 20m baseline，可用 `LAUNCH_PATH` 审计 15m 候选，可用 `OUTPUT_DIR` 指定直接输出目录；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_wind_orbit_frustum_coverage.sh`：只读解析风机 multilevel orbit launch、AerialCore world 和 wind turbine mesh，输出 mesh 顶点级 frustum coverage 上界、重复观测比例和高度分段覆盖率；默认审计 20m baseline，可用 `LAUNCH_PATH` 审计 15m 候选，可用 `OUTPUT_DIR` 指定直接输出目录；不做遮挡/法向/动态碰撞/图像质量判断，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_wind_turbine_multilevel_orbit.sh`：加载 AerialCore 风机 world，并运行独立 multilevel orbit waypoint/yaw baseline；该脚本会启动 PX4 Offboard/arm，仅用于风机规则 baseline 验证，不属于电缆 Phase B active。
 - `capture_wind_turbine_multilevel_orbit_gui.sh`：启动 AerialCore 风机 world 的 Gazebo GUI、Micro XRCE-DDS 和 multilevel orbit launch，等待真实 waypoint advancement 后截取 Gazebo GUI 截图。
 - `verify_cable_waypoints.sh`：加载 AerialCore 两塔导线 world，并运行最小电缆巡检几何 waypoint baseline。

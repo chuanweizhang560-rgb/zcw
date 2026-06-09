@@ -1022,6 +1022,20 @@ Interpretation:
 - The 15m candidate keeps the full-view upper bound and improves frame-fill ratio over the 20m baseline.
 - This still does not prove dynamic collision safety or coverage completeness.
 
+Static frustum coverage upper-bound follow-up:
+
+- script: `scripts/audit_wind_orbit_frustum_coverage.sh`
+- 20m baseline summary: `data/results/wind_frustum_coverage_20m_20260609_000000/wind_orbit_frustum_coverage_20260609_092332.txt`
+- 15m candidate summary: `data/results/wind_frustum_coverage_r15_20260609_000000/wind_orbit_frustum_coverage_20260609_092324.txt`
+- 20m vertex_coverage_ratio: `1.000000`
+- 15m vertex_coverage_ratio: `1.000000`
+- 20m double_observed_ratio: `1.000000`
+- 15m double_observed_ratio: `1.000000`
+- 20m min_band_coverage_ratio_observed: `1.000000`
+- 15m min_band_coverage_ratio_observed: `1.000000`
+
+Interpretation: the wind orbit geometry passes a static mesh-vertex frustum coverage upper-bound audit. This is still weaker than inspection coverage because it omits occlusion, surface normals, useful-depth validity and dynamic collision safety.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

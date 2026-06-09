@@ -312,6 +312,20 @@ Supplemental 15m RTAB-Map RGB-D motion evidence on 2026-06-08:
 
 Manual screenshot review: RViz Global Status is OK; `Cloud Map` and `Octomap Occupied Space` displays are OK; the screenshot is non-empty and shows localized cloud/octomap structure. This supports 15m as the preferred observation candidate, but still does not prove turbine surface coverage completion.
 
+Supplemental frustum coverage upper-bound audit on 2026-06-09:
+
+- script: `scripts/audit_wind_orbit_frustum_coverage.sh`
+- 20m summary: `data/results/wind_frustum_coverage_20m_20260609_000000/wind_orbit_frustum_coverage_20260609_092332.txt`
+- 15m summary: `data/results/wind_frustum_coverage_r15_20260609_000000/wind_orbit_frustum_coverage_20260609_092324.txt`
+- 20m vertex_coverage_ratio: `1.000000`
+- 15m vertex_coverage_ratio: `1.000000`
+- 20m double_observed_ratio: `1.000000`
+- 15m double_observed_ratio: `1.000000`
+- 20m min_band_coverage_ratio_observed: `1.000000`
+- 15m min_band_coverage_ratio_observed: `1.000000`
+
+This confirms that the current orbit geometry satisfies a static mesh-vertex frustum upper-bound audit. It is intentionally not a final coverage certificate because it does not model occlusion, surface normals, image texture quality, dynamic collision safety, or useful-depth validity.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:
