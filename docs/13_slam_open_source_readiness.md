@@ -1091,6 +1091,21 @@ Longer dynamic 15m wind follow-up:
 
 Interpretation: this is the strongest current wind task dynamic evidence. It still is not SLAM accuracy evidence and still omits occlusion-aware coverage.
 
+Occlusion-aware wind coverage follow-up:
+
+- setup script: `scripts/setup_geometry_venv.sh`
+- audit script: `scripts/audit_wind_occlusion_coverage_progression.sh`
+- mature libraries used: `trimesh==4.12.2`, `rtree==1.4.1`, `pycollada==0.9.3`
+- accepted fast summary: `data/results/wind_occlusion_coverage_progression_r15_full_fast_20260609_000000/wind_occlusion_coverage_progression_20260609_103920.txt`
+- pose source: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_pose_20260609_095734.csv`
+- pose_stride: `20`
+- face_stride: `8`
+- ray_tests: `28505`
+- final_occlusion_clear_normal_coverage_ratio: `0.634335`
+- min_band_occlusion_clear_normal_ratio_observed: `0.534884`
+
+Interpretation: this is a mature-library sampled ray-intersection audit for task coverage. It is still not SLAM accuracy evidence and does not perform image-level defect detection.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

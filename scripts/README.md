@@ -7,6 +7,7 @@
 ## 当前脚本
 
 - `setup_px4_venv.sh`：基于系统 Python 3.10 建立 PX4 release/1.14 专用 venv，并固定 `empy==3.3.4`。
+- `setup_geometry_venv.sh`：建立 `.venv/geometry` 并安装 `trimesh==4.12.2`、`rtree==1.4.1`、`pycollada==0.9.3`，用于成熟库驱动的 wind mesh/ray coverage 审计；`.venv/` 被 git 忽略。
 - `run_px4_gazebo_classic_headless.sh`：用 clean env 启动 PX4 SITL + Gazebo Classic headless，并把运行日志写入 `data/logs/`。
 - `run_px4_aerialcore_world_headless.sh`：用 PX4 `iris` 加载 AerialCore 风机或两塔导线 world，做组合 smoke test。
 - `build_microxrce_agent.sh`：用 eProsima Micro-XRCE-DDS-Agent v2.2.1 和系统 FastDDS/FastCDR 构建 `MicroXRCEAgent`。
@@ -20,6 +21,7 @@
 - `audit_wind_orbit_frustum_coverage.sh`：只读解析风机 multilevel orbit launch、AerialCore world 和 wind turbine mesh，输出 mesh 顶点级 frustum coverage 上界、重复观测比例和高度分段覆盖率；默认审计 20m baseline，可用 `LAUNCH_PATH` 审计 15m 候选，可用 `OUTPUT_DIR` 指定直接输出目录；不做遮挡/法向/动态碰撞/图像质量判断，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_wind_orbit_quality_coverage.sh`：只读解析风机 multilevel orbit launch、AerialCore world、wind turbine mesh 三角面片/法向，并联动既有 wind depth stats summary，输出三角面片中心的 frustum 覆盖、法向观测角过滤覆盖、高度分段覆盖和 useful-depth 指标；默认审计 20m baseline，可用 `LAUNCH_PATH` 审计 15m 候选，可用 `DEPTH_STATS_SUMMARY` 指定真实仿真 depth 统计；不做遮挡/动态碰撞/视觉缺陷识别，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_wind_dynamic_coverage_progression.sh`：只读消费 `wind_dynamic_orbit_audit` 的真实 PX4 local position CSV，结合 AerialCore wind turbine mesh 三角面片/法向计算动态累计 frustum/normal-filtered 覆盖 progression 和高度分段结果；默认读取最新动态 pose CSV，可用 `POSE_CSV` 指定证据；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_wind_occlusion_coverage_progression.sh`：使用 `.venv/geometry` 中的成熟开源库 `trimesh`/`rtree`/`pycollada`，只读消费 longer 15m pose CSV 与 wind turbine mesh，执行抽样 ray intersection，输出 occlusion-clear normal-filtered coverage progression；默认 `POSE_STRIDE=20`、`FACE_STRIDE=8` 以控制运行时间，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_wind_turbine_multilevel_orbit.sh`：加载 AerialCore 风机 world，并运行独立 multilevel orbit waypoint/yaw baseline；该脚本会启动 PX4 Offboard/arm，仅用于风机规则 baseline 验证，不属于电缆 Phase B active。
 - `capture_wind_turbine_multilevel_orbit_gui.sh`：启动 AerialCore 风机 world 的 Gazebo GUI、Micro XRCE-DDS 和 multilevel orbit launch，等待真实 waypoint advancement 后截取 Gazebo GUI 截图。
 - `verify_wind_dynamic_orbit_audit.sh`：启动 AerialCore 风机场景、PX4 `iris_depth_camera` 和风机规则 orbit baseline，运行只读 `wind_dynamic_orbit_audit` 订阅 `/fmu/out/vehicle_local_position` 与 `/camera/depth/image_raw`，记录真实运动轨迹、保守 clearance、半径误差和 useful-depth progression；该脚本会启动 wind Offboard/arm 并发布 PX4 输入 topic，仅用于风机规则 baseline 动态审计，不属于电缆 Phase B active。

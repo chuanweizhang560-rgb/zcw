@@ -420,6 +420,32 @@ Decision:
 - Compared with the 35-second partial run, final normal-filtered coverage improved from `0.637935` to `0.688708`, and the weakest band improved from `0.410206` to `0.546614`.
 - The result still omits occlusion and image-level inspection quality, so it should be treated as dynamic geometry/sensor-readiness evidence rather than final inspection acceptance.
 
+Supplemental occlusion-aware 15m coverage progression on 2026-06-09:
+
+- setup script: `scripts/setup_geometry_venv.sh`
+- audit script: `scripts/audit_wind_occlusion_coverage_progression.sh`
+- dependency path: `.venv/geometry`
+- mature libraries used: `trimesh==4.12.2`, `rtree==1.4.1`, `pycollada==0.9.3`
+- first default attempt with denser sampling was terminated after excessive runtime
+- accepted fast summary: `data/results/wind_occlusion_coverage_progression_r15_full_fast_20260609_000000/wind_occlusion_coverage_progression_20260609_103920.txt`
+- accepted fast progression CSV: `data/results/wind_occlusion_coverage_progression_r15_full_fast_20260609_000000/wind_occlusion_coverage_progression_20260609_103920.csv`
+- accepted fast band CSV: `data/results/wind_occlusion_coverage_progression_r15_full_fast_20260609_000000/wind_occlusion_coverage_progression_bands_20260609_103920.csv`
+- pose source: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_pose_20260609_095734.csv`
+- pose_stride: `20`
+- face_stride: `8`
+- pose_samples_used: `60`
+- mesh_samples: `1165`
+- ray_tests: `28505`
+- final_normal_filtered_coverage_ratio: `0.690129`
+- final_occlusion_clear_normal_coverage_ratio: `0.634335`
+- min_band_occlusion_clear_normal_ratio_observed: `0.534884`
+
+Decision:
+
+- The project now has a mature-library occlusion-aware wind coverage audit path.
+- The current accepted occlusion result is intentionally sampled for runtime control, so it is evidence of method readiness and approximate coverage, not dense final coverage certification.
+- The result still does not perform image-level defect detection or guarantee photometric quality.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:

@@ -61,6 +61,7 @@ Accepted evidence:
 - static quality coverage audit accepted for both 20m and 15m, combining frustum, mesh surface-normal/view-angle filtering and prior useful-depth stats.
 - 15m short dynamic orbit audit accepted with real PX4/Gazebo motion, 350 pose samples, 101 depth frames, `final_normal_filtered_coverage_ratio=0.637935`.
 - 15m longer dynamic orbit audit accepted with all 48 waypoint advancements, 1200 pose samples, 315 depth frames, `min_conservative_clearance_m=2.72578086707`, `mean_useful_ratio=0.232852213737`, `final_normal_filtered_coverage_ratio=0.688708`, weakest band `0.546614`.
+- 15m occlusion-aware fast progression audit accepted using `trimesh`/`rtree` ray intersection, with `pose_stride=20`, `face_stride=8`, `ray_tests=28505`, `final_occlusion_clear_normal_coverage_ratio=0.634335`, weakest band `0.534884`.
 
 Important boundary:
 
@@ -71,8 +72,9 @@ Important boundary:
 
 Next wind work:
 
-- Add a stricter occlusion-aware or ray-casting coverage audit before calling wind inspection complete.
-- Consider orbit adjustment only after occlusion-aware results identify persistent uncovered regions.
+- Add a denser occlusion-aware audit if runtime permits, or keep the fast audit as approximate method evidence.
+- Add image-level quality/defect-detection integration only through mature open-source models or clearly separated future work.
+- Define explicit wind inspection acceptance thresholds before claiming completion.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
 - Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion.
 
@@ -121,12 +123,12 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Add an occlusion-aware wind coverage audit or a ray-casting approximation over the accepted longer 15m pose CSV.
+1. Decide whether the next wind node should optimize the occlusion audit runtime, add visual screenshot evidence, or move back to cable/multi-vehicle work.
 
 Reason:
 
-- The offline quality coverage audit, real-motion dynamic orbit audit and longer full-waypoint dynamic coverage progression audit all exist now.
-- The largest remaining wind gap is occlusion-aware coverage, not basic motion.
+- The offline quality coverage audit, real-motion dynamic orbit audit, longer full-waypoint dynamic coverage progression audit and sampled occlusion-aware audit all exist now.
+- The largest remaining wind gap is dense occlusion/image-quality evidence and formal acceptance thresholds, not basic motion.
 
 Safety boundary for that node:
 

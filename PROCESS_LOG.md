@@ -6831,3 +6831,64 @@
 - 下一步：
   - 可继续实现 occlusion-aware/ray-casting 风机覆盖审计，离线消费 longer 15m pose CSV
 - 阻塞项：无
+
+### 2026-06-09 10:41:10 CST
+
+- 节点：风机 15m occlusion-aware coverage progression 快速审计完成
+- 执行动作：
+  - 检查本机默认 Python 几何库状态：`trimesh`、`rtree`、`scipy` 在默认 `python3` 不可见，`numpy` 可见
+  - 检查 `/usr/bin/python3`：`numpy`、`scipy` 可见，`rtree`、`trimesh` 不可见
+  - apt 仓库未发现 `python3-trimesh`
+  - 新建 ignored venv：`.venv/geometry`
+  - 安装成熟开源库：`trimesh==4.12.2`、`rtree==1.4.1`、`pycollada==0.9.3`
+  - 验证 `trimesh` 可读取 AerialCore wind turbine DAE 并执行 ray query
+  - 新增 `scripts/setup_geometry_venv.sh`
+  - 新增 `scripts/audit_wind_occlusion_coverage_progression.sh`
+  - 首次使用较密抽样运行 `audit_wind_occlusion_coverage_progression.sh`，运行超过合理时间
+  - 在沙箱外定位并终止长时离线 `trimesh` ray 审计进程
+  - 将脚本默认抽样调整为 `POSE_STRIDE=20`、`FACE_STRIDE=8`、`RAY_CHUNK_SIZE=5000`
+  - 使用 `timeout 180s` 执行快速遮挡审计并通过
+  - 更新 `scripts/README.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - setup script：`scripts/setup_geometry_venv.sh`
+  - audit script：`scripts/audit_wind_occlusion_coverage_progression.sh`
+  - accepted fast summary：`data/results/wind_occlusion_coverage_progression_r15_full_fast_20260609_000000/wind_occlusion_coverage_progression_20260609_103920.txt`
+  - accepted fast progression CSV：`data/results/wind_occlusion_coverage_progression_r15_full_fast_20260609_000000/wind_occlusion_coverage_progression_20260609_103920.csv`
+  - accepted fast band CSV：`data/results/wind_occlusion_coverage_progression_r15_full_fast_20260609_000000/wind_occlusion_coverage_progression_bands_20260609_103920.csv`
+  - pose source：`data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_pose_20260609_095734.csv`
+  - `decision=accepted_wind_occlusion_coverage_progression_static_audit`
+  - `uses_trimesh=true`
+  - `uses_rtree=true`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `pose_stride=20`
+  - `face_stride=8`
+  - `pose_samples_used=60`
+  - `mesh_samples=1165`
+  - `ray_tests=28505`
+  - `ray_clear=22243`
+  - `final_frustum_coverage_ratio=1.000000`
+  - `final_normal_filtered_coverage_ratio=0.690129`
+  - `final_occlusion_clear_normal_coverage_ratio=0.634335`
+  - `min_band_occlusion_clear_normal_ratio_observed=0.534884`
+  - 高度分段 occlusion-clear normal coverage：
+    - band 0：`1.000000`
+    - band 1：`1.000000`
+    - band 2：`0.628803`
+    - band 3：`0.534884`
+- 结论：
+  - 项目现在具备基于成熟开源库 `trimesh`/`rtree` 的风机遮挡感知覆盖审计路径
+  - 当前结果是抽样快速版，用于证明方法链路和近似覆盖，不是密集最终验收
+  - 该节点不启动仿真、不控制 PX4、不涉及 cable Phase B active bridge
+  - 该节点仍不包含图像级缺陷识别或 photometric quality 判断
+- 下一步：
+  - 可优化遮挡审计运行效率、尝试更密抽样，或转回 cable/multi-vehicle 节点
+- 阻塞项：无
