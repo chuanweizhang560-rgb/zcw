@@ -350,6 +350,30 @@ Decision:
 - The current practical decision remains unchanged: keep 20m as the safer accepted baseline, keep 15m as the preferred observation-quality candidate for additional dynamic tests.
 - This audit still does not model occlusion, dynamic collision safety, actual image defect recognition or final inspection completion.
 
+Supplemental 15m dynamic orbit audit on 2026-06-09:
+
+- script: `scripts/verify_wind_dynamic_orbit_audit.sh`
+- wrapper summary: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_audit_wrapper_20260609_094838.txt`
+- node summary: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_audit_20260609_094921.txt`
+- pose CSV: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_pose_20260609_094921.csv`
+- depth CSV: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_depth_20260609_094921.csv`
+- launch: `single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+- waypoint_advancements: `23`
+- pose_samples: `350`
+- depth_frames: `101`
+- min_conservative_clearance_m: `2.8703362146`
+- mean_radius_error_m: `0.177446480778`
+- max_radius_error_m_observed: `0.462360872702`
+- mean_useful_ratio: `0.0854219693785`
+- max_useful_ratio: `0.218219339623`
+
+Decision:
+
+- The 15m candidate now has accepted real-motion dynamic audit evidence in headless PX4/Gazebo.
+- The audit uses a conservative mesh-radius clearance proxy and does not replace full mesh collision checking.
+- It records useful depth during real motion, but it still does not prove final inspection coverage, occlusion-free observation, or defect detection.
+- The 15m candidate remains the preferred observation-quality candidate and is now stronger than before, but final promotion still needs a coverage progression audit tied to mesh samples or RViz/Gazebo visual evidence.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:

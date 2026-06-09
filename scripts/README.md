@@ -21,6 +21,7 @@
 - `audit_wind_orbit_quality_coverage.sh`：只读解析风机 multilevel orbit launch、AerialCore world、wind turbine mesh 三角面片/法向，并联动既有 wind depth stats summary，输出三角面片中心的 frustum 覆盖、法向观测角过滤覆盖、高度分段覆盖和 useful-depth 指标；默认审计 20m baseline，可用 `LAUNCH_PATH` 审计 15m 候选，可用 `DEPTH_STATS_SUMMARY` 指定真实仿真 depth 统计；不做遮挡/动态碰撞/视觉缺陷识别，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `verify_wind_turbine_multilevel_orbit.sh`：加载 AerialCore 风机 world，并运行独立 multilevel orbit waypoint/yaw baseline；该脚本会启动 PX4 Offboard/arm，仅用于风机规则 baseline 验证，不属于电缆 Phase B active。
 - `capture_wind_turbine_multilevel_orbit_gui.sh`：启动 AerialCore 风机 world 的 Gazebo GUI、Micro XRCE-DDS 和 multilevel orbit launch，等待真实 waypoint advancement 后截取 Gazebo GUI 截图。
+- `verify_wind_dynamic_orbit_audit.sh`：启动 AerialCore 风机场景、PX4 `iris_depth_camera` 和风机规则 orbit baseline，运行只读 `wind_dynamic_orbit_audit` 订阅 `/fmu/out/vehicle_local_position` 与 `/camera/depth/image_raw`，记录真实运动轨迹、保守 clearance、半径误差和 useful-depth progression；该脚本会启动 wind Offboard/arm 并发布 PX4 输入 topic，仅用于风机规则 baseline 动态审计，不属于电缆 Phase B active。
 - `verify_cable_waypoints.sh`：加载 AerialCore 两塔导线 world，并运行最小电缆巡检几何 waypoint baseline。
 - `verify_foggy_lidar_pointcloud.sh`：加载 AerialCore 两塔导线 world 和 PX4 `iris_foggy_lidar`，验证 ROS2 `/zcw/foggy_lidar/points` PointCloud2 输出。
 - `verify_foggy_lidar_pose.sh`：验证 foggy lidar PointCloud2 `frame_id=foggy_lidar_link`，以及官方 `gazebo_ros_p3d` 输出 `/zcw/foggy_lidar/pose` Odometry。

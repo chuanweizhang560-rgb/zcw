@@ -1050,6 +1050,21 @@ Static quality coverage follow-up:
 
 Interpretation: the 20m baseline is slightly stronger under the offline surface-normal/view-angle filter, while the 15m candidate remains stronger under real useful-depth image statistics. This is useful coverage-quality context for the wind task, but it is not SLAM accuracy evidence and not a final turbine inspection certificate.
 
+Dynamic 15m wind orbit follow-up:
+
+- script: `scripts/verify_wind_dynamic_orbit_audit.sh`
+- wrapper summary: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_audit_wrapper_20260609_094838.txt`
+- node summary: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_audit_20260609_094921.txt`
+- launch: `single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+- waypoint_advancements: `23`
+- pose_samples: `350`
+- depth_frames: `101`
+- min_conservative_clearance_m: `2.8703362146`
+- mean_useful_ratio: `0.0854219693785`
+- max_useful_ratio: `0.218219339623`
+
+Interpretation: this is real-motion wind task evidence from PX4/Gazebo and the depth camera. It supports the 15m observation candidate, but it is not SLAM accuracy evidence, loop-closure evidence, or final turbine coverage completion.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

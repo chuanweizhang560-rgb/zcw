@@ -6678,3 +6678,54 @@
 - 下一步：
   - 可继续做 wind dynamic safety/coverage audit，采样真实运动轨迹下的最近距离、depth useful-return 和 coverage-quality progression
 - 阻塞项：无
+
+### 2026-06-09 09:50:25 CST
+
+- 节点：风机 15m dynamic orbit 审计完成
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_px4_baseline/src/wind_dynamic_orbit_audit.cpp`
+  - 新节点只读订阅 `/fmu/out/vehicle_local_position` 和 `/camera/depth/image_raw`
+  - 新节点输出真实运动位姿 CSV、depth frame CSV、保守 clearance、半径误差、useful-depth progression 和 summary
+  - 更新 `zcw_px4_baseline` 的 `CMakeLists.txt` 与 `package.xml`，加入 `sensor_msgs` 依赖和 `wind_dynamic_orbit_audit` 安装目标
+  - 执行 `colcon build --packages-select zcw_px4_baseline --symlink-install`
+  - 新增 `scripts/verify_wind_dynamic_orbit_audit.sh`
+  - 首次在沙箱内运行失败：Micro XRCE-DDS 无法绑定 UDP `8888`，属受限网络命名空间问题
+  - 第一次沙箱外运行失败：ROS 参数 `duration_sec` 被整数值 `35` 触发 double 类型错误
+  - 第二次沙箱外运行失败：ROS 参数 `sample_rate_hz` 被整数值 `10` 触发 double 类型错误
+  - 修复包装脚本，新增 `as_ros_double`，自动把整数形式的 double 参数转换为 `N.0`
+  - 第三次沙箱外运行 15m wind orbit dynamic audit 通过
+  - 检查仿真相关进程清理状态
+  - 更新 `scripts/README.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - wrapper summary：`data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_audit_wrapper_20260609_094838.txt`
+  - node summary：`data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_audit_20260609_094921.txt`
+  - pose CSV：`data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_pose_20260609_094921.csv`
+  - depth CSV：`data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_depth_20260609_094921.csv`
+  - `decision=accepted_wind_dynamic_orbit_wrapper`
+  - `audit_decision=accepted_wind_dynamic_orbit_audit`
+  - `launch=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+  - `waypoint_advancements=23`
+  - `motion_ok=true`
+  - `pose_samples=350`
+  - `valid_pose_samples=350`
+  - `depth_frames=101`
+  - `min_conservative_clearance_m=2.8703362146`
+  - `mean_radius_error_m=0.177446480778`
+  - `max_radius_error_m_observed=0.462360872702`
+  - `mean_useful_ratio=0.0854219693785`
+  - `max_useful_ratio=0.218219339623`
+  - wrapper 明确 `starts_px4=true`、`starts_gazebo=true`、`starts_offboard=true`、`arms=true`、`publishes_fmu_in=true`
+  - wrapper 明确 `cable_phase_b_active=false`
+  - 只读审计节点自身明确 `starts_px4=false`、`starts_gazebo=false`、`starts_offboard=false`、`arms=false`、`publishes_fmu_in=false`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`wind_turbine_autospawn`、`offboard_waypoint_sequence` 残留进程
+- 结论：
+  - 15m wind orbit candidate 现在具备真实 PX4/Gazebo 运动下的动态位姿与 depth useful-return 审计证据
+  - 该节点仍是风机规则 baseline，不是 RL，不是 cable Phase B active bridge
+  - 保守 clearance proxy 不能替代完整 mesh collision checking
+  - 该节点不证明最终风机覆盖完成或缺陷识别完成
+- 下一步：
+  - 可继续做 dynamic wind coverage progression audit，离线消费 15m pose CSV 并映射到 mesh/frustum/normal sample coverage progression
+- 阻塞项：无
