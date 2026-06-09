@@ -6729,3 +6729,48 @@
 - 下一步：
   - 可继续做 dynamic wind coverage progression audit，离线消费 15m pose CSV 并映射到 mesh/frustum/normal sample coverage progression
 - 阻塞项：无
+
+### 2026-06-09 09:55:07 CST
+
+- 节点：风机 15m dynamic coverage progression 离线审计完成
+- 执行动作：
+  - 新增 `scripts/audit_wind_dynamic_coverage_progression.sh`
+  - 新脚本只读消费 `wind_dynamic_orbit_audit` 输出的真实 PX4 local position CSV
+  - 新脚本解析 AerialCore wind turbine Collada mesh 的三角面片与法向
+  - 新脚本输出随时间累积的 frustum coverage、normal-filtered coverage 和高度分段覆盖结果
+  - 使用 15m dynamic orbit 的 accepted pose CSV 执行 progression 审计
+  - 更新 `scripts/README.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/wind_dynamic_coverage_progression_r15_20260609_000000/wind_dynamic_coverage_progression_20260609_095332.txt`
+  - progression CSV：`data/results/wind_dynamic_coverage_progression_r15_20260609_000000/wind_dynamic_coverage_progression_20260609_095332.csv`
+  - band CSV：`data/results/wind_dynamic_coverage_progression_r15_20260609_000000/wind_dynamic_coverage_progression_bands_20260609_095332.csv`
+  - pose source：`data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_pose_20260609_094921.csv`
+  - `decision=accepted_wind_dynamic_coverage_progression_static_audit`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `pose_samples_used=350`
+  - `mesh_samples=9316`
+  - `final_frustum_coverage_ratio=1.000000`
+  - `final_normal_filtered_coverage_ratio=0.637935`
+  - `min_band_normal_coverage_ratio_observed=0.410206`
+  - 高度分段 normal-filtered coverage：
+    - band 0：`0.962963`
+    - band 1：`0.916667`
+    - band 2：`0.651667`
+    - band 3：`0.410206`
+- 结论：
+  - 15m 真实运动 pose CSV 已经可以映射到 mesh/frustum/normal 动态覆盖 progression
+  - 该 35 秒片段只覆盖了部分动态任务，不能作为完整 4 层 wind inspection coverage certificate
+  - 顶部高度 band 是当前最弱项，后续需要更长完整 orbit 或调整轨迹
+  - 该节点不启动仿真、不控制 PX4、不涉及 cable Phase B active bridge
+- 下一步：
+  - 可运行更长 15m wind dynamic orbit capture，使轨迹覆盖全部 4 个高度层，然后重跑 dynamic coverage progression
+- 阻塞项：无

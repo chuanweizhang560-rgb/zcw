@@ -374,6 +374,26 @@ Decision:
 - It records useful depth during real motion, but it still does not prove final inspection coverage, occlusion-free observation, or defect detection.
 - The 15m candidate remains the preferred observation-quality candidate and is now stronger than before, but final promotion still needs a coverage progression audit tied to mesh samples or RViz/Gazebo visual evidence.
 
+Supplemental 15m dynamic coverage progression audit on 2026-06-09:
+
+- script: `scripts/audit_wind_dynamic_coverage_progression.sh`
+- summary: `data/results/wind_dynamic_coverage_progression_r15_20260609_000000/wind_dynamic_coverage_progression_20260609_095332.txt`
+- progression CSV: `data/results/wind_dynamic_coverage_progression_r15_20260609_000000/wind_dynamic_coverage_progression_20260609_095332.csv`
+- band CSV: `data/results/wind_dynamic_coverage_progression_r15_20260609_000000/wind_dynamic_coverage_progression_bands_20260609_095332.csv`
+- pose source: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_pose_20260609_094921.csv`
+- pose_samples_used: `350`
+- mesh_samples: `9316`
+- final_frustum_coverage_ratio: `1.000000`
+- final_normal_filtered_coverage_ratio: `0.637935`
+- min_band_normal_coverage_ratio_observed: `0.410206`
+
+Decision:
+
+- The accepted 15m real-motion pose CSV now has offline cumulative coverage progression evidence.
+- The 35-second segment covers enough normal-filtered samples for a partial dynamic audit, but it is not a full 4-level orbit completion certificate.
+- The weakest final band is the top band (`0.410206` normal-filtered), so final wind inspection coverage still needs either a longer full-orbit run or orbit adjustment evidence.
+- This audit still omits occlusion and real image defect recognition.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:

@@ -60,6 +60,7 @@ Accepted evidence:
 - static mesh-vertex frustum coverage upper-bound accepted for both 20m and 15m.
 - static quality coverage audit accepted for both 20m and 15m, combining frustum, mesh surface-normal/view-angle filtering and prior useful-depth stats.
 - 15m dynamic orbit audit accepted with real PX4/Gazebo motion, 350 pose samples, 101 depth frames, `min_conservative_clearance_m=2.8703362146`, `mean_useful_ratio=0.0854219693785`.
+- 15m dynamic coverage progression audit accepted on the same pose CSV, with `final_normal_filtered_coverage_ratio=0.637935` and weakest band `0.410206`.
 
 Important boundary:
 
@@ -70,7 +71,7 @@ Important boundary:
 
 Next wind work:
 
-- Add dynamic coverage progression evidence that maps the real moving pose samples onto the accepted mesh/frustum/normal samples.
+- Extend the dynamic wind run to a full 4-level orbit or create a longer capture to raise top-band normal-filtered coverage.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
 - Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion.
 
@@ -119,20 +120,17 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Add a dynamic wind coverage progression audit that consumes the accepted 15m pose CSV and estimates:
-   - cumulative mesh sample coverage over time,
-   - per-height-band progression,
-   - normal-filtered observation progression,
-   - residual uncovered sample groups for orbit adjustment.
+1. Run a longer 15m wind dynamic orbit capture, preferably long enough to traverse all 4 height levels, then rerun:
+   - `scripts/verify_wind_dynamic_orbit_audit.sh`
+   - `scripts/audit_wind_dynamic_coverage_progression.sh`
 
 Reason:
 
-- The offline quality coverage audit and real-motion dynamic orbit audit both exist now.
-- The largest remaining wind gap is connecting real moving pose samples to coverage progression instead of only checking static waypoint geometry.
+- The offline quality coverage audit, real-motion dynamic orbit audit and partial dynamic coverage progression audit all exist now.
+- The largest remaining wind gap is full-orbit dynamic coverage, especially the upper turbine band.
 
 Safety boundary for that node:
 
-- Prefer offline processing of the accepted 15m pose CSV first.
-- It may later use the wind rule baseline Offboard/arm path, because that path is already part of wind evidence.
+- It may use the wind rule baseline Offboard/arm path, because that path is already part of wind evidence.
 - It must remain wind-only and must not create or use cable Phase B active bridge.
 - It must keep RTAB-Map/coverage outputs out of active PX4 control.

@@ -1065,6 +1065,17 @@ Dynamic 15m wind orbit follow-up:
 
 Interpretation: this is real-motion wind task evidence from PX4/Gazebo and the depth camera. It supports the 15m observation candidate, but it is not SLAM accuracy evidence, loop-closure evidence, or final turbine coverage completion.
 
+Dynamic 15m wind coverage progression follow-up:
+
+- script: `scripts/audit_wind_dynamic_coverage_progression.sh`
+- summary: `data/results/wind_dynamic_coverage_progression_r15_20260609_000000/wind_dynamic_coverage_progression_20260609_095332.txt`
+- pose source: `data/results/wind_dynamic_orbit_audit_20260609_094838/wind_dynamic_orbit_pose_20260609_094921.csv`
+- pose_samples_used: `350`
+- final_normal_filtered_coverage_ratio: `0.637935`
+- min_band_normal_coverage_ratio_observed: `0.410206`
+
+Interpretation: this connects the accepted real-motion pose samples to mesh/frustum/normal coverage progression. It is useful task coverage context, not SLAM accuracy evidence, and the top band remains the weakest part of the partial dynamic run.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`
