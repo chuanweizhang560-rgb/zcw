@@ -18,6 +18,12 @@ FORBIDDEN_PUBLISHERS_LOG="${LOG_DIR}/multi_vehicle_forbidden_publishers_${STAMP}
 TIMEOUT_SEC="${TIMEOUT_SEC:-75}"
 WORLD_NAME="${WORLD_NAME:-empty}"
 MODEL_NAME="${MODEL_NAME:-iris}"
+NUM_VEHICLES="${NUM_VEHICLES:-2}"
+
+if ! [[ "${NUM_VEHICLES}" =~ ^[0-9]+$ ]] || (( NUM_VEHICLES < 2 || NUM_VEHICLES > 4 )); then
+  echo "NUM_VEHICLES must be an integer from 2 to 4 for this read-only smoke." >&2
+  exit 1
+fi
 
 agent_pid=""
 gzserver_pid=""
@@ -151,8 +157,21 @@ spawn_vehicle() {
   gz model --spawn-file="${sdf_file}" --model-name="${MODEL_NAME}_${instance}" -x "${x}" -y "${y}" -z 0.83 >/dev/null
 }
 
-spawn_vehicle 1 0.0 0.0
-spawn_vehicle 2 0.0 3.0
+vehicle_spawn_xy() {
+  local instance="$1"
+  case "${instance}" in
+    1) echo "0.0 0.0" ;;
+    2) echo "0.0 3.0" ;;
+    3) echo "3.0 0.0" ;;
+    4) echo "3.0 3.0" ;;
+    *) return 1 ;;
+  esac
+}
+
+for instance in $(seq 1 "${NUM_VEHICLES}"); do
+  read -r spawn_x spawn_y < <(vehicle_spawn_xy "${instance}")
+  spawn_vehicle "${instance}" "${spawn_x}" "${spawn_y}"
+done
 
 deadline=$((SECONDS + TIMEOUT_SEC))
 topics_ok=false
@@ -166,39 +185,46 @@ while (( SECONDS < deadline )); do
   topic_status=$?
   set -e
 
-  if [[ "${topic_status}" -eq 0 ]] &&
-     grep -q "/px4_1/fmu/out/vehicle_status" "${TOPICS_LOG}" &&
-     grep -q "/px4_2/fmu/out/vehicle_status" "${TOPICS_LOG}"; then
+  if [[ "${topic_status}" -eq 0 ]]; then
     topics_ok=true
+    for instance in $(seq 1 "${NUM_VEHICLES}"); do
+      if ! grep -q "/px4_${instance}/fmu/out/vehicle_status" "${TOPICS_LOG}"; then
+        topics_ok=false
+      fi
+    done
+  fi
+  if [[ "${topics_ok}" == "true" ]]; then
     break
   fi
   sleep 2
 done
 
 if [[ "${topics_ok}" != "true" ]]; then
-  echo "Two-vehicle ROS 2 namespaced output topics were not observed." >&2
+  echo "${NUM_VEHICLES}-vehicle ROS 2 namespaced output topics were not observed." >&2
   tail -n 120 "${TOPICS_LOG}" >&2 || true
   exit 1
 fi
 
 {
   echo "Forbidden publisher audit"
-  for topic in \
-    /fmu/in/offboard_control_mode \
-    /fmu/in/trajectory_setpoint \
-    /fmu/in/vehicle_command \
-    /px4_1/fmu/in/offboard_control_mode \
-    /px4_1/fmu/in/trajectory_setpoint \
-    /px4_1/fmu/in/vehicle_command \
-    /px4_2/fmu/in/offboard_control_mode \
-    /px4_2/fmu/in/trajectory_setpoint \
-    /px4_2/fmu/in/vehicle_command; do
+  for topic in /fmu/in/offboard_control_mode /fmu/in/trajectory_setpoint /fmu/in/vehicle_command; do
     echo "--- ${topic}"
     timeout 5s env -i \
       HOME="${HOME:-/home/travis}" \
       USER="${USER:-travis}" \
       PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
       /bin/bash -c "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 topic info '${topic}' --no-daemon 2>/dev/null || true"
+  done
+  for instance in $(seq 1 "${NUM_VEHICLES}"); do
+    for suffix in offboard_control_mode trajectory_setpoint vehicle_command; do
+      topic="/px4_${instance}/fmu/in/${suffix}"
+      echo "--- ${topic}"
+      timeout 5s env -i \
+        HOME="${HOME:-/home/travis}" \
+        USER="${USER:-travis}" \
+        PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+        /bin/bash -c "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && ros2 topic info '${topic}' --no-daemon 2>/dev/null || true"
+    done
   done
 } >"${FORBIDDEN_PUBLISHERS_LOG}" 2>&1
 
@@ -210,7 +236,7 @@ fi
 {
   echo "scope=multi_vehicle_readonly"
   echo "decision=accepted_multi_vehicle_readonly_smoke"
-  echo "reason=two_px4_instances_publish_namespaced_ros2_outputs_without_project_fmu_in_publishers"
+  echo "reason=${NUM_VEHICLES}_px4_instances_publish_namespaced_ros2_outputs_without_project_fmu_in_publishers"
   echo "starts_ros=true"
   echo "starts_px4=true"
   echo "starts_gazebo=true"
@@ -218,9 +244,10 @@ fi
   echo "starts_offboard=false"
   echo "arms=false"
   echo "publishes_fmu_in=false"
-  echo "num_vehicles=2"
-  echo "observed_px4_1_vehicle_status=true"
-  echo "observed_px4_2_vehicle_status=true"
+  echo "num_vehicles=${NUM_VEHICLES}"
+  for instance in $(seq 1 "${NUM_VEHICLES}"); do
+    echo "observed_px4_${instance}_vehicle_status=true"
+  done
   echo "forbidden_publishers_zero=${forbidden_ok}"
   echo "agent_log=${AGENT_LOG}"
   echo "gazebo_log=${GAZEBO_LOG}"

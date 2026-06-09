@@ -7243,3 +7243,59 @@
 - 下一步：
   - 可继续扩展 dry-run-only 拓扑/任务评分，或回到 wind/cable 单机证据链
 - 阻塞项：无
+
+### 2026-06-09 11:11:14 CST
+
+- 节点：四机 PX4/Gazebo Classic read-only namespace smoke 完成
+- 执行动作：
+  - 读取 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 读取 `docs/12_multi_vehicle_readiness.md`
+  - 将 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh` 参数化：
+    - 默认 `NUM_VEHICLES=2`
+    - 允许 `NUM_VEHICLES=4`
+    - 支持实例 1-4 的固定 spawn 坐标
+    - 循环检查 `/px4_i/fmu/out/vehicle_status`
+    - 循环检查 `/px4_i/fmu/in/offboard_control_mode`
+    - 循环检查 `/px4_i/fmu/in/trajectory_setpoint`
+    - 循环检查 `/px4_i/fmu/in/vehicle_command`
+  - 执行 `bash -n scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 在沙箱外执行默认两机回归：`scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 在沙箱外执行四机 read-only：`NUM_VEHICLES=4 TIMEOUT_SEC=100 scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 读取四机 summary、forbidden publisher log 和 topic log
+  - 检查仿真相关进程清理状态
+  - 更新 `scripts/README.md`
+  - 更新 `docs/12_multi_vehicle_readiness.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - 两机回归 summary：`data/results/multi_vehicle_readonly_20260609_111016/multi_vehicle_readonly_20260609_111016.txt`
+  - 四机 summary：`data/results/multi_vehicle_readonly_20260609_111036/multi_vehicle_readonly_20260609_111036.txt`
+  - 四机 topics：`data/logs/multi_vehicle_topics_20260609_111036.log`
+  - 四机 forbidden publishers：`data/logs/multi_vehicle_forbidden_publishers_20260609_111036.log`
+  - `decision=accepted_multi_vehicle_readonly_smoke`
+  - `starts_ros=true`
+  - `starts_px4=true`
+  - `starts_gazebo=true`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `num_vehicles=4`
+  - `observed_px4_1_vehicle_status=true`
+  - `observed_px4_2_vehicle_status=true`
+  - `observed_px4_3_vehicle_status=true`
+  - `observed_px4_4_vehicle_status=true`
+  - `forbidden_publishers_zero=true`
+  - topic log 确认：
+    - `/px4_1/fmu/out/vehicle_status`
+    - `/px4_2/fmu/out/vehicle_status`
+    - `/px4_3/fmu/out/vehicle_status`
+    - `/px4_4/fmu/out/vehicle_status`
+  - forbidden publisher log 确认 `/px4_1` 到 `/px4_4` 的 `offboard_control_mode`、`trajectory_setpoint`、`vehicle_command` publisher count 均为 `0`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`iris_1_readonly`、`iris_2_readonly`、`iris_3_readonly`、`iris_4_readonly` 残留进程
+- 结论：
+  - 四机 PX4/Gazebo Classic read-only 命名空间基础已通过
+  - 这只证明四个实例可以同时暴露 ROS 2 output topic
+  - 该节点仍不启动 Offboard、不 arm、不批准四机 active control 或四机策略控制
+- 下一步：
+  - 可基于四机 read-only 证据设计四机 dry-run planner；active control 仍需单独评审
+- 阻塞项：无

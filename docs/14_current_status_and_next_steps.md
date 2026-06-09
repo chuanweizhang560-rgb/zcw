@@ -112,6 +112,7 @@ Current status:
 - PX4/Gazebo Classic multi-vehicle readiness has been audited separately.
 - Two-vehicle read-only smoke was refreshed on 2026-06-09 and accepted with `/px4_1` and `/px4_2` output namespaces observed.
 - Refreshed multi-vehicle forbidden publisher audit confirms key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` project publisher counts are `0`.
+- Four-vehicle read-only namespace smoke is accepted with `/px4_1` through `/px4_4` output namespaces observed and key `/px4_i/fmu/in/*` publisher counts at `0`.
 - Two-vehicle rule-baseline design exists at `docs/15_two_vehicle_rule_baseline_design.md`.
 - Two-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Two-vehicle dry-run M2 read-only smoke is accepted; dry-run topics publish while key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` publisher counts remain `0`.
@@ -123,7 +124,7 @@ Current status:
 
 Next multi-vehicle work:
 
-- Design a two-vehicle rule-baseline plan before any multi-vehicle Offboard/arm.
+- Design a four-vehicle dry-run rule-baseline plan before any four-vehicle Offboard/arm.
 - Keep the first multi-vehicle control node dry-run or read-only.
 - Do not combine multi-vehicle, SLAM feedback, and active cable setpoint publication in one step.
 
@@ -131,12 +132,13 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Extend dry-run-only two-vehicle planning evidence toward richer offline topology/task scoring, or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
+1. Extend dry-run-only multi-vehicle planning evidence toward four-vehicle offline topology/task scoring, or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
 
 Reason:
 
 - Wind has strong single-vehicle dynamic/coverage evidence now.
 - Multi-vehicle has refreshed read-only namespace evidence and a dry-run-first rule-baseline design.
+- Four-vehicle read-only startup is now accepted, but four-vehicle active control is still forbidden.
 - M1, M2, M3, M4 and M5 are accepted for the two-vehicle dry-run baseline.
 - The next multi-vehicle gap is offline scoring/richer topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
 

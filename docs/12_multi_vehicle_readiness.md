@@ -12,9 +12,9 @@ The project may proceed toward multi-vehicle simulation only through official PX
 2. two-vehicle headless read-only startup. Accepted.
 3. two-vehicle ROS 2 topic namespace audit. Accepted.
 4. two-vehicle rule baseline only after read-only topics are isolated.
-5. four-vehicle startup only after two-vehicle evidence is accepted.
+5. four-vehicle read-only startup only after two-vehicle evidence is accepted.
 
-No RL, role assignment, relay behavior or multi-vehicle Offboard control is approved by this document.
+No RL, active/learned role assignment, active relay behavior or multi-vehicle Offboard control is approved by this document.
 
 ## 2. Upstream Audit Command
 
@@ -179,11 +179,47 @@ Allowed next:
 1. document the two-vehicle read-only evidence in the main runbook.
 2. add a two-vehicle rule-baseline design document.
 3. keep two-vehicle Offboard disabled until the rule-baseline design is reviewed.
-4. keep four-vehicle startup disabled until two-vehicle rule-baseline evidence is accepted.
+4. keep four-vehicle active control disabled until a separate active-control review exists.
 
-Still forbidden until the two-vehicle rule-baseline design and evidence are accepted:
+Four-vehicle read-only evidence on 2026-06-09:
+
+- command: `NUM_VEHICLES=4 TIMEOUT_SEC=100 scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+- summary: `data/results/multi_vehicle_readonly_20260609_111036/multi_vehicle_readonly_20260609_111036.txt`
+- topics: `data/logs/multi_vehicle_topics_20260609_111036.log`
+- forbidden publishers: `data/logs/multi_vehicle_forbidden_publishers_20260609_111036.log`
+- agent log: `data/logs/multi_vehicle_agent_20260609_111036.log`
+- Gazebo log: `data/logs/multi_vehicle_gzserver_20260609_111036.log`
+
+Observed four-vehicle result:
+
+```text
+decision=accepted_multi_vehicle_readonly_smoke
+starts_ros=true
+starts_px4=true
+starts_gazebo=true
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+num_vehicles=4
+observed_px4_1_vehicle_status=true
+observed_px4_2_vehicle_status=true
+observed_px4_3_vehicle_status=true
+observed_px4_4_vehicle_status=true
+forbidden_publishers_zero=true
+```
+
+Four-vehicle forbidden publisher evidence:
+
+- `/px4_1/fmu/in/offboard_control_mode`, `/trajectory_setpoint`, `/vehicle_command`: publisher count `0`.
+- `/px4_2/fmu/in/offboard_control_mode`, `/trajectory_setpoint`, `/vehicle_command`: publisher count `0`.
+- `/px4_3/fmu/in/offboard_control_mode`, `/trajectory_setpoint`, `/vehicle_command`: publisher count `0`.
+- `/px4_4/fmu/in/offboard_control_mode`, `/trajectory_setpoint`, `/vehicle_command`: publisher count `0`.
+
+Still forbidden until an explicit active-control review exists:
 
 1. two-vehicle Offboard.
 2. two-vehicle arming from project code.
-3. four-vehicle startup.
-4. multi-agent policy or role assignment.
+3. four-vehicle Offboard.
+4. four-vehicle arming from project code.
+5. multi-agent active policy or active role assignment.
