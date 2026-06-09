@@ -112,6 +112,7 @@ Current status:
 - PX4/Gazebo Classic multi-vehicle readiness has been audited separately.
 - Two-vehicle read-only smoke was refreshed on 2026-06-09 and accepted with `/px4_1` and `/px4_2` output namespaces observed.
 - Refreshed multi-vehicle forbidden publisher audit confirms key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` project publisher counts are `0`.
+- Two-vehicle rule-baseline design exists at `docs/15_two_vehicle_rule_baseline_design.md`.
 - Multi-vehicle task planning/RL is not implemented.
 - Current reliable evidence is mostly single-vehicle baseline, mapping, and dry-run control-gate evidence.
 
@@ -125,12 +126,13 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Add a two-vehicle rule-baseline design document that stays dry-run/read-only first.
+1. Implement the M1 static contract audit for the two-vehicle dry-run planner.
 
 Reason:
 
 - Wind has strong single-vehicle dynamic/coverage evidence now.
-- Multi-vehicle has refreshed read-only namespace evidence but no rule-baseline design or dry-run planner yet.
+- Multi-vehicle has refreshed read-only namespace evidence and a dry-run-first rule-baseline design.
+- The next gap is an enforceable static contract audit before adding any dry-run planner node.
 
 Safety boundary for that node:
 

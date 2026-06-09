@@ -6942,3 +6942,28 @@
 - 下一步：
   - 可新增 two-vehicle rule-baseline design 文档，要求先 dry-run/read-only，再考虑任何多机 active 控制
 - 阻塞项：无
+
+### 2026-06-09 10:45:00 CST
+
+- 节点：两机规则 baseline dry-run 设计文档完成
+- 执行动作：
+  - 新增 `docs/15_two_vehicle_rule_baseline_design.md`
+  - 明确该文档不批准 two-vehicle Offboard、不 arm、不批准 RL/role assignment、不批准 cable Phase B active bridge
+  - 明确第一阶段只允许 dry-run planner
+  - 明确允许输入为 `/px4_1/fmu/out/*` 与 `/px4_2/fmu/out/*`
+  - 明确允许输出仅限 `/zcw/multi_vehicle/dry_run/*`
+  - 明确禁止输出任何 PX4 input topic
+  - 定义 M1 static contract audit、M2 read-only ROS graph smoke、M3 RViz overlay 三阶段
+  - 更新 `README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - 设计文档：`docs/15_two_vehicle_rule_baseline_design.md`
+  - README 入口：`docs/15_two_vehicle_rule_baseline_design.md`
+  - 下一推荐节点更新为 two-vehicle dry-run planner 的 M1 static contract audit
+- 结论：
+  - 两机规则 baseline 已有 dry-run-first 设计边界
+  - 尚未实现 two-vehicle dry-run planner
+  - 尚未批准 two-vehicle Offboard/arm 或任何 multi-agent policy
+- 下一步：
+  - 实现 M1 static contract audit，先检查未来 dry-run planner 的 topic/依赖/launch 边界
+- 阻塞项：无
