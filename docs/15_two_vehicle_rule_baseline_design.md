@@ -247,6 +247,47 @@ vehicle_1_role=inspection_candidate
 vehicle_2_role=relay_candidate
 ```
 
+Stage M5: dry-run sample audit.
+
+- Use full-length ROS topic echo samples to avoid truncated role/topology evidence.
+- Parse the generated sample log offline.
+- Require vehicle goals, topology state, safety state and assignment state to be present.
+- Require non-placeholder topology distance evidence.
+- Require no-active and no-PX4-input flags to be present in the samples.
+
+Latest M5 evidence:
+
+- script: `scripts/audit_two_vehicle_dry_run_samples.sh`
+- smoke summary: `data/results/two_vehicle_dry_run_smoke_20260609_110728/two_vehicle_dry_run_smoke_20260609_110728.txt`
+- samples: `data/logs/two_vehicle_dry_run_samples_20260609_110728.log`
+- samples audit summary: `data/results/two_vehicle_dry_run_samples_audit_20260609_110749/two_vehicle_dry_run_samples_audit_20260609_110749.txt`
+- forbidden publishers: `data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_110728.log`
+
+Observed M5 result:
+
+```text
+decision=accepted_two_vehicle_dry_run_samples_audit
+has_vehicle_1_goal=true
+has_vehicle_2_goal=true
+has_topology=true
+has_safety=true
+has_assignment=true
+has_rule_baseline=true
+has_no_learned_policy=true
+has_v1_inspection=true
+has_v2_relay=true
+has_no_active=true
+has_no_fmu_in=true
+has_valid_topology_distance=true
+```
+
+Representative full-length topology and assignment samples:
+
+```text
+TOPOLOGY_READY; dry_run=true; publishes_fmu_in=false; vehicle_distance_m=0.0107667; relay_radius_m=800
+RULE_BASELINE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=false; arms=false; publishes_fmu_in=false; vehicle_1_role=inspection_candidate; vehicle_2_role=relay_candidate; topology_ready=true; safety_ready=true
+```
+
 ## 6. Promotion Criteria
 
 Two-vehicle active control may only be considered after all of these exist:

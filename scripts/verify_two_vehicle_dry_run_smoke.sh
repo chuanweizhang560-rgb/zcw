@@ -215,15 +215,15 @@ done
 
 {
   echo "--- vehicle_1_goal"
-  timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/vehicle_1_goal || true
+  timeout 8s ros2 topic echo --full-length --once /zcw/multi_vehicle/dry_run/vehicle_1_goal || true
   echo "--- vehicle_2_goal"
-  timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/vehicle_2_goal || true
+  timeout 8s ros2 topic echo --full-length --once /zcw/multi_vehicle/dry_run/vehicle_2_goal || true
   echo "--- topology_state"
-  timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/topology_state || true
+  timeout 8s ros2 topic echo --full-length --once /zcw/multi_vehicle/dry_run/topology_state --filter '"vehicle_distance_m=-1" not in m.data' || true
   echo "--- safety_state"
-  timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/safety_state || true
+  timeout 8s ros2 topic echo --full-length --once /zcw/multi_vehicle/dry_run/safety_state || true
   echo "--- assignment_state"
-  timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/assignment_state || true
+  timeout 8s ros2 topic echo --full-length --once /zcw/multi_vehicle/dry_run/assignment_state || true
 } >"${DRY_RUN_SAMPLES_LOG}" 2>&1
 
 {

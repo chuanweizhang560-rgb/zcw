@@ -7186,3 +7186,60 @@
   - 可继续扩展 dry-run-only 拓扑/任务评分，或回到 cable/wind 证据
   - 进入 active multi-vehicle 仍需单独安全评审和用户批准
 - 阻塞项：无
+
+### 2026-06-09 11:08:02 CST
+
+- 节点：两机 dry-run planner M5 full-length sample 与样本审计完成
+- 执行动作：
+  - 检查 `ros2 topic echo --help`，确认支持 `--full-length`
+  - 更新 `scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 将 dry-run sample 采集改为 `ros2 topic echo --full-length`
+  - 针对 `/zcw/multi_vehicle/dry_run/topology_state` 增加 filter，避免采到启动早期 `vehicle_distance_m=-1` 占位样本
+  - 新增 `scripts/audit_two_vehicle_dry_run_samples.sh`
+  - 新脚本只读解析 dry-run sample 日志，不启动 ROS/PX4/Gazebo/RViz
+  - 新脚本检查：
+    - vehicle 1/2 goal 样本存在
+    - topology/safety/assignment 样本存在
+    - `RULE_BASELINE_DRY_RUN` 存在
+    - `learned_policy=false` 存在
+    - `vehicle_1_role=inspection_candidate` 存在
+    - `vehicle_2_role=relay_candidate` 存在
+    - `starts_offboard=false` 与 `arms=false` 存在
+    - `publishes_fmu_in=false` 存在
+    - topology distance 非占位
+  - 执行 `bash -n scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 执行 `bash -n scripts/audit_two_vehicle_dry_run_samples.sh`
+  - 首次 full-length sample 发现 `topology_state` 仍可能采到启动早期占位值，随后增强 filter 和审计条件
+  - 在沙箱外重新执行 `scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 执行 `SAMPLES_FILE=data/logs/two_vehicle_dry_run_samples_20260609_110728.log scripts/audit_two_vehicle_dry_run_samples.sh`
+  - 读取 smoke summary、samples audit summary、full-length sample、forbidden publisher log
+  - 检查仿真相关进程清理状态
+  - 更新 `scripts/README.md`
+  - 更新 `docs/15_two_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - smoke summary：`data/results/two_vehicle_dry_run_smoke_20260609_110728/two_vehicle_dry_run_smoke_20260609_110728.txt`
+  - full-length samples：`data/logs/two_vehicle_dry_run_samples_20260609_110728.log`
+  - samples audit summary：`data/results/two_vehicle_dry_run_samples_audit_20260609_110749/two_vehicle_dry_run_samples_audit_20260609_110749.txt`
+  - forbidden publishers：`data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_110728.log`
+  - `decision=accepted_two_vehicle_dry_run_smoke`
+  - `decision=accepted_two_vehicle_dry_run_samples_audit`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - `has_valid_topology_distance=true`
+  - full-length topology sample：
+    - `TOPOLOGY_READY; dry_run=true; publishes_fmu_in=false; vehicle_distance_m=0.0107667; vehicle_1_base_distance_m=0.00859059; vehicle_2_base_distance_m=0.0101229; relay_radius_m=800`
+  - full-length assignment sample：
+    - `RULE_BASELINE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=false; arms=false; publishes_fmu_in=false; vehicle_1_role=inspection_candidate; vehicle_1_task=wind_or_cable_geometry_candidate; vehicle_1_goal_ready=false; vehicle_2_role=relay_candidate; vehicle_2_task=base_to_inspector_topology_candidate; vehicle_2_goal_ready=false; topology_ready=true; safety_ready=true`
+  - key `/px4_1/fmu/in/*` 与 `/px4_2/fmu/in/*` publisher count 全部为 `0`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`two_vehicle_dry_run`、`rviz2`、`iris_1_dry_run`、`iris_2_dry_run` 残留进程
+- 结论：
+  - two-vehicle dry-run 角色状态证据已可机器审计
+  - 采样日志不再依赖截断字符串或人工解释
+  - 该节点仍不启动 Offboard、不 arm、不批准 active multi-vehicle control
+- 下一步：
+  - 可继续扩展 dry-run-only 拓扑/任务评分，或回到 wind/cable 单机证据链
+- 阻塞项：无
