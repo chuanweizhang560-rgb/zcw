@@ -6892,3 +6892,53 @@
 - 下一步：
   - 可优化遮挡审计运行效率、尝试更密抽样，或转回 cable/multi-vehicle 节点
 - 阻塞项：无
+
+### 2026-06-09 10:44:03 CST
+
+- 节点：多机 two-vehicle read-only smoke 刷新通过
+- 执行动作：
+  - 读取 `docs/12_multi_vehicle_readiness.md`
+  - 读取 `scripts/audit_multi_vehicle_upstream_readiness.sh`
+  - 读取 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 在沙箱外运行 `scripts/verify_px4_gazebo_classic_multi_vehicle_readonly.sh`
+  - 读取 refreshed summary
+  - 读取 refreshed ROS 2 topic list
+  - 读取 refreshed forbidden publishers log
+  - 检查仿真相关进程清理状态
+  - 更新 `docs/12_multi_vehicle_readiness.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/multi_vehicle_readonly_20260609_104248/multi_vehicle_readonly_20260609_104248.txt`
+  - topics log：`data/logs/multi_vehicle_topics_20260609_104248.log`
+  - forbidden publishers log：`data/logs/multi_vehicle_forbidden_publishers_20260609_104248.log`
+  - agent log：`data/logs/multi_vehicle_agent_20260609_104248.log`
+  - Gazebo log：`data/logs/multi_vehicle_gzserver_20260609_104248.log`
+  - `decision=accepted_multi_vehicle_readonly_smoke`
+  - `starts_ros=true`
+  - `starts_px4=true`
+  - `starts_gazebo=true`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `num_vehicles=2`
+  - `observed_px4_1_vehicle_status=true`
+  - `observed_px4_2_vehicle_status=true`
+  - `forbidden_publishers_zero=true`
+  - `clean_gazebo_env=true`
+  - observed topics include `/px4_1/fmu/out/vehicle_status` and `/px4_2/fmu/out/vehicle_status`
+  - forbidden publisher check reports publisher count `0` for:
+    - `/px4_1/fmu/in/offboard_control_mode`
+    - `/px4_1/fmu/in/trajectory_setpoint`
+    - `/px4_1/fmu/in/vehicle_command`
+    - `/px4_2/fmu/in/offboard_control_mode`
+    - `/px4_2/fmu/in/trajectory_setpoint`
+    - `/px4_2/fmu/in/vehicle_command`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`iris_1_readonly`、`iris_2_readonly` 残留进程
+- 结论：
+  - 当前环境下 PX4/Gazebo Classic two-vehicle read-only namespace 隔离仍然成立
+  - 该节点不启动 Offboard、不 arm、不发布 `/fmu/in/*`
+  - 该节点不批准 multi-vehicle Offboard，也不创建 multi-agent policy/role assignment
+- 下一步：
+  - 可新增 two-vehicle rule-baseline design 文档，要求先 dry-run/read-only，再考虑任何多机 active 控制
+- 阻塞项：无

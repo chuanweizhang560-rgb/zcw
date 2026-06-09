@@ -108,6 +108,43 @@ Latest evidence:
 - agent log: `data/logs/multi_vehicle_agent_20260604_141601.log`
 - Gazebo log: `data/logs/multi_vehicle_gzserver_20260604_141601.log`
 
+Supplemental refreshed evidence on 2026-06-09:
+
+- summary: `data/results/multi_vehicle_readonly_20260609_104248/multi_vehicle_readonly_20260609_104248.txt`
+- topics: `data/logs/multi_vehicle_topics_20260609_104248.log`
+- forbidden publishers: `data/logs/multi_vehicle_forbidden_publishers_20260609_104248.log`
+- agent log: `data/logs/multi_vehicle_agent_20260609_104248.log`
+- Gazebo log: `data/logs/multi_vehicle_gzserver_20260609_104248.log`
+
+Observed refreshed result:
+
+```text
+decision=accepted_multi_vehicle_readonly_smoke
+starts_ros=true
+starts_px4=true
+starts_gazebo=true
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+num_vehicles=2
+observed_px4_1_vehicle_status=true
+observed_px4_2_vehicle_status=true
+forbidden_publishers_zero=true
+clean_gazebo_env=true
+```
+
+Refreshed topic evidence:
+
+- `/px4_1/fmu/out/vehicle_status` observed.
+- `/px4_2/fmu/out/vehicle_status` observed.
+- `/px4_1/fmu/in/offboard_control_mode` publisher count: `0`.
+- `/px4_1/fmu/in/trajectory_setpoint` publisher count: `0`.
+- `/px4_1/fmu/in/vehicle_command` publisher count: `0`.
+- `/px4_2/fmu/in/offboard_control_mode` publisher count: `0`.
+- `/px4_2/fmu/in/trajectory_setpoint` publisher count: `0`.
+- `/px4_2/fmu/in/vehicle_command` publisher count: `0`.
+
 Observed result:
 
 ```text

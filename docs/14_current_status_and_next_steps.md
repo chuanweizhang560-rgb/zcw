@@ -110,28 +110,30 @@ Next SLAM work:
 Current status:
 
 - PX4/Gazebo Classic multi-vehicle readiness has been audited separately.
+- Two-vehicle read-only smoke was refreshed on 2026-06-09 and accepted with `/px4_1` and `/px4_2` output namespaces observed.
+- Refreshed multi-vehicle forbidden publisher audit confirms key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` project publisher counts are `0`.
 - Multi-vehicle task planning/RL is not implemented.
 - Current reliable evidence is mostly single-vehicle baseline, mapping, and dry-run control-gate evidence.
 
 Next multi-vehicle work:
 
-- Keep first multi-vehicle node read-only or dry-run.
-- Validate namespaces, DDS keys, and topic isolation before any multi-vehicle control.
+- Design a two-vehicle rule-baseline plan before any multi-vehicle Offboard/arm.
+- Keep the first multi-vehicle control node dry-run or read-only.
 - Do not combine multi-vehicle, SLAM feedback, and active cable setpoint publication in one step.
 
 ## 6. Immediate Next Recommended Node
 
 Recommended next node:
 
-1. Decide whether the next wind node should optimize the occlusion audit runtime, add visual screenshot evidence, or move back to cable/multi-vehicle work.
+1. Add a two-vehicle rule-baseline design document that stays dry-run/read-only first.
 
 Reason:
 
-- The offline quality coverage audit, real-motion dynamic orbit audit, longer full-waypoint dynamic coverage progression audit and sampled occlusion-aware audit all exist now.
-- The largest remaining wind gap is dense occlusion/image-quality evidence and formal acceptance thresholds, not basic motion.
+- Wind has strong single-vehicle dynamic/coverage evidence now.
+- Multi-vehicle has refreshed read-only namespace evidence but no rule-baseline design or dry-run planner yet.
 
 Safety boundary for that node:
 
-- It may use the wind rule baseline Offboard/arm path, because that path is already part of wind evidence.
-- It must remain wind-only and must not create or use cable Phase B active bridge.
-- It must keep RTAB-Map/coverage outputs out of active PX4 control.
+- It must not start multi-vehicle Offboard or arm.
+- It must not publish `/fmu/in/*`.
+- It must not create or use cable Phase B active bridge.
