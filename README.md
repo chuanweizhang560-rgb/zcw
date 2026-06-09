@@ -11,6 +11,7 @@
 - 过程日志见 [PROCESS_LOG.md](PROCESS_LOG.md)。
 - 第一阶段开源审计见 [OPEN_SOURCE_AUDIT.md](OPEN_SOURCE_AUDIT.md)。
 - 当前执行入口见 [RUNBOOK.md](RUNBOOK.md)。
+- 当前阶段状态和下一步见 [docs/14_current_status_and_next_steps.md](docs/14_current_status_and_next_steps.md)。
 
 详细工作流见 [docs/00_workflow.md](docs/00_workflow.md)。
 电缆巡检感知与跟踪专项计划见 [docs/02_cable_tracking_open_source_plan.md](docs/02_cable_tracking_open_source_plan.md)。
