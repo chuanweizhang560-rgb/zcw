@@ -7299,3 +7299,73 @@
 - 下一步：
   - 可基于四机 read-only 证据设计四机 dry-run planner；active control 仍需单独评审
 - 阻塞项：无
+
+### 2026-06-09 11:17:25 CST
+
+- 节点：四机 dry-run planner 设计与 M1 静态合同审计完成
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_px4_baseline/src/four_vehicle_dry_run_planner.cpp`
+  - 新节点只读订阅：
+    - `/px4_1/fmu/out/vehicle_local_position`
+    - `/px4_1/fmu/out/vehicle_status`
+    - `/px4_2/fmu/out/vehicle_local_position`
+    - `/px4_2/fmu/out/vehicle_status`
+    - `/px4_3/fmu/out/vehicle_local_position`
+    - `/px4_3/fmu/out/vehicle_status`
+    - `/px4_4/fmu/out/vehicle_local_position`
+    - `/px4_4/fmu/out/vehicle_status`
+  - 新节点只发布：
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_1_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_2_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_3_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_4_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/topology_state`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/safety_state`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/assignment_state`
+  - 初始 dry-run 角色候选：
+    - vehicle 1：`wind_inspection_candidate`
+    - vehicle 2：`cable_inspection_candidate`
+    - vehicle 3：`relay_candidate`
+    - vehicle 4：`relay_candidate`
+  - 更新 `ros2_ws/src/zcw_px4_baseline/CMakeLists.txt`
+  - 新增 `ros2_ws/src/zcw_bringup/launch/four_vehicle_dry_run_planner.launch.py`
+  - 新增 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 新增 `scripts/audit_four_vehicle_dry_run_contract.sh`
+  - 执行 `bash -n scripts/audit_four_vehicle_dry_run_contract.sh`
+  - 执行 `colcon build --packages-select zcw_px4_baseline zcw_bringup --symlink-install`
+  - 执行 `scripts/audit_four_vehicle_dry_run_contract.sh`
+  - 读取 M1 summary 和 detail log
+  - 检查仿真相关进程，确认本节点未启动 ROS/PX4/Gazebo/RViz
+  - 更新 `README.md`
+  - 更新 `scripts/README.md`
+  - 更新 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - build：`zcw_px4_baseline` 与 `zcw_bringup` 构建通过
+  - summary：`data/results/four_vehicle_dry_run_contract_20260609_111711/four_vehicle_dry_run_contract_20260609_111711.txt`
+  - detail log：`data/results/four_vehicle_dry_run_contract_20260609_111711/four_vehicle_dry_run_contract_detail_20260609_111711.log`
+  - `decision=accepted_four_vehicle_dry_run_contract_static_audit`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `has_source_target=true`
+  - `has_launch_node=true`
+  - `has_allowed_outputs=true`
+  - `has_allowed_inputs=true`
+  - `forbidden_topics=false`
+  - `forbidden_active_terms=false`
+  - detail log 显示允许输出均在 `/zcw/multi_vehicle/four_vehicle_dry_run/*`
+  - detail log 显示输入命名空间为 `/px4_1/fmu/out/` 到 `/px4_4/fmu/out/`
+  - detail log 未发现 PX4 input topic 或 active control terms
+  - 检查后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`four_vehicle_dry_run`、`iris_[1-4]` 残留进程
+- 结论：
+  - 四机 dry-run planner 的 M1 静态合同审计通过
+  - 该节点目前只提供 dry-run/debug 规则候选，不驱动 PX4
+  - 该节点仍不启动 Offboard、不 arm、不批准四机 active control
+- 下一步：
+  - 可实现四机 dry-run M2 ROS graph smoke：四机 read-only PX4/Gazebo + `four_vehicle_dry_run_planner` + forbidden publisher check
+- 阻塞项：无

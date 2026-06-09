@@ -38,6 +38,9 @@ ament_target_dependencies(wind_dynamic_orbit_audit rclcpp px4_msgs sensor_msgs)
 add_executable(two_vehicle_dry_run_planner src/two_vehicle_dry_run_planner.cpp)
 ament_target_dependencies(two_vehicle_dry_run_planner rclcpp px4_msgs geometry_msgs std_msgs)
 
+add_executable(four_vehicle_dry_run_planner src/four_vehicle_dry_run_planner.cpp)
+ament_target_dependencies(four_vehicle_dry_run_planner rclcpp px4_msgs geometry_msgs std_msgs)
+
 install(TARGETS
   offboard_hover_retry
   offboard_waypoint_sequence
@@ -46,6 +49,7 @@ install(TARGETS
   cable_offboard_gate_dry_run
   wind_dynamic_orbit_audit
   two_vehicle_dry_run_planner
+  four_vehicle_dry_run_planner
   DESTINATION lib/${PROJECT_NAME}
 )
 
