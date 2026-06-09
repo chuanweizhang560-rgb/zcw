@@ -59,8 +59,8 @@ Accepted evidence:
 - 15m RTAB-Map RGB-D motion-backed RViz evidence accepted.
 - static mesh-vertex frustum coverage upper-bound accepted for both 20m and 15m.
 - static quality coverage audit accepted for both 20m and 15m, combining frustum, mesh surface-normal/view-angle filtering and prior useful-depth stats.
-- 15m dynamic orbit audit accepted with real PX4/Gazebo motion, 350 pose samples, 101 depth frames, `min_conservative_clearance_m=2.8703362146`, `mean_useful_ratio=0.0854219693785`.
-- 15m dynamic coverage progression audit accepted on the same pose CSV, with `final_normal_filtered_coverage_ratio=0.637935` and weakest band `0.410206`.
+- 15m short dynamic orbit audit accepted with real PX4/Gazebo motion, 350 pose samples, 101 depth frames, `final_normal_filtered_coverage_ratio=0.637935`.
+- 15m longer dynamic orbit audit accepted with all 48 waypoint advancements, 1200 pose samples, 315 depth frames, `min_conservative_clearance_m=2.72578086707`, `mean_useful_ratio=0.232852213737`, `final_normal_filtered_coverage_ratio=0.688708`, weakest band `0.546614`.
 
 Important boundary:
 
@@ -71,7 +71,8 @@ Important boundary:
 
 Next wind work:
 
-- Extend the dynamic wind run to a full 4-level orbit or create a longer capture to raise top-band normal-filtered coverage.
+- Add a stricter occlusion-aware or ray-casting coverage audit before calling wind inspection complete.
+- Consider orbit adjustment only after occlusion-aware results identify persistent uncovered regions.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
 - Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion.
 
@@ -120,14 +121,12 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Run a longer 15m wind dynamic orbit capture, preferably long enough to traverse all 4 height levels, then rerun:
-   - `scripts/verify_wind_dynamic_orbit_audit.sh`
-   - `scripts/audit_wind_dynamic_coverage_progression.sh`
+1. Add an occlusion-aware wind coverage audit or a ray-casting approximation over the accepted longer 15m pose CSV.
 
 Reason:
 
-- The offline quality coverage audit, real-motion dynamic orbit audit and partial dynamic coverage progression audit all exist now.
-- The largest remaining wind gap is full-orbit dynamic coverage, especially the upper turbine band.
+- The offline quality coverage audit, real-motion dynamic orbit audit and longer full-waypoint dynamic coverage progression audit all exist now.
+- The largest remaining wind gap is occlusion-aware coverage, not basic motion.
 
 Safety boundary for that node:
 

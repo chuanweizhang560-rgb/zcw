@@ -1076,6 +1076,21 @@ Dynamic 15m wind coverage progression follow-up:
 
 Interpretation: this connects the accepted real-motion pose samples to mesh/frustum/normal coverage progression. It is useful task coverage context, not SLAM accuracy evidence, and the top band remains the weakest part of the partial dynamic run.
 
+Longer dynamic 15m wind follow-up:
+
+- dynamic wrapper summary: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_audit_wrapper_20260609_095652.txt`
+- dynamic node summary: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_audit_20260609_095734.txt`
+- progression summary: `data/results/wind_dynamic_coverage_progression_r15_full_20260609_000000/wind_dynamic_coverage_progression_20260609_100000.txt`
+- waypoint_advancements: `48`
+- pose_samples: `1200`
+- depth_frames: `315`
+- min_conservative_clearance_m: `2.72578086707`
+- mean_useful_ratio: `0.232852213737`
+- final_normal_filtered_coverage_ratio: `0.688708`
+- min_band_normal_coverage_ratio_observed: `0.546614`
+
+Interpretation: this is the strongest current wind task dynamic evidence. It still is not SLAM accuracy evidence and still omits occlusion-aware coverage.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

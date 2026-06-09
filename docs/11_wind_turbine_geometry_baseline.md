@@ -394,6 +394,32 @@ Decision:
 - The weakest final band is the top band (`0.410206` normal-filtered), so final wind inspection coverage still needs either a longer full-orbit run or orbit adjustment evidence.
 - This audit still omits occlusion and real image defect recognition.
 
+Supplemental longer 15m dynamic orbit and coverage progression on 2026-06-09:
+
+- dynamic wrapper summary: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_audit_wrapper_20260609_095652.txt`
+- dynamic node summary: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_audit_20260609_095734.txt`
+- pose CSV: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_pose_20260609_095734.csv`
+- depth CSV: `data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_depth_20260609_095734.csv`
+- progression summary: `data/results/wind_dynamic_coverage_progression_r15_full_20260609_000000/wind_dynamic_coverage_progression_20260609_100000.txt`
+- progression CSV: `data/results/wind_dynamic_coverage_progression_r15_full_20260609_000000/wind_dynamic_coverage_progression_20260609_100000.csv`
+- progression band CSV: `data/results/wind_dynamic_coverage_progression_r15_full_20260609_000000/wind_dynamic_coverage_progression_bands_20260609_100000.csv`
+- waypoint_advancements: `48`
+- pose_samples: `1200`
+- depth_frames: `315`
+- min_conservative_clearance_m: `2.72578086707`
+- mean_radius_error_m: `0.131602303283`
+- max_radius_error_m_observed: `0.481701799685`
+- mean_useful_ratio: `0.232852213737`
+- max_useful_ratio: `0.423267983491`
+- final_normal_filtered_coverage_ratio: `0.688708`
+- min_band_normal_coverage_ratio_observed: `0.546614`
+
+Decision:
+
+- The longer 15m run completed all 48 orbit waypoint advancements and is the strongest current wind dynamic evidence.
+- Compared with the 35-second partial run, final normal-filtered coverage improved from `0.637935` to `0.688708`, and the weakest band improved from `0.410206` to `0.546614`.
+- The result still omits occlusion and image-level inspection quality, so it should be treated as dynamic geometry/sensor-readiness evidence rather than final inspection acceptance.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:

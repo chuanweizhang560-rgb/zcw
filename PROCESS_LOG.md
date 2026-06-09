@@ -6774,3 +6774,60 @@
 - 下一步：
   - 可运行更长 15m wind dynamic orbit capture，使轨迹覆盖全部 4 个高度层，然后重跑 dynamic coverage progression
 - 阻塞项：无
+
+### 2026-06-09 10:00:46 CST
+
+- 节点：风机 15m longer dynamic orbit 与 full-waypoint coverage progression 审计完成
+- 执行动作：
+  - 运行更长的 `scripts/verify_wind_dynamic_orbit_audit.sh`
+  - 参数：`OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+  - 参数：`EXPECTED_RADIUS_M=15.0`
+  - 参数：`PRE_AUDIT_SETTLE_SEC=35`
+  - 参数：`AUDIT_DURATION_SEC=120`
+  - 参数：`AUDIT_TIMEOUT_SEC=150`
+  - 参数：`MIN_WAYPOINT_ADVANCEMENTS=40`
+  - 检查仿真相关进程清理状态
+  - 使用新 pose CSV 重跑 `scripts/audit_wind_dynamic_coverage_progression.sh`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - dynamic wrapper summary：`data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_audit_wrapper_20260609_095652.txt`
+  - dynamic node summary：`data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_audit_20260609_095734.txt`
+  - pose CSV：`data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_pose_20260609_095734.csv`
+  - depth CSV：`data/results/wind_dynamic_orbit_audit_20260609_095652/wind_dynamic_orbit_depth_20260609_095734.csv`
+  - progression summary：`data/results/wind_dynamic_coverage_progression_r15_full_20260609_000000/wind_dynamic_coverage_progression_20260609_100000.txt`
+  - progression CSV：`data/results/wind_dynamic_coverage_progression_r15_full_20260609_000000/wind_dynamic_coverage_progression_20260609_100000.csv`
+  - progression band CSV：`data/results/wind_dynamic_coverage_progression_r15_full_20260609_000000/wind_dynamic_coverage_progression_bands_20260609_100000.csv`
+  - `decision=accepted_wind_dynamic_orbit_wrapper`
+  - `audit_decision=accepted_wind_dynamic_orbit_audit`
+  - `waypoint_advancements=48`
+  - `motion_ok=true`
+  - `pose_samples=1200`
+  - `valid_pose_samples=1200`
+  - `depth_frames=315`
+  - `min_conservative_clearance_m=2.72578086707`
+  - `mean_radius_error_m=0.131602303283`
+  - `max_radius_error_m_observed=0.481701799685`
+  - `mean_useful_ratio=0.232852213737`
+  - `max_useful_ratio=0.423267983491`
+  - full progression `decision=accepted_wind_dynamic_coverage_progression_static_audit`
+  - full progression `pose_samples_used=1200`
+  - full progression `final_frustum_coverage_ratio=1.000000`
+  - full progression `final_normal_filtered_coverage_ratio=0.688708`
+  - full progression `min_band_normal_coverage_ratio_observed=0.546614`
+  - 高度分段 normal-filtered coverage：
+    - band 0：`1.000000`
+    - band 1：`1.000000`
+    - band 2：`0.690962`
+    - band 3：`0.546614`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`wind_turbine_autospawn`、`offboard_waypoint_sequence` 残留进程
+- 结论：
+  - 15m candidate 完成全部 48 个 orbit waypoint advancement，成为当前最强 wind dynamic evidence
+  - 相比 35 秒短片段，final normal-filtered coverage 从 `0.637935` 提升到 `0.688708`
+  - 相比 35 秒短片段，最弱高度 band 从 `0.410206` 提升到 `0.546614`
+  - 该证据仍然不包含遮挡 ray-casting 或图像级缺陷识别，不能声明最终 wind inspection coverage complete
+  - 该节点是 wind rule baseline，不是 RL，不涉及 cable Phase B active bridge
+- 下一步：
+  - 可继续实现 occlusion-aware/ray-casting 风机覆盖审计，离线消费 longer 15m pose CSV
+- 阻塞项：无
