@@ -7072,3 +7072,58 @@
 - 下一步：
   - 可实现 M3 RViz overlay，显示两机 dry-run goal/topology 状态并截图
 - 阻塞项：无
+
+### 2026-06-09 10:59:21 CST
+
+- 节点：两机 dry-run planner M3 RViz overlay 截图完成
+- 执行动作：
+  - 检查 GUI/RViz 条件：`DISPLAY=:1`、`rviz2`、`import`、`gnome-screenshot` 均可用
+  - 新增 `ros2_ws/src/zcw_cable_perception/rviz/two_vehicle_dry_run_overlay.rviz`
+  - 扩展 `scripts/verify_two_vehicle_dry_run_smoke.sh`，支持 `CAPTURE_RVIZ=1`
+  - 执行 `bash -n scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 执行 `colcon build --packages-select zcw_cable_perception --symlink-install`
+  - 构建通过，仅出现既有 PCL/miniconda runtime path warning
+  - 在沙箱外运行 `CAPTURE_RVIZ=1 RVIZ_SETTLE_SEC=10 scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 读取 summary
+  - 检查截图文件尺寸和非空性
+  - 读取 forbidden publishers log
+  - 检查仿真/RViz 相关进程清理状态
+  - 打开真实 RViz 截图并人工审核
+  - 更新 `scripts/README.md`
+  - 更新 `docs/15_two_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/two_vehicle_dry_run_smoke_20260609_105743/two_vehicle_dry_run_smoke_20260609_105743.txt`
+  - screenshot：`data/screenshots/two_vehicle_dry_run_overlay_20260609_105743.png`
+  - dry-run samples：`data/logs/two_vehicle_dry_run_samples_20260609_105743.log`
+  - forbidden publishers：`data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_105743.log`
+  - RViz log：`data/logs/two_vehicle_dry_run_rviz_20260609_105743.log`
+  - `decision=accepted_two_vehicle_dry_run_smoke`
+  - `starts_ros=true`
+  - `starts_px4=true`
+  - `starts_gazebo=true`
+  - `starts_rviz=true`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - `capture_rviz=1`
+  - `screenshot_ok=1`
+  - screenshot size：`2480x1522`
+  - forbidden publisher check reports publisher count `0` for：
+    - `/px4_1/fmu/in/offboard_control_mode`
+    - `/px4_1/fmu/in/trajectory_setpoint`
+    - `/px4_1/fmu/in/vehicle_command`
+    - `/px4_2/fmu/in/offboard_control_mode`
+    - `/px4_2/fmu/in/trajectory_setpoint`
+    - `/px4_2/fmu/in/vehicle_command`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`two_vehicle_dry_run`、`rviz2`、`iris_1_dry_run`、`iris_2_dry_run` 残留进程
+  - 人工截图审核：RViz 中两个 dry-run goal 点清晰显示，Displays 中 Vehicle 1/Vehicle 2 dry goal display 均启用，截图非空
+- 结论：
+  - two-vehicle dry-run planner 已完成 M1 static contract、M2 read-only smoke、M3 RViz overlay 三阶段证据
+  - 该节点仍不启动 Offboard、不 arm、不批准 active multi-vehicle control
+  - 后续若进入 active multi-vehicle，必须另起安全评审
+- 下一步：
+  - 可扩展 dry-run 逻辑或回到 cable/wind，不能直接进入 active multi-vehicle Offboard
+- 阻塞项：无

@@ -115,6 +115,7 @@ Current status:
 - Two-vehicle rule-baseline design exists at `docs/15_two_vehicle_rule_baseline_design.md`.
 - Two-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Two-vehicle dry-run M2 read-only smoke is accepted; dry-run topics publish while key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` publisher counts remain `0`.
+- Two-vehicle dry-run M3 RViz overlay screenshot is accepted at `data/screenshots/two_vehicle_dry_run_overlay_20260609_105743.png`.
 - Multi-vehicle task planning/RL is not implemented.
 - Current reliable evidence is mostly single-vehicle baseline, mapping, and dry-run control-gate evidence.
 
@@ -128,13 +129,14 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Implement M3 RViz overlay for the two-vehicle dry-run planner, still read-only and no Offboard/arm.
+1. Decide whether to extend two-vehicle dry-run planning logic or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
 
 Reason:
 
 - Wind has strong single-vehicle dynamic/coverage evidence now.
 - Multi-vehicle has refreshed read-only namespace evidence and a dry-run-first rule-baseline design.
-- M1 and M2 are accepted; the next multi-vehicle gap is visual/RViz evidence for dry-run goals and topology state.
+- M1, M2 and M3 are accepted for the two-vehicle dry-run baseline.
+- The next multi-vehicle gap is richer dry-run logic or a separate active-control review, not evidence that the dry-run node can publish.
 
 Safety boundary for that node:
 

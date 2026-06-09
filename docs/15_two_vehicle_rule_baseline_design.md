@@ -180,6 +180,33 @@ Stage M3: RViz overlay.
 - Capture real RViz evidence only after M2 passes.
 - Do not start Offboard or arm for this overlay.
 
+Latest M3 evidence:
+
+- RViz config: `ros2_ws/src/zcw_cable_perception/rviz/two_vehicle_dry_run_overlay.rviz`
+- command: `CAPTURE_RVIZ=1 RVIZ_SETTLE_SEC=10 scripts/verify_two_vehicle_dry_run_smoke.sh`
+- summary: `data/results/two_vehicle_dry_run_smoke_20260609_105743/two_vehicle_dry_run_smoke_20260609_105743.txt`
+- screenshot: `data/screenshots/two_vehicle_dry_run_overlay_20260609_105743.png`
+- forbidden publishers: `data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_105743.log`
+
+Observed M3 result:
+
+```text
+decision=accepted_two_vehicle_dry_run_smoke
+starts_rviz=true
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+dry_topics_ok=true
+forbidden_publishers_zero=true
+screenshot_ok=1
+```
+
+Manual screenshot review:
+
+- RViz Global Status is usable for the configured fixed frame.
+- Vehicle 1 and Vehicle 2 dry-run goal displays are enabled.
+- The screenshot is non-empty and shows the two dry-run goal points on the grid.
+
 ## 6. Promotion Criteria
 
 Two-vehicle active control may only be considered after all of these exist:
