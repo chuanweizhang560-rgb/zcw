@@ -70,6 +70,8 @@ public:
       "/zcw/multi_vehicle/dry_run/topology_state", 10);
     safety_pub_ = create_publisher<std_msgs::msg::String>(
       "/zcw/multi_vehicle/dry_run/safety_state", 10);
+    assignment_pub_ = create_publisher<std_msgs::msg::String>(
+      "/zcw/multi_vehicle/dry_run/assignment_state", 10);
 
     timer_ = create_wall_timer(
       std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -127,6 +129,8 @@ private:
     double v2_base_distance = -1.0;
     bool topology_ready = false;
     bool safety_ready = false;
+    bool v1_goal_ready = false;
+    bool v2_goal_ready = false;
 
     if (v1_pose_ready && v2_pose_ready) {
       v1_goal_distance = distance_xy(v1_position_->x, v1_position_->y, v1_goal_x_, v1_goal_y_);
@@ -139,6 +143,8 @@ private:
         v1_base_distance <= relay_radius_m_ &&
         v2_base_distance <= relay_radius_m_;
       safety_ready = topology_ready && v1_status_ready && v2_status_ready;
+      v1_goal_ready = v1_goal_distance <= goal_acceptance_radius_m_;
+      v2_goal_ready = v2_goal_distance <= goal_acceptance_radius_m_;
     }
 
     std_msgs::msg::String topology_msg;
@@ -169,6 +175,25 @@ private:
            << "; goal_acceptance_radius_m=" << goal_acceptance_radius_m_;
     safety_msg.data = safety.str();
     safety_pub_->publish(safety_msg);
+
+    std_msgs::msg::String assignment_msg;
+    std::ostringstream assignment;
+    assignment << "RULE_BASELINE_DRY_RUN"
+               << "; dry_run=true"
+               << "; learned_policy=false"
+               << "; starts_offboard=false"
+               << "; arms=false"
+               << "; publishes_fmu_in=false"
+               << "; vehicle_1_role=inspection_candidate"
+               << "; vehicle_1_task=wind_or_cable_geometry_candidate"
+               << "; vehicle_1_goal_ready=" << (v1_goal_ready ? "true" : "false")
+               << "; vehicle_2_role=relay_candidate"
+               << "; vehicle_2_task=base_to_inspector_topology_candidate"
+               << "; vehicle_2_goal_ready=" << (v2_goal_ready ? "true" : "false")
+               << "; topology_ready=" << (topology_ready ? "true" : "false")
+               << "; safety_ready=" << (safety_ready ? "true" : "false");
+    assignment_msg.data = assignment.str();
+    assignment_pub_->publish(assignment_msg);
   }
 
   double publish_hz_{2.0};
@@ -199,6 +224,7 @@ private:
   rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr v2_goal_pub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr topology_pub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr safety_pub_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr assignment_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 };
 

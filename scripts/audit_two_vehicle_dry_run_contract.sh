@@ -52,7 +52,8 @@ fi
 if rg -q '/zcw/multi_vehicle/dry_run/vehicle_1_goal' "${SOURCE_FILE}" &&
    rg -q '/zcw/multi_vehicle/dry_run/vehicle_2_goal' "${SOURCE_FILE}" &&
    rg -q '/zcw/multi_vehicle/dry_run/topology_state' "${SOURCE_FILE}" &&
-   rg -q '/zcw/multi_vehicle/dry_run/safety_state' "${SOURCE_FILE}"; then
+   rg -q '/zcw/multi_vehicle/dry_run/safety_state' "${SOURCE_FILE}" &&
+   rg -q '/zcw/multi_vehicle/dry_run/assignment_state' "${SOURCE_FILE}"; then
   has_allowed_outputs=true
 fi
 if rg -q '/px4_1/fmu/out/vehicle_local_position' "${SOURCE_FILE}" &&

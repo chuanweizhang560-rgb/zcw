@@ -7127,3 +7127,62 @@
 - 下一步：
   - 可扩展 dry-run 逻辑或回到 cable/wind，不能直接进入 active multi-vehicle Offboard
 - 阻塞项：无
+
+### 2026-06-09 11:04:13 CST
+
+- 节点：两机 dry-run planner M4 规则角色状态增强完成
+- 执行动作：
+  - 检查仓库状态，确认 `codex/initial-workflow` 与 `origin/codex/initial-workflow` 一致
+  - 检查仿真相关进程，确认无 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`two_vehicle_dry_run`、`rviz2` 残留
+  - 读取 `docs/14_current_status_and_next_steps.md`、`docs/15_two_vehicle_rule_baseline_design.md` 和 `PROCESS_LOG.md` 尾部
+  - 增强 `ros2_ws/src/zcw_px4_baseline/src/two_vehicle_dry_run_planner.cpp`
+  - 新增 dry-run 输出 topic：
+    - `/zcw/multi_vehicle/dry_run/assignment_state`
+  - `assignment_state` 仅声明规则 baseline 候选角色：
+    - `vehicle_1_role=inspection_candidate`
+    - `vehicle_2_role=relay_candidate`
+    - `learned_policy=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+  - 更新 `scripts/audit_two_vehicle_dry_run_contract.sh`，将 `assignment_state` 纳入允许输出检查
+  - 更新 `scripts/verify_two_vehicle_dry_run_smoke.sh`，将 `assignment_state` 纳入 dry-run topic smoke 和 sample 日志
+  - 执行 `bash -n scripts/audit_two_vehicle_dry_run_contract.sh`
+  - 执行 `bash -n scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 执行 `colcon build --packages-select zcw_px4_baseline --symlink-install`
+  - 执行 `scripts/audit_two_vehicle_dry_run_contract.sh`
+  - 在沙箱外执行 `scripts/verify_two_vehicle_dry_run_smoke.sh`
+  - 读取 summary、dry-run samples、forbidden publisher log
+  - 检查仿真相关进程清理状态
+  - 更新 `scripts/README.md`
+  - 更新 `docs/15_two_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - build：`zcw_px4_baseline` 构建通过
+  - static contract summary：`data/results/two_vehicle_dry_run_contract_20260609_110329/two_vehicle_dry_run_contract_20260609_110329.txt`
+  - smoke summary：`data/results/two_vehicle_dry_run_smoke_20260609_110334/two_vehicle_dry_run_smoke_20260609_110334.txt`
+  - dry-run samples：`data/logs/two_vehicle_dry_run_samples_20260609_110334.log`
+  - forbidden publishers：`data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_110334.log`
+  - `decision=accepted_two_vehicle_dry_run_contract_static_audit`
+  - `decision=accepted_two_vehicle_dry_run_smoke`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - key `/px4_1/fmu/in/*` 与 `/px4_2/fmu/in/*` publisher count 全部为 `0`
+  - dry-run samples 包含：
+    - `/zcw/multi_vehicle/dry_run/vehicle_1_goal`
+    - `/zcw/multi_vehicle/dry_run/vehicle_2_goal`
+    - `/zcw/multi_vehicle/dry_run/topology_state`
+    - `/zcw/multi_vehicle/dry_run/safety_state`
+    - `/zcw/multi_vehicle/dry_run/assignment_state`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`two_vehicle_dry_run`、`rviz2`、`iris_1_dry_run`、`iris_2_dry_run` 残留进程
+- 结论：
+  - two-vehicle dry-run baseline 已具备规则角色状态输出
+  - 该输出仍是 dry-run/debug 状态，不驱动 PX4
+  - 该节点仍不启动 Offboard、不 arm、不批准 active multi-vehicle control
+- 下一步：
+  - 可继续扩展 dry-run-only 拓扑/任务评分，或回到 cable/wind 证据
+  - 进入 active multi-vehicle 仍需单独安全评审和用户批准
+- 阻塞项：无

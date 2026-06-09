@@ -205,7 +205,8 @@ while (( SECONDS < deadline )); do
   if grep -q "/zcw/multi_vehicle/dry_run/vehicle_1_goal" "${TOPICS_LOG}" &&
      grep -q "/zcw/multi_vehicle/dry_run/vehicle_2_goal" "${TOPICS_LOG}" &&
      grep -q "/zcw/multi_vehicle/dry_run/topology_state" "${TOPICS_LOG}" &&
-     grep -q "/zcw/multi_vehicle/dry_run/safety_state" "${TOPICS_LOG}"; then
+     grep -q "/zcw/multi_vehicle/dry_run/safety_state" "${TOPICS_LOG}" &&
+     grep -q "/zcw/multi_vehicle/dry_run/assignment_state" "${TOPICS_LOG}"; then
     dry_topics_ok=true
     break
   fi
@@ -221,6 +222,8 @@ done
   timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/topology_state || true
   echo "--- safety_state"
   timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/safety_state || true
+  echo "--- assignment_state"
+  timeout 8s ros2 topic echo --once /zcw/multi_vehicle/dry_run/assignment_state || true
 } >"${DRY_RUN_SAMPLES_LOG}" 2>&1
 
 {

@@ -61,6 +61,7 @@ Outputs:
 - `/zcw/multi_vehicle/dry_run/vehicle_2_goal`
 - `/zcw/multi_vehicle/dry_run/topology_state`
 - `/zcw/multi_vehicle/dry_run/safety_state`
+- `/zcw/multi_vehicle/dry_run/assignment_state`
 
 Forbidden outputs:
 
@@ -77,6 +78,8 @@ The first dry-run behavior should be deliberately simple:
 - The planner computes vehicle-to-vehicle distance.
 - The planner computes each vehicle distance to the base point.
 - The planner marks topology as ready only if both vehicles remain within a configured relay radius.
+- The planner publishes a dry-run assignment state that declares rule-baseline roles only:
+  `vehicle_1_role=inspection_candidate` and `vehicle_2_role=relay_candidate`.
 
 Default constants:
 
@@ -164,6 +167,7 @@ Observed dry-run topics:
 - `/zcw/multi_vehicle/dry_run/vehicle_2_goal`
 - `/zcw/multi_vehicle/dry_run/topology_state`
 - `/zcw/multi_vehicle/dry_run/safety_state`
+- `/zcw/multi_vehicle/dry_run/assignment_state`
 
 Observed forbidden publisher counts:
 
@@ -206,6 +210,42 @@ Manual screenshot review:
 - RViz Global Status is usable for the configured fixed frame.
 - Vehicle 1 and Vehicle 2 dry-run goal displays are enabled.
 - The screenshot is non-empty and shows the two dry-run goal points on the grid.
+
+Stage M4: role assignment dry-run enrichment.
+
+- Keep the same M1/M2/M3 safety boundary.
+- Add a rule-baseline `assignment_state` topic.
+- Verify assignment state publishes in a two-vehicle read-only smoke.
+- Verify key PX4 input publisher counts remain `0`.
+
+Latest M4 evidence:
+
+- source: `ros2_ws/src/zcw_px4_baseline/src/two_vehicle_dry_run_planner.cpp`
+- static contract summary: `data/results/two_vehicle_dry_run_contract_20260609_110329/two_vehicle_dry_run_contract_20260609_110329.txt`
+- smoke summary: `data/results/two_vehicle_dry_run_smoke_20260609_110334/two_vehicle_dry_run_smoke_20260609_110334.txt`
+- dry-run samples: `data/logs/two_vehicle_dry_run_samples_20260609_110334.log`
+- forbidden publishers: `data/logs/two_vehicle_dry_run_forbidden_publishers_20260609_110334.log`
+
+Observed M4 result:
+
+```text
+decision=accepted_two_vehicle_dry_run_smoke
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+dry_topics_ok=true
+forbidden_publishers_zero=true
+```
+
+Observed assignment state includes:
+
+```text
+RULE_BASELINE_DRY_RUN
+dry_run=true
+learned_policy=false
+vehicle_1_role=inspection_candidate
+vehicle_2_role=relay_candidate
+```
 
 ## 6. Promotion Criteria
 
