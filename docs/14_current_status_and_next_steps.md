@@ -58,16 +58,18 @@ Accepted evidence:
 - 15m static visibility accepted: best frame-fill ratio `0.109478`, better than 20m `0.092567`.
 - 15m RTAB-Map RGB-D motion-backed RViz evidence accepted.
 - static mesh-vertex frustum coverage upper-bound accepted for both 20m and 15m.
+- static quality coverage audit accepted for both 20m and 15m, combining frustum, mesh surface-normal/view-angle filtering and prior useful-depth stats.
 
 Important boundary:
 
-- Static visibility/frustum coverage does not model occlusion, surface normals, dynamic collision, or useful depth.
+- Static visibility/frustum coverage does not model occlusion or dynamic collision.
+- The newer quality coverage audit adds surface-normal/view-angle filtering and useful-depth linkage, but still does not model occlusion, actual visual defect recognition, or dynamic collision safety.
 - RTAB-Map screenshots are SLAM plumbing evidence, not inspection coverage certificates.
 - 15m is preferred for observation experiments, but not final coverage readiness.
 
 Next wind work:
 
-- Implement a stricter offline coverage audit that combines frustum, depth usefulness, and surface-normal/view-angle checks.
+- Add dynamic wind safety/coverage evidence that samples the actual moving orbit and checks closest approach, useful depth and coverage progression over time.
 - Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion.
 
 ## 4. SLAM Status
@@ -115,19 +117,19 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Add a wind coverage-quality audit that combines:
-   - frustum visibility,
-   - useful depth statistics,
-   - surface-normal/view-angle filtering if mesh normals can be recovered from the Collada asset,
-   - per-height-band and per-orbit-level coverage summaries.
+1. Add a dynamic wind orbit audit that samples the real moving baseline and records:
+   - closest approach to the wind turbine mesh or conservative collision proxy,
+   - waypoint progress and pose track quality,
+   - depth useful-return statistics during orbit progress,
+   - coverage-quality progression against the accepted offline mesh samples.
 
 Reason:
 
-- The project now has enough wind geometry and RTAB-Map smoke evidence.
-- The largest remaining wind gap is not movement; it is coverage validity.
+- The offline quality coverage audit exists now.
+- The largest remaining wind gap is dynamic evidence that the selected orbit remains safe and useful while PX4/Gazebo is actually moving.
 
 Safety boundary for that node:
 
-- It should be offline/read-only first.
-- It should not start PX4, Gazebo, RViz, Offboard or arm.
-- It should not publish `/fmu/in/*`.
+- It may use the wind rule baseline Offboard/arm path, because that path is already part of wind evidence.
+- It must remain wind-only and must not create or use cable Phase B active bridge.
+- It must keep RTAB-Map/coverage outputs out of active PX4 control.

@@ -6632,3 +6632,49 @@
 - 下一步：
   - 可继续实现 wind coverage-quality offline audit
 - 阻塞项：无
+
+### 2026-06-09 09:34:37 CST
+
+- 节点：风机 orbit quality coverage 离线审计完成
+- 执行动作：
+  - 新增 `scripts/audit_wind_orbit_quality_coverage.sh`
+  - 新脚本只读解析 wind turbine multilevel orbit launch、AerialCore world、wind turbine Collada mesh 的三角面片与法向
+  - 新脚本联动既有 wind depth stats summary，输出三角面片中心 frustum 覆盖、表面法向/观测角过滤覆盖、高度分段覆盖、逐视角统计和 useful-depth 指标
+  - 执行 20m baseline 审计
+  - 执行 15m candidate 审计
+  - 更新 `scripts/README.md`
+  - 更新 `docs/11_wind_turbine_geometry_baseline.md`
+  - 更新 `docs/13_slam_open_source_readiness.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - 20m summary：`data/results/wind_quality_coverage_20m_20260609_000000/wind_orbit_quality_coverage_20260609_093420.txt`
+  - 15m summary：`data/results/wind_quality_coverage_r15_20260609_000000/wind_orbit_quality_coverage_20260609_093420.txt`
+  - 20m sample CSV：`data/results/wind_quality_coverage_20m_20260609_000000/wind_orbit_quality_coverage_samples_20260609_093420.csv`
+  - 15m sample CSV：`data/results/wind_quality_coverage_r15_20260609_000000/wind_orbit_quality_coverage_samples_20260609_093420.csv`
+  - 20m band CSV：`data/results/wind_quality_coverage_20m_20260609_000000/wind_orbit_quality_coverage_bands_20260609_093420.csv`
+  - 15m band CSV：`data/results/wind_quality_coverage_r15_20260609_000000/wind_orbit_quality_coverage_bands_20260609_093420.csv`
+  - 20m view CSV：`data/results/wind_quality_coverage_20m_20260609_000000/wind_orbit_quality_coverage_views_20260609_093420.csv`
+  - 15m view CSV：`data/results/wind_quality_coverage_r15_20260609_000000/wind_orbit_quality_coverage_views_20260609_093420.csv`
+  - 20m `decision=accepted_wind_orbit_quality_coverage_static_audit`
+  - 15m `decision=accepted_wind_orbit_quality_coverage_static_audit`
+  - 20m `frustum_coverage_ratio=1.000000`
+  - 15m `frustum_coverage_ratio=1.000000`
+  - 20m `normal_filtered_coverage_ratio=0.723701`
+  - 15m `normal_filtered_coverage_ratio=0.715221`
+  - 20m `normal_filtered_double_observed_ratio=0.700837`
+  - 15m `normal_filtered_double_observed_ratio=0.686561`
+  - 20m `min_band_normal_coverage_ratio_observed=0.613346`
+  - 15m `min_band_normal_coverage_ratio_observed=0.582924`
+  - 20m `mean_useful_ratio=0.094775`
+  - 15m `mean_useful_ratio=0.116670`
+  - 20m `max_useful_ratio=0.207139`
+  - 15m `max_useful_ratio=0.225683`
+  - 两个审计均 `starts_ros=false`、`starts_px4=false`、`starts_gazebo=false`、`starts_rviz=false`、`starts_offboard=false`、`arms=false`、`publishes_fmu_in=false`
+- 结论：
+  - 20m baseline 在离线表面法向/观测角过滤覆盖上略强
+  - 15m candidate 在真实仿真 useful-depth 图像统计上仍然更强
+  - 当前决策不变：20m 继续作为更保守的已接受风机规则 baseline，15m 继续作为观察质量候选
+  - 该审计不建模遮挡、动态碰撞安全、真实视觉缺陷识别或最终巡检覆盖完成
+- 下一步：
+  - 可继续做 wind dynamic safety/coverage audit，采样真实运动轨迹下的最近距离、depth useful-return 和 coverage-quality progression
+- 阻塞项：无

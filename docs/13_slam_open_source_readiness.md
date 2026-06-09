@@ -1036,6 +1036,20 @@ Static frustum coverage upper-bound follow-up:
 
 Interpretation: the wind orbit geometry passes a static mesh-vertex frustum coverage upper-bound audit. This is still weaker than inspection coverage because it omits occlusion, surface normals, useful-depth validity and dynamic collision safety.
 
+Static quality coverage follow-up:
+
+- script: `scripts/audit_wind_orbit_quality_coverage.sh`
+- 20m baseline summary: `data/results/wind_quality_coverage_20m_20260609_000000/wind_orbit_quality_coverage_20260609_093420.txt`
+- 15m candidate summary: `data/results/wind_quality_coverage_r15_20260609_000000/wind_orbit_quality_coverage_20260609_093420.txt`
+- 20m normal_filtered_coverage_ratio: `0.723701`
+- 15m normal_filtered_coverage_ratio: `0.715221`
+- 20m min_band_normal_coverage_ratio_observed: `0.613346`
+- 15m min_band_normal_coverage_ratio_observed: `0.582924`
+- 20m mean_useful_ratio: `0.094775`
+- 15m mean_useful_ratio: `0.116670`
+
+Interpretation: the 20m baseline is slightly stronger under the offline surface-normal/view-angle filter, while the 15m candidate remains stronger under real useful-depth image statistics. This is useful coverage-quality context for the wind task, but it is not SLAM accuracy evidence and not a final turbine inspection certificate.
+
 Evidence from previous sensor smoke:
 
 - point cloud sample: `data/logs/depth_camera_pose_points_sample_20260602_204840.log`

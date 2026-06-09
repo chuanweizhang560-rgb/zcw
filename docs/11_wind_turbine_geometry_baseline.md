@@ -326,6 +326,30 @@ Supplemental frustum coverage upper-bound audit on 2026-06-09:
 
 This confirms that the current orbit geometry satisfies a static mesh-vertex frustum upper-bound audit. It is intentionally not a final coverage certificate because it does not model occlusion, surface normals, image texture quality, dynamic collision safety, or useful-depth validity.
 
+Supplemental quality coverage static audit on 2026-06-09:
+
+- script: `scripts/audit_wind_orbit_quality_coverage.sh`
+- 20m summary: `data/results/wind_quality_coverage_20m_20260609_000000/wind_orbit_quality_coverage_20260609_093420.txt`
+- 15m summary: `data/results/wind_quality_coverage_r15_20260609_000000/wind_orbit_quality_coverage_20260609_093420.txt`
+- 20m normal_filtered_coverage_ratio: `0.723701`
+- 15m normal_filtered_coverage_ratio: `0.715221`
+- 20m normal_filtered_double_observed_ratio: `0.700837`
+- 15m normal_filtered_double_observed_ratio: `0.686561`
+- 20m min_band_normal_coverage_ratio_observed: `0.613346`
+- 15m min_band_normal_coverage_ratio_observed: `0.582924`
+- 20m mean_useful_ratio: `0.094775`
+- 15m mean_useful_ratio: `0.116670`
+- 20m max_useful_ratio: `0.207139`
+- 15m max_useful_ratio: `0.225683`
+
+Decision:
+
+- Both the 20m baseline and 15m candidate produce valid offline quality metrics with real wind depth-stat evidence attached.
+- The 20m baseline has slightly stronger normal-filtered mesh coverage in this static model.
+- The 15m candidate still has stronger useful-depth image returns.
+- The current practical decision remains unchanged: keep 20m as the safer accepted baseline, keep 15m as the preferred observation-quality candidate for additional dynamic tests.
+- This audit still does not model occlusion, dynamic collision safety, actual image defect recognition or final inspection completion.
+
 ## 10. Static Frustum/Frame-Fill Visibility Audit
 
 Purpose:
