@@ -21,6 +21,8 @@ RTABMAP_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_${STAMP}.log
 RVIZ_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_rviz_${STAMP}.log"
 STATUS_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_status_${STAMP}.log"
 LOCAL_POSITION_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_local_position_${STAMP}.log"
+LOCAL_POSITION_TRAJECTORY_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_local_position_trajectory_${STAMP}.log"
+DEPTH_POSE_TRAJECTORY_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_depth_pose_trajectory_${STAMP}.log"
 TOPICS_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_topics_${STAMP}.log"
 RGB_SAMPLE_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_rgb_sample_${STAMP}.log"
 DEPTH_SAMPLE_LOG="${LOG_DIR}/rtabmap_depth_camera_rgbd_wind_rviz_depth_sample_${STAMP}.log"
@@ -39,6 +41,8 @@ bridge_pid=""
 rtabmap_pid=""
 rviz_pid=""
 tf_pid=""
+local_position_traj_pid=""
+depth_pose_traj_pid=""
 
 source_workspace() {
   set +u
@@ -48,7 +52,7 @@ source_workspace() {
 }
 
 cleanup() {
-  for pid in "${rviz_pid}" "${rtabmap_pid}" "${bridge_pid}" "${offboard_pid}" "${tf_pid}" "${px4_pid}" "${agent_pid}"; do
+  for pid in "${rviz_pid}" "${local_position_traj_pid}" "${depth_pose_traj_pid}" "${rtabmap_pid}" "${bridge_pid}" "${offboard_pid}" "${tf_pid}" "${px4_pid}" "${agent_pid}"; do
     if [[ -n "${pid}" ]]; then
       kill -TERM -- "-${pid}" >/dev/null 2>&1 || true
       wait "${pid}" >/dev/null 2>&1 || true
@@ -198,7 +202,17 @@ setsid env \
   bash -lc "source /opt/ros/humble/setup.bash && ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 world map" >/dev/null 2>&1 &
 tf_pid=$!
 
+setsid bash -lc "source /opt/ros/humble/setup.bash && timeout '${MOTION_SETTLE_SEC}' ros2 topic echo --no-daemon --full-length /fmu/out/vehicle_local_position" >"${LOCAL_POSITION_TRAJECTORY_LOG}" 2>&1 &
+local_position_traj_pid=$!
+
+setsid bash -lc "source /opt/ros/humble/setup.bash && timeout '${MOTION_SETTLE_SEC}' ros2 topic echo --no-daemon --full-length /zcw/depth_camera/pose" >"${DEPTH_POSE_TRAJECTORY_LOG}" 2>&1 &
+depth_pose_traj_pid=$!
+
 sleep "${MOTION_SETTLE_SEC}"
+wait "${local_position_traj_pid}" >/dev/null 2>&1 || true
+wait "${depth_pose_traj_pid}" >/dev/null 2>&1 || true
+local_position_traj_pid=""
+depth_pose_traj_pid=""
 
 timeout 8s ros2 topic echo --once /fmu/out/vehicle_status >"${STATUS_LOG}" 2>&1
 timeout 8s ros2 topic echo --once /fmu/out/vehicle_local_position >"${LOCAL_POSITION_LOG}" 2>&1
@@ -230,6 +244,8 @@ rtabmap_ok=false
 outputs_ok=false
 motion_ok=false
 waypoint_advancements=0
+local_position_trajectory_samples=0
+depth_pose_trajectory_samples=0
 if grep -q "SLAM mode" "${RTABMAP_LOG}" &&
    grep -q "subscribe_depth = true" "${RTABMAP_LOG}" &&
    grep -q "subscribe_rgb = true" "${RTABMAP_LOG}" &&
@@ -250,6 +266,8 @@ if grep -q "arming_state: 2" "${STATUS_LOG}" &&
    [[ "${waypoint_advancements}" -ge "${MIN_WAYPOINT_ADVANCEMENTS}" ]]; then
   motion_ok=true
 fi
+local_position_trajectory_samples="$(rg -c '^---$' "${LOCAL_POSITION_TRAJECTORY_LOG}" || true)"
+depth_pose_trajectory_samples="$(rg -c '^---$' "${DEPTH_POSE_TRAJECTORY_LOG}" || true)"
 
 decision="accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay"
 reason="rtabmap_rgbd_wind_motion_backed_rviz_capture_completed"
@@ -287,6 +305,10 @@ fi
   echo "rviz_log=${RVIZ_LOG}"
   echo "status_log=${STATUS_LOG}"
   echo "local_position_log=${LOCAL_POSITION_LOG}"
+  echo "local_position_trajectory_log=${LOCAL_POSITION_TRAJECTORY_LOG}"
+  echo "local_position_trajectory_samples=${local_position_trajectory_samples}"
+  echo "depth_pose_trajectory_log=${DEPTH_POSE_TRAJECTORY_LOG}"
+  echo "depth_pose_trajectory_samples=${depth_pose_trajectory_samples}"
   echo "topics_log=${TOPICS_LOG}"
   echo "rgb_sample_log=${RGB_SAMPLE_LOG}"
   echo "depth_sample_log=${DEPTH_SAMPLE_LOG}"

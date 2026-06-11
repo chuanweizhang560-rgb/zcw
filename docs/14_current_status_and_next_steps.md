@@ -105,7 +105,7 @@ Important boundary:
 
 Next SLAM work:
 
-- Add a fresh motion capture path that records full reference trajectory samples, then compute ATE/RMSE; add loop-closure positive cases and map-to-ground-truth error metrics before claiming SLAM completion.
+- Re-run the updated cable/wind RTAB-Map RGB-D motion capture scripts to generate full reference trajectory logs, then compute ATE/RMSE; add loop-closure positive cases and map-to-ground-truth error metrics before claiming SLAM completion.
 - Keep RTAB-Map output out of active control until a separate safety review exists.
 
 ## 5. Multi-Vehicle Status

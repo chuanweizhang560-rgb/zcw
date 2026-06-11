@@ -7883,3 +7883,45 @@
   - 修改或新增 motion evidence 脚本，让它采集完整 `/fmu/out/vehicle_local_position` 或 Gazebo P3D trajectory，再进行 ATE/RMSE 审计
   - 仍不把 SLAM 输出接入 PX4 控制
 - 阻塞项：无
+
+### 2026-06-11 15:36:00 CST
+
+- 节点：RTAB-Map motion capture 轨迹日志入口补齐
+- 执行动作：
+  - 只读分析：
+    - `scripts/capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`
+    - `scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 确认原脚本只在 `MOTION_SETTLE_SEC` 后执行：
+    - `ros2 topic echo --once /fmu/out/vehicle_status`
+    - `ros2 topic echo --once /fmu/out/vehicle_local_position`
+  - 修改 cable motion RTAB-Map RViz capture 脚本：
+    - 新增 `LOCAL_POSITION_TRAJECTORY_LOG`
+    - 新增 `DEPTH_POSE_TRAJECTORY_LOG`
+    - 在运动阶段并行记录 `/fmu/out/vehicle_local_position`
+    - 在运动阶段并行记录 `/zcw/depth_camera/pose`
+    - summary 输出 trajectory log 路径与样本数
+  - 修改 wind motion RTAB-Map RViz capture 脚本：
+    - 新增 `LOCAL_POSITION_TRAJECTORY_LOG`
+    - 新增 `DEPTH_POSE_TRAJECTORY_LOG`
+    - 在运动阶段并行记录 `/fmu/out/vehicle_local_position`
+    - 在运动阶段并行记录 `/zcw/depth_camera/pose`
+    - summary 输出 trajectory log 路径与样本数
+  - 执行 `bash -n scripts/capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 执行静态 `rg` 检查 trajectory log 字段和采集命令
+  - 更新 `scripts/README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - 语法检查通过
+  - 两个 motion capture 脚本后续运行时会生成完整 reference trajectory logs：
+    - `*_vehicle_local_position_trajectory_*.log`
+    - `*_depth_pose_trajectory_*.log`
+  - 当前步骤未启动 ROS、PX4、Gazebo、RViz
+  - 当前步骤未新增控制策略，未把 SLAM 输出接入 PX4 控制
+- 结论：
+  - 下一次运行 cable/wind RTAB-Map motion capture 后，将具备计算 ATE/RMSE 所需的 reference trajectory 输入候选
+  - 当前仍未产生新的 ATE/RMSE 结果
+- 下一步：
+  - 在用户允许 active single-vehicle motion evidence 的前提下，运行更新后的 wind 或 cable RTAB-Map motion capture
+  - 然后新增 trajectory parser / ATE audit
+- 阻塞项：
+  - 需要重新运行会 Offboard/arm 的单机 motion evidence 脚本，才能获得完整轨迹日志
