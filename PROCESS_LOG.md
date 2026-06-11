@@ -7566,3 +7566,78 @@
 - 下一步：
   - 可给 RViz overlay 增加评分文本证据，或回到 wind/cable 证据链
 - 阻塞项：无
+
+### 2026-06-11 15:10:33 CST
+
+- 节点：四机 dry-run planner M5 评分 MarkerArray 与 RViz overlay 完成
+- 执行动作：
+  - 检查 `zcw_px4_baseline` package 和 RViz 配置
+  - 在 `four_vehicle_dry_run_planner` 中新增可视化输出：
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/score_markers`
+  - 新增依赖：
+    - `visualization_msgs`
+  - `score_markers` 使用标准 RViz `MarkerArray`
+  - marker 内容包括：
+    - `FOUR_RULE_SCORE_DRY_RUN`
+    - `total`
+    - `topology`
+    - `state`
+    - `task_distance`
+    - `chain_margin_m`
+    - `V1 wind`
+    - `V2 cable`
+    - `V3 relay`
+    - `V4 relay`
+  - 更新 `ros2_ws/src/zcw_cable_perception/rviz/four_vehicle_dry_run_overlay.rviz`
+  - 新增 RViz `MarkerArray` display：`Rule Score Markers`
+  - 更新 `scripts/audit_four_vehicle_dry_run_contract.sh`，将 `score_markers` 纳入允许输出
+  - 更新 `scripts/verify_four_vehicle_dry_run_smoke.sh`，将 `score_markers` 纳入 dry-run topics 和 sample 采集
+  - 更新 `scripts/audit_four_vehicle_dry_run_samples.sh`，检查 marker topic 和 marker text
+  - 执行脚本语法检查
+  - 执行 `colcon build --packages-select zcw_px4_baseline zcw_cable_perception zcw_bringup --symlink-install`
+  - 执行 `scripts/audit_four_vehicle_dry_run_contract.sh`
+  - 在沙箱外执行 `scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 执行 `SAMPLES_FILE=data/logs/four_vehicle_dry_run_samples_20260611_150811.log scripts/audit_four_vehicle_dry_run_samples.sh`
+  - 在沙箱外执行 `CAPTURE_RVIZ=1 RVIZ_SETTLE_SEC=10 scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 读取 contract summary、smoke summary、sample audit summary、marker sample、forbidden publisher log
+  - 检查截图文件类型、尺寸和 mean pixel value
+  - 打开真实 RViz 截图并人工审核
+  - 检查仿真/RViz 相关进程清理状态
+- 结果：
+  - build：`zcw_px4_baseline`、`zcw_cable_perception`、`zcw_bringup` 构建通过
+  - contract summary：`data/results/four_vehicle_dry_run_contract_20260611_150804/four_vehicle_dry_run_contract_20260611_150804.txt`
+  - smoke summary：`data/results/four_vehicle_dry_run_smoke_20260611_150906/four_vehicle_dry_run_smoke_20260611_150906.txt`
+  - full-length samples：`data/logs/four_vehicle_dry_run_samples_20260611_150811.log`
+  - sample audit summary：`data/results/four_vehicle_dry_run_samples_audit_20260611_150859/four_vehicle_dry_run_samples_audit_20260611_150859.txt`
+  - screenshot：`data/screenshots/four_vehicle_dry_run_overlay_20260611_150906.png`
+  - `decision=accepted_four_vehicle_dry_run_contract_static_audit`
+  - `decision=accepted_four_vehicle_dry_run_smoke`
+  - `decision=accepted_four_vehicle_dry_run_samples_audit`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - `has_score_markers=true`
+  - `has_marker_text=true`
+  - `screenshot_ok=1`
+  - screenshot size：`2480x1522`
+  - screenshot mean：`22183.8`
+  - marker sample 包含：
+    - `FOUR_RULE_SCORE_DRY_RUN`
+    - `total=0.992365 topology=1.000000 state=1.000000`
+    - `task_distance=0.969460 chain_margin_m=799.977095`
+    - `V1 wind`
+    - `V2 cable`
+    - `V3 relay`
+    - `V4 relay`
+  - forbidden publisher log 未发现非零 publisher
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`four_vehicle_dry_run`、`two_vehicle_dry_run`、`rviz2`、`iris_[1-4]` 残留进程
+  - 人工截图审核：评分文本、四个角色标签、四个 dry-run goal 点均可见
+- 结论：
+  - 四机 dry-run scoring 已从日志证据扩展到 RViz 可视证据
+  - 该可视化仍是 debug/审计输出，不驱动 PX4
+  - 该节点仍不启动 Offboard、不 arm、不批准四机 active control 或策略控制
+- 下一步：
+  - 可继续做四机 dry-run 离线拓扑/任务评分 sweep，或回到 wind/cable 证据链
+- 阻塞项：无

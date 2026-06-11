@@ -31,8 +31,10 @@ has_topology=false
 has_safety=false
 has_assignment=false
 has_scoring=false
+has_score_markers=false
 has_rule_baseline=false
 has_rule_score=false
+has_marker_text=false
 has_no_learned_policy=false
 has_no_active=false
 has_no_fmu_in=false
@@ -44,8 +46,15 @@ if rg -q -- '--- topology_state' "${SAMPLES_FILE}" && rg -q 'FOUR_TOPOLOGY_READY
 if rg -q -- '--- safety_state' "${SAMPLES_FILE}" && rg -q 'FOUR_SAFETY_READY_DRY_RUN' "${SAMPLES_FILE}"; then has_safety=true; fi
 if rg -q -- '--- assignment_state' "${SAMPLES_FILE}"; then has_assignment=true; fi
 if rg -q -- '--- scoring_state' "${SAMPLES_FILE}"; then has_scoring=true; fi
+if rg -q -- '--- score_markers' "${SAMPLES_FILE}"; then has_score_markers=true; fi
 if rg -q 'FOUR_RULE_BASELINE_DRY_RUN' "${SAMPLES_FILE}"; then has_rule_baseline=true; fi
 if rg -q 'FOUR_RULE_SCORE_DRY_RUN' "${SAMPLES_FILE}"; then has_rule_score=true; fi
+if rg -q 'V1 wind' "${SAMPLES_FILE}" &&
+   rg -q 'V2 cable' "${SAMPLES_FILE}" &&
+   rg -q 'V3 relay' "${SAMPLES_FILE}" &&
+   rg -q 'V4 relay' "${SAMPLES_FILE}"; then
+  has_marker_text=true
+fi
 if rg -q 'learned_policy=false' "${SAMPLES_FILE}"; then has_no_learned_policy=true; fi
 if rg -q 'starts_offboard=false.*arms=false' "${SAMPLES_FILE}"; then has_no_active=true; fi
 if rg -q 'publishes_fmu_in=false' "${SAMPLES_FILE}"; then has_no_fmu_in=true; fi
@@ -75,8 +84,10 @@ if [[ "${has_all_goals}" == "true" &&
       "${has_safety}" == "true" &&
       "${has_assignment}" == "true" &&
       "${has_scoring}" == "true" &&
+      "${has_score_markers}" == "true" &&
       "${has_rule_baseline}" == "true" &&
       "${has_rule_score}" == "true" &&
+      "${has_marker_text}" == "true" &&
       "${has_no_learned_policy}" == "true" &&
       "${has_no_active}" == "true" &&
       "${has_no_fmu_in}" == "true" &&
@@ -103,8 +114,10 @@ fi
   echo "has_safety=${has_safety}"
   echo "has_assignment=${has_assignment}"
   echo "has_scoring=${has_scoring}"
+  echo "has_score_markers=${has_score_markers}"
   echo "has_rule_baseline=${has_rule_baseline}"
   echo "has_rule_score=${has_rule_score}"
+  echo "has_marker_text=${has_marker_text}"
   echo "has_no_learned_policy=${has_no_learned_policy}"
   echo "has_no_active=${has_no_active}"
   echo "has_no_fmu_in=${has_no_fmu_in}"

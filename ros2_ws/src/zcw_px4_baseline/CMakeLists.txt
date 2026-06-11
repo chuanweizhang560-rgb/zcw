@@ -16,6 +16,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 add_executable(offboard_hover_retry src/offboard_hover_retry.cpp)
 ament_target_dependencies(offboard_hover_retry rclcpp px4_msgs)
@@ -39,7 +40,7 @@ add_executable(two_vehicle_dry_run_planner src/two_vehicle_dry_run_planner.cpp)
 ament_target_dependencies(two_vehicle_dry_run_planner rclcpp px4_msgs geometry_msgs std_msgs)
 
 add_executable(four_vehicle_dry_run_planner src/four_vehicle_dry_run_planner.cpp)
-ament_target_dependencies(four_vehicle_dry_run_planner rclcpp px4_msgs geometry_msgs std_msgs)
+ament_target_dependencies(four_vehicle_dry_run_planner rclcpp px4_msgs geometry_msgs std_msgs visualization_msgs)
 
 install(TARGETS
   offboard_hover_retry

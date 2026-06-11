@@ -230,7 +230,58 @@ FOUR_RULE_SCORE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=fal
 
 This score is dry-run evidence only. It is not used to command PX4 and does not approve active role assignment.
 
-## 8. Promotion Criteria
+## 8. M5 Scoring Marker Overlay
+
+M5 requirements:
+
+- Keep the same no-active boundary as M1-M4.
+- Publish RViz `MarkerArray` text under `/zcw/multi_vehicle/four_vehicle_dry_run/score_markers`.
+- Show the rule score summary and four role labels in RViz.
+- Verify marker samples offline.
+- Capture a real RViz screenshot with the marker display enabled.
+
+Latest M5 evidence:
+
+- RViz config: `ros2_ws/src/zcw_cable_perception/rviz/four_vehicle_dry_run_overlay.rviz`
+- contract summary: `data/results/four_vehicle_dry_run_contract_20260611_150804/four_vehicle_dry_run_contract_20260611_150804.txt`
+- smoke summary: `data/results/four_vehicle_dry_run_smoke_20260611_150906/four_vehicle_dry_run_smoke_20260611_150906.txt`
+- dry-run samples: `data/logs/four_vehicle_dry_run_samples_20260611_150811.log`
+- samples audit summary: `data/results/four_vehicle_dry_run_samples_audit_20260611_150859/four_vehicle_dry_run_samples_audit_20260611_150859.txt`
+- screenshot: `data/screenshots/four_vehicle_dry_run_overlay_20260611_150906.png`
+
+Observed M5 result:
+
+```text
+decision=accepted_four_vehicle_dry_run_contract_static_audit
+decision=accepted_four_vehicle_dry_run_smoke
+decision=accepted_four_vehicle_dry_run_samples_audit
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+has_score_markers=true
+has_marker_text=true
+screenshot_ok=1
+```
+
+Representative marker text:
+
+```text
+FOUR_RULE_SCORE_DRY_RUN
+total=0.992365 topology=1.000000 state=1.000000
+task_distance=0.969460 chain_margin_m=799.977095
+V1 wind
+V2 cable
+V3 relay
+V4 relay
+```
+
+Manual screenshot review:
+
+- RViz screenshot is non-empty: `2480x1522`, mean pixel value `22183.8`.
+- Rule Score Markers display is enabled.
+- Score text and all four role labels are visible with the dry-run goal points.
+
+## 9. Promotion Criteria
 
 Four-vehicle active control may only be considered after all of these exist:
 

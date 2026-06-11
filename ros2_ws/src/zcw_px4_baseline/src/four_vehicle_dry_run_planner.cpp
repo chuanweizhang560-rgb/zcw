@@ -12,6 +12,8 @@
 #include <px4_msgs/msg/vehicle_status.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
+#include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 class FourVehicleDryRunPlanner : public rclcpp::Node
 {
@@ -87,6 +89,8 @@ public:
       "/zcw/multi_vehicle/four_vehicle_dry_run/assignment_state", 10);
     scoring_pub_ = create_publisher<std_msgs::msg::String>(
       "/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state", 10);
+    score_markers_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>(
+      "/zcw/multi_vehicle/four_vehicle_dry_run/score_markers", 10);
 
     timer_ = create_wall_timer(
       std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -268,6 +272,60 @@ private:
             << "; vehicle_4_task=relay_candidate";
     scoring_msg.data = scoring.str();
     scoring_pub_->publish(scoring_msg);
+
+    visualization_msgs::msg::MarkerArray markers;
+    auto text_marker = visualization_msgs::msg::Marker();
+    text_marker.header.stamp = now();
+    text_marker.header.frame_id = "px4_local_ned";
+    text_marker.ns = "four_vehicle_dry_run_score";
+    text_marker.id = 1;
+    text_marker.type = visualization_msgs::msg::Marker::TEXT_VIEW_FACING;
+    text_marker.action = visualization_msgs::msg::Marker::ADD;
+    text_marker.pose.position.x = -25.0;
+    text_marker.pose.position.y = 4.0;
+    text_marker.pose.position.z = -4.0;
+    text_marker.pose.orientation.w = 1.0;
+    text_marker.scale.z = 3.0;
+    text_marker.color.r = 0.95F;
+    text_marker.color.g = 0.95F;
+    text_marker.color.b = 0.95F;
+    text_marker.color.a = 1.0F;
+    text_marker.text =
+      "FOUR_RULE_SCORE_DRY_RUN\n"
+      "total=" + std::to_string(rule_total_score) +
+      " topology=" + std::to_string(topology_score) +
+      " state=" + std::to_string(state_score) +
+      "\ntask_distance=" + std::to_string(task_distance_score) +
+      " chain_margin_m=" + std::to_string(chain_min_margin);
+    markers.markers.push_back(text_marker);
+
+    const std::array<const char *, 4> role_labels{{
+      "V1 wind",
+      "V2 cable",
+      "V3 relay",
+      "V4 relay",
+    }};
+    for (std::size_t i = 0; i < vehicles_.size(); ++i) {
+      auto role_marker = visualization_msgs::msg::Marker();
+      role_marker.header.stamp = text_marker.header.stamp;
+      role_marker.header.frame_id = "px4_local_ned";
+      role_marker.ns = "four_vehicle_dry_run_roles";
+      role_marker.id = static_cast<int>(10 + i);
+      role_marker.type = visualization_msgs::msg::Marker::TEXT_VIEW_FACING;
+      role_marker.action = visualization_msgs::msg::Marker::ADD;
+      role_marker.pose.position.x = vehicles_[i].goal_x;
+      role_marker.pose.position.y = vehicles_[i].goal_y;
+      role_marker.pose.position.z = vehicles_[i].goal_z - 3.0;
+      role_marker.pose.orientation.w = 1.0;
+      role_marker.scale.z = 2.0;
+      role_marker.color.r = 0.85F;
+      role_marker.color.g = 0.92F;
+      role_marker.color.b = 1.0F;
+      role_marker.color.a = 1.0F;
+      role_marker.text = role_labels[i];
+      markers.markers.push_back(role_marker);
+    }
+    score_markers_pub_->publish(markers);
   }
 
   double publish_hz_{2.0};
@@ -281,6 +339,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr safety_pub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr assignment_pub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr scoring_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr score_markers_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 };
 

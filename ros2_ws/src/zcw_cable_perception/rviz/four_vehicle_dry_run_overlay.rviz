@@ -73,6 +73,18 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /zcw/multi_vehicle/four_vehicle_dry_run/vehicle_4_goal
       Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Rule Score Markers
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /zcw/multi_vehicle/four_vehicle_dry_run/score_markers
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 20; 24; 28

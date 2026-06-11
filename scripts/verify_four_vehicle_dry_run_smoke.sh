@@ -216,7 +216,8 @@ while (( SECONDS < deadline )); do
     /zcw/multi_vehicle/four_vehicle_dry_run/topology_state \
     /zcw/multi_vehicle/four_vehicle_dry_run/safety_state \
     /zcw/multi_vehicle/four_vehicle_dry_run/assignment_state \
-    /zcw/multi_vehicle/four_vehicle_dry_run/scoring_state; do
+    /zcw/multi_vehicle/four_vehicle_dry_run/scoring_state \
+    /zcw/multi_vehicle/four_vehicle_dry_run/score_markers; do
     if ! grep -q "${topic}" "${TOPICS_LOG}"; then
       dry_topics_ok=false
     fi
@@ -250,6 +251,10 @@ done
   timeout 10s ros2 topic echo --no-daemon --full-length --once \
     /zcw/multi_vehicle/four_vehicle_dry_run/scoring_state \
     std_msgs/msg/String || true
+  echo "--- score_markers"
+  timeout 10s ros2 topic echo --no-daemon --full-length --once \
+    /zcw/multi_vehicle/four_vehicle_dry_run/score_markers \
+    visualization_msgs/msg/MarkerArray || true
 } >"${DRY_RUN_SAMPLES_LOG}" 2>&1
 
 {
