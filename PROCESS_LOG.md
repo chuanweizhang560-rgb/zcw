@@ -7699,3 +7699,57 @@
 - 下一步：
   - 可继续做四机 dry-run 更细 assignment/topology 证据，或回到 wind/cable 证据链
 - 阻塞项：无
+
+### 2026-06-11 15:25:27 CST
+
+- 节点：RTAB-Map RGB-D SLAM quality gate 只读审计完成
+- 执行动作：
+  - 新增 `scripts/audit_rtabmap_rgbd_quality_gate.sh`
+  - 该脚本只读已有 RTAB-Map RGB-D 证据，不启动 ROS/PX4/Gazebo/RViz
+  - 汇总并检查：
+    - RGB-D smoke summary
+    - RGB-D consistency summary
+    - static RGB-D RViz overlay summary
+    - cable motion-backed RGB-D RViz overlay summary
+    - wind motion-backed RGB-D RViz overlay summary
+    - static RViz topics log 中 `/map`、`/cloud_map`、`/octomap_*`
+    - depth sample 中 `height=480`、`width=848`、`encoding=32FC1`
+    - static/cable-motion/wind-motion 三张真实 RViz 截图的尺寸与 mean pixel
+    - smoke/static RViz 的 no-active 边界
+  - 执行 `chmod +x scripts/audit_rtabmap_rgbd_quality_gate.sh`
+  - 执行 `bash -n scripts/audit_rtabmap_rgbd_quality_gate.sh`
+  - 执行 `scripts/audit_rtabmap_rgbd_quality_gate.sh`
+  - 读取 quality gate summary
+  - 更新 `scripts/README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/rtabmap_rgbd_quality_gate_20260611_152527/rtabmap_rgbd_quality_gate_20260611_152527.txt`
+  - `decision=accepted_rtabmap_rgbd_quality_gate`
+  - `reason=rgbd_slam_baseline_has_stable_outputs_topics_depth_contract_and_visual_evidence`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `uses_gazebo_pose_as_debug_odom=true`
+  - `claims_slam_accuracy=false`
+  - `quality_gate_score=17/17`
+  - `topics_have_map=true`
+  - `topics_have_cloud=true`
+  - `topics_have_octomap=true`
+  - `depth_contract_ok=true`
+  - `static_screenshot_ok=true`，尺寸 `2490,1522`，mean `34043.6`
+  - `motion_screenshot_ok=true`，尺寸 `1280,920`，mean `49405.2`
+  - `wind_screenshot_ok=true`，尺寸 `2560,1403`，mean `34133.9`
+  - `static_no_active=true`
+  - `smoke_no_active=true`
+- 结论：
+  - RTAB-Map RGB-D 单机 SLAM baseline 的工程链路、输出 topic、深度输入合同和可视证据质量门槛已通过
+  - 该节点仍不声明 SLAM 精度完成
+  - 尚未完成 loop-closure 质量、map-to-ground-truth 或定位误差量化
+  - SLAM 输出仍不接入 PX4 控制
+- 下一步：
+  - 可继续做 SLAM 精度/地图质量量化，或回到四机 dry-run assignment/topology 证据
+- 阻塞项：无

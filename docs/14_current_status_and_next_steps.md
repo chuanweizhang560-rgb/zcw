@@ -93,16 +93,17 @@ Accepted evidence:
 - RGB-D RViz overlay accepted.
 - cable motion-backed RGB-D RViz accepted.
 - wind 15m motion-backed RGB-D RViz accepted.
+- RTAB-Map RGB-D quality gate accepted with stable smoke/consistency, `/map` + `/cloud_map` + `/octomap_*` topics, depth contract evidence, and three real RViz screenshots checked.
 
 Important boundary:
 
 - Gazebo pose / P3D odometry is used as debug/reference odometry in current smoke tests.
 - SLAM output is not used for PX4 control.
-- No quantitative SLAM accuracy, loop-closure quality, or map-to-ground-truth metric is complete.
+- The quality gate does not claim SLAM accuracy; no loop-closure quality or map-to-ground-truth metric is complete.
 
 Next SLAM work:
 
-- Add map quality metrics before claiming SLAM completion.
+- Add quantitative map accuracy, loop-closure and map-to-ground-truth metrics before claiming SLAM completion.
 - Keep RTAB-Map output out of active control until a separate safety review exists.
 
 ## 5. Multi-Vehicle Status
