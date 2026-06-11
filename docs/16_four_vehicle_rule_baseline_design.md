@@ -93,8 +93,6 @@ forbidden_topics=false
 forbidden_active_terms=false
 ```
 
-## 5. Promotion Criteria
-
 ## 5. M2 ROS Graph Smoke
 
 M2 requirements:
@@ -152,7 +150,46 @@ Representative assignment sample:
 FOUR_RULE_BASELINE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=false; arms=false; publishes_fmu_in=false; vehicle_1_role=wind_inspection_candidate; vehicle_2_role=cable_inspection_candidate; vehicle_3_role=relay_candidate; vehicle_4_role=relay_candidate; topology_ready=true; safety_ready=true
 ```
 
-## 6. Promotion Criteria
+## 6. M3 RViz Overlay
+
+M3 requirements:
+
+- Reuse the accepted M2 smoke boundary.
+- Start RViz only for visualization.
+- Display all four dry-run goal topics.
+- Capture a real RViz screenshot.
+- Keep `/px4_i/fmu/in/*` publisher counts at `0`.
+
+Latest M3 evidence:
+
+- RViz config: `ros2_ws/src/zcw_cable_perception/rviz/four_vehicle_dry_run_overlay.rviz`
+- command: `CAPTURE_RVIZ=1 RVIZ_SETTLE_SEC=10 scripts/verify_four_vehicle_dry_run_smoke.sh`
+- summary: `data/results/four_vehicle_dry_run_smoke_20260611_143238/four_vehicle_dry_run_smoke_20260611_143238.txt`
+- screenshot: `data/screenshots/four_vehicle_dry_run_overlay_20260611_143238.png`
+- forbidden publishers: `data/logs/four_vehicle_dry_run_forbidden_publishers_20260611_143238.log`
+- RViz log: `data/logs/four_vehicle_dry_run_rviz_20260611_143238.log`
+
+Observed M3 result:
+
+```text
+decision=accepted_four_vehicle_dry_run_smoke
+starts_rviz=true
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+dry_topics_ok=true
+forbidden_publishers_zero=true
+capture_rviz=1
+screenshot_ok=1
+```
+
+Manual screenshot review:
+
+- RViz screenshot is non-empty: `2480x1522`, mean pixel value `21573`.
+- Four dry-run goal displays are enabled.
+- Four colored dry-run goal points are visible on the grid.
+
+## 7. Promotion Criteria
 
 Four-vehicle active control may only be considered after all of these exist:
 

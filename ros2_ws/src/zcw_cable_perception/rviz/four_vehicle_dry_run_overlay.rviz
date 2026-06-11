@@ -1,0 +1,107 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.35
+      Cell Size: 10
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 160
+      Enabled: true
+      Line Style:
+        Line Width: 0.03
+        Value: Lines
+      Name: Grid
+      Plane: XY
+      Plane Cell Count: 60
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/PointStamped
+      Color: 40; 170; 255
+      Enabled: true
+      History Length: 50
+      Name: Vehicle 1 Wind Goal
+      Radius: 2.0
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /zcw/multi_vehicle/four_vehicle_dry_run/vehicle_1_goal
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/PointStamped
+      Color: 255; 190; 40
+      Enabled: true
+      History Length: 50
+      Name: Vehicle 2 Cable Goal
+      Radius: 2.0
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /zcw/multi_vehicle/four_vehicle_dry_run/vehicle_2_goal
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/PointStamped
+      Color: 60; 220; 120
+      Enabled: true
+      History Length: 50
+      Name: Vehicle 3 Relay Goal
+      Radius: 2.0
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /zcw/multi_vehicle/four_vehicle_dry_run/vehicle_3_goal
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/PointStamped
+      Color: 255; 90; 90
+      Enabled: true
+      History Length: 50
+      Name: Vehicle 4 Relay Goal
+      Radius: 2.0
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /zcw/multi_vehicle/four_vehicle_dry_run/vehicle_4_goal
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 20; 24; 28
+    Fixed Frame: px4_local_ned
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 95
+      Focal Point:
+        X: -23
+        Y: 4
+        Z: -10
+      Name: Current View
+      Pitch: 0.75
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 5.45
+    Saved: ~
+Window Geometry:
+  Height: 900
+  Width: 1200
+  X: 80
+  Y: 80

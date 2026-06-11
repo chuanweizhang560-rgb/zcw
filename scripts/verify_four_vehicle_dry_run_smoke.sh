@@ -8,6 +8,8 @@ AGENT_BIN="${AGENT_BIN:-${ROOT_DIR}/third_party/Micro-XRCE-DDS-Agent-v2.2.1/buil
 AGENT_LIB_DIR="${AGENT_LIB_DIR:-${ROOT_DIR}/third_party/Micro-XRCE-DDS-Agent-v2.2.1/build_clean}"
 LOG_DIR="${LOG_DIR:-${ROOT_DIR}/data/logs}"
 RESULT_ROOT="${RESULT_ROOT:-${ROOT_DIR}/data/results}"
+SCREENSHOT_DIR="${SCREENSHOT_DIR:-${ROOT_DIR}/data/screenshots}"
+RVIZ_CONFIG="${RVIZ_CONFIG:-${ROOT_DIR}/ros2_ws/src/zcw_cable_perception/rviz/four_vehicle_dry_run_overlay.rviz}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 RESULT_DIR="${RESULT_ROOT}/four_vehicle_dry_run_smoke_${STAMP}"
 SUMMARY_FILE="${RESULT_DIR}/four_vehicle_dry_run_smoke_${STAMP}.txt"
@@ -17,16 +19,25 @@ PLANNER_LOG="${LOG_DIR}/four_vehicle_dry_run_planner_${STAMP}.log"
 TOPICS_LOG="${LOG_DIR}/four_vehicle_dry_run_topics_${STAMP}.log"
 FORBIDDEN_PUBLISHERS_LOG="${LOG_DIR}/four_vehicle_dry_run_forbidden_publishers_${STAMP}.log"
 DRY_RUN_SAMPLES_LOG="${LOG_DIR}/four_vehicle_dry_run_samples_${STAMP}.log"
+RVIZ_LOG="${LOG_DIR}/four_vehicle_dry_run_rviz_${STAMP}.log"
+SCREENSHOT_FILE="${SCREENSHOT_DIR}/four_vehicle_dry_run_overlay_${STAMP}.png"
 TIMEOUT_SEC="${TIMEOUT_SEC:-110}"
 WORLD_NAME="${WORLD_NAME:-empty}"
 MODEL_NAME="${MODEL_NAME:-iris}"
+CAPTURE_RVIZ="${CAPTURE_RVIZ:-0}"
+RVIZ_SETTLE_SEC="${RVIZ_SETTLE_SEC:-8}"
 
 agent_pid=""
 gzserver_pid=""
 planner_pid=""
+rviz_pid=""
 px4_pids=()
 
 cleanup() {
+  if [[ -n "${rviz_pid}" ]]; then
+    kill -TERM -- "-${rviz_pid}" >/dev/null 2>&1 || true
+    wait "${rviz_pid}" >/dev/null 2>&1 || true
+  fi
   if [[ -n "${planner_pid}" ]]; then
     kill -TERM -- "-${planner_pid}" >/dev/null 2>&1 || true
     wait "${planner_pid}" >/dev/null 2>&1 || true
@@ -44,6 +55,7 @@ cleanup() {
     wait "${agent_pid}" >/dev/null 2>&1 || true
   fi
   pkill -TERM -f "four_vehicle_dry_run_planner.launch.py" >/dev/null 2>&1 || true
+  pkill -TERM -f "rviz2.*four_vehicle_dry_run_overlay.rviz" >/dev/null 2>&1 || true
   pkill -TERM -f "${PX4_DIR}/build/px4_sitl_default/bin/px4" >/dev/null 2>&1 || true
   pkill -TERM -f "gzserver .*sitl_gazebo-classic/worlds/${WORLD_NAME}\\.world" >/dev/null 2>&1 || true
 }
@@ -68,6 +80,10 @@ if [[ ! -x "${AGENT_BIN}" ]]; then
   echo "MicroXRCEAgent not found: ${AGENT_BIN}" >&2
   exit 1
 fi
+if [[ "${CAPTURE_RVIZ}" == "1" && ! -f "${RVIZ_CONFIG}" ]]; then
+  echo "RViz config not found: ${RVIZ_CONFIG}" >&2
+  exit 1
+fi
 
 BUILD_DIR="${PX4_DIR}/build/px4_sitl_default"
 PX4_BIN="${BUILD_DIR}/bin/px4"
@@ -82,7 +98,7 @@ for path in "${PX4_BIN}" "${JINJA_GEN}" "${MODEL_JINJA}" "${WORLD_PATH}"; do
   fi
 done
 
-mkdir -p "${LOG_DIR}" "${RESULT_DIR}" "${LOG_DIR}/ros"
+mkdir -p "${LOG_DIR}" "${RESULT_DIR}" "${SCREENSHOT_DIR}" "${LOG_DIR}/ros"
 
 setsid env -i \
   HOME="${HOME:-/home/travis}" \
@@ -247,11 +263,36 @@ if rg -n "Publisher count: [1-9]" "${FORBIDDEN_PUBLISHERS_LOG}" >/dev/null; then
   forbidden_ok=false
 fi
 
+screenshot_ok=not_requested
+if [[ "${CAPTURE_RVIZ}" == "1" ]]; then
+  screenshot_ok=0
+  setsid env \
+    ROS_LOG_DIR="${LOG_DIR}/ros" \
+    RCUTILS_LOGGING_DIRECTORY="${LOG_DIR}/ros" \
+    bash -lc "source /opt/ros/humble/setup.bash && source '${ROOT_DIR}/install/setup.bash' && rviz2 -d '${RVIZ_CONFIG}'" >"${RVIZ_LOG}" 2>&1 &
+  rviz_pid=$!
+  sleep "${RVIZ_SETTLE_SEC}"
+  set +o pipefail
+  RVIZ_WINDOW_ID="$(env DISPLAY="${DISPLAY:-}" XAUTHORITY="${XAUTHORITY:-}" XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-}" xwininfo -root -tree 2>/dev/null | awk '/RViz/ {print $1; exit}')"
+  set -o pipefail
+  if [[ -n "${RVIZ_WINDOW_ID}" ]] &&
+     env DISPLAY="${DISPLAY:-}" XAUTHORITY="${XAUTHORITY:-}" XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-}" import -window "${RVIZ_WINDOW_ID}" "${SCREENSHOT_FILE}" >/dev/null 2>&1; then
+    screenshot_ok=1
+  elif env DISPLAY="${DISPLAY:-}" XAUTHORITY="${XAUTHORITY:-}" XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-}" gnome-screenshot -f "${SCREENSHOT_FILE}" >/dev/null 2>&1; then
+    screenshot_ok=1
+  elif env DISPLAY="${DISPLAY:-}" XAUTHORITY="${XAUTHORITY:-}" XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-}" import -window root "${SCREENSHOT_FILE}" >/dev/null 2>&1; then
+    screenshot_ok=1
+  fi
+fi
+
 decision="accepted_four_vehicle_dry_run_smoke"
 reason="four_vehicle_dry_run_topics_publish_without_px4_input_publishers"
 if [[ "${dry_topics_ok}" != "true" || "${forbidden_ok}" != "true" ]]; then
   decision="rejected_four_vehicle_dry_run_smoke"
   reason="dry_run_topics_or_forbidden_publisher_gate_failed"
+elif [[ "${CAPTURE_RVIZ}" == "1" && "${screenshot_ok}" != "1" ]]; then
+  decision="rejected_four_vehicle_dry_run_smoke"
+  reason="rviz_screenshot_failed"
 fi
 
 {
@@ -261,13 +302,15 @@ fi
   echo "starts_ros=true"
   echo "starts_px4=true"
   echo "starts_gazebo=true"
-  echo "starts_rviz=false"
+  echo "starts_rviz=$([[ "${CAPTURE_RVIZ}" == "1" ]] && echo true || echo false)"
   echo "starts_offboard=false"
   echo "arms=false"
   echo "publishes_fmu_in=false"
   echo "num_vehicles=4"
   echo "dry_topics_ok=${dry_topics_ok}"
   echo "forbidden_publishers_zero=${forbidden_ok}"
+  echo "capture_rviz=${CAPTURE_RVIZ}"
+  echo "screenshot_ok=${screenshot_ok}"
   for instance in 1 2 3 4; do
     echo "observed_px4_${instance}_vehicle_status=true"
   done
@@ -277,6 +320,9 @@ fi
   echo "topics_log=${TOPICS_LOG}"
   echo "dry_run_samples_log=${DRY_RUN_SAMPLES_LOG}"
   echo "forbidden_publishers_log=${FORBIDDEN_PUBLISHERS_LOG}"
+  echo "rviz_config=${RVIZ_CONFIG}"
+  echo "rviz_log=${RVIZ_LOG}"
+  echo "screenshot=${SCREENSHOT_FILE}"
 } >"${SUMMARY_FILE}"
 
 echo "Four-vehicle dry-run smoke completed."

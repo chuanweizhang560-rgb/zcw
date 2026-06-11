@@ -7447,3 +7447,54 @@
 - 下一步：
   - 可实现四机 dry-run RViz overlay 截图，或回到 wind/cable 证据链
 - 阻塞项：无
+
+### 2026-06-11 14:33:43 CST
+
+- 节点：四机 dry-run planner M3 RViz overlay 截图完成
+- 执行动作：
+  - 修复 `docs/16_four_vehicle_rule_baseline_design.md` 中 M2 插入后遗留的重复 `Promotion Criteria` 标题
+  - 新增 `ros2_ws/src/zcw_cable_perception/rviz/four_vehicle_dry_run_overlay.rviz`
+  - 扩展 `scripts/verify_four_vehicle_dry_run_smoke.sh`，支持 `CAPTURE_RVIZ=1`
+  - 新增 RViz 日志和截图输出：
+    - `data/logs/four_vehicle_dry_run_rviz_<stamp>.log`
+    - `data/screenshots/four_vehicle_dry_run_overlay_<stamp>.png`
+  - 执行 `bash -n scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 执行 `colcon build --packages-select zcw_cable_perception zcw_px4_baseline zcw_bringup --symlink-install`
+  - 在沙箱外执行 `CAPTURE_RVIZ=1 RVIZ_SETTLE_SEC=10 scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 读取 summary
+  - 检查截图文件类型、尺寸和 mean pixel value
+  - 读取 forbidden publisher log
+  - 检查仿真/RViz 相关进程清理状态
+  - 打开真实 RViz 截图并人工审核
+  - 更新 `scripts/README.md`
+  - 更新 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/four_vehicle_dry_run_smoke_20260611_143238/four_vehicle_dry_run_smoke_20260611_143238.txt`
+  - screenshot：`data/screenshots/four_vehicle_dry_run_overlay_20260611_143238.png`
+  - RViz log：`data/logs/four_vehicle_dry_run_rviz_20260611_143238.log`
+  - forbidden publishers：`data/logs/four_vehicle_dry_run_forbidden_publishers_20260611_143238.log`
+  - `decision=accepted_four_vehicle_dry_run_smoke`
+  - `starts_ros=true`
+  - `starts_px4=true`
+  - `starts_gazebo=true`
+  - `starts_rviz=true`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `num_vehicles=4`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - `capture_rviz=1`
+  - `screenshot_ok=1`
+  - screenshot size：`2480x1522`
+  - screenshot mean：`21573`
+  - key `/px4_1` 到 `/px4_4` 的 `/fmu/in/*` publisher count 检查未发现非零 publisher
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`four_vehicle_dry_run`、`two_vehicle_dry_run`、`rviz2`、`iris_[1-4]` 残留进程
+  - 人工截图审核：RViz 中四个 dry-run goal 点清晰显示，四个 goal display 均启用，截图非空
+- 结论：
+  - 四机 dry-run planner 已完成 M1 static contract、M2 ROS graph smoke、M2 sample audit、M3 RViz overlay 三类证据
+  - 该节点仍不启动 Offboard、不 arm、不批准四机 active control 或策略控制
+- 下一步：
+  - 可继续扩展四机 dry-run-only 拓扑/任务评分，或回到 wind/cable 证据链
+- 阻塞项：无

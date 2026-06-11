@@ -118,6 +118,7 @@ Current status:
 - Four-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Four-vehicle dry-run M2 ROS graph smoke is accepted; dry-run topics publish with four PX4/Gazebo read-only instances while key `/px4_i/fmu/in/*` publisher counts remain `0`.
 - Four-vehicle dry-run sample audit is accepted; full-length samples show four goal topics, `FOUR_TOPOLOGY_READY`, `FOUR_SAFETY_READY_DRY_RUN`, rule-baseline assignment fields, `learned_policy=false`, and no-active/no-PX4-input flags.
+- Four-vehicle dry-run M3 RViz overlay screenshot is accepted at `data/screenshots/four_vehicle_dry_run_overlay_20260611_143238.png`.
 - Two-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Two-vehicle dry-run M2 read-only smoke is accepted; dry-run topics publish while key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` publisher counts remain `0`.
 - Two-vehicle dry-run M3 RViz overlay screenshot is accepted at `data/screenshots/two_vehicle_dry_run_overlay_20260609_105743.png`.
@@ -136,7 +137,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Add four-vehicle RViz overlay evidence, or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
+1. Add richer four-vehicle dry-run topology/task scoring, or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
 
 Reason:
 
@@ -145,6 +146,7 @@ Reason:
 - Four-vehicle read-only startup is now accepted, but four-vehicle active control is still forbidden.
 - Four-vehicle dry-run planner M1 static contract is accepted.
 - Four-vehicle dry-run M2 ROS graph smoke and sample audit are accepted.
+- Four-vehicle dry-run M3 RViz overlay is accepted.
 - M1, M2, M3, M4 and M5 are accepted for the two-vehicle dry-run baseline.
 - The next multi-vehicle gap is offline scoring/richer topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
 
