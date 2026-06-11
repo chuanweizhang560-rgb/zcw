@@ -95,6 +95,65 @@ forbidden_active_terms=false
 
 ## 5. Promotion Criteria
 
+## 5. M2 ROS Graph Smoke
+
+M2 requirements:
+
+- Start four PX4/Gazebo Classic read-only instances.
+- Start `four_vehicle_dry_run_planner`.
+- Verify dry-run goal/topology/safety/assignment topics publish.
+- Verify key `/px4_i/fmu/in/*` publisher counts remain `0`.
+- Capture full-length dry-run samples and run an offline sample audit.
+
+Latest M2 evidence:
+
+- smoke script: `scripts/verify_four_vehicle_dry_run_smoke.sh`
+- smoke summary: `data/results/four_vehicle_dry_run_smoke_20260611_142737/four_vehicle_dry_run_smoke_20260611_142737.txt`
+- dry-run samples: `data/logs/four_vehicle_dry_run_samples_20260611_142737.log`
+- forbidden publishers: `data/logs/four_vehicle_dry_run_forbidden_publishers_20260611_142737.log`
+- samples audit script: `scripts/audit_four_vehicle_dry_run_samples.sh`
+- samples audit summary: `data/results/four_vehicle_dry_run_samples_audit_20260611_142923/four_vehicle_dry_run_samples_audit_20260611_142923.txt`
+
+Observed M2 result:
+
+```text
+decision=accepted_four_vehicle_dry_run_smoke
+starts_ros=true
+starts_px4=true
+starts_gazebo=true
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+num_vehicles=4
+dry_topics_ok=true
+forbidden_publishers_zero=true
+```
+
+Observed sample audit result:
+
+```text
+decision=accepted_four_vehicle_dry_run_samples_audit
+has_all_goals=true
+has_topology=true
+has_safety=true
+has_assignment=true
+has_rule_baseline=true
+has_no_learned_policy=true
+has_no_active=true
+has_no_fmu_in=true
+has_valid_topology_distance=true
+has_roles=true
+```
+
+Representative assignment sample:
+
+```text
+FOUR_RULE_BASELINE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=false; arms=false; publishes_fmu_in=false; vehicle_1_role=wind_inspection_candidate; vehicle_2_role=cable_inspection_candidate; vehicle_3_role=relay_candidate; vehicle_4_role=relay_candidate; topology_ready=true; safety_ready=true
+```
+
+## 6. Promotion Criteria
+
 Four-vehicle active control may only be considered after all of these exist:
 
 - accepted M1 static contract audit.

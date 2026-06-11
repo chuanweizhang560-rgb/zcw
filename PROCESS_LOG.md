@@ -7369,3 +7369,81 @@
 - 下一步：
   - 可实现四机 dry-run M2 ROS graph smoke：四机 read-only PX4/Gazebo + `four_vehicle_dry_run_planner` + forbidden publisher check
 - 阻塞项：无
+
+### 2026-06-11 14:29:30 CST
+
+- 节点：四机 dry-run planner M2 ROS graph smoke 与 sample 审计完成
+- 执行动作：
+  - 检查仓库状态，确认 `codex/initial-workflow` 与 `origin/codex/initial-workflow` 一致
+  - 检查仿真相关进程，确认无 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`four_vehicle_dry_run`、`two_vehicle_dry_run`、`rviz2`、`iris_[1-4]` 残留
+  - 读取 `scripts/verify_two_vehicle_dry_run_smoke.sh` 和 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 新增 `scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 新脚本启动：
+    - Micro XRCE-DDS Agent
+    - Gazebo Classic headless
+    - PX4/Gazebo Classic `iris` 实例 1-4
+    - `zcw_bringup four_vehicle_dry_run_planner.launch.py`
+  - 新脚本验证：
+    - `/px4_1` 到 `/px4_4` 的 `vehicle_status` 与 `vehicle_local_position`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_1_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_2_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_3_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_4_goal`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/topology_state`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/safety_state`
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/assignment_state`
+    - `/px4_1` 到 `/px4_4` 的关键 `/fmu/in/*` publisher count 为 `0`
+  - 执行 `bash -n scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 执行 `colcon build --packages-select zcw_px4_baseline zcw_bringup --symlink-install`
+  - 首次运行 `scripts/verify_four_vehicle_dry_run_smoke.sh` 通过 summary，但 sample 日志有 topic type discovery 不完整问题
+  - 修正 sample 采集为显式消息类型和 `--no-daemon`
+  - 重新运行 `scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 新增 `scripts/audit_four_vehicle_dry_run_samples.sh`
+  - 执行 `bash -n scripts/audit_four_vehicle_dry_run_samples.sh`
+  - 执行 `SAMPLES_FILE=data/logs/four_vehicle_dry_run_samples_20260611_142737.log scripts/audit_four_vehicle_dry_run_samples.sh`
+  - 读取 smoke summary、full-length samples、forbidden publisher log、sample audit summary
+  - 检查仿真相关进程清理状态
+  - 更新 `scripts/README.md`
+  - 更新 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - build：`zcw_px4_baseline` 与 `zcw_bringup` 构建通过
+  - smoke summary：`data/results/four_vehicle_dry_run_smoke_20260611_142737/four_vehicle_dry_run_smoke_20260611_142737.txt`
+  - full-length samples：`data/logs/four_vehicle_dry_run_samples_20260611_142737.log`
+  - forbidden publishers：`data/logs/four_vehicle_dry_run_forbidden_publishers_20260611_142737.log`
+  - samples audit summary：`data/results/four_vehicle_dry_run_samples_audit_20260611_142923/four_vehicle_dry_run_samples_audit_20260611_142923.txt`
+  - `decision=accepted_four_vehicle_dry_run_smoke`
+  - `decision=accepted_four_vehicle_dry_run_samples_audit`
+  - `starts_ros=true`
+  - `starts_px4=true`
+  - `starts_gazebo=true`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `num_vehicles=4`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - `has_all_goals=true`
+  - `has_topology=true`
+  - `has_safety=true`
+  - `has_assignment=true`
+  - `has_rule_baseline=true`
+  - `has_no_learned_policy=true`
+  - `has_no_active=true`
+  - `has_no_fmu_in=true`
+  - `has_valid_topology_distance=true`
+  - `has_roles=true`
+  - full-length topology sample：
+    - `FOUR_TOPOLOGY_READY; dry_run=true; publishes_fmu_in=false; relay_radius_m=800; chain_max_distance_m=0.0179211; vehicle_1_base_distance_m=0.0206145; vehicle_2_base_distance_m=0.0346536; vehicle_3_base_distance_m=0.0191935; vehicle_4_base_distance_m=0.0261875`
+  - full-length assignment sample：
+    - `FOUR_RULE_BASELINE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=false; arms=false; publishes_fmu_in=false; vehicle_1_role=wind_inspection_candidate; vehicle_2_role=cable_inspection_candidate; vehicle_3_role=relay_candidate; vehicle_4_role=relay_candidate; topology_ready=true; safety_ready=true`
+  - key `/px4_1` 到 `/px4_4` 的 `/fmu/in/*` publisher count 检查未发现非零 publisher
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`four_vehicle_dry_run`、`two_vehicle_dry_run`、`rviz2`、`iris_[1-4]` 残留进程
+- 结论：
+  - 四机 dry-run planner 可以与四台 PX4 read-only 实例同时运行
+  - dry-run planner 发布四机规则候选 topic，但不发布 PX4 input topic
+  - 该节点仍不启动 Offboard、不 arm、不批准四机 active control 或策略控制
+- 下一步：
+  - 可实现四机 dry-run RViz overlay 截图，或回到 wind/cable 证据链
+- 阻塞项：无
