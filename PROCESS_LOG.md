@@ -7826,3 +7826,60 @@
   - 如继续 SLAM，应补 ground-truth alignment 或能产生闭环的专门场景
   - 也可返回四机 dry-run assignment/topology 证据
 - 阻塞项：无
+
+### 2026-06-11 15:32:49 CST
+
+- 节点：RTAB-Map 轨迹误差 readiness 审计完成
+- 执行动作：
+  - 检查现有 RTAB-Map RGB-D motion 相关日志：
+    - `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_vehicle_local_position_20260608_104943.log`
+    - `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_local_position_20260608_105840.log`
+  - 发现上述 PX4 local position reference 日志均是单条 `ros2 topic echo --once` 样本，不是完整轨迹
+  - 检查 RTAB-Map `.db` 表结构：
+    - `Node`
+    - `Link`
+    - `Statistics`
+  - 检查 `Node.pose`、`Node.ground_truth_pose`
+  - 发现 `ground_truth_pose` 虽为 48 字节 BLOB，但前若干节点均为全零占位
+  - 新增 `scripts/audit_rtabmap_trajectory_error_readiness.sh`
+  - 脚本只读统计：
+    - Node 总数
+    - 非空 `Node.pose` 数量
+    - 非全零 `ground_truth_pose` 数量
+    - reference local position 样本数量
+    - 是否可用现有文件计算 ATE
+  - 执行 `chmod +x scripts/audit_rtabmap_trajectory_error_readiness.sh`
+  - 执行 `bash -n scripts/audit_rtabmap_trajectory_error_readiness.sh`
+  - 首次运行后发现 ground truth 全零占位被误计为有效，修正为排除全零 BLOB
+  - 重新执行 `scripts/audit_rtabmap_trajectory_error_readiness.sh`
+  - 读取 summary 和 CSV
+  - 更新 `scripts/README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/rtabmap_trajectory_error_readiness_20260611_153249/rtabmap_trajectory_error_readiness_20260611_153249.txt`
+  - CSV：`data/results/rtabmap_trajectory_error_readiness_20260611_153249/rtabmap_trajectory_error_readiness_20260611_153249.csv`
+  - `decision=accepted_rtabmap_trajectory_error_readiness`
+  - `reason=existing_files_audited_but_reference_trajectory_is_insufficient_for_ate`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `claims_trajectory_error=false`
+  - `db_pose_ready=true`
+  - `ground_truth_ready=false`
+  - `reference_ready=false`
+  - `ate_ready=false`
+  - cable motion DB：`node_count=47`，`pose_count=47`，`ground_truth_pose_count=0`，`reference_sample_count=1`
+  - wind motion DB：`node_count=62`，`pose_count=62`，`ground_truth_pose_count=0`，`reference_sample_count=1`
+- 结论：
+  - 现有 RTAB-Map `.db` 具备 SLAM pose 序列
+  - 现有文件缺少有效 ground truth pose 和完整参考轨迹
+  - 当前不能计算 ATE/RMSE，也不能声明 SLAM 精度
+  - 下一步需要重新采集完整 reference trajectory，或让 RTAB-Map 数据库记录有效 ground-truth/reference pose
+- 下一步：
+  - 修改或新增 motion evidence 脚本，让它采集完整 `/fmu/out/vehicle_local_position` 或 Gazebo P3D trajectory，再进行 ATE/RMSE 审计
+  - 仍不把 SLAM 输出接入 PX4 控制
+- 阻塞项：无

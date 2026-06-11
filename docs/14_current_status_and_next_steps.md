@@ -95,16 +95,17 @@ Accepted evidence:
 - wind 15m motion-backed RGB-D RViz accepted.
 - RTAB-Map RGB-D quality gate accepted with stable smoke/consistency, `/map` + `/cloud_map` + `/octomap_*` topics, depth contract evidence, and three real RViz screenshots checked.
 - RTAB-Map database info metrics accepted using official `rtabmap-info`: cable motion DB has 47 graph poses and 259.931030m odometry length; wind motion DB has 62 graph poses and 383.794189m odometry length.
+- RTAB-Map trajectory-error readiness accepted as a negative/limitation audit: existing DB poses are available, but effective ground-truth poses are `0` and current reference logs contain only one sample per scenario, so ATE cannot be computed from existing files.
 
 Important boundary:
 
 - Gazebo pose / P3D odometry is used as debug/reference odometry in current smoke tests.
 - SLAM output is not used for PX4 control.
-- The quality gate and database metrics do not claim SLAM accuracy; current audited DBs have `ground_truth_total=0`, `total_global_closures=0`, and `total_local_space_closures=0`.
+- The quality gate, database metrics and trajectory-error readiness audit do not claim SLAM accuracy; current audited DBs have `ground_truth_total=0`, `total_global_closures=0`, `total_local_space_closures=0`, and `ate_ready=false`.
 
 Next SLAM work:
 
-- Add ground-truth alignment, loop-closure positive cases and map-to-ground-truth error metrics before claiming SLAM completion.
+- Add a fresh motion capture path that records full reference trajectory samples, then compute ATE/RMSE; add loop-closure positive cases and map-to-ground-truth error metrics before claiming SLAM completion.
 - Keep RTAB-Map output out of active control until a separate safety review exists.
 
 ## 5. Multi-Vehicle Status
