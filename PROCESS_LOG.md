@@ -7925,3 +7925,81 @@
   - 然后新增 trajectory parser / ATE audit
 - 阻塞项：
   - 需要重新运行会 Offboard/arm 的单机 motion evidence 脚本，才能获得完整轨迹日志
+
+### 2026-06-11 15:40:30 CST
+
+- 节点：Wind RTAB-Map RGB-D motion reference trajectory 与 ATE/RMSE 审计完成
+- 执行动作：
+  - 运行更新后的 wind RTAB-Map motion capture：
+    - `OFFBOARD_LAUNCH_FILE=single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`
+    - `MIN_WAYPOINT_ADVANCEMENTS=8`
+    - `MOTION_SETTLE_SEC=115`
+    - `scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+  - 读取 capture summary
+  - 检查截图文件类型、尺寸和 mean pixel
+  - 检查 trajectory log 文件大小
+  - 检查仿真/RViz/RTAB-Map 进程清理状态
+  - 读取 P3D depth pose trajectory log 样本
+  - 读取 PX4 local position trajectory log 样本
+  - 读取新 RTAB-Map `.db` 的 Node pose/stamp 样本
+  - 使用 `rtabmap-info` 读取新数据库概要
+  - 新增 `scripts/audit_rtabmap_wind_trajectory_ate.sh`
+  - 脚本只读解析：
+    - RTAB-Map `.db` 中 `Node.pose`
+    - P3D `/zcw/depth_camera/pose` trajectory log
+    - 时间戳插值后的 reference pose
+    - 刚体 SVD 对齐后的误差
+  - 执行 `chmod +x scripts/audit_rtabmap_wind_trajectory_ate.sh`
+  - 执行 `bash -n scripts/audit_rtabmap_wind_trajectory_ate.sh`
+  - 执行 `SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605.txt scripts/audit_rtabmap_wind_trajectory_ate.sh`
+  - 读取 ATE summary 和 CSV 前几行
+  - 人工打开并检查真实 RViz 截图
+  - 更新 `scripts/README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - wind capture summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605.txt`
+  - wind capture DB：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605/rtabmap_depth_camera_rgbd_wind_20260611_153605.db`
+  - screenshot：`data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605.png`
+  - local position trajectory：`data/logs/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_local_position_trajectory_20260611_153605.log`
+  - P3D depth pose trajectory：`data/logs/rtabmap_depth_camera_rgbd_wind_rviz_depth_pose_trajectory_20260611_153605.log`
+  - ATE summary：`data/results/rtabmap_wind_trajectory_ate_20260611_154030/rtabmap_wind_trajectory_ate_20260611_154030.txt`
+  - ATE CSV：`data/results/rtabmap_wind_trajectory_ate_20260611_154030/rtabmap_wind_trajectory_ate_20260611_154030.csv`
+  - capture：`decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+  - capture：`waypoint_advancements=48`
+  - capture：`rtabmap_ok=true`
+  - capture：`outputs_ok=false`
+  - capture：`motion_ok=true`
+  - capture：`screenshot_ok=1`
+  - capture：`local_position_trajectory_samples=14264`
+  - capture：`depth_pose_trajectory_samples=1142`
+  - screenshot：`1280x920`，mean `48234.2`
+  - RTAB-Map DB：
+    - version `0.22.1`
+    - total odometry length `361.174744m`
+    - total time `128.400000s`
+    - global graph `39 poses / 37 links`
+    - global closures `0`
+    - local space closures `0`
+    - ground truth `0 poses`
+  - ATE：`decision=accepted_rtabmap_wind_trajectory_ate`
+  - ATE：`alignment=rigid_se3_svd`
+  - ATE：`claims_slam_pass=false`
+  - ATE：`rtabmap_pose_count=39`
+  - ATE：`reference_sample_count=1142`
+  - ATE：`matched_pair_count=31`
+  - ATE：`rmse_m=0.000001010`
+  - ATE：`mean_error_m=0.000000903`
+  - ATE：`median_error_m=0.000000859`
+  - ATE：`p95_error_m=0.000001584`
+  - ATE：`max_error_m=0.000002165`
+  - 进程检查未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`rtabmap`、`rviz2`、`wind_turbine`、`iris_depth_camera` 残留进程
+- 结论：
+  - 已获得 wind RTAB-Map motion 的完整 reference trajectory 输入
+  - 已完成第一版 ATE/RMSE 离线计算
+  - 由于 RTAB-Map 当前使用 Gazebo/P3D debug odom，ATE 接近 0 只能证明数据库轨迹与输入 odom 一致
+  - 该指标不是独立 SLAM 定位精度证明
+  - 本轮仍没有 loop closure 正例，也没有 map-to-ground-truth 误差
+- 下一步：
+  - 需要构造独立参考或闭环场景，才能验证 SLAM 本体质量
+  - 可继续做 ATE 审计脚本的 cable 版本或 generalized version
+- 阻塞项：无

@@ -96,12 +96,15 @@ Accepted evidence:
 - RTAB-Map RGB-D quality gate accepted with stable smoke/consistency, `/map` + `/cloud_map` + `/octomap_*` topics, depth contract evidence, and three real RViz screenshots checked.
 - RTAB-Map database info metrics accepted using official `rtabmap-info`: cable motion DB has 47 graph poses and 259.931030m odometry length; wind motion DB has 62 graph poses and 383.794189m odometry length.
 - RTAB-Map trajectory-error readiness accepted as a negative/limitation audit: existing DB poses are available, but effective ground-truth poses are `0` and current reference logs contain only one sample per scenario, so ATE cannot be computed from existing files.
+- Updated wind RTAB-Map RGB-D motion capture accepted on 2026-06-11 with 48 waypoint advancements, 14264 PX4 local-position trajectory samples, 1142 P3D depth-pose trajectory samples, and a new RViz screenshot.
+- Wind RTAB-Map trajectory ATE audit accepted as an odom-consistency metric: 39 RTAB-Map poses, 1142 P3D reference samples, 31 matched pairs, rigid-aligned `rmse_m=0.000001010`.
 
 Important boundary:
 
 - Gazebo pose / P3D odometry is used as debug/reference odometry in current smoke tests.
 - SLAM output is not used for PX4 control.
-- The quality gate, database metrics and trajectory-error readiness audit do not claim SLAM accuracy; current audited DBs have `ground_truth_total=0`, `total_global_closures=0`, `total_local_space_closures=0`, and `ate_ready=false`.
+- The quality gate, database metrics and trajectory-error readiness audit do not claim SLAM accuracy; current audited DBs have `ground_truth_total=0`, `total_global_closures=0`, and `total_local_space_closures=0`.
+- The new ATE result is a consistency check against the same Gazebo/P3D debug odometry source used by RTAB-Map, not independent ground-truth SLAM accuracy.
 
 Next SLAM work:
 
