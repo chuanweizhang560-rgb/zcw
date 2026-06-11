@@ -55,7 +55,8 @@ if rg -q '/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_1_goal' "${SOURCE_FILE
    rg -q '/zcw/multi_vehicle/four_vehicle_dry_run/vehicle_4_goal' "${SOURCE_FILE}" &&
    rg -q '/zcw/multi_vehicle/four_vehicle_dry_run/topology_state' "${SOURCE_FILE}" &&
    rg -q '/zcw/multi_vehicle/four_vehicle_dry_run/safety_state' "${SOURCE_FILE}" &&
-   rg -q '/zcw/multi_vehicle/four_vehicle_dry_run/assignment_state' "${SOURCE_FILE}"; then
+   rg -q '/zcw/multi_vehicle/four_vehicle_dry_run/assignment_state' "${SOURCE_FILE}" &&
+   rg -q '/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state' "${SOURCE_FILE}"; then
   has_allowed_outputs=true
 fi
 has_allowed_inputs=true

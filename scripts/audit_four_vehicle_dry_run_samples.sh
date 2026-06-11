@@ -30,22 +30,33 @@ done
 has_topology=false
 has_safety=false
 has_assignment=false
+has_scoring=false
 has_rule_baseline=false
+has_rule_score=false
 has_no_learned_policy=false
 has_no_active=false
 has_no_fmu_in=false
 has_valid_topology_distance=false
+has_score_terms=false
 has_roles=true
 
 if rg -q -- '--- topology_state' "${SAMPLES_FILE}" && rg -q 'FOUR_TOPOLOGY_READY' "${SAMPLES_FILE}"; then has_topology=true; fi
 if rg -q -- '--- safety_state' "${SAMPLES_FILE}" && rg -q 'FOUR_SAFETY_READY_DRY_RUN' "${SAMPLES_FILE}"; then has_safety=true; fi
 if rg -q -- '--- assignment_state' "${SAMPLES_FILE}"; then has_assignment=true; fi
+if rg -q -- '--- scoring_state' "${SAMPLES_FILE}"; then has_scoring=true; fi
 if rg -q 'FOUR_RULE_BASELINE_DRY_RUN' "${SAMPLES_FILE}"; then has_rule_baseline=true; fi
+if rg -q 'FOUR_RULE_SCORE_DRY_RUN' "${SAMPLES_FILE}"; then has_rule_score=true; fi
 if rg -q 'learned_policy=false' "${SAMPLES_FILE}"; then has_no_learned_policy=true; fi
 if rg -q 'starts_offboard=false.*arms=false' "${SAMPLES_FILE}"; then has_no_active=true; fi
 if rg -q 'publishes_fmu_in=false' "${SAMPLES_FILE}"; then has_no_fmu_in=true; fi
 if rg -q 'chain_max_distance_m=[0-9]' "${SAMPLES_FILE}" && ! rg -q 'chain_max_distance_m=-1' "${SAMPLES_FILE}"; then
   has_valid_topology_distance=true
+fi
+if rg -q 'topology_score=[0-9]' "${SAMPLES_FILE}" &&
+   rg -q 'state_score=[0-9]' "${SAMPLES_FILE}" &&
+   rg -q 'task_distance_score=[0-9]' "${SAMPLES_FILE}" &&
+   rg -q 'rule_total_score=[0-9]' "${SAMPLES_FILE}"; then
+  has_score_terms=true
 fi
 
 for role in \
@@ -63,11 +74,14 @@ if [[ "${has_all_goals}" == "true" &&
       "${has_topology}" == "true" &&
       "${has_safety}" == "true" &&
       "${has_assignment}" == "true" &&
+      "${has_scoring}" == "true" &&
       "${has_rule_baseline}" == "true" &&
+      "${has_rule_score}" == "true" &&
       "${has_no_learned_policy}" == "true" &&
       "${has_no_active}" == "true" &&
       "${has_no_fmu_in}" == "true" &&
       "${has_valid_topology_distance}" == "true" &&
+      "${has_score_terms}" == "true" &&
       "${has_roles}" == "true" ]]; then
   accepted=true
 fi
@@ -88,11 +102,14 @@ fi
   echo "has_topology=${has_topology}"
   echo "has_safety=${has_safety}"
   echo "has_assignment=${has_assignment}"
+  echo "has_scoring=${has_scoring}"
   echo "has_rule_baseline=${has_rule_baseline}"
+  echo "has_rule_score=${has_rule_score}"
   echo "has_no_learned_policy=${has_no_learned_policy}"
   echo "has_no_active=${has_no_active}"
   echo "has_no_fmu_in=${has_no_fmu_in}"
   echo "has_valid_topology_distance=${has_valid_topology_distance}"
+  echo "has_score_terms=${has_score_terms}"
   echo "has_roles=${has_roles}"
 } >"${SUMMARY_FILE}"
 

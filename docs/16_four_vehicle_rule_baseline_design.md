@@ -46,6 +46,7 @@ Outputs:
 - `/zcw/multi_vehicle/four_vehicle_dry_run/topology_state`
 - `/zcw/multi_vehicle/four_vehicle_dry_run/safety_state`
 - `/zcw/multi_vehicle/four_vehicle_dry_run/assignment_state`
+- `/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state`
 
 Initial dry-run role candidates:
 
@@ -189,7 +190,47 @@ Manual screenshot review:
 - Four dry-run goal displays are enabled.
 - Four colored dry-run goal points are visible on the grid.
 
-## 7. Promotion Criteria
+## 7. M4 Rule Scoring
+
+M4 requirements:
+
+- Keep the same no-active boundary as M1-M3.
+- Publish a dry-run scoring state under `/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state`.
+- Include topology, state freshness, task-distance and total rule scores.
+- Verify scoring samples offline.
+
+Latest M4 evidence:
+
+- source: `ros2_ws/src/zcw_px4_baseline/src/four_vehicle_dry_run_planner.cpp`
+- static contract summary: `data/results/four_vehicle_dry_run_contract_20260611_143944/four_vehicle_dry_run_contract_20260611_143944.txt`
+- smoke summary: `data/results/four_vehicle_dry_run_smoke_20260611_143952/four_vehicle_dry_run_smoke_20260611_143952.txt`
+- dry-run samples: `data/logs/four_vehicle_dry_run_samples_20260611_143952.log`
+- samples audit summary: `data/results/four_vehicle_dry_run_samples_audit_20260611_144049/four_vehicle_dry_run_samples_audit_20260611_144049.txt`
+
+Observed M4 result:
+
+```text
+decision=accepted_four_vehicle_dry_run_smoke
+decision=accepted_four_vehicle_dry_run_samples_audit
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+dry_topics_ok=true
+forbidden_publishers_zero=true
+has_scoring=true
+has_rule_score=true
+has_score_terms=true
+```
+
+Representative scoring sample:
+
+```text
+FOUR_RULE_SCORE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=false; arms=false; publishes_fmu_in=false; topology_score=1; state_score=1; task_distance_score=0.969446; rule_total_score=0.992361; chain_max_distance_m=0.0183265; chain_min_margin_m=799.982; mean_goal_distance_m=25.2136
+```
+
+This score is dry-run evidence only. It is not used to command PX4 and does not approve active role assignment.
+
+## 8. Promotion Criteria
 
 Four-vehicle active control may only be considered after all of these exist:
 

@@ -7498,3 +7498,71 @@
 - 下一步：
   - 可继续扩展四机 dry-run-only 拓扑/任务评分，或回到 wind/cable 证据链
 - 阻塞项：无
+
+### 2026-06-11 14:41:09 CST
+
+- 节点：四机 dry-run planner M4 规则评分状态完成
+- 执行动作：
+  - 检查仓库状态，确认 `codex/initial-workflow` 与 `origin/codex/initial-workflow` 一致
+  - 检查仿真相关进程，确认无 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`four_vehicle_dry_run`、`two_vehicle_dry_run`、`rviz2`、`iris_[1-4]` 残留
+  - 读取 `ros2_ws/src/zcw_px4_baseline/src/four_vehicle_dry_run_planner.cpp`
+  - 读取 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 增强 `four_vehicle_dry_run_planner`
+  - 新增 dry-run 输出 topic：
+    - `/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state`
+  - `scoring_state` 包含：
+    - `FOUR_RULE_SCORE_DRY_RUN`
+    - `dry_run=true`
+    - `learned_policy=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `topology_score`
+    - `state_score`
+    - `task_distance_score`
+    - `rule_total_score`
+    - `chain_max_distance_m`
+    - `chain_min_margin_m`
+    - `mean_goal_distance_m`
+  - 更新 `scripts/audit_four_vehicle_dry_run_contract.sh`，将 `scoring_state` 纳入允许输出
+  - 更新 `scripts/verify_four_vehicle_dry_run_smoke.sh`，将 `scoring_state` 纳入 dry-run topics 和 sample 采集
+  - 更新 `scripts/audit_four_vehicle_dry_run_samples.sh`，检查 scoring topic 和评分字段
+  - 执行 `bash -n scripts/audit_four_vehicle_dry_run_contract.sh`
+  - 执行 `bash -n scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 执行 `bash -n scripts/audit_four_vehicle_dry_run_samples.sh`
+  - 执行 `colcon build --packages-select zcw_px4_baseline zcw_bringup --symlink-install`
+  - 执行 `scripts/audit_four_vehicle_dry_run_contract.sh`
+  - 在沙箱外执行 `scripts/verify_four_vehicle_dry_run_smoke.sh`
+  - 执行 `SAMPLES_FILE=data/logs/four_vehicle_dry_run_samples_20260611_143952.log scripts/audit_four_vehicle_dry_run_samples.sh`
+  - 读取 contract summary、smoke summary、sample audit summary 和 full-length samples
+  - 检查仿真相关进程清理状态
+  - 更新 `scripts/README.md`
+  - 更新 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - build：`zcw_px4_baseline` 与 `zcw_bringup` 构建通过
+  - contract summary：`data/results/four_vehicle_dry_run_contract_20260611_143944/four_vehicle_dry_run_contract_20260611_143944.txt`
+  - smoke summary：`data/results/four_vehicle_dry_run_smoke_20260611_143952/four_vehicle_dry_run_smoke_20260611_143952.txt`
+  - full-length samples：`data/logs/four_vehicle_dry_run_samples_20260611_143952.log`
+  - samples audit summary：`data/results/four_vehicle_dry_run_samples_audit_20260611_144049/four_vehicle_dry_run_samples_audit_20260611_144049.txt`
+  - `decision=accepted_four_vehicle_dry_run_contract_static_audit`
+  - `decision=accepted_four_vehicle_dry_run_smoke`
+  - `decision=accepted_four_vehicle_dry_run_samples_audit`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `dry_topics_ok=true`
+  - `forbidden_publishers_zero=true`
+  - `has_scoring=true`
+  - `has_rule_score=true`
+  - `has_score_terms=true`
+  - full-length scoring sample：
+    - `FOUR_RULE_SCORE_DRY_RUN; dry_run=true; learned_policy=false; starts_offboard=false; arms=false; publishes_fmu_in=false; topology_score=1; state_score=1; task_distance_score=0.969446; rule_total_score=0.992361; chain_max_distance_m=0.0183265; chain_min_margin_m=799.982; mean_goal_distance_m=25.2136; vehicle_1_task=wind_inspection_candidate; vehicle_2_task=cable_inspection_candidate; vehicle_3_task=relay_candidate; vehicle_4_task=relay_candidate`
+  - 脚本清理后未发现 `gzserver`、`gzclient`、`px4`、`MicroXRCEAgent`、`four_vehicle_dry_run`、`two_vehicle_dry_run`、`rviz2`、`iris_[1-4]` 残留进程
+- 结论：
+  - 四机 dry-run planner 已具备可机器审计的规则评分状态
+  - 评分只用于 dry-run/debug，不驱动 PX4
+  - 该节点仍不启动 Offboard、不 arm、不批准四机 active control 或策略控制
+- 下一步：
+  - 可给 RViz overlay 增加评分文本证据，或回到 wind/cable 证据链
+- 阻塞项：无

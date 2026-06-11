@@ -85,6 +85,8 @@ public:
       "/zcw/multi_vehicle/four_vehicle_dry_run/safety_state", 10);
     assignment_pub_ = create_publisher<std_msgs::msg::String>(
       "/zcw/multi_vehicle/four_vehicle_dry_run/assignment_state", 10);
+    scoring_pub_ = create_publisher<std_msgs::msg::String>(
+      "/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state", 10);
 
     timer_ = create_wall_timer(
       std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -170,16 +172,34 @@ private:
     }
 
     double chain_max_distance = -1.0;
+    double chain_min_margin = -1.0;
     if (all_pose_ready) {
       for (std::size_t i = 1; i < vehicles_.size(); ++i) {
         const auto & a = *vehicles_[i - 1].position;
         const auto & b = *vehicles_[i].position;
         const auto d = distance_xy(a.x, a.y, b.x, b.y);
         chain_max_distance = std::max(chain_max_distance, d);
+        const auto margin = relay_radius_m_ - d;
+        chain_min_margin = (chain_min_margin < 0.0) ? margin : std::min(chain_min_margin, margin);
         topology_ready = topology_ready && d <= relay_radius_m_;
       }
     }
     const bool safety_ready = topology_ready && all_status_ready;
+
+    double mean_goal_distance = -1.0;
+    if (all_pose_ready) {
+      double sum_goal_distance = 0.0;
+      for (const auto d : goal_distance) {
+        sum_goal_distance += d;
+      }
+      mean_goal_distance = sum_goal_distance / static_cast<double>(goal_distance.size());
+    }
+    const double topology_score = topology_ready ? 1.0 : 0.0;
+    const double state_score = (all_pose_ready && all_status_ready) ? 1.0 : 0.0;
+    const double task_distance_score = (mean_goal_distance >= 0.0) ?
+      1.0 / (1.0 + mean_goal_distance / relay_radius_m_) : 0.0;
+    const double rule_total_score =
+      0.45 * topology_score + 0.30 * state_score + 0.25 * task_distance_score;
 
     std_msgs::msg::String topology_msg;
     std::ostringstream topology;
@@ -226,6 +246,28 @@ private:
                << "; safety_ready=" << (safety_ready ? "true" : "false");
     assignment_msg.data = assignment.str();
     assignment_pub_->publish(assignment_msg);
+
+    std_msgs::msg::String scoring_msg;
+    std::ostringstream scoring;
+    scoring << "FOUR_RULE_SCORE_DRY_RUN"
+            << "; dry_run=true"
+            << "; learned_policy=false"
+            << "; starts_offboard=false"
+            << "; arms=false"
+            << "; publishes_fmu_in=false"
+            << "; topology_score=" << topology_score
+            << "; state_score=" << state_score
+            << "; task_distance_score=" << task_distance_score
+            << "; rule_total_score=" << rule_total_score
+            << "; chain_max_distance_m=" << chain_max_distance
+            << "; chain_min_margin_m=" << chain_min_margin
+            << "; mean_goal_distance_m=" << mean_goal_distance
+            << "; vehicle_1_task=wind_inspection_candidate"
+            << "; vehicle_2_task=cable_inspection_candidate"
+            << "; vehicle_3_task=relay_candidate"
+            << "; vehicle_4_task=relay_candidate";
+    scoring_msg.data = scoring.str();
+    scoring_pub_->publish(scoring_msg);
   }
 
   double publish_hz_{2.0};
@@ -238,6 +280,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr topology_pub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr safety_pub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr assignment_pub_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr scoring_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 };
 
