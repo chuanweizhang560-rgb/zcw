@@ -7753,3 +7753,76 @@
 - 下一步：
   - 可继续做 SLAM 精度/地图质量量化，或回到四机 dry-run assignment/topology 证据
 - 阻塞项：无
+
+### 2026-06-11 15:28:36 CST
+
+- 节点：RTAB-Map 数据库 `rtabmap-info` 量化指标审计完成
+- 执行动作：
+  - 确认系统存在 RTAB-Map 官方工具 `/opt/ros/humble/bin/rtabmap-info`
+  - 手动试读既有 wind/cable RGB-D motion `.db`
+  - 新增 `scripts/audit_rtabmap_db_info_metrics.sh`
+  - 脚本只读调用 `rtabmap-info`，解析：
+    - RTAB-Map version
+    - total odometry length
+    - total time
+    - LTM/WM nodes
+    - global graph poses/links
+    - optimized graph poses
+    - ground truth poses
+    - GPS poses
+    - Neighbor links
+    - GlobalClosure links
+    - LocalSpaceClosure links
+    - database size
+  - 执行 `chmod +x scripts/audit_rtabmap_db_info_metrics.sh`
+  - 执行 `bash -n scripts/audit_rtabmap_db_info_metrics.sh`
+  - 首次运行发现 `LocalSpaceClosure` 行没有冒号后的空格，修正解析
+  - 第二次运行发现链接行前置缩进导致 `Neighbor` 未解析，修正为 trim 后匹配
+  - 重新执行 `scripts/audit_rtabmap_db_info_metrics.sh`
+  - 读取 summary 和 CSV
+  - 更新 `scripts/README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/rtabmap_db_info_metrics_20260611_152836/rtabmap_db_info_metrics_20260611_152836.txt`
+  - CSV：`data/results/rtabmap_db_info_metrics_20260611_152836/rtabmap_db_info_metrics_20260611_152836.csv`
+  - `decision=accepted_rtabmap_db_info_metrics`
+  - `reason=rtabmap_info_quantified_existing_databases_with_limitations`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `uses_rtabmap_info=true`
+  - `claims_slam_accuracy=false`
+  - `claims_loop_closure_quality=false`
+  - `database_count=2`
+  - `ground_truth_total=0`
+  - `total_global_closures=0`
+  - `total_local_space_closures=0`
+  - cable motion DB：
+    - version `0.22.1`
+    - odometry length `259.931030m`
+    - total time `82.600000s`
+    - LTM/WM nodes `47`
+    - global graph `47 poses / 30 links`
+    - neighbor links `30`
+    - database size `16 MB`
+  - wind motion DB：
+    - version `0.22.1`
+    - odometry length `383.794189m`
+    - total time `127.000000s`
+    - LTM/WM nodes `62`
+    - global graph `62 poses / 60 links`
+    - neighbor links `60`
+    - database size `19 MB`
+- 结论：
+  - 已有 cable/wind RTAB-Map RGB-D 运动数据库具备可量化的轨迹/图结构证据
+  - 当前证据没有 ground truth，没有全局闭环/局部空间闭环
+  - 因此该节点量化了 SLAM baseline 数据库内容，但仍不声明 SLAM 精度或闭环质量完成
+  - SLAM 输出仍不接入 PX4 控制
+- 下一步：
+  - 如继续 SLAM，应补 ground-truth alignment 或能产生闭环的专门场景
+  - 也可返回四机 dry-run assignment/topology 证据
+- 阻塞项：无
