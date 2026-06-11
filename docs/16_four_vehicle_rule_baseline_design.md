@@ -283,12 +283,58 @@ Manual screenshot review:
 
 ## 9. Promotion Criteria
 
+## 9. M6 Offline Rule Score Sweep
+
+M6 requirements:
+
+- Keep the same no-active boundary as M1-M5.
+- Do not start ROS, PX4, Gazebo, or RViz.
+- Reproduce the dry-run rule score formula in an auditable offline script.
+- Sweep nominal, exact-goal, far-task, near-limit, disconnected, stale-state, and missing-pose cases.
+- Verify that disconnected/stale/missing states are penalized before any future learning-policy comparison.
+
+Latest M6 evidence:
+
+- script: `scripts/audit_four_vehicle_rule_score_sweep.sh`
+- summary: `data/results/four_vehicle_rule_score_sweep_20260611_152204/four_vehicle_rule_score_sweep_20260611_152204.txt`
+- CSV: `data/results/four_vehicle_rule_score_sweep_20260611_152204/four_vehicle_rule_score_sweep_20260611_152204.csv`
+
+Observed M6 result:
+
+```text
+decision=accepted_four_vehicle_rule_score_sweep
+reason=score_sweep_matches_expected_monotonic_boundaries
+starts_ros=false
+starts_px4=false
+starts_gazebo=false
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+uses_learned_policy=false
+cases=8
+```
+
+Representative sweep rows:
+
+```text
+near_ready_exact_goals,true,true,...,task_distance_score=1.000000,rule_total_score=1.000000
+chain_break_between_1_2,false,true,...,chain_min_margin_m=-50.000000,rule_total_score=0.496319
+status_stale_topology_ok,true,false,...,rule_total_score=0.700000
+pose_missing,false,false,...,rule_total_score=0.000000
+```
+
+This is an offline scoring audit only. It does not drive PX4 and does not approve active four-vehicle role assignment.
+
+## 10. Promotion Criteria
+
 Four-vehicle active control may only be considered after all of these exist:
 
 - accepted M1 static contract audit.
 - accepted four-vehicle read-only smoke.
 - accepted four-vehicle dry-run ROS graph smoke.
 - accepted four-vehicle RViz overlay.
+- accepted four-vehicle offline score sweep.
 - documented user approval for a four-vehicle active review.
 
 Until then, four-vehicle work remains dry-run/read-only.

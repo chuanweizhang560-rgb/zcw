@@ -121,6 +121,7 @@ Current status:
 - Four-vehicle dry-run M3 RViz overlay screenshot is accepted at `data/screenshots/four_vehicle_dry_run_overlay_20260611_143238.png`.
 - Four-vehicle dry-run M4 rule scoring is accepted; `/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state` publishes topology/state/task-distance/total rule scores while key `/px4_i/fmu/in/*` publisher counts remain `0`.
 - Four-vehicle dry-run M5 scoring marker overlay is accepted; `/zcw/multi_vehicle/four_vehicle_dry_run/score_markers` publishes RViz `MarkerArray` score/role text and screenshot evidence exists at `data/screenshots/four_vehicle_dry_run_overlay_20260611_150906.png`.
+- Four-vehicle dry-run M6 offline rule score sweep is accepted; `scripts/audit_four_vehicle_rule_score_sweep.sh` verifies nominal, exact-goal, task-far, chain-break, base-range-break, stale-status and missing-pose cases without starting ROS/PX4/Gazebo/RViz.
 - Two-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Two-vehicle dry-run M2 read-only smoke is accepted; dry-run topics publish while key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` publisher counts remain `0`.
 - Two-vehicle dry-run M3 RViz overlay screenshot is accepted at `data/screenshots/two_vehicle_dry_run_overlay_20260609_105743.png`.
@@ -139,7 +140,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with four-vehicle dry-run offline topology/task scoring refinements, or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
+1. Continue with four-vehicle dry-run assignment/topology evidence, or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
 
 Reason:
 
@@ -151,8 +152,9 @@ Reason:
 - Four-vehicle dry-run M3 RViz overlay is accepted.
 - Four-vehicle dry-run M4 rule scoring is accepted.
 - Four-vehicle dry-run M5 scoring marker overlay is accepted.
+- Four-vehicle dry-run M6 offline rule score sweep is accepted.
 - M1, M2, M3, M4 and M5 are accepted for the two-vehicle dry-run baseline.
-- The next multi-vehicle gap is offline scoring/richer topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
+- The next multi-vehicle gap is richer assignment/topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
 
 Safety boundary for that node:
 

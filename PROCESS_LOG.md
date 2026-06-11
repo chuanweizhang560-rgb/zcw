@@ -7641,3 +7641,61 @@
 - 下一步：
   - 可继续做四机 dry-run 离线拓扑/任务评分 sweep，或回到 wind/cable 证据链
 - 阻塞项：无
+
+### 2026-06-11 15:22:04 CST
+
+- 节点：四机 dry-run planner M6 离线规则评分 sweep 完成
+- 执行动作：
+  - 新增 `scripts/audit_four_vehicle_rule_score_sweep.sh`
+  - 该脚本只复现当前 `four_vehicle_dry_run_planner` 的 dry-run 评分公式：
+    - `topology_score`
+    - `state_score`
+    - `task_distance_score`
+    - `rule_total_score`
+  - 覆盖 8 个离线场景：
+    - `near_ready_nominal`
+    - `near_ready_exact_goals`
+    - `topology_ok_task_far`
+    - `chain_margin_near_limit`
+    - `chain_break_between_1_2`
+    - `base_range_break_vehicle_4`
+    - `status_stale_topology_ok`
+    - `pose_missing`
+  - 执行 `bash -n scripts/audit_four_vehicle_rule_score_sweep.sh`
+  - 首次运行发现 `awk` 多行表达式/函数调用在当前系统上不兼容
+  - 修正为单行表达式和单行 `score_case(...)` 调用
+  - 重新执行脚本语法检查
+  - 执行 `scripts/audit_four_vehicle_rule_score_sweep.sh`
+  - 读取 summary 和 CSV 结果
+  - 更新 `scripts/README.md`
+  - 更新 `docs/16_four_vehicle_rule_baseline_design.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/four_vehicle_rule_score_sweep_20260611_152204/four_vehicle_rule_score_sweep_20260611_152204.txt`
+  - CSV：`data/results/four_vehicle_rule_score_sweep_20260611_152204/four_vehicle_rule_score_sweep_20260611_152204.csv`
+  - `decision=accepted_four_vehicle_rule_score_sweep`
+  - `reason=score_sweep_matches_expected_monotonic_boundaries`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `uses_learned_policy=false`
+  - `cases=8`
+  - 关键 CSV 行：
+    - `near_ready_exact_goals`：`rule_total_score=1.000000`
+    - `topology_ok_task_far`：`rule_total_score=0.896666`
+    - `chain_break_between_1_2`：`chain_min_margin_m=-50.000000`，`rule_total_score=0.496319`
+    - `base_range_break_vehicle_4`：`rule_total_score=0.538806`
+    - `status_stale_topology_ok`：`rule_total_score=0.700000`
+    - `pose_missing`：`rule_total_score=0.000000`
+- 结论：
+  - 四机 dry-run scoring 的离线边界行为符合预期
+  - 该节点未启动 ROS、PX4、Gazebo、RViz
+  - 该节点未启动 Offboard、未 arm、未发布 `/fmu/in/*`
+  - 该节点不涉及学习策略，不批准四机 active control
+- 下一步：
+  - 可继续做四机 dry-run 更细 assignment/topology 证据，或回到 wind/cable 证据链
+- 阻塞项：无
