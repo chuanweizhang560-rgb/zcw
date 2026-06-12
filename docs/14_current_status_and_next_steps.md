@@ -103,6 +103,9 @@ Accepted evidence:
 - Updated cable RTAB-Map RGB-D motion capture accepted on 2026-06-12 with real PX4/Gazebo/RViz evidence, 11134 PX4 local-position trajectory samples, 891 P3D depth-pose trajectory samples, and screenshot `data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911.png`.
 - Cable RTAB-Map trajectory ATE audit accepted as an odom-consistency metric: 38 RTAB-Map poses, 891 P3D reference samples, 32 matched pairs, rigid-aligned `rmse_m=0.000001421`.
 - Cable RTAB-Map loop-closure evidence audit accepted as a limitation audit: latest cable DB has 23 neighbor links and `0` raw/official loop-closure links, so `claims_loop_closure_pass=false`.
+- Deliberate wind loop-closure smoke entry accepted on 2026-06-12 using `single_vehicle_wind_turbine_loop_closure_smoke.launch.py`, two repeated wind-orbit laps, and RTAB-Map parameter file `rtabmap_loop_closure_smoke.yaml`; the accepted run produced 60 nodes, 111 words, 33 neighbor links, 1 official `LocalTimeClosure`, and screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032.png`.
+- Loop-closure evidence audit now distinguishes `claims_official_loop_evidence` from `claims_task_level_loop_closure_pass`; the loop smoke has `claims_official_loop_evidence=true` but `claims_task_level_loop_closure_pass=false` because official `GlobalClosure=0` and `LocalSpaceClosure=0`.
+- Loop smoke trajectory ATE audit accepted as an odom-consistency metric: 60 RTAB-Map poses, 1491 P3D reference samples, 52 matched pairs, rigid-aligned `rmse_m=0.000000804`.
 
 Important boundary:
 
@@ -112,10 +115,11 @@ Important boundary:
 - The new ATE result is a consistency check against the same Gazebo/P3D debug odometry source used by RTAB-Map, not independent ground-truth SLAM accuracy.
 - The wind raw closure candidate is not accepted as task-level loop closure because it is an early near-duplicate link and official RTAB-Map info does not confirm a GlobalClosure.
 - The cable loop-closure audit has no raw candidate and no official closure evidence.
+- The deliberate loop smoke improves the evidence from `0 words` to a word-bearing RTAB-Map DB and one official local-time closure, but it still does not prove task-level loop closure or independent SLAM accuracy.
 
 Next SLAM work:
 
-- Create a deliberate loop-closure scenario or tune RTAB-Map loop/proximity settings in a separate smoke test, then require official closure evidence before claiming loop closure; add map-to-ground-truth error metrics before claiming SLAM completion.
+- Improve deliberate loop-closure evidence until official `GlobalClosure` or `LocalSpaceClosure` is nonzero, or keep the current result as a documented limitation; add independent map-to-ground-truth error metrics before claiming SLAM completion.
 - Keep RTAB-Map output out of active control until a separate safety review exists.
 
 ## 5. Multi-Vehicle Status

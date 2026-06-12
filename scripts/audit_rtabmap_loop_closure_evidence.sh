@@ -146,11 +146,17 @@ has_raw_loop_candidate = raw_global + raw_local_space + raw_local_time > 0
 official_loop_count = max(official_global, 0) + max(official_local_space, 0) + max(official_local_time, 0)
 has_official_loop = official_loop_count > 0
 has_mismatch = has_raw_loop_candidate and not has_official_loop
+has_task_level_loop = max(official_global, 0) + max(official_local_space, 0) > 0
 
 decision = "accepted_rtabmap_loop_closure_evidence_audit"
-reason = "raw_loop_candidate_present_but_official_info_does_not_confirm_loop_closure" if has_mismatch else (
-    "official_loop_closure_present" if has_official_loop else "no_loop_closure_evidence_present"
-)
+if has_mismatch:
+    reason = "raw_loop_candidate_present_but_official_info_does_not_confirm_loop_closure"
+elif has_task_level_loop:
+    reason = "official_global_or_local_space_loop_closure_present"
+elif has_official_loop:
+    reason = "official_local_time_closure_present_only"
+else:
+    reason = "no_loop_closure_evidence_present"
 
 def metric(value):
     return "nan" if not math.isfinite(value) else f"{value:.9f}"
@@ -168,7 +174,9 @@ summary_lines = [
     "publishes_fmu_in=false",
     "uses_rtabmap_db=true",
     "uses_rtabmap_info=true",
-    "claims_loop_closure_pass=false",
+    f"claims_loop_closure_pass={'true' if has_task_level_loop else 'false'}",
+    f"claims_official_loop_evidence={'true' if has_official_loop else 'false'}",
+    f"claims_task_level_loop_closure_pass={'true' if has_task_level_loop else 'false'}",
     f"db_path={db_path}",
     f"csv_file={csv_file}",
     f"info_log={info_log}",

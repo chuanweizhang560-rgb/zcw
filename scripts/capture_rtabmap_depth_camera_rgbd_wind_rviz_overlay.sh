@@ -33,6 +33,7 @@ MOTION_SETTLE_SEC="${MOTION_SETTLE_SEC:-70}"
 GUI_SETTLE_SEC="${GUI_SETTLE_SEC:-10}"
 OFFBOARD_LAUNCH_FILE="${OFFBOARD_LAUNCH_FILE:-single_vehicle_wind_turbine_inspection.launch.py}"
 MIN_WAYPOINT_ADVANCEMENTS="${MIN_WAYPOINT_ADVANCEMENTS:-1}"
+RTABMAP_EXTRA_ROS_ARGS="${RTABMAP_EXTRA_ROS_ARGS:-}"
 
 agent_pid=""
 px4_pid=""
@@ -193,7 +194,8 @@ setsid env \
     -r rgb/image:=/camera/image_raw \
     -r depth/image:=/camera/depth/image_raw \
     -r rgb/camera_info:=/camera/camera_info \
-    -r odom:=/zcw/rtabmap/odom_camera_link" >"${RTABMAP_LOG}" 2>&1 &
+    -r odom:=/zcw/rtabmap/odom_camera_link \
+    ${RTABMAP_EXTRA_ROS_ARGS}" >"${RTABMAP_LOG}" 2>&1 &
 rtabmap_pid=$!
 
 setsid env \
@@ -292,6 +294,7 @@ fi
   echo "launch=${OFFBOARD_LAUNCH_FILE}"
   echo "min_waypoint_advancements=${MIN_WAYPOINT_ADVANCEMENTS}"
   echo "waypoint_advancements=${waypoint_advancements}"
+  echo "rtabmap_extra_ros_args=${RTABMAP_EXTRA_ROS_ARGS}"
   echo "rtabmap_ok=${rtabmap_ok}"
   echo "outputs_ok=${outputs_ok}"
   echo "motion_ok=${motion_ok}"

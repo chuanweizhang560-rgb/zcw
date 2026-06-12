@@ -1,0 +1,13 @@
+rtabmap:
+  ros__parameters:
+    "Mem/UseOdomFeatures": "false"
+    "Mem/DepthAsMask": "false"
+    "Vis/DepthAsMask": "false"
+    "Kp/MaxFeatures": "1000"
+    "Vis/MaxFeatures": "1500"
+    "RGBD/ProximityByTime": "true"
+    "RGBD/ProximityOdomGuess": "true"
+    "RGBD/ProximityPathMaxNeighbors": "10"
+    "RGBD/ProximityPathFilteringRadius": "4"
+    "RGBD/OptimizeMaxError": "0"
+    "Rtabmap/LoopThr": "0.05"

@@ -8249,3 +8249,190 @@
   - 设计 deliberate loop-closure smoke，要求官方 `GlobalClosure` 或 `LocalSpaceClosure` 计数非零
   - 或继续推进 wind/cable 的几何覆盖和观测质量量化
 - 阻塞项：无
+
+### 2026-06-12 14:01:28 CST
+
+- 节点：RTAB-Map deliberate loop-closure smoke 入口建立
+- 执行动作：
+  - 检查现有 wind/cable RTAB-Map motion capture 脚本
+  - 确认 `capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh` 已支持通过 `OFFBOARD_LAUNCH_FILE` 切换风机运动 launch
+  - 查询本机 RTAB-Map 参数：
+    - `Mem/UseOdomFeatures`
+    - `Mem/DepthAsMask`
+    - `Vis/DepthAsMask`
+    - `Kp/MaxFeatures`
+    - `Vis/MaxFeatures`
+    - `RGBD/ProximityByTime`
+    - `RGBD/ProximityOdomGuess`
+    - `RGBD/ProximityPathMaxNeighbors`
+    - `RGBD/ProximityPathFilteringRadius`
+    - `RGBD/OptimizeMaxError`
+    - `Rtabmap/LoopThr`
+  - 判断现有 DB 中 `0 words` 是闭环审计的关键限制，不能只靠现有 orbit 轨迹硬判闭环
+  - 新增 `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_loop_closure_smoke.launch.py`
+    - 复用现有 `offboard_waypoint_sequence`
+    - 不新增底层控制算法
+    - 在风机周围执行两圈重复 orbit
+    - 目标是制造重复视角给 RTAB-Map 形成闭环机会
+  - 修改 `scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+    - 新增 `RTABMAP_EXTRA_ROS_ARGS`
+    - summary 记录实际使用的 RTAB-Map 额外参数
+  - 新增 `scripts/capture_rtabmap_loop_closure_smoke.sh`
+    - 复用 wind RGB-D motion capture
+    - 切换到 loop-closure smoke launch
+    - 使用 RTAB-Map 成熟参数打开视觉词袋/邻近闭环条件
+  - 更新 `scripts/README.md`
+  - 执行 `chmod +x scripts/capture_rtabmap_loop_closure_smoke.sh`
+  - 执行：
+    - `bash -n scripts/capture_rtabmap_loop_closure_smoke.sh`
+    - `bash -n scripts/capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+    - `python3 -m py_compile ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_loop_closure_smoke.launch.py`
+  - 执行 `colcon build --packages-select zcw_bringup`
+  - 首次 `ros2 launch --show-args` 因 ROS 默认写 `/home/travis/.ros/log` 被沙箱只读拦截
+  - 清理 py_compile 生成的 `ros2_ws/src/zcw_bringup/launch/__pycache__`
+  - 使用仓库内日志目录重新执行：
+    - `ROS_LOG_DIR=data/logs/ros RCUTILS_LOGGING_DIRECTORY=data/logs/ros ros2 launch zcw_bringup single_vehicle_wind_turbine_loop_closure_smoke.launch.py --show-args`
+- 结果：
+  - shell 语法检查通过
+  - Python launch 语法检查通过
+  - `zcw_bringup` 构建通过
+  - ROS 2 launch 可加载该文件，显示 `No arguments`
+- 结论：
+  - deliberate loop-closure smoke 入口已具备执行条件
+  - 该入口仍是单机 wind baseline 运动证据，会进入 Offboard/arm
+  - 是否存在闭环必须以后续 `audit_rtabmap_loop_closure_evidence.sh` 和官方 `rtabmap-info` 为准
+  - 若官方闭环计数仍为 0，只能记录为失败/限制，不能声明 SLAM 闭环完成
+- 下一步：
+  - 运行 `scripts/capture_rtabmap_loop_closure_smoke.sh`
+  - 对生成的 DB 执行 `audit_rtabmap_loop_closure_evidence.sh`
+  - 视情况执行通用 ATE 审计
+- 阻塞项：无
+
+### 2026-06-12 14:15:27 CST
+
+- 节点：RTAB-Map deliberate loop-closure smoke 首轮实测、修复与审计完成
+- 执行动作：
+  - 首次运行 `scripts/capture_rtabmap_loop_closure_smoke.sh`
+  - 首轮运行结果：
+    - summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_140439/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_140439.txt`
+    - `decision=rejected_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+    - `waypoint_advancements=33`
+    - `motion_ok=true`
+    - `screenshot_ok=1`
+    - `rtabmap_ok=false`
+    - `outputs_ok=false`
+  - 读取 RTAB-Map 日志：
+    - `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260612_140439.log`
+  - 失败原因：
+    - RTAB-Map ROS 2 参数 `Kp/MaxFeatures` 按 string 声明
+    - CLI 传入未加类型保护的整数，触发 `InvalidParameterTypeException`
+  - 修复动作：
+    - 新增 `ros2_ws/src/zcw_bringup/config/rtabmap_loop_closure_smoke.yaml`
+    - 将 RTAB-Map loop smoke 参数全部按字符串写入 YAML
+    - 修改 `scripts/capture_rtabmap_loop_closure_smoke.sh`
+      - 使用 `--params-file install/zcw_bringup/share/zcw_bringup/config/rtabmap_loop_closure_smoke.yaml`
+    - 执行 `bash -n scripts/capture_rtabmap_loop_closure_smoke.sh`
+    - 执行 `colcon build --packages-select zcw_bringup`
+    - 确认安装后的 YAML symlink 存在
+  - 第二次运行 `scripts/capture_rtabmap_loop_closure_smoke.sh`
+  - 读取第二次 summary、DB、截图
+  - 使用官方 `rtabmap-info` 检查 DB
+  - 执行闭环证据审计：
+    - 首次用旧字段生成 `data/results/rtabmap_loop_closure_evidence_20260612_141411/rtabmap_loop_closure_evidence_20260612_141411.txt`
+  - 发现旧审计字段对“官方闭环证据”和“任务级闭环通过”区分不够清楚
+  - 修改 `scripts/audit_rtabmap_loop_closure_evidence.sh`
+    - 新增 `claims_official_loop_evidence`
+    - 新增 `claims_task_level_loop_closure_pass`
+    - `claims_loop_closure_pass` 只在官方 `GlobalClosure` 或 `LocalSpaceClosure` 非零时为 true
+  - 更新 `scripts/README.md`
+  - 重新执行闭环审计：
+    - `DB_PATH=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032/rtabmap_depth_camera_rgbd_wind_20260612_141032.db scripts/audit_rtabmap_loop_closure_evidence.sh`
+  - 执行通用 ATE 审计：
+    - `SCENARIO=rtabmap_loop_closure_smoke`
+    - `SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032.txt`
+    - `scripts/audit_rtabmap_trajectory_ate.sh`
+  - 检查 RViz 截图：
+    - `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032.png`
+  - 检查仿真进程清理状态
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - accepted loop smoke summary：
+    - `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032.txt`
+  - summary 关键字段：
+    - `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+    - `launch=single_vehicle_wind_turbine_loop_closure_smoke.launch.py`
+    - `min_waypoint_advancements=24`
+    - `waypoint_advancements=33`
+    - `rtabmap_extra_ros_args=--params-file /home/travis/zcw/BS/codex_zcw/install/zcw_bringup/share/zcw_bringup/config/rtabmap_loop_closure_smoke.yaml`
+    - `rtabmap_ok=true`
+    - `outputs_ok=false`
+    - `motion_ok=true`
+    - `screenshot_ok=1`
+    - `local_position_trajectory_samples=18643`
+    - `depth_pose_trajectory_samples=1491`
+  - DB：
+    - `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032/rtabmap_depth_camera_rgbd_wind_20260612_141032.db`
+    - size `19M`
+  - screenshot：
+    - `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032.png`
+    - size `1280 x 920`
+    - mean `49093.4`
+    - RViz 中可见风机点云/云图和路径/OctoMap 证据
+  - `rtabmap-info` 关键字段：
+    - total odometry length `209.447937 m`
+    - total time `162.800000s`
+    - `60 nodes and 111 words`
+    - global graph `60 poses and 34 links`
+    - Neighbor `33`
+    - GlobalClosure `0`
+    - LocalSpaceClosure `0`
+    - LocalTimeClosure `1`
+  - 新闭环审计 summary：
+    - `data/results/rtabmap_loop_closure_evidence_20260612_141516/rtabmap_loop_closure_evidence_20260612_141516.txt`
+  - 新闭环审计 CSV：
+    - `data/results/rtabmap_loop_closure_evidence_20260612_141516/rtabmap_loop_closure_evidence_20260612_141516.csv`
+  - 新闭环审计关键字段：
+    - `decision=accepted_rtabmap_loop_closure_evidence_audit`
+    - `reason=official_local_time_closure_present_only`
+    - `claims_loop_closure_pass=false`
+    - `claims_official_loop_evidence=true`
+    - `claims_task_level_loop_closure_pass=false`
+    - `node_count=60`
+    - `link_count=35`
+    - `raw_neighbor_links=33`
+    - `raw_global_closure_links=1`
+    - `raw_local_space_closure_links=0`
+    - `raw_local_time_closure_links=1`
+    - `official_global_closure_links=0`
+    - `official_local_space_closure_links=0`
+    - `official_local_time_closure_links=1`
+    - `path_length_proxy_m=209.447943843`
+    - `first_last_distance_m=33.634158382`
+  - raw closure CSV 中：
+    - raw `GlobalClosure` 为 `from_id=2,to_id=1`，`node_distance_m=0.000011293`，仍是启动初期近重复节点，不作为任务级闭环
+    - official `LocalTimeClosure` 为 `from_id=50,to_id=41`，`node_distance_m=0.100013336`
+  - RTAB-Map 日志显示多次视觉闭环候选被尝试，但多数因为 `Not enough inliers` 被拒绝
+  - ATE summary：
+    - `data/results/rtabmap_loop_closure_smoke_trajectory_ate_20260612_141423/rtabmap_loop_closure_smoke_trajectory_ate_20260612_141423.txt`
+  - ATE 关键字段：
+    - `decision=accepted_rtabmap_loop_closure_smoke_trajectory_ate`
+    - `claims_slam_pass=false`
+    - `rtabmap_pose_count=60`
+    - `reference_sample_count=1491`
+    - `matched_pair_count=52`
+    - `rmse_m=0.000000804`
+    - `mean_error_m=0.000000723`
+    - `median_error_m=0.000000764`
+    - `p95_error_m=0.000001253`
+    - `max_error_m=0.000001888`
+- 结论：
+  - deliberate loop smoke 从此前 `0 words` 的 DB 前进到 `111 words`，RTAB-Map 视觉词袋链路已被激活
+  - 当前已有官方闭环类证据：`LocalTimeClosure=1`
+  - 但官方 `GlobalClosure=0` 且 `LocalSpaceClosure=0`
+  - 因此仍不能声明任务级闭环或独立 SLAM 完成
+  - ATE 仍只是相对 Gazebo/P3D debug odom 的一致性审计
+  - SLAM 输出仍未接入 PX4 控制
+- 下一步：
+  - 若继续 SLAM，应优化 deliberate loop smoke 的视角/纹理/RTAB-Map 参数，目标是官方 `GlobalClosure` 或 `LocalSpaceClosure` 非零
+  - 或转入 wind/cable 几何覆盖与观测质量量化
+- 阻塞项：无
