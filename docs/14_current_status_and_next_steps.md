@@ -106,6 +106,7 @@ Accepted evidence:
 - Deliberate wind loop-closure smoke entry accepted on 2026-06-12 using `single_vehicle_wind_turbine_loop_closure_smoke.launch.py`, two repeated wind-orbit laps, and RTAB-Map parameter file `rtabmap_loop_closure_smoke.yaml`; the accepted run produced 60 nodes, 111 words, 33 neighbor links, 1 official `LocalTimeClosure`, and screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_141032.png`.
 - Loop-closure evidence audit now distinguishes `claims_official_loop_evidence` from `claims_task_level_loop_closure_pass`; the loop smoke has `claims_official_loop_evidence=true` but `claims_task_level_loop_closure_pass=false` because official `GlobalClosure=0` and `LocalSpaceClosure=0`.
 - Loop smoke trajectory ATE audit accepted as an odom-consistency metric: 60 RTAB-Map poses, 1491 P3D reference samples, 52 matched pairs, rigid-aligned `rmse_m=0.000000804`.
+- RTAB-Map rejected-loop-candidate audit accepted for the loop smoke: 29 rejected candidates, best visual inliers `10/20`, best match count `103` but `0` inliers, and `near_pass_count=0`.
 
 Important boundary:
 
@@ -119,7 +120,7 @@ Important boundary:
 
 Next SLAM work:
 
-- Improve deliberate loop-closure evidence until official `GlobalClosure` or `LocalSpaceClosure` is nonzero, or keep the current result as a documented limitation; add independent map-to-ground-truth error metrics before claiming SLAM completion.
+- Improve deliberate loop-closure evidence by changing view geometry/texture richness rather than only lowering thresholds; current rejected-candidate audit shows no near-pass visual loop candidate. Keep the current result as a documented limitation unless official `GlobalClosure` or `LocalSpaceClosure` becomes nonzero.
 - Keep RTAB-Map output out of active control until a separate safety review exists.
 
 ## 5. Multi-Vehicle Status

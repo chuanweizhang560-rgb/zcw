@@ -8436,3 +8436,59 @@
   - 若继续 SLAM，应优化 deliberate loop smoke 的视角/纹理/RTAB-Map 参数，目标是官方 `GlobalClosure` 或 `LocalSpaceClosure` 非零
   - 或转入 wind/cable 几何覆盖与观测质量量化
 - 阻塞项：无
+
+### 2026-06-12 14:18:30 CST
+
+- 节点：RTAB-Map rejected loop-candidate 只读审计完成
+- 执行动作：
+  - 新增 `scripts/audit_rtabmap_rejected_loop_candidates.sh`
+  - 脚本只读解析 RTAB-Map 日志中的：
+    - `Rejected loop closure ... Not enough inliers`
+  - 输出：
+    - rejected candidate CSV
+    - summary
+    - best inliers
+    - best matches
+    - near-pass count
+  - 更新 `scripts/README.md`
+  - 执行：
+    - `chmod +x scripts/audit_rtabmap_rejected_loop_candidates.sh`
+    - `bash -n scripts/audit_rtabmap_rejected_loop_candidates.sh`
+    - `RTABMAP_LOG=data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260612_141032.log scripts/audit_rtabmap_rejected_loop_candidates.sh`
+  - 读取 summary 和 CSV 高 inlier 候选
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：
+    - `data/results/rtabmap_rejected_loop_candidates_20260612_141819/rtabmap_rejected_loop_candidates_20260612_141819.txt`
+  - CSV：
+    - `data/results/rtabmap_rejected_loop_candidates_20260612_141819/rtabmap_rejected_loop_candidates_20260612_141819.csv`
+  - 关键字段：
+    - `decision=accepted_rtabmap_rejected_loop_candidates_audit`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `rejected_loop_candidate_count=29`
+    - `matched_candidate_count=29`
+    - `near_pass_count=0`
+    - `best_inliers=10`
+    - `best_required_inliers=20`
+    - `best_inliers_from_id=23`
+    - `best_inliers_to_id=43`
+    - `best_inliers_matches=87`
+    - `best_matches=103`
+    - `best_matches_from_id=10`
+    - `best_matches_to_id=21`
+    - `best_matches_inliers=0`
+- 结论：
+  - 当前 loop smoke 中 RTAB-Map 已经形成视觉词袋和大量候选，但视觉几何验证明显不足
+  - 29 个拒绝候选里没有 near-pass，最好只有 `10/20` inliers
+  - 下一步不能只靠轻微降低阈值来声明闭环，应优先改善视角、重复观测纹理、距离或轨迹设计
+  - 当前任务级闭环仍未完成
+- 下一步：
+  - 若继续 SLAM，设计更近距/更慢速/更强纹理重复视角的 loop smoke
+  - 或转入 wind/cable 几何覆盖与观测质量量化
+- 阻塞项：无
