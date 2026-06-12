@@ -62,6 +62,7 @@ Accepted evidence:
 - 15m short dynamic orbit audit accepted with real PX4/Gazebo motion, 350 pose samples, 101 depth frames, `final_normal_filtered_coverage_ratio=0.637935`.
 - 15m longer dynamic orbit audit accepted with all 48 waypoint advancements, 1200 pose samples, 315 depth frames, `min_conservative_clearance_m=2.72578086707`, `mean_useful_ratio=0.232852213737`, `final_normal_filtered_coverage_ratio=0.688708`, weakest band `0.546614`.
 - 15m occlusion-aware fast progression audit accepted using `trimesh`/`rtree` ray intersection, with `pose_stride=20`, `face_stride=8`, `ray_tests=28505`, `final_occlusion_clear_normal_coverage_ratio=0.634335`, weakest band `0.534884`.
+- Slow loop wind coverage audit accepted from the 2026-06-12 PX4 local-position trajectory: converted 29888 valid poses, dynamic normal-filtered coverage `0.729605`, weakest normal band `0.581943`, fast occlusion-clear normal coverage `0.680961`, weakest occlusion band `0.600000`.
 
 Important boundary:
 
@@ -69,6 +70,7 @@ Important boundary:
 - The newer quality coverage audit adds surface-normal/view-angle filtering and useful-depth linkage, but still does not model occlusion, actual visual defect recognition, or dynamic collision safety.
 - RTAB-Map screenshots are SLAM plumbing evidence, not inspection coverage certificates.
 - 15m is preferred for observation experiments, but not final coverage readiness.
+- Slow loop coverage uses PX4 local-position trajectory converted to the existing wind coverage CSV format. The fast occlusion audit is sampled for runtime control (`pose_stride=120`, `face_stride=16`), so it improves comparative evidence but still is not a dense final coverage certificate.
 
 Next wind work:
 
@@ -76,7 +78,7 @@ Next wind work:
 - Add image-level quality/defect-detection integration only through mature open-source models or clearly separated future work.
 - Define explicit wind inspection acceptance thresholds before claiming completion.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
-- Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion.
+- Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion; slow loop is currently the strongest wind SLAM/coverage evidence candidate, but it is not yet the default patrol baseline.
 
 ## 4. SLAM Status
 

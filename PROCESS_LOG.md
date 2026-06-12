@@ -8757,3 +8757,95 @@
   - 如果继续 SLAM，需建立真正独立的 ground-truth/map error 指标
   - 或回到 wind/cable 几何覆盖与观测质量量化
 - 阻塞项：无
+
+### 2026-06-12 14:53:51 CST
+
+- 节点：Slow loop wind coverage progression 与 occlusion fast 审计完成
+- 执行动作：
+  - 目标：把 slow loop 真实 PX4 local-position trajectory 接入已有 wind coverage 审计链路
+  - 新增 `scripts/convert_px4_local_position_log_to_wind_pose_csv.sh`
+    - 只读解析 PX4 `/fmu/out/vehicle_local_position` trajectory log
+    - 输出 `wind_dynamic_orbit_pose_*.csv` 兼容字段：
+      - `sample_index`
+      - `t_sec`
+      - `x,y,z`
+      - `xy_valid,z_valid`
+      - `center_xy_radius_m`
+      - `radius_error_m`
+      - `conservative_clearance_m`
+    - 只做格式转换，不启动 ROS/PX4/Gazebo/RViz
+  - 更新 `scripts/README.md`
+  - 执行转换：
+    - `SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.txt OUTPUT_DIR=data/results/wind_pose_from_slow_loop_20260612_143153 scripts/convert_px4_local_position_log_to_wind_pose_csv.sh`
+  - 用转换后的 pose CSV 执行现有 no-occlusion dynamic coverage：
+    - `POSE_CSV=data/results/wind_pose_from_slow_loop_20260612_143153/wind_pose_from_px4_local_position_20260612_144422.csv OUTPUT_DIR=data/results/wind_dynamic_coverage_slow_loop_20260612_143153 POSE_STRIDE=20 scripts/audit_wind_dynamic_coverage_progression.sh`
+  - 启动一次较密 occlusion audit：
+    - `POSE_STRIDE=40`
+    - `FACE_STRIDE=8`
+    - 输出目录 `data/results/wind_occlusion_coverage_slow_loop_20260612_143153`
+  - 该较密 occlusion audit 长时间无输出，summary 文件保持 0 字节
+  - 改用 runtime-controlled fast occlusion audit：
+    - `timeout 180s bash -lc 'POSE_CSV=data/results/wind_pose_from_slow_loop_20260612_143153/wind_pose_from_px4_local_position_20260612_144422.csv OUTPUT_DIR=data/results/wind_occlusion_coverage_slow_loop_fast_20260612_143153 POSE_STRIDE=120 FACE_STRIDE=16 scripts/audit_wind_occlusion_coverage_progression.sh'`
+  - fast occlusion audit 正常完成
+  - 使用宿主 `ps -ef` 找到较密 occlusion audit 残留进程：
+    - Python PID `25472`
+  - 终止已被 fast 审计替代的残留进程：
+    - `kill 25472 25462 25461 25460 25454`
+  - 确认残留进程清理完成
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - pose conversion summary：
+    - `data/results/wind_pose_from_slow_loop_20260612_143153/wind_pose_from_px4_local_position_20260612_144422.txt`
+  - pose conversion CSV：
+    - `data/results/wind_pose_from_slow_loop_20260612_143153/wind_pose_from_px4_local_position_20260612_144422.csv`
+  - pose conversion 关键字段：
+    - `sample_count=29888`
+    - `valid_pose_samples=29888`
+    - `duration_sec=239.181101`
+    - `mean_center_xy_radius_m=15.935036`
+    - `max_radius_error_m=20.414803`
+    - `min_conservative_clearance_m=1.396764`
+  - dynamic coverage summary：
+    - `data/results/wind_dynamic_coverage_slow_loop_20260612_143153/wind_dynamic_coverage_progression_20260612_144434.txt`
+  - dynamic coverage CSV：
+    - `data/results/wind_dynamic_coverage_slow_loop_20260612_143153/wind_dynamic_coverage_progression_20260612_144434.csv`
+  - dynamic band CSV：
+    - `data/results/wind_dynamic_coverage_slow_loop_20260612_143153/wind_dynamic_coverage_progression_bands_20260612_144434.csv`
+  - dynamic coverage 关键字段：
+    - `decision=accepted_wind_dynamic_coverage_progression_static_audit`
+    - `pose_stride=20`
+    - `pose_samples_used=1495`
+    - `mesh_samples=9316`
+    - `final_frustum_coverage_ratio=1.000000`
+    - `final_normal_filtered_coverage_ratio=0.729605`
+    - `min_band_normal_coverage_ratio_observed=0.581943`
+  - fast occlusion summary：
+    - `data/results/wind_occlusion_coverage_slow_loop_fast_20260612_143153/wind_occlusion_coverage_progression_20260612_144936.txt`
+  - fast occlusion progression CSV：
+    - `data/results/wind_occlusion_coverage_slow_loop_fast_20260612_143153/wind_occlusion_coverage_progression_20260612_144936.csv`
+  - fast occlusion band CSV：
+    - `data/results/wind_occlusion_coverage_slow_loop_fast_20260612_143153/wind_occlusion_coverage_progression_bands_20260612_144936.csv`
+  - fast occlusion 关键字段：
+    - `decision=accepted_wind_occlusion_coverage_progression_static_audit`
+    - `uses_trimesh=true`
+    - `uses_rtree=true`
+    - `pose_stride=120`
+    - `face_stride=16`
+    - `pose_samples_used=250`
+    - `mesh_faces=9316`
+    - `mesh_samples=583`
+    - `ray_tests=58030`
+    - `ray_clear=46276`
+    - `final_frustum_coverage_ratio=1.000000`
+    - `final_normal_filtered_coverage_ratio=0.723842`
+    - `final_occlusion_clear_normal_coverage_ratio=0.680961`
+    - `min_band_occlusion_clear_normal_ratio_observed=0.600000`
+- 结论：
+  - slow loop 轨迹不仅提升了 SLAM loop closure，也提升了风机覆盖审计指标
+  - 对比此前 15m full occlusion fast 结果 `0.634335`，slow loop fast occlusion-clear normal coverage 达到 `0.680961`
+  - 转换 summary 中 `max_radius_error_m=20.414803` 说明起飞/过渡段也进入了 pose CSV；因此该结果是 trajectory-level coverage evidence，不是精确 patrol-only coverage certificate
+  - fast occlusion audit 为 runtime-controlled sampled evidence，不是 dense final coverage
+- 下一步：
+  - 可增加一个裁剪起飞/过渡段的 orbit-only pose filter，再复跑 coverage
+  - 或继续推进 cable 侧几何覆盖/跟踪 dry-run 证据
+- 阻塞项：无
