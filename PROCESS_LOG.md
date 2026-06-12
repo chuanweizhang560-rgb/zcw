@@ -8492,3 +8492,204 @@
   - 若继续 SLAM，设计更近距/更慢速/更强纹理重复视角的 loop smoke
   - 或转入 wind/cable 几何覆盖与观测质量量化
 - 阻塞项：无
+
+### 2026-06-12 14:25:02 CST
+
+- 节点：RTAB-Map slow loop-closure smoke 入口建立
+- 执行动作：
+  - 根据 rejected loop-candidate 审计结论，优先改变视角/轨迹，而不是降低 RTAB-Map inlier 阈值
+  - 新增 `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_slow_loop_closure_smoke.launch.py`
+    - 复用 `offboard_waypoint_sequence`
+    - 半径保持 `15m`
+    - 高度保持 `z=-20m`
+    - 每圈 `32` 个 waypoint
+    - 重复 `3` 圈
+    - `acceptance_radius_m=2.0`
+    - `hold_ticks_required=8`
+  - 新增 `scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+    - 复用 `capture_rtabmap_depth_camera_rgbd_wind_rviz_overlay.sh`
+    - 使用同一个 RTAB-Map loop 参数 YAML
+    - `MIN_WAYPOINT_ADVANCEMENTS=72`
+    - `MOTION_SETTLE_SEC=240`
+  - 更新 `scripts/README.md`
+  - 执行：
+    - `chmod +x scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+    - `bash -n scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+    - `python3 -m py_compile ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_slow_loop_closure_smoke.launch.py`
+    - `colcon build --packages-select zcw_bringup`
+  - 清理 `ros2_ws/src/zcw_bringup/launch/__pycache__`
+  - 执行 launch 加载检查：
+    - `ROS_LOG_DIR=data/logs/ros RCUTILS_LOGGING_DIRECTORY=data/logs/ros ros2 launch zcw_bringup single_vehicle_wind_turbine_slow_loop_closure_smoke.launch.py --show-args`
+- 结果：
+  - shell 语法检查通过
+  - Python launch 编译通过
+  - `zcw_bringup` 构建通过
+  - ROS 2 launch 可加载该文件，显示 `No arguments`
+- 结论：
+  - slow loop smoke 已具备真实仿真执行条件
+  - 该入口仍会进入单机 Offboard/arm，只用于 wind SLAM motion evidence
+  - 是否存在任务级闭环仍必须以后续官方 DB 审计为准
+- 下一步：
+  - 运行 `scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+  - 对生成 DB 执行 loop closure、rejected candidate 和 ATE 审计
+- 阻塞项：无
+
+### 2026-06-12 14:31:07 CST
+
+- 节点：RTAB-Map slow loop-closure smoke 首轮运行失败定位与 wrapper 修复
+- 执行动作：
+  - 运行 `scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+  - 用户观察到仿真界面消失
+  - 脚本退出码为 `124`
+  - 检查最新结果和日志：
+    - `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_*_20260612_142540.log`
+    - `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_142540/`
+  - 确认没有残留 Gazebo/PX4/RTAB-Map/RViz 进程
+  - 读取 offboard 日志，确认 slow loop 轨迹已推进到 waypoint `97`
+  - 读取 PX4 日志，确认 PX4 在 wrapper summary/screenshot 前退出
+  - 判断失败原因为 wrapper 的 `PX4_TIMEOUT_SEC` 默认仍为 `190`，短于 slow loop 的 `MOTION_SETTLE_SEC=240`
+  - 对 partial DB 执行只读审计：
+    - `rtabmap-info`
+    - `DB_PATH=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_142540/rtabmap_depth_camera_rgbd_wind_20260612_142540.db scripts/audit_rtabmap_loop_closure_evidence.sh`
+    - `RTABMAP_LOG=data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260612_142540.log scripts/audit_rtabmap_rejected_loop_candidates.sh`
+    - `DB_PATH=... REFERENCE_LOG=data/logs/rtabmap_depth_camera_rgbd_wind_rviz_depth_pose_trajectory_20260612_142540.log SCENARIO=rtabmap_slow_loop_partial scripts/audit_rtabmap_trajectory_ate.sh`
+  - 修改 `scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+    - 新增 `PX4_TIMEOUT_SEC=360`
+  - 执行 `bash -n scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+- 结果：
+  - 首轮未生成 capture summary 和 RViz screenshot，不能作为完整可视证据
+  - partial DB：
+    - `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_142540/rtabmap_depth_camera_rgbd_wind_20260612_142540.db`
+    - size `17M`
+  - `rtabmap-info` partial DB：
+    - total odometry length `281.291718 m`
+    - total time `165.500000s`
+    - `46 nodes and 173 words`
+    - global graph `46 poses and 49 links`
+    - Neighbor `44`
+    - GlobalClosure `5`
+    - LocalSpaceClosure `0`
+    - LocalTimeClosure `0`
+  - loop closure audit：
+    - summary `data/results/rtabmap_loop_closure_evidence_20260612_143040/rtabmap_loop_closure_evidence_20260612_143040.txt`
+    - `claims_loop_closure_pass=true`
+    - `claims_official_loop_evidence=true`
+    - `claims_task_level_loop_closure_pass=true`
+    - `official_global_closure_links=5`
+    - `raw_global_closure_links=6`
+  - rejected candidate audit：
+    - summary `data/results/rtabmap_rejected_loop_candidates_20260612_143040/rtabmap_rejected_loop_candidates_20260612_143040.txt`
+    - `rejected_loop_candidate_count=24`
+    - `best_inliers=14`
+    - `best_required_inliers=20`
+    - `near_pass_count=0`
+  - ATE partial：
+    - summary `data/results/rtabmap_slow_loop_partial_trajectory_ate_20260612_143040/rtabmap_slow_loop_partial_trajectory_ate_20260612_143040.txt`
+    - `rtabmap_pose_count=46`
+    - `reference_sample_count=1774`
+    - `matched_pair_count=46`
+    - `rmse_m=0.000001073`
+- 结论：
+  - slow loop 轨迹设计已经能让 RTAB-Map 官方报告 `GlobalClosure=5`
+  - 但首轮 capture 失败，缺少正常 summary 和 RViz screenshot，不能作为完整视觉闭环证据
+  - wrapper 已修复，下一步必须重跑完整 capture
+- 下一步：
+  - 重新运行 `scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+  - 要求正常 summary、DB、截图和闭环审计同时存在
+- 阻塞项：无
+
+### 2026-06-12 14:37:12 CST
+
+- 节点：RTAB-Map slow loop-closure smoke 完整证据通过
+- 执行动作：
+  - 重新运行修复后的 `scripts/capture_rtabmap_slow_loop_closure_smoke.sh`
+  - 本轮 `PX4_TIMEOUT_SEC=360`，避免 PX4 在 summary/screenshot 前退出
+  - 等待真实 PX4/Gazebo/RTAB-Map/RViz 运行完成
+  - 读取完整 capture summary
+  - 检查无 Gazebo/PX4/RTAB-Map/RViz 残留进程
+  - 对生成 DB 执行：
+    - `rtabmap-info`
+    - `DB_PATH=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153/rtabmap_depth_camera_rgbd_wind_20260612_143153.db scripts/audit_rtabmap_loop_closure_evidence.sh`
+    - `RTABMAP_LOG=data/logs/rtabmap_depth_camera_rgbd_wind_rviz_rtabmap_20260612_143153.log scripts/audit_rtabmap_rejected_loop_candidates.sh`
+    - `SCENARIO=rtabmap_slow_loop SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.txt scripts/audit_rtabmap_trajectory_ate.sh`
+  - 检查 RViz 截图：
+    - `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.png`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - capture summary：
+    - `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.txt`
+  - capture 关键字段：
+    - `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+    - `launch=single_vehicle_wind_turbine_slow_loop_closure_smoke.launch.py`
+    - `min_waypoint_advancements=72`
+    - `waypoint_advancements=97`
+    - `rtabmap_ok=true`
+    - `outputs_ok=false`
+    - `motion_ok=true`
+    - `screenshot_ok=1`
+    - `local_position_trajectory_samples=29888`
+    - `depth_pose_trajectory_samples=2391`
+  - DB：
+    - `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153/rtabmap_depth_camera_rgbd_wind_20260612_143153.db`
+    - size `28M`
+  - screenshot：
+    - `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.png`
+    - size `1280 x 920`
+    - mean `48363.3`
+    - 人工检查：RViz 中可见 wind tower/rotor 附近的 RTAB-Map 点云/OctoMap 证据
+  - `rtabmap-info` 关键字段：
+    - total odometry length `313.453094 m`
+    - total time `252.000000s`
+    - `83 nodes and 140 words`
+    - global graph `83 poses and 71 links`
+    - Neighbor `64`
+    - GlobalClosure `4`
+    - LocalSpaceClosure `0`
+    - LocalTimeClosure `3`
+  - loop closure audit：
+    - summary `data/results/rtabmap_loop_closure_evidence_20260612_143649/rtabmap_loop_closure_evidence_20260612_143649.txt`
+    - CSV `data/results/rtabmap_loop_closure_evidence_20260612_143649/rtabmap_loop_closure_evidence_20260612_143649.csv`
+    - `decision=accepted_rtabmap_loop_closure_evidence_audit`
+    - `reason=official_global_or_local_space_loop_closure_present`
+    - `claims_loop_closure_pass=true`
+    - `claims_official_loop_evidence=true`
+    - `claims_task_level_loop_closure_pass=true`
+    - `node_count=83`
+    - `link_count=72`
+    - `raw_neighbor_links=64`
+    - `raw_global_closure_links=5`
+    - `raw_local_space_closure_links=0`
+    - `raw_local_time_closure_links=3`
+    - `official_global_closure_links=4`
+    - `official_local_space_closure_links=0`
+    - `official_local_time_closure_links=3`
+    - `path_length_proxy_m=313.453128911`
+    - `first_last_distance_m=33.427983324`
+  - rejected candidate audit：
+    - summary `data/results/rtabmap_rejected_loop_candidates_20260612_143649/rtabmap_rejected_loop_candidates_20260612_143649.txt`
+    - `rejected_loop_candidate_count=57`
+    - `near_pass_count=0`
+    - `best_inliers=11`
+    - `best_required_inliers=20`
+    - `best_inliers_matches=66`
+  - ATE：
+    - summary `data/results/rtabmap_slow_loop_trajectory_ate_20260612_143649/rtabmap_slow_loop_trajectory_ate_20260612_143649.txt`
+    - `decision=accepted_rtabmap_slow_loop_trajectory_ate`
+    - `claims_slam_pass=false`
+    - `rtabmap_pose_count=83`
+    - `reference_sample_count=2391`
+    - `matched_pair_count=75`
+    - `rmse_m=0.000001033`
+    - `mean_error_m=0.000000912`
+    - `median_error_m=0.000000873`
+    - `p95_error_m=0.000001767`
+    - `max_error_m=0.000002111`
+- 结论：
+  - slow loop smoke 已形成完整证据链：真实 PX4/Gazebo/RViz 截图、RTAB-Map DB、官方 `GlobalClosure=4`、闭环审计通过
+  - 这是当前仓库第一份任务级 RTAB-Map loop closure smoke 通过证据
+  - 该结论仍不是独立 SLAM 精度验收，因为当前 RTAB-Map 仍使用 Gazebo/P3D debug odom 作为输入，ATE 也只是 odom consistency
+  - SLAM 输出仍未接入 PX4 active control
+- 下一步：
+  - 补独立 map-to-ground-truth / pose-to-ground-truth 误差指标
+  - 或回到 wind/cable 几何覆盖与观测质量量化
+- 阻塞项：无
