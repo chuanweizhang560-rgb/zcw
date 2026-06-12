@@ -100,6 +100,9 @@ Accepted evidence:
 - Wind RTAB-Map trajectory ATE audit accepted as an odom-consistency metric: 39 RTAB-Map poses, 1142 P3D reference samples, 31 matched pairs, rigid-aligned `rmse_m=0.000001010`.
 - Generic RTAB-Map trajectory ATE audit script accepted by reproducing the wind ATE CSV exactly with `SCENARIO=rtabmap_wind_generic`.
 - RTAB-Map loop-closure evidence audit accepted as a limitation audit: latest wind DB has one raw `Link.type=1` candidate between nearly identical startup nodes, but official `rtabmap-info` reports `GlobalClosure=0`, so `claims_loop_closure_pass=false`.
+- Updated cable RTAB-Map RGB-D motion capture accepted on 2026-06-12 with real PX4/Gazebo/RViz evidence, 11134 PX4 local-position trajectory samples, 891 P3D depth-pose trajectory samples, and screenshot `data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911.png`.
+- Cable RTAB-Map trajectory ATE audit accepted as an odom-consistency metric: 38 RTAB-Map poses, 891 P3D reference samples, 32 matched pairs, rigid-aligned `rmse_m=0.000001421`.
+- Cable RTAB-Map loop-closure evidence audit accepted as a limitation audit: latest cable DB has 23 neighbor links and `0` raw/official loop-closure links, so `claims_loop_closure_pass=false`.
 
 Important boundary:
 
@@ -107,7 +110,8 @@ Important boundary:
 - SLAM output is not used for PX4 control.
 - The quality gate, database metrics and trajectory-error readiness audit do not claim SLAM accuracy; current audited DBs have `ground_truth_total=0`, `total_global_closures=0`, and `total_local_space_closures=0`.
 - The new ATE result is a consistency check against the same Gazebo/P3D debug odometry source used by RTAB-Map, not independent ground-truth SLAM accuracy.
-- The raw closure candidate is not accepted as task-level loop closure because it is an early near-duplicate link and official RTAB-Map info does not confirm a GlobalClosure.
+- The wind raw closure candidate is not accepted as task-level loop closure because it is an early near-duplicate link and official RTAB-Map info does not confirm a GlobalClosure.
+- The cable loop-closure audit has no raw candidate and no official closure evidence.
 
 Next SLAM work:
 

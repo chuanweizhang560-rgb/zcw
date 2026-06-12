@@ -8130,3 +8130,122 @@
   - 可运行 cable RTAB-Map motion capture 并用通用脚本计算 cable ATE
   - 或设计 deliberate loop-closure smoke
 - 阻塞项：无
+
+### 2026-06-12 13:32:54 CST
+
+- 节点：Cable RTAB-Map RGB-D motion reference trajectory、ATE/RMSE 与闭环证据审计完成
+- 执行动作：
+  - 按用户持续要求继续执行，不等待额外确认
+  - 运行更新后的 cable RTAB-Map motion RViz capture：
+    - `MOTION_SETTLE_SEC=90 scripts/capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`
+  - 本节点启动单机 cable waypoint baseline 真实运动、PX4/Gazebo、RTAB-Map RGB-D mode 和 RViz2
+  - 本节点属于既有单机规则 baseline 运动证据，不是 cable Phase B active bridge
+  - 未新增 cable active bridge
+  - 未将 cable lookahead/gate setpoint 发布到 `/fmu/in/*`
+  - 检查截图：
+    - `data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911.png`
+    - RViz 中可见 `/cloud_map`、OctoMap occupied markers 和运动生成的 map/path 证据
+  - 使用通用 ATE 脚本计算 cable 轨迹误差：
+    - `SCENARIO=rtabmap_cable`
+    - `SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911.txt`
+    - `scripts/audit_rtabmap_trajectory_ate.sh`
+  - 使用 `rtabmap-info` 检查 cable RTAB-Map `.db` 官方图结构摘要
+  - 使用闭环证据审计脚本检查 cable DB：
+    - `DB_PATH=data/results/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911/rtabmap_depth_camera_rgbd_motion_20260612_132911.db scripts/audit_rtabmap_loop_closure_evidence.sh`
+  - 读取 summary、CSV 和 DB 指标
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - motion capture summary：
+    - `data/results/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911.txt`
+  - motion capture 关键字段：
+    - `decision=accepted_rtabmap_depth_camera_rgbd_motion_rviz_overlay`
+    - `starts_ros=true`
+    - `starts_px4=true`
+    - `starts_gazebo=true`
+    - `starts_rviz=true`
+    - `starts_offboard=true`
+    - `arms=true`
+    - `publishes_fmu_in=true`
+    - `rtabmap_ok=true`
+    - `outputs_ok=false`
+    - `motion_ok=true`
+    - `screenshot_ok=1`
+  - screenshot：
+    - `data/screenshots/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911.png`
+    - 尺寸 `2480 x 1522`
+  - RTAB-Map DB：
+    - `data/results/rtabmap_depth_camera_rgbd_motion_rviz_overlay_20260612_132911/rtabmap_depth_camera_rgbd_motion_20260612_132911.db`
+    - size `12M`
+  - reference trajectory：
+    - `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_vehicle_local_position_trajectory_20260612_132911.log`
+    - samples `11134`
+    - `data/logs/rtabmap_depth_camera_rgbd_motion_rviz_depth_pose_trajectory_20260612_132911.log`
+    - samples `891`
+  - ATE summary：
+    - `data/results/rtabmap_cable_trajectory_ate_20260612_133127/rtabmap_cable_trajectory_ate_20260612_133127.txt`
+  - ATE CSV：
+    - `data/results/rtabmap_cable_trajectory_ate_20260612_133127/rtabmap_cable_trajectory_ate_20260612_133127.csv`
+  - ATE 关键字段：
+    - `decision=accepted_rtabmap_cable_trajectory_ate`
+    - `reason=rigid_aligned_ate_computed_from_rtabmap_db_and_p3d_reference`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `uses_rtabmap_db=true`
+    - `uses_p3d_reference=true`
+    - `alignment=rigid_se3_svd`
+    - `claims_slam_pass=false`
+    - `rtabmap_pose_count=38`
+    - `reference_sample_count=891`
+    - `matched_pair_count=32`
+    - `rmse_m=0.000001421`
+    - `mean_error_m=0.000001292`
+    - `median_error_m=0.000001216`
+    - `p95_error_m=0.000002216`
+    - `max_error_m=0.000002451`
+  - `rtabmap-info` cable DB 关键字段：
+    - total odometry length `223.303802 m`
+    - total time `98.600000s`
+    - `38 nodes and 0 words`
+    - global graph `38 poses and 23 links`
+    - Neighbor links `23`
+    - GlobalClosure `0`
+    - LocalSpaceClosure `0`
+    - LocalTimeClosure `0`
+  - loop-closure summary：
+    - `data/results/rtabmap_loop_closure_evidence_20260612_133138/rtabmap_loop_closure_evidence_20260612_133138.txt`
+  - loop-closure CSV：
+    - `data/results/rtabmap_loop_closure_evidence_20260612_133138/rtabmap_loop_closure_evidence_20260612_133138.csv`
+  - loop-closure 关键字段：
+    - `decision=accepted_rtabmap_loop_closure_evidence_audit`
+    - `reason=no_loop_closure_evidence_present`
+    - `claims_loop_closure_pass=false`
+    - `node_count=38`
+    - `link_count=23`
+    - `raw_neighbor_links=23`
+    - `raw_global_closure_links=0`
+    - `raw_local_space_closure_links=0`
+    - `raw_local_time_closure_links=0`
+    - `official_global_closure_links=0`
+    - `official_local_space_closure_links=0`
+    - `official_local_time_closure_links=0`
+    - `has_raw_loop_candidate=false`
+    - `has_official_loop_closure=false`
+    - `raw_official_mismatch=false`
+    - `path_length_proxy_m=223.303799499`
+    - `first_last_distance_m=64.674744365`
+- 结论：
+  - cable 场景已经具备新的 motion-backed RTAB-Map RGB-D RViz 证据和完整 reference trajectory
+  - cable ATE/RMSE 已可由通用脚本复现
+  - 由于 RTAB-Map 当前使用 Gazebo/P3D debug odom，ATE 接近 0 只能证明 RTAB-Map DB 轨迹与输入 odom/reference 一致
+  - 本节点不声明独立 SLAM 精度通过
+  - cable DB 没有 raw 或官方 loop-closure 证据，不能声明闭环通过
+  - SLAM 输出仍未接入 PX4 控制
+- 下一步：
+  - 设计 deliberate loop-closure smoke，要求官方 `GlobalClosure` 或 `LocalSpaceClosure` 计数非零
+  - 或继续推进 wind/cable 的几何覆盖和观测质量量化
+- 阻塞项：无
