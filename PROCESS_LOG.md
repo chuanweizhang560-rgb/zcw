@@ -8693,3 +8693,67 @@
   - 补独立 map-to-ground-truth / pose-to-ground-truth 误差指标
   - 或回到 wind/cable 几何覆盖与观测质量量化
 - 阻塞项：无
+
+### 2026-06-12 14:41:33 CST
+
+- 节点：RTAB-Map slow loop PX4 local-position cross-check 审计完成
+- 执行动作：
+  - 检查现有 `scripts/audit_rtabmap_trajectory_ate.sh`
+  - 检查 slow loop 的 P3D depth-pose trajectory log 和 PX4 local-position trajectory log 格式
+  - 发现：
+    - P3D/depth pose 使用仿真相对秒 stamp
+    - PX4 local-position 使用同步后的微秒 timestamp
+    - 不能直接复用 P3D ATE 脚本硬算
+  - 新增 `scripts/audit_rtabmap_px4_local_position_crosscheck.sh`
+    - 只读解析 RTAB-Map `.db`
+    - 只读解析 PX4 `/fmu/out/vehicle_local_position` trajectory log
+    - 使用 elapsed-time-from-first-sample 做时间归一
+    - 使用 SVD rigid SE(3) 对齐
+    - 明确 `claims_ground_truth_accuracy=false`
+    - 明确 `source_boundary=px4_local_position_is_estimator_output_not_independent_ground_truth`
+  - 更新 `scripts/README.md`
+  - 执行：
+    - `chmod +x scripts/audit_rtabmap_px4_local_position_crosscheck.sh`
+    - `bash -n scripts/audit_rtabmap_px4_local_position_crosscheck.sh`
+    - `SCENARIO=rtabmap_slow_loop_px4_crosscheck SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.txt scripts/audit_rtabmap_px4_local_position_crosscheck.sh`
+  - 读取 summary 和 CSV
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：
+    - `data/results/rtabmap_slow_loop_px4_crosscheck_20260612_144123/rtabmap_slow_loop_px4_crosscheck_20260612_144123.txt`
+  - CSV：
+    - `data/results/rtabmap_slow_loop_px4_crosscheck_20260612_144123/rtabmap_slow_loop_px4_crosscheck_20260612_144123.csv`
+  - 关键字段：
+    - `decision=accepted_rtabmap_slow_loop_px4_crosscheck`
+    - `reason=rigid_aligned_elapsed_time_crosscheck_against_px4_local_position`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `uses_rtabmap_db=true`
+    - `uses_px4_local_position_reference=true`
+    - `alignment=rigid_se3_svd`
+    - `time_alignment=elapsed_time_from_first_sample`
+    - `claims_slam_pass=false`
+    - `claims_ground_truth_accuracy=false`
+    - `source_boundary=px4_local_position_is_estimator_output_not_independent_ground_truth`
+    - `rtabmap_pose_count=83`
+    - `px4_reference_sample_count=29888`
+    - `matched_pair_count=76`
+    - `rmse_m=3.020397355`
+    - `mean_error_m=1.871303507`
+    - `median_error_m=1.234783664`
+    - `p95_error_m=3.177182157`
+    - `max_error_m=16.625628476`
+- 结论：
+  - PX4 estimator cross-check 明显大于 P3D ATE，说明不能用 P3D ATE 接近 0 来宣称独立 SLAM 精度
+  - 该审计有助于暴露 RTAB-Map/P3D 输入轨迹与 PX4 estimator 输出之间的系统差异
+  - PX4 local-position 仍不是独立 ground truth，因此不能作为最终 SLAM 精度验收
+  - SLAM 输出仍不接入 PX4 active control
+- 下一步：
+  - 如果继续 SLAM，需建立真正独立的 ground-truth/map error 指标
+  - 或回到 wind/cable 几何覆盖与观测质量量化
+- 阻塞项：无

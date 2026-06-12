@@ -109,6 +109,7 @@ Accepted evidence:
 - RTAB-Map rejected-loop-candidate audit accepted for the loop smoke: 29 rejected candidates, best visual inliers `10/20`, best match count `103` but `0` inliers, and `near_pass_count=0`.
 - Slow wind loop-closure smoke accepted on 2026-06-12 using `single_vehicle_wind_turbine_slow_loop_closure_smoke.launch.py`: 15m radius, 32 points per lap, 3 repeated laps, 97 waypoint advancements, 83 RTAB-Map nodes, 140 words, 64 neighbor links, official `GlobalClosure=4`, official `LocalTimeClosure=3`, and screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.png`.
 - Slow loop closure audit has `claims_loop_closure_pass=true`, `claims_official_loop_evidence=true`, and `claims_task_level_loop_closure_pass=true`; slow loop ATE remains an odom-consistency metric with 83 RTAB-Map poses, 2391 P3D reference samples, 75 matched pairs, and rigid-aligned `rmse_m=0.000001033`.
+- PX4 local-position cross-check audit accepted for the slow loop: 83 RTAB-Map poses, 29888 PX4 local-position samples, 76 matched elapsed-time pairs, rigid-aligned `rmse_m=3.020397355`, `p95_error_m=3.177182157`, and `max_error_m=16.625628476`; this uses PX4 estimator output, not independent ground truth.
 
 Important boundary:
 
@@ -120,10 +121,11 @@ Important boundary:
 - The cable loop-closure audit has no raw candidate and no official closure evidence.
 - The first deliberate loop smoke improved the evidence from `0 words` to a word-bearing RTAB-Map DB and one official local-time closure.
 - The slow loop smoke now provides official task-level loop-closure evidence through RTAB-Map `GlobalClosure=4`, but it still does not prove independent SLAM accuracy because Gazebo/P3D debug odometry is still the odometry input/reference.
+- The PX4 local-position cross-check is useful as an estimator-consistency warning: it is much larger than P3D ATE, but PX4 local position is still not an independent ground-truth system.
 
 Next SLAM work:
 
-- Add independent map-to-ground-truth error metrics before claiming SLAM completion; keep RTAB-Map loop closure as a smoke-level integration result, not final localization accuracy.
+- Add a true independent map-to-ground-truth metric before claiming SLAM completion; keep RTAB-Map loop closure as a smoke-level integration result, not final localization accuracy.
 - Keep RTAB-Map output out of active control until a separate safety review exists.
 
 ## 5. Multi-Vehicle Status
