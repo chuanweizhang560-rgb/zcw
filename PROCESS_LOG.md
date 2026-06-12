@@ -8003,3 +8003,75 @@
   - 需要构造独立参考或闭环场景，才能验证 SLAM 本体质量
   - 可继续做 ATE 审计脚本的 cable 版本或 generalized version
 - 阻塞项：无
+
+### 2026-06-12 13:24:49 CST
+
+- 节点：RTAB-Map loop-closure evidence 只读审计完成
+- 执行动作：
+  - 检查最新 wind RTAB-Map RGB-D motion DB：
+    - `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605/rtabmap_depth_camera_rgbd_wind_20260611_153605.db`
+  - 使用 SQLite 查询 `Link` 表：
+    - `select type, count(*) from Link group by type`
+    - `select from_id,to_id,type,length(transform),length(information_matrix) from Link`
+  - 发现 `Link.type=1` 原始链接 1 条
+  - 对照 RTAB-Map schema，`type=1` 名称为 `GlobalClosure`
+  - 使用 `rtabmap-info` 读取同一 DB 官方摘要
+  - 发现官方摘要仍显示 `GlobalClosure: 0`
+  - 新增 `scripts/audit_rtabmap_loop_closure_evidence.sh`
+  - 脚本只读解析：
+    - `Node.pose`
+    - `Link.type`
+    - raw Neighbor / GlobalClosure / LocalSpaceClosure / LocalTimeClosure 数量
+    - 官方 `rtabmap-info` closure 数量
+    - raw/official mismatch
+    - 首尾距离和路径长度 proxy
+  - 执行 `chmod +x scripts/audit_rtabmap_loop_closure_evidence.sh`
+  - 执行 `bash -n scripts/audit_rtabmap_loop_closure_evidence.sh`
+  - 执行 `DB_PATH=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605/rtabmap_depth_camera_rgbd_wind_20260611_153605.db scripts/audit_rtabmap_loop_closure_evidence.sh`
+  - 读取 summary、CSV 和 `rtabmap-info` log
+  - 更新 `scripts/README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/rtabmap_loop_closure_evidence_20260612_132449/rtabmap_loop_closure_evidence_20260612_132449.txt`
+  - CSV：`data/results/rtabmap_loop_closure_evidence_20260612_132449/rtabmap_loop_closure_evidence_20260612_132449.csv`
+  - info log：`data/results/rtabmap_loop_closure_evidence_20260612_132449/rtabmap_loop_closure_info_20260612_132449.log`
+  - `decision=accepted_rtabmap_loop_closure_evidence_audit`
+  - `reason=raw_loop_candidate_present_but_official_info_does_not_confirm_loop_closure`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `claims_loop_closure_pass=false`
+  - `node_count=39`
+  - `link_count=38`
+  - `raw_neighbor_links=37`
+  - `raw_global_closure_links=1`
+  - `raw_local_space_closure_links=0`
+  - `raw_local_time_closure_links=0`
+  - `official_global_closure_links=0`
+  - `official_local_space_closure_links=0`
+  - `official_local_time_closure_links=0`
+  - `has_raw_loop_candidate=true`
+  - `has_official_loop_closure=false`
+  - `raw_official_mismatch=true`
+  - `path_length_proxy_m=361.174719326`
+  - `first_last_distance_m=23.932767623`
+  - raw `GlobalClosure` row：
+    - `from_id=2`
+    - `to_id=1`
+    - `from_stamp=15.556`
+    - `to_stamp=14.156`
+    - `node_distance_m=0.000017090`
+- 结论：
+  - 数据库存在 1 条 raw `Link.type=1` 候选
+  - 该候选发生在启动初期近重复节点之间，距离仅约 17 微米
+  - 官方 `rtabmap-info` 不确认 GlobalClosure
+  - 因此当前仍不能声明任务级 loop closure 通过
+  - 需要单独设计闭环验证场景或调整 RTAB-Map loop/proximity smoke test
+- 下一步：
+  - 设计 deliberate loop-closure smoke：往返或小环线轨迹，要求官方 closure 计数非零且截图/DB 同时佐证
+  - 或继续完成 cable 版本 ATE/RMSE
+- 阻塞项：无

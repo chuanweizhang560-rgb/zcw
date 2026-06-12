@@ -98,6 +98,7 @@ Accepted evidence:
 - RTAB-Map trajectory-error readiness accepted as a negative/limitation audit: existing DB poses are available, but effective ground-truth poses are `0` and current reference logs contain only one sample per scenario, so ATE cannot be computed from existing files.
 - Updated wind RTAB-Map RGB-D motion capture accepted on 2026-06-11 with 48 waypoint advancements, 14264 PX4 local-position trajectory samples, 1142 P3D depth-pose trajectory samples, and a new RViz screenshot.
 - Wind RTAB-Map trajectory ATE audit accepted as an odom-consistency metric: 39 RTAB-Map poses, 1142 P3D reference samples, 31 matched pairs, rigid-aligned `rmse_m=0.000001010`.
+- RTAB-Map loop-closure evidence audit accepted as a limitation audit: latest wind DB has one raw `Link.type=1` candidate between nearly identical startup nodes, but official `rtabmap-info` reports `GlobalClosure=0`, so `claims_loop_closure_pass=false`.
 
 Important boundary:
 
@@ -105,10 +106,11 @@ Important boundary:
 - SLAM output is not used for PX4 control.
 - The quality gate, database metrics and trajectory-error readiness audit do not claim SLAM accuracy; current audited DBs have `ground_truth_total=0`, `total_global_closures=0`, and `total_local_space_closures=0`.
 - The new ATE result is a consistency check against the same Gazebo/P3D debug odometry source used by RTAB-Map, not independent ground-truth SLAM accuracy.
+- The raw closure candidate is not accepted as task-level loop closure because it is an early near-duplicate link and official RTAB-Map info does not confirm a GlobalClosure.
 
 Next SLAM work:
 
-- Re-run the updated cable/wind RTAB-Map RGB-D motion capture scripts to generate full reference trajectory logs, then compute ATE/RMSE; add loop-closure positive cases and map-to-ground-truth error metrics before claiming SLAM completion.
+- Create a deliberate loop-closure scenario or tune RTAB-Map loop/proximity settings in a separate smoke test, then require official closure evidence before claiming loop closure; add map-to-ground-truth error metrics before claiming SLAM completion.
 - Keep RTAB-Map output out of active control until a separate safety review exists.
 
 ## 5. Multi-Vehicle Status
