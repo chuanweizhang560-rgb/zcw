@@ -8075,3 +8075,58 @@
   - 设计 deliberate loop-closure smoke：往返或小环线轨迹，要求官方 closure 计数非零且截图/DB 同时佐证
   - 或继续完成 cable 版本 ATE/RMSE
 - 阻塞项：无
+
+### 2026-06-12 13:27:14 CST
+
+- 节点：RTAB-Map ATE/RMSE 审计脚本泛化完成
+- 执行动作：
+  - 读取 `scripts/audit_rtabmap_wind_trajectory_ate.sh`
+  - 新增通用脚本 `scripts/audit_rtabmap_trajectory_ate.sh`
+  - 通用脚本支持：
+    - `SCENARIO`
+    - `SOURCE_SUMMARY`
+    - `DB_PATH`
+    - `REFERENCE_LOG`
+  - 复用同一套逻辑：
+    - 解析 RTAB-Map `.db` 中 `Node.pose`
+    - 解析 P3D trajectory log
+    - 时间插值
+    - SVD 刚体对齐
+    - 输出 ATE/RMSE CSV 和 summary
+  - 执行 `chmod +x scripts/audit_rtabmap_trajectory_ate.sh`
+  - 执行 `bash -n scripts/audit_rtabmap_trajectory_ate.sh`
+  - 用 wind 证据回归执行：
+    - `SCENARIO=rtabmap_wind_generic`
+    - `SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260611_153605.txt`
+    - `scripts/audit_rtabmap_trajectory_ate.sh`
+  - 对比通用脚本 CSV 与 wind 专用脚本 CSV
+  - 更新 `scripts/README.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/rtabmap_wind_generic_trajectory_ate_20260612_132714/rtabmap_wind_generic_trajectory_ate_20260612_132714.txt`
+  - CSV：`data/results/rtabmap_wind_generic_trajectory_ate_20260612_132714/rtabmap_wind_generic_trajectory_ate_20260612_132714.csv`
+  - `decision=accepted_rtabmap_wind_generic_trajectory_ate`
+  - `starts_ros=false`
+  - `starts_px4=false`
+  - `starts_gazebo=false`
+  - `starts_rviz=false`
+  - `starts_offboard=false`
+  - `arms=false`
+  - `publishes_fmu_in=false`
+  - `claims_slam_pass=false`
+  - `rtabmap_pose_count=39`
+  - `reference_sample_count=1142`
+  - `matched_pair_count=31`
+  - `rmse_m=0.000001010`
+  - `mean_error_m=0.000000903`
+  - `median_error_m=0.000000859`
+  - `p95_error_m=0.000001584`
+  - `max_error_m=0.000002165`
+  - `diff -q` 显示通用脚本 CSV 与 wind 专用脚本 CSV 一致
+- 结论：
+  - 后续 cable/wind 任意 motion capture 只要 summary 中有 `depth_pose_trajectory_log` 和同目录 `.db`，即可复用通用 ATE 审计
+  - 该脚本仍只证明相对 P3D/debug odom 的一致性，不声明独立 SLAM 精度
+- 下一步：
+  - 可运行 cable RTAB-Map motion capture 并用通用脚本计算 cable ATE
+  - 或设计 deliberate loop-closure smoke
+- 阻塞项：无

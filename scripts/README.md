@@ -82,6 +82,7 @@
 - `audit_rtabmap_db_info_metrics.sh`：调用 RTAB-Map 官方 `rtabmap-info` 只读解析既有 cable/wind RGB-D 运动数据库，量化 odometry length、time、nodes、graph poses、links、closures 和 ground truth availability；不启动 ROS/PX4/Gazebo/RViz，不声明 SLAM 精度或闭环质量。
 - `audit_rtabmap_trajectory_error_readiness.sh`：只读检查既有 RTAB-Map RGB-D motion `.db` 是否有可用 pose、是否有非全零 ground truth pose、以及现有 PX4 local position reference log 是否有足够样本计算 ATE；不启动 ROS/PX4/Gazebo/RViz，不声明轨迹误差。
 - `audit_rtabmap_wind_trajectory_ate.sh`：只读解析最新或指定 wind RTAB-Map RGB-D motion `.db` 和 P3D trajectory log，按时间插值并做刚体对齐后输出 ATE/RMSE CSV；该指标是 RTAB-Map 数据库轨迹相对输入 debug odom/P3D 的一致性审计，不是独立 SLAM 精度证明，不启动 ROS/PX4/Gazebo/RViz。
+- `audit_rtabmap_trajectory_ate.sh`：通用版 ATE/RMSE 离线审计脚本，可用 `SCENARIO`、`SOURCE_SUMMARY`、`DB_PATH`、`REFERENCE_LOG` 指定 wind/cable RTAB-Map `.db` 和 P3D trajectory log；不启动 ROS/PX4/Gazebo/RViz，不声明独立 SLAM 精度。
 - `audit_rtabmap_loop_closure_evidence.sh`：只读解析 RTAB-Map `.db` 的 `Link` 表并对照官方 `rtabmap-info` 闭环统计，输出 raw closure candidate、official closure 和首尾距离；不启动 ROS/PX4/Gazebo/RViz，不声明闭环质量通过。
 - `capture_rtabmap_depth_camera_rgbd_rviz_overlay.sh`：启动 Gazebo depth camera、只读 odom bridge、RTAB-Map RGB-D mode 和 RViz2，加载 `rtabmap_depth_camera_overlay.rviz` 并截取真实 RGB-D map/cloud/octomap 证据；不启动 Offboard、不 arm、不发布 `/fmu/in/*`。
 - `capture_rtabmap_depth_camera_rgbd_motion_rviz_overlay.sh`：在 cable waypoint baseline 真实运动过程中启动 RTAB-Map RGB-D mode 和 RViz2，截取运动场景下的 RGB-D map/cloud/octomap 证据，并记录完整 `/fmu/out/vehicle_local_position` 与 `/zcw/depth_camera/pose` trajectory log 供后续 ATE/RMSE 审计；该脚本会进入 Offboard/arm，用于 motion-backed SLAM 可视化验证。

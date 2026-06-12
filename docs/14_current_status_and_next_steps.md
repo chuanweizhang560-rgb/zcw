@@ -98,6 +98,7 @@ Accepted evidence:
 - RTAB-Map trajectory-error readiness accepted as a negative/limitation audit: existing DB poses are available, but effective ground-truth poses are `0` and current reference logs contain only one sample per scenario, so ATE cannot be computed from existing files.
 - Updated wind RTAB-Map RGB-D motion capture accepted on 2026-06-11 with 48 waypoint advancements, 14264 PX4 local-position trajectory samples, 1142 P3D depth-pose trajectory samples, and a new RViz screenshot.
 - Wind RTAB-Map trajectory ATE audit accepted as an odom-consistency metric: 39 RTAB-Map poses, 1142 P3D reference samples, 31 matched pairs, rigid-aligned `rmse_m=0.000001010`.
+- Generic RTAB-Map trajectory ATE audit script accepted by reproducing the wind ATE CSV exactly with `SCENARIO=rtabmap_wind_generic`.
 - RTAB-Map loop-closure evidence audit accepted as a limitation audit: latest wind DB has one raw `Link.type=1` candidate between nearly identical startup nodes, but official `rtabmap-info` reports `GlobalClosure=0`, so `claims_loop_closure_pass=false`.
 
 Important boundary:
