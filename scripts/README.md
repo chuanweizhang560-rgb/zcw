@@ -49,6 +49,7 @@
 - `audit_cable_frenet_consistency.sh`：只读解析已审核的 offset path CSV 和 lookahead target CSV，检查 offset 偏移量、路径切向和 lookahead 切向一致性；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_tracking_envelope.sh`：只读汇总 centerline、offset path 和 lookahead targets，审计每条导线的覆盖长度、5m offset clearance、lookahead 进度和高度跨度；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_frame_contract.sh`：只读验证 centerline、offset path 和 lookahead targets 的坐标契约，包括 source 点、-Y 5m offset、target index、lookahead 距离和前向切线一致性；不启动 ROS/PX4/Gazebo/RViz。
+- `audit_cable_dry_run_acceptance.sh`：只读聚合 tracking envelope、frame contract 和 all-groups coverage monitor 证据，验证电缆 dry-run 验收阈值；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_lookahead_distance_sweep.sh`：复用现成的 lookahead target audit，离线扫多个 `LOOKAHEAD_M`，比较目标数和组级距离统计；不启动 Gazebo/PX4/RViz，不发布 `/fmu/in/*`。
 - `verify_lookahead_topic_publish.sh`：启动只读 `lookahead_path_publisher`，验证 `/zcw/cable/offset_path` 和 `/zcw/cable/lookahead_target` ROS topic 可发布；不接 PX4 setpoint。
 - `capture_lookahead_rviz_overlay.sh`：启动只读 lookahead publisher、static TF 和 RViz2，加载 overlay 配置并截取真实 RViz 截图；不启动 Gazebo/PX4。

@@ -55,6 +55,13 @@ Current status:
   - `accepted_group_count=5`
   - source, offset and target-point errors are zero at the stored CSV precision
   - maximum lookahead distance error is `0.001200000m`
+- Latest dry-run acceptance evidence:
+  - summary: `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`
+  - `tracking_ok=true`
+  - `frame_ok=true`
+  - `coverage_ok=true`
+  - `boundary_ok=true`
+  - `claims_cable_dry_run_acceptance_pass=true`
 - Latest PX4 isolation evidence:
   - summary: `data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
   - `package.xml` has no `px4_msgs` dependency

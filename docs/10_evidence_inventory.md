@@ -47,6 +47,7 @@ The audit is not allowed to:
 | Cable path geometry audit | offset path and lookahead target consistency summary | `scripts/audit_cable_path_geometry.sh` |
 | Cable Frenet consistency audit | offset path and lookahead target Frenet consistency summary | `scripts/audit_cable_frenet_consistency.sh` |
 | Cable frame contract audit | centerline, offset path and lookahead target frame-contract summary | `scripts/audit_cable_frame_contract.sh` |
+| Cable dry-run acceptance audit | aggregate tracking, frame-contract and coverage threshold summary | `scripts/audit_cable_dry_run_acceptance.sh` |
 | Cable lookahead sweep | multi-lookahead summary and CSV | `scripts/audit_lookahead_distance_sweep.sh` |
 | Cable dry-run coverage monitor | coverage monitor summary, topic list and coverage state echo | `scripts/verify_lookahead_coverage_monitor.sh`, `scripts/audit_lookahead_coverage_monitor_all_groups.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
@@ -96,6 +97,8 @@ Additional latest local cable coverage evidence:
 - frame-contract summary: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`
 - frame-contract CSV: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_groups_20260615_100822.csv`
 - frame-contract accepted fields: `decision=accepted_cable_frame_contract_audit`, `accepted_group_count=5`, `global_max_target_point_error_m=0.000000000`, `global_max_lookahead_error_m=0.001200000`
+- dry-run acceptance summary: `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`
+- dry-run acceptance fields: `decision=accepted_cable_dry_run_acceptance`, `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `boundary_ok=true`
 
 ## 5. Regeneration Rule
 

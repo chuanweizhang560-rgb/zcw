@@ -9477,3 +9477,70 @@
   - 可定义电缆覆盖验收阈值文档
   - 或转向风机验收阈值/多机干跑证据
 - 阻塞项：无
+
+### 2026-06-15 10:12:48 CST
+
+- 节点：Cable dry-run acceptance 聚合审计完成
+- 执行动作：
+  - 新增离线聚合审计脚本：
+    - `scripts/audit_cable_dry_run_acceptance.sh`
+  - 聚合输入：
+    - tracking envelope summary：`data/results/cable_tracking_envelope_20260615_093659/cable_tracking_envelope_20260615_093659.txt`
+    - frame contract summary：`data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`
+    - all-groups coverage summary：`data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.txt`
+    - all-groups coverage CSV：`data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.csv`
+  - 验收阈值：
+    - `min_groups=5`
+    - `min_coverage_ratio=0.80`
+    - `max_clearance_error_m=0.001`
+    - `max_frame_error_m=0.001`
+    - `max_lookahead_error_m=0.01`
+    - `min_forward_dot=0.99`
+  - 边界检查：
+    - tracking/frame/coverage 三个输入 summary 均不得启动 PX4/Gazebo/RViz
+    - 不得进入 Offboard
+    - 不得 arm
+    - 不得发布 `/fmu/in/*`
+  - 执行：
+    - `bash -n scripts/audit_cable_dry_run_acceptance.sh`
+    - `chmod +x scripts/audit_cable_dry_run_acceptance.sh`
+    - `scripts/audit_cable_dry_run_acceptance.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/03_cable_px4_dry_run_gate.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：
+    - `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`
+  - 关键字段：
+    - `decision=accepted_cable_dry_run_acceptance`
+    - `reason=tracking_frame_and_coverage_evidence_meets_dry_run_thresholds`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `tracking_ok=true`
+    - `frame_ok=true`
+    - `coverage_ok=true`
+    - `boundary_ok=true`
+    - `coverage_group_count=5`
+    - `coverage_min_ratio=0.840000000`
+    - `coverage_max_ratio=0.840000000`
+    - `tracking_global_max_clearance_error_m=0.000000000`
+    - `frame_global_max_target_point_error_m=0.000000000`
+    - `frame_global_max_lookahead_error_m=0.001200000`
+    - `frame_global_min_forward_dot=0.999999005`
+    - `claims_cable_dry_run_acceptance_pass=true`
+- 结论：
+  - 当前电缆 dry-run 链路在 tracking envelope、坐标契约、全组 coverage 和安全边界上达到本阶段验收阈值
+  - 这不是 cable active bridge 批准
+  - 没有启动 ROS/PX4/Gazebo/RViz
+  - cable Phase B active bridge 仍禁止
+- 下一步：
+  - 可做 all-groups RViz 可视化刷新
+  - 或转向风机验收阈值定义
+- 阻塞项：无

@@ -34,6 +34,7 @@ Accepted evidence:
 - Cable frame contract audit accepted on 2026-06-15: summary `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`, all 5 groups accepted, `global_max_source_error_m=0.000000000`, `global_max_offset_y_error_m=0.000000000`, `global_max_offset_z_error_m=0.000000000`, `global_max_target_current_error_m=0.000000000`, `global_max_target_point_error_m=0.000000000`, `global_max_lookahead_error_m=0.001200000`, and `global_min_forward_dot=0.999999005`.
 - Cable dry-run coverage monitor accepted on 2026-06-15 using the `y8_z20` offset/lookahead candidate: summary `data/results/lookahead_coverage_monitor_20260615_094950/lookahead_coverage_monitor_20260615_094950.txt`, ROS topics only under `/zcw/cable/*`, `path_points=25`, `covered_points=21`, `target_samples=66`, `coverage_ratio=0.84`, `tracking_ready=true`, `safety_gate=true`, `coverage_ready=true`, and no `/fmu/in/*` topics in the smoke topic list.
 - Cable dry-run coverage monitor all-groups audit accepted on 2026-06-15: summary `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.txt`, all 5 groups accepted (`y8_z20`, `y8_z21`, `y8_z23`, `y8_z25`, `y8_z26`), each with `path_points=25`, `covered_points=21`, `coverage_ratio=0.84`, `coverage_ok=true`, and isolated `ROS_DOMAIN_ID` values `80` through `84`.
+- Cable dry-run acceptance audit accepted on 2026-06-15: summary `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`, with `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `boundary_ok=true`, `coverage_min_ratio=0.840000000`, `tracking_global_max_clearance_error_m=0.000000000`, `frame_global_max_target_point_error_m=0.000000000`, and `claims_cable_dry_run_acceptance_pass=true`.
 
 Important boundary:
 
@@ -44,7 +45,7 @@ Important boundary:
 Next cable work:
 
 - Do not implement active bridge without explicit approval.
-- Useful safe next nodes are cable coverage acceptance-threshold documentation, an all-groups RViz visualization refresh, or a documented active-control review. Do not implement active bridge without explicit approval.
+- Useful safe next nodes are an all-groups RViz visualization refresh, wind acceptance-threshold documentation, or a documented active-control review. Do not implement active bridge without explicit approval.
 
 ## 3. Wind Status
 
