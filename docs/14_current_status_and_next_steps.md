@@ -32,6 +32,7 @@ Accepted evidence:
 - dry-run readiness accepted.
 - Cable tracking envelope audit accepted on 2026-06-15 from the current catenary/offset/lookahead candidate: 5 wire groups, 600.011818m total centerline length, 600.011818m total offset-path length, 125 offset points, 105 lookahead targets, fixed 5.000000m clearance, max clearance error `0.000000m`, target distance range `20.000000m` to `20.001200m`, and max vertical span `0.692100m`.
 - Cable dry-run coverage monitor accepted on 2026-06-15 using the `y8_z20` offset/lookahead candidate: summary `data/results/lookahead_coverage_monitor_20260615_094950/lookahead_coverage_monitor_20260615_094950.txt`, ROS topics only under `/zcw/cable/*`, `path_points=25`, `covered_points=21`, `target_samples=66`, `coverage_ratio=0.84`, `tracking_ready=true`, `safety_gate=true`, `coverage_ready=true`, and no `/fmu/in/*` topics in the smoke topic list.
+- Cable dry-run coverage monitor all-groups audit accepted on 2026-06-15: summary `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.txt`, all 5 groups accepted (`y8_z20`, `y8_z21`, `y8_z23`, `y8_z25`, `y8_z26`), each with `path_points=25`, `covered_points=21`, `coverage_ratio=0.84`, `coverage_ok=true`, and isolated `ROS_DOMAIN_ID` values `80` through `84`.
 
 Important boundary:
 
@@ -42,7 +43,7 @@ Important boundary:
 Next cable work:
 
 - Do not implement active bridge without explicit approval.
-- Useful safe next nodes are stricter coordinate-frame audits, extending dry-run coverage to all five cable groups, or a documented active-control review. Do not implement active bridge without explicit approval.
+- Useful safe next nodes are stricter coordinate-frame audits, cable coverage acceptance-threshold documentation, or a documented active-control review. Do not implement active bridge without explicit approval.
 
 ## 3. Wind Status
 

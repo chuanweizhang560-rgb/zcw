@@ -15,6 +15,7 @@ MIN_COVERAGE_RATIO="${MIN_COVERAGE_RATIO:-0.80}"
 MAX_TARGET_TO_PATH_M="${MAX_TARGET_TO_PATH_M:-2.0}"
 MAX_DATA_AGE_SEC="${MAX_DATA_AGE_SEC:-3.0}"
 SETTLE_SEC="${SETTLE_SEC:-5}"
+TOPIC_WAIT_SEC="${TOPIC_WAIT_SEC:-15}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 LOG_DIR="${LOG_DIR:-data/logs}"
 RESULT_ROOT="${RESULT_ROOT:-data/results}"
@@ -110,8 +111,17 @@ COVERAGE_PID=$!
 
 sleep "${SETTLE_SEC}"
 
-ros2 topic list --no-daemon | sort >"${TOPIC_LIST_LOG}"
-if ! grep -q '^/zcw/cable/dry_run/coverage_state$' "${TOPIC_LIST_LOG}"; then
+topic_ready=0
+for _ in $(seq 1 "${TOPIC_WAIT_SEC}"); do
+  ros2 topic list --no-daemon | sort >"${TOPIC_LIST_LOG}"
+  if grep -q '^/zcw/cable/dry_run/coverage_state$' "${TOPIC_LIST_LOG}"; then
+    topic_ready=1
+    break
+  fi
+  sleep 1
+done
+
+if [[ "${topic_ready}" -ne 1 ]]; then
   write_summary "rejected_lookahead_coverage_monitor" "coverage_state_topic_missing" "false"
   echo "Lookahead coverage monitor smoke completed."
   echo "Summary: ${SUMMARY_FILE}"
@@ -128,8 +138,8 @@ if [[ -s "${FORBIDDEN_LOG}" ]]; then
 fi
 
 coverage_ok=0
-for _ in $(seq 1 12); do
-  timeout 3s ros2 topic echo --full-length --once /zcw/cable/dry_run/coverage_state >"${COVERAGE_ECHO_LOG}" || true
+for _ in $(seq 1 3); do
+  timeout 8s ros2 topic echo --full-length /zcw/cable/dry_run/coverage_state >"${COVERAGE_ECHO_LOG}" || true
   if grep -q 'coverage_ready=true' "${COVERAGE_ECHO_LOG}"; then
     coverage_ok=1
     break

@@ -42,6 +42,13 @@ Current status:
   - `coverage_ratio=0.84`
   - `coverage_ready=true`
   - no `/fmu/in/*` topics in the smoke topic list
+- Latest all-groups dry-run coverage evidence:
+  - summary: `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.txt`
+  - group CSV: `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.csv`
+  - `group_count=5`
+  - `accepted_group_count=5`
+  - all groups reached `coverage_ratio=0.84`
+  - each group used an isolated `ROS_DOMAIN_ID`
 - Latest PX4 isolation evidence:
   - summary: `data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
   - `package.xml` has no `px4_msgs` dependency

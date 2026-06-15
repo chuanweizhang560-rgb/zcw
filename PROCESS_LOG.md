@@ -9331,3 +9331,79 @@
   - 或继续做电缆坐标系/验收覆盖标准
   - 不得在未明确批准前实现 cable active bridge
 - 阻塞项：无
+
+### 2026-06-15 10:05:27 CST
+
+- 节点：Cable lookahead dry-run coverage monitor 全 5 组审计完成
+- 执行动作：
+  - 新增聚合审计脚本：
+    - `scripts/audit_lookahead_coverage_monitor_all_groups.sh`
+  - 聚合脚本复用单组 smoke：
+    - `scripts/verify_lookahead_coverage_monitor.sh`
+  - 聚合输入：
+    - `data/results/cable_tracking_envelope_20260615_093659/cable_tracking_envelope_groups_20260615_093659.csv`
+  - 每个 group 独立执行 dry-run coverage monitor：
+    - `y8_z20`
+    - `y8_z21`
+    - `y8_z23`
+    - `y8_z25`
+    - `y8_z26`
+  - 初次连续执行发现后续 group 不稳定：
+    - rejected summary：`data/results/lookahead_coverage_monitor_all_groups_20260615_095443/lookahead_coverage_monitor_all_groups_20260615_095443.txt`
+    - rejected summary：`data/results/lookahead_coverage_monitor_all_groups_20260615_095911/lookahead_coverage_monitor_all_groups_20260615_095911.txt`
+    - 现象：第一组通过，后续组 `target_samples=1` 且 `coverage_ratio=0.04`
+    - 原因判断：连续切换 group 时 DDS graph/publisher 残留影响新组，导致 path signature 交替变化并重置 coverage
+  - 修复验证脚本：
+    - 单组 smoke 不再只抓早期 `--once` 样本
+    - 改为连续监听 coverage topic，日志中保留多条 `coverage_state`
+    - 聚合 CSV 解析修复，避免把 `min_coverage_ratio` 误读为 `coverage_ratio`
+  - 修复聚合脚本：
+    - 每个 group 使用独立 `ROS_DOMAIN_ID`
+    - domain 起点：`80`
+    - group 间加入短暂等待，避免 DDS 残留影响
+  - 执行：
+    - `bash -n scripts/verify_lookahead_coverage_monitor.sh`
+    - `bash -n scripts/audit_lookahead_coverage_monitor_all_groups.sh`
+    - `GROUP_ID=y8_z21 scripts/verify_lookahead_coverage_monitor.sh`
+    - `scripts/audit_lookahead_coverage_monitor_all_groups.sh`
+  - 更新 `scripts/README.md`
+- 结果：
+  - 单组复测：
+    - `data/results/lookahead_coverage_monitor_20260615_095756/lookahead_coverage_monitor_20260615_095756.txt`
+    - `y8_z21` accepted
+  - 全组 accepted summary：
+    - `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.txt`
+  - 全组 CSV：
+    - `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.csv`
+  - run log：
+    - `data/logs/lookahead_coverage_monitor_all_groups_20260615_100351.log`
+  - 关键字段：
+    - `decision=accepted_lookahead_coverage_monitor_all_groups`
+    - `reason=all_groups_reach_dry_run_coverage_ready_without_px4_inputs`
+    - `starts_ros=true`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `min_coverage_ratio=0.80`
+    - `max_target_to_path_m=2.0`
+  - 每组结果：
+    - `y8_z20`: `coverage_ratio=0.84`, `path_points=25`, `covered_points=21`, `target_samples=136`
+    - `y8_z21`: `coverage_ratio=0.84`, `path_points=25`, `covered_points=21`, `target_samples=140`
+    - `y8_z23`: `coverage_ratio=0.84`, `path_points=25`, `covered_points=21`, `target_samples=136`
+    - `y8_z25`: `coverage_ratio=0.84`, `path_points=25`, `covered_points=21`, `target_samples=136`
+    - `y8_z26`: `coverage_ratio=0.84`, `path_points=25`, `covered_points=21`, `target_samples=136`
+- 结论：
+  - 当前 5 条电缆候选均能通过 dry-run coverage readiness
+  - 该证据仍是 ROS dry-run monitor 证据
+  - 没有启动 PX4/Gazebo/RViz
+  - 没有进入 Offboard，没有 arm，没有发布 `/fmu/in/*`
+  - cable Phase B active bridge 仍禁止
+- 下一步：
+  - 可继续做电缆覆盖验收标准文档与坐标系一致性审计
+  - 或转向风机验收阈值定义
+- 阻塞项：无
