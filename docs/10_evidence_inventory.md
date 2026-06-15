@@ -47,6 +47,7 @@ The audit is not allowed to:
 | Cable path geometry audit | offset path and lookahead target consistency summary | `scripts/audit_cable_path_geometry.sh` |
 | Cable Frenet consistency audit | offset path and lookahead target Frenet consistency summary | `scripts/audit_cable_frenet_consistency.sh` |
 | Cable lookahead sweep | multi-lookahead summary and CSV | `scripts/audit_lookahead_distance_sweep.sh` |
+| Cable dry-run coverage monitor | coverage monitor summary, topic list and coverage state echo | `scripts/verify_lookahead_coverage_monitor.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
@@ -81,6 +82,13 @@ Latest accepted result:
 - `present_count=21`
 - `missing_count=0`
 - `not_ignored_count=0`
+
+Additional latest local cable coverage evidence:
+
+- summary: `data/results/lookahead_coverage_monitor_20260615_094950/lookahead_coverage_monitor_20260615_094950.txt`
+- coverage echo: `data/logs/lookahead_coverage_state_echo_20260615_094950.log`
+- topic list: `data/logs/lookahead_coverage_topic_list_20260615_094950.log`
+- accepted fields: `decision=accepted_lookahead_coverage_monitor`, `coverage_ratio=0.84`, `coverage_ready=true`, `publishes_fmu_in=false`
 
 ## 5. Regeneration Rule
 

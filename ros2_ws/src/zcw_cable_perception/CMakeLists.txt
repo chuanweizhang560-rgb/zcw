@@ -93,6 +93,14 @@ ament_target_dependencies(lookahead_dry_run_setpoint
   std_msgs
 )
 
+add_executable(lookahead_coverage_monitor src/lookahead_coverage_monitor.cpp)
+ament_target_dependencies(lookahead_coverage_monitor
+  rclcpp
+  nav_msgs
+  geometry_msgs
+  std_msgs
+)
+
 add_executable(odom_child_frame_bridge src/odom_child_frame_bridge.cpp)
 ament_target_dependencies(odom_child_frame_bridge
   rclcpp
@@ -114,6 +122,7 @@ install(TARGETS
   lookahead_path_publisher
   lookahead_safety_monitor
   lookahead_dry_run_setpoint
+  lookahead_coverage_monitor
   odom_child_frame_bridge
   DESTINATION lib/${PROJECT_NAME}
 )

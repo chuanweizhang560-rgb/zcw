@@ -18,6 +18,7 @@ Current executable:
 - `lookahead_path_publisher`: read-only ROS 2 publisher for audited offset path and lookahead target CSV files. It publishes `nav_msgs/Path` and `geometry_msgs/PointStamped`; it does not publish PX4 setpoints.
 - `lookahead_safety_monitor`: read-only ROS 2 safety monitor for offset path and lookahead target topics. It publishes tracking state and a boolean safety gate; it does not publish PX4 setpoints.
 - `lookahead_dry_run_setpoint`: read-only dry-run candidate setpoint generator. It publishes only `/zcw/cable/dry_run/*` debug topics and does not publish PX4 input topics.
+- `lookahead_coverage_monitor`: read-only dry-run coverage monitor. It subscribes to the offset path, lookahead target, tracking state and safety gate, then publishes only `/zcw/cable/dry_run/coverage_state`.
 
 RViz:
 

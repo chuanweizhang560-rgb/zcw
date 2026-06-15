@@ -9238,3 +9238,96 @@
   - 可把 tracking envelope 指标接入 dry-run scoring/coverage monitor
   - 或继续做电缆坐标系/导线覆盖验收审计
 - 阻塞项：无
+
+### 2026-06-15 09:51:07 CST
+
+- 节点：Cable lookahead dry-run coverage monitor 完成
+- 执行动作：
+  - 基于已接受的电缆 tracking envelope，新增 dry-run coverage monitor：
+    - `ros2_ws/src/zcw_cable_perception/src/lookahead_coverage_monitor.cpp`
+    - 订阅 `/zcw/cable/offset_path`
+    - 订阅 `/zcw/cable/lookahead_target`
+    - 订阅 `/zcw/cable/tracking_state`
+    - 订阅 `/zcw/cable/safety_gate`
+    - 仅发布 `/zcw/cable/dry_run/coverage_state`
+  - 明确节点状态字段：
+    - `dry_run=true`
+    - `learned_policy=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+  - 修复 coverage 累计逻辑：
+    - offset path 周期性重复发布时不再清空 coverage
+    - 仅当 path 内容签名变化时重置覆盖集合
+  - 新增验证脚本：
+    - `scripts/verify_lookahead_coverage_monitor.sh`
+    - 不启动 PX4/Gazebo/RViz
+    - 不进入 Offboard
+    - 不 arm
+    - 检查 topic list 中没有 `/fmu/in/*`
+    - 失败时也写入 summary，避免证据缺失
+  - 更新文档：
+    - `docs/03_cable_px4_dry_run_gate.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+    - `scripts/README.md`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+  - 执行静态检查：
+    - `bash -n scripts/verify_lookahead_coverage_monitor.sh`
+    - `grep -R "/fmu/in" ros2_ws/src/zcw_cable_perception/src/lookahead_coverage_monitor.cpp scripts/verify_lookahead_coverage_monitor.sh`
+  - 执行构建：
+    - `colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_cable_perception`
+  - 第一次普通沙箱验证失败：
+    - summary：`data/results/lookahead_coverage_monitor_20260615_094412/lookahead_coverage_monitor_20260615_094412.txt`
+    - 失败原因：ROS 2 CLI 在沙箱网络中出现 `Operation not permitted`
+    - 该结果不作为功能失败证据
+  - 第二次沙箱外验证暴露脚本提前退出问题：
+    - topic list 未包含 coverage topic，脚本在写 summary 前退出
+    - 随后补充完整 summary 写入逻辑
+  - 最终验证通过：
+    - `scripts/verify_lookahead_coverage_monitor.sh`
+- 结果：
+  - summary：
+    - `data/results/lookahead_coverage_monitor_20260615_094950/lookahead_coverage_monitor_20260615_094950.txt`
+  - echo：
+    - `data/logs/lookahead_coverage_state_echo_20260615_094950.log`
+  - topic list：
+    - `data/logs/lookahead_coverage_topic_list_20260615_094950.log`
+  - forbidden topics：
+    - `data/logs/lookahead_coverage_forbidden_topics_20260615_094950.log`
+  - 关键字段：
+    - `decision=accepted_lookahead_coverage_monitor`
+    - `reason=coverage_monitor_reaches_ready_without_px4_inputs`
+    - `starts_ros=true`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `path_points=25`
+    - `covered_points=21`
+    - `target_samples=66`
+    - `coverage_ratio=0.84`
+    - `tracking_ready=true`
+    - `safety_gate=true`
+    - `coverage_ready=true`
+  - topic list 仅包含：
+    - `/zcw/cable/dry_run/coverage_state`
+    - `/zcw/cable/lookahead_target`
+    - `/zcw/cable/offset_path`
+    - `/zcw/cable/safety_gate`
+    - `/zcw/cable/tracking_state`
+    - `/parameter_events`
+    - `/rosout`
+  - `/fmu/in/*` 检查为空
+- 结论：
+  - 电缆 dry-run 链路现在有 coverage readiness 证据
+  - 该节点仍然只是 dry-run scoring/monitor，不是控制桥
+  - cable Phase B active bridge 仍禁止
+  - 没有启动 Gazebo/PX4/RViz；本节点无需截图
+- 下一步：
+  - 可把 coverage monitor 扩展到 5 条导线全组审计
+  - 或继续做电缆坐标系/验收覆盖标准
+  - 不得在未明确批准前实现 cable active bridge
+- 阻塞项：无

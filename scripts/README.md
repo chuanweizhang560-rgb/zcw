@@ -53,6 +53,7 @@
 - `capture_lookahead_rviz_overlay.sh`：启动只读 lookahead publisher、static TF 和 RViz2，加载 overlay 配置并截取真实 RViz 截图；不启动 Gazebo/PX4。
 - `verify_lookahead_safety_monitor.sh`：启动只读 lookahead publisher 和 safety monitor，验证 `/zcw/cable/tracking_state` 与 `/zcw/cable/safety_gate`；不接 PX4 setpoint。
 - `verify_lookahead_dry_run_setpoint.sh`：启动只读 publisher、safety monitor 和 dry-run setpoint 节点，验证 `/zcw/cable/dry_run/*` debug topics，并确认没有 `/fmu/in/*` topic。
+- `verify_lookahead_coverage_monitor.sh`：启动只读 publisher、safety monitor 和 coverage monitor，验证 `/zcw/cable/dry_run/coverage_state` 达到 `coverage_ready=true`，并确认没有 `/fmu/in/*` topic。
 - `capture_lookahead_dry_run_rviz_overlay.sh`：启动只读 publisher、safety monitor、dry-run setpoint、static TF 和 RViz2，加载 dry-run overlay 配置并截取真实 RViz 截图；不启动 Gazebo/PX4。
 - `audit_px4_isolation.sh`：静态检查 `zcw_cable_perception` 与 lookahead 脚本没有 `px4_msgs` 依赖、PX4 message API 或 `/fmu/in/*` 发布。
 - `verify_px4_bridge_dry_run_isolation.sh`：启动只读 lookahead pipeline 和 Phase A bridge dry-run，验证 `/zcw/cable/px4_bridge/*` debug topics，并确认没有 `/fmu/in/*` topic。

@@ -33,6 +33,15 @@ Current status:
   - Dry Run Path: OK
   - Dry Run Candidate: OK
   - no local `/fmu/in/*` publisher in dry-run checks
+- Latest dry-run coverage monitor evidence:
+  - summary: `data/results/lookahead_coverage_monitor_20260615_094950/lookahead_coverage_monitor_20260615_094950.txt`
+  - group: `y8_z20`
+  - `path_points=25`
+  - `covered_points=21`
+  - `target_samples=66`
+  - `coverage_ratio=0.84`
+  - `coverage_ready=true`
+  - no `/fmu/in/*` topics in the smoke topic list
 - Latest PX4 isolation evidence:
   - summary: `data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
   - `package.xml` has no `px4_msgs` dependency
@@ -84,6 +93,7 @@ Allowed debug topics:
 | `/zcw/cable/dry_run/state` | `std_msgs/String` | `WAITING`, `TRACK_READY`, `HOLD_*` |
 | `/zcw/cable/dry_run/candidate_setpoint` | `geometry_msgs/PointStamped` | Candidate position that would later feed PX4 |
 | `/zcw/cable/dry_run/path` | `nav_msgs/Path` | Candidate setpoint history for RViz |
+| `/zcw/cable/dry_run/coverage_state` | `std_msgs/String` | Dry-run coverage progress and readiness state |
 
 Forbidden in dry-run:
 
