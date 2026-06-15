@@ -46,6 +46,7 @@ The audit is not allowed to:
 | Cable path inputs | offset path CSV and lookahead target CSV | `scripts/audit_catenary_fit.sh`, `scripts/audit_offset_path.sh`, `scripts/audit_lookahead_target.sh` |
 | Cable path geometry audit | offset path and lookahead target consistency summary | `scripts/audit_cable_path_geometry.sh` |
 | Cable Frenet consistency audit | offset path and lookahead target Frenet consistency summary | `scripts/audit_cable_frenet_consistency.sh` |
+| Cable frame contract audit | centerline, offset path and lookahead target frame-contract summary | `scripts/audit_cable_frame_contract.sh` |
 | Cable lookahead sweep | multi-lookahead summary and CSV | `scripts/audit_lookahead_distance_sweep.sh` |
 | Cable dry-run coverage monitor | coverage monitor summary, topic list and coverage state echo | `scripts/verify_lookahead_coverage_monitor.sh`, `scripts/audit_lookahead_coverage_monitor_all_groups.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
@@ -92,6 +93,9 @@ Additional latest local cable coverage evidence:
 - all-groups summary: `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.txt`
 - all-groups CSV: `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.csv`
 - all-groups accepted fields: `decision=accepted_lookahead_coverage_monitor_all_groups`, `group_count=5`, `accepted_group_count=5`, each group `coverage_ratio=0.84`
+- frame-contract summary: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`
+- frame-contract CSV: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_groups_20260615_100822.csv`
+- frame-contract accepted fields: `decision=accepted_cable_frame_contract_audit`, `accepted_group_count=5`, `global_max_target_point_error_m=0.000000000`, `global_max_lookahead_error_m=0.001200000`
 
 ## 5. Regeneration Rule
 

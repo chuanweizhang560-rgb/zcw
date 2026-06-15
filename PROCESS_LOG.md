@@ -9407,3 +9407,73 @@
   - 可继续做电缆覆盖验收标准文档与坐标系一致性审计
   - 或转向风机验收阈值定义
 - 阻塞项：无
+
+### 2026-06-15 10:08:34 CST
+
+- 节点：Cable frame contract 离线审计完成
+- 执行动作：
+  - 新增只读离线审计脚本：
+    - `scripts/audit_cable_frame_contract.sh`
+  - 审计输入：
+    - centerline：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_centerline_20260608_085655.csv`
+    - offset path：`data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+    - lookahead targets：`data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+  - 审计内容：
+    - centerline index 与 offset path index 一致
+    - offset path 的 `source_x/y/z` 与 centerline 坐标一致
+    - offset path 相对 centerline 固定为 `offset_y_m=-5m`、`offset_z_m=0m`
+    - lookahead target 的 current 点对应 offset path current index
+    - lookahead target 的 target 点对应 offset path target index
+    - target index 单调向前
+    - lookahead 距离接近 20m
+    - target-current 方向与路径切向同向
+    - tangent norm 接近 1
+  - 执行：
+    - `bash -n scripts/audit_cable_frame_contract.sh`
+    - `chmod +x scripts/audit_cable_frame_contract.sh`
+    - `scripts/audit_cable_frame_contract.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/03_cable_px4_dry_run_gate.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：
+    - `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`
+  - group CSV：
+    - `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_groups_20260615_100822.csv`
+  - 关键字段：
+    - `decision=accepted_cable_frame_contract_audit`
+    - `reason=centerline_offset_and_lookahead_frames_are_self_consistent`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `total_targets=105`
+    - `expected_offset_y_m=-5.000000000`
+    - `expected_offset_z_m=0.000000000`
+    - `expected_lookahead_m=20.000000000`
+    - `global_max_source_error_m=0.000000000`
+    - `global_max_offset_y_error_m=0.000000000`
+    - `global_max_offset_z_error_m=0.000000000`
+    - `global_max_target_current_error_m=0.000000000`
+    - `global_max_target_point_error_m=0.000000000`
+    - `global_max_lookahead_error_m=0.001200000`
+    - `global_min_forward_dot=0.999999005`
+    - `global_min_tangent_norm=0.999999506`
+    - `global_max_tangent_norm=1.000000488`
+    - `claims_frame_contract_pass=true`
+- 结论：
+  - 当前电缆 centerline、offset path 和 lookahead target CSV 在同一几何 frame 下自洽
+  - 该审计仍是离线几何/坐标契约证据，不代表 active PX4 控制已批准
+  - 没有启动 ROS/PX4/Gazebo/RViz
+  - cable Phase B active bridge 仍禁止
+- 下一步：
+  - 可定义电缆覆盖验收阈值文档
+  - 或转向风机验收阈值/多机干跑证据
+- 阻塞项：无

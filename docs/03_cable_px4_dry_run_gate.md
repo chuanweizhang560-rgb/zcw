@@ -49,6 +49,12 @@ Current status:
   - `accepted_group_count=5`
   - all groups reached `coverage_ratio=0.84`
   - each group used an isolated `ROS_DOMAIN_ID`
+- Latest frame-contract evidence:
+  - summary: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`
+  - group CSV: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_groups_20260615_100822.csv`
+  - `accepted_group_count=5`
+  - source, offset and target-point errors are zero at the stored CSV precision
+  - maximum lookahead distance error is `0.001200000m`
 - Latest PX4 isolation evidence:
   - summary: `data/results/px4_isolation_audit_20260603_180400/px4_isolation_audit_20260603_180310.txt`
   - `package.xml` has no `px4_msgs` dependency
