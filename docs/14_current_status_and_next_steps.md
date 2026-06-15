@@ -30,6 +30,7 @@ Accepted evidence:
 - PX4/Gazebo offboard gate dry-run accepted with `phase_b_allowed=false`.
 - gate RViz/debug overlay accepted.
 - dry-run readiness accepted.
+- Cable tracking envelope audit accepted on 2026-06-15 from the current catenary/offset/lookahead candidate: 5 wire groups, 600.011818m total centerline length, 600.011818m total offset-path length, 125 offset points, 105 lookahead targets, fixed 5.000000m clearance, max clearance error `0.000000m`, target distance range `20.000000m` to `20.001200m`, and max vertical span `0.692100m`.
 
 Important boundary:
 
@@ -40,7 +41,7 @@ Important boundary:
 Next cable work:
 
 - Do not implement active bridge without explicit approval.
-- Useful safe next nodes are better dry-run evidence, stricter coordinate-frame audits, or offline tracking/coverage analysis.
+- Useful safe next nodes are better dry-run evidence, stricter coordinate-frame audits, or connecting this offline tracking envelope to a dry-run scoring/coverage monitor.
 
 ## 3. Wind Status
 

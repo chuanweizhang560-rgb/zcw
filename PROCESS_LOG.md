@@ -9162,3 +9162,79 @@
   - 如需修 topic gate，可单独调整 capture 脚本在 RTAB-Map map publication 后立即采样 topic list，或延长 map publish settle；不必重跑完整 coverage
   - 或转向 cable offline geometry/tracking evidence
 - 阻塞项：无
+
+### 2026-06-15 09:37:07 CST
+
+- 节点：Cable tracking envelope 离线总览审计完成
+- 执行动作：
+  - 转向电缆侧安全节点，不启动仿真，不进入 active bridge
+  - 读取现有电缆候选与审计：
+    - `data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_centerline_20260608_085655.csv`
+    - `data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+    - `data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+    - `data/results/cable_frenet_consistency_20260608_085959/cable_frenet_consistency_20260608_085959.txt`
+    - `data/results/cable_path_geometry_20260608_085959/cable_path_geometry_20260608_085959.txt`
+  - 新增只读脚本：
+    - `scripts/audit_cable_tracking_envelope.sh`
+    - 汇总 centerline、offset path 和 lookahead targets
+    - 审计每条导线：
+      - centerline/offset path 点数一致
+      - 单条长度
+      - 5m offset clearance
+      - clearance error
+      - lookahead target 覆盖进度
+      - target index/current index 单调性
+      - target distance 范围
+      - 高度跨度
+    - 不启动 ROS/PX4/Gazebo/RViz
+    - 不进入 Offboard，不 arm
+    - 不发布 `/fmu/in/*`
+  - 更新 `scripts/README.md`
+  - 执行：
+    - `chmod +x scripts/audit_cable_tracking_envelope.sh`
+    - `bash -n scripts/audit_cable_tracking_envelope.sh`
+    - `scripts/audit_cable_tracking_envelope.sh`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：
+    - `data/results/cable_tracking_envelope_20260615_093659/cable_tracking_envelope_20260615_093659.txt`
+  - group CSV：
+    - `data/results/cable_tracking_envelope_20260615_093659/cable_tracking_envelope_groups_20260615_093659.csv`
+  - 关键字段：
+    - `decision=accepted_cable_tracking_envelope_audit`
+    - `reason=offset_tracking_envelope_and_lookahead_progress_are_consistent`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `total_center_length_m=600.011818322`
+    - `total_offset_length_m=600.011818322`
+    - `total_offset_points=125`
+    - `total_lookahead_targets=105`
+    - `expected_offset_m=5.000000000`
+    - `global_min_clearance_m=5.000000000`
+    - `global_max_clearance_m=5.000000000`
+    - `global_max_clearance_error_m=0.000000000`
+    - `global_min_target_distance_m=20.000000000`
+    - `global_max_target_distance_m=20.001200000`
+    - `global_max_vertical_span_m=0.692100000`
+    - `claims_tracking_envelope_pass=true`
+  - 分组结果：
+    - `y8_z20` 到 `y8_z26` 共 5 组全部 accepted
+    - 每组 25 个 offset 点、21 个 lookahead target
+    - 每组长度约 `120.002m`
+    - 每组 target progress ratio `0.84`
+- 结论：
+  - 当前电缆候选具备更清晰的离线 tracking envelope 证据
+  - 该结果只证明几何 envelope、offset clearance 和 lookahead progression 一致
+  - 仍不代表 active cable control 已批准
+  - cable Phase B active bridge 仍禁止
+- 下一步：
+  - 可把 tracking envelope 指标接入 dry-run scoring/coverage monitor
+  - 或继续做电缆坐标系/导线覆盖验收审计
+- 阻塞项：无
