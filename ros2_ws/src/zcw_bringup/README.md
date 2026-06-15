@@ -11,4 +11,5 @@ ROS 2 bringup package for launch and configuration entry points.
 - `single_vehicle_wind_turbine_inspection.launch.py`：在 AerialCore 风机 world 上用固定几何航点验证最小风机巡检 baseline。
 - `single_vehicle_wind_turbine_multilevel_orbit.launch.py`：在 AerialCore 风机 world 上用独立多高度层 orbit 航点和 yaw-to-center setpoint 验证规则风机巡检 baseline。
 - `single_vehicle_wind_turbine_multilevel_orbit_r15.launch.py`：15m 半径近距多高度层 orbit 候选，用于对比风机 depth useful return；不替代默认 20m baseline。
+- `single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`：15m 半径、3 个高度层、每层 2 圈重复的慢速 wind orbit，用于同时审计 RTAB-Map 闭环证据和多高度覆盖；不替代默认规则 baseline。
 - `single_vehicle_cable_inspection.launch.py`：在 AerialCore 两塔导线 world 上用固定几何航点验证最小电缆巡检 baseline。

@@ -8929,3 +8929,141 @@
   - 可设计 multi-level slow loop，把当前 GlobalClosure 能力与多层覆盖结合
   - 或转向 cable 几何覆盖/跟踪 dry-run 证据
 - 阻塞项：无
+
+### 2026-06-15 09:25:16 CST
+
+- 节点：Multi-level slow loop wind SLAM/coverage 组合候选新增与部分证据审计完成
+- 执行动作：
+  - 新增 `ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`
+    - 15m 半径
+    - 3 个高度层：`-32m`, `-24m`, `-16m` NED
+    - 每层 2 圈
+    - 每圈 24 个航点
+    - yaw 始终指向风机中心
+  - 新增 `scripts/capture_rtabmap_multilevel_slow_loop_closure_smoke.sh`
+    - 复用 wind RTAB-Map RGB-D RViz capture 主脚本
+    - 使用 `rtabmap_loop_closure_smoke.yaml`
+    - `MIN_WAYPOINT_ADVANCEMENTS=120`
+    - `MOTION_SETTLE_SEC=360`
+    - `PX4_TIMEOUT_SEC=480`
+  - 更新 `ros2_ws/src/zcw_bringup/README.md`
+  - 更新 `scripts/README.md`
+  - 静态校验：
+    - `bash -n scripts/capture_rtabmap_multilevel_slow_loop_closure_smoke.sh`
+    - `python3 -m py_compile ros2_ws/src/zcw_bringup/launch/single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`
+  - 构建安装：
+    - 先误在 `ros2_ws/` 下执行 `colcon build --packages-select zcw_bringup`，生成的是 `ros2_ws/install`
+    - 首次 capture 因项目脚本 source 根目录 `install/`，新增 launch 未被找到，Offboard 没有启动
+    - 修正为在仓库根目录执行：
+      - `source /opt/ros/humble/setup.bash && colcon build --symlink-install --base-paths ros2_ws/src --packages-select zcw_bringup`
+    - 确认新增 launch 已存在于 `install/zcw_bringup/share/zcw_bringup/launch/`
+  - 首次错误 capture：
+    - summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_090722/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_090722.txt`
+    - 判定：`decision=rejected_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+    - 根因：Offboard log 报 `file 'single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py' was not found`
+    - `waypoint_advancements=0`
+    - `screenshot_ok=1`
+    - 已作为失败证据保留
+  - 第二次 capture：
+    - 启动真实 Gazebo/PX4/RTAB-Map/RViz wind capture
+    - 用户观察到 Gazebo GUI 后段退掉
+    - 自动 wrapper 未写出 final summary/screenshot
+    - 但运动日志和 RTAB-Map DB 可用
+    - Offboard log 统计 `Advancing to waypoint` 为 `145`
+    - final waypoint `145` 后持续 `Holding final waypoint 145`
+    - DB：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_20260615_091712.db`
+  - 对第二次 partial capture 做离线审计：
+    - RTAB-Map loop closure audit
+    - RTAB-Map rejected loop candidate audit
+    - RTAB-Map P3D/depth-pose ATE audit
+    - RTAB-Map vs PX4 local-position cross-check
+    - PX4 local-position 转 wind pose CSV
+    - no-occlusion wind dynamic coverage audit
+    - very-fast occlusion wind coverage audit
+  - fast occlusion audit `POSE_STRIDE=120 FACE_STRIDE=16` 被终止，仅留下 0 字节 summary：
+    - `data/results/wind_occlusion_coverage_multilevel_slow_loop_fast_20260615_091712/wind_occlusion_coverage_progression_20260615_092327.txt`
+    - 不作为有效结果
+  - 降低采样后用 `POSE_STRIDE=240 FACE_STRIDE=32` 完成 very-fast occlusion audit
+  - 检查无 Gazebo/PX4/RViz/RTAB-Map/coverage 残留进程
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - 第二次 motion/DB 证据：
+    - `waypoint_advancements=145`
+    - final hold 已出现
+    - RTAB-Map DB 大小约 `48M`
+  - loop closure summary：
+    - `data/results/rtabmap_loop_closure_evidence_20260615_092310/rtabmap_loop_closure_evidence_20260615_092310.txt`
+    - `claims_loop_closure_pass=true`
+    - `claims_official_loop_evidence=true`
+    - `claims_task_level_loop_closure_pass=true`
+    - `node_count=174`
+    - `link_count=161`
+    - `raw_neighbor_links=148`
+    - `raw_global_closure_links=5`
+    - `raw_local_space_closure_links=2`
+    - `raw_local_time_closure_links=6`
+    - `official_global_closure_links=2`
+    - `official_local_space_closure_links=2`
+    - `official_local_time_closure_links=6`
+  - rejected loop summary：
+    - `data/results/rtabmap_rejected_loop_candidates_20260615_092310/rtabmap_rejected_loop_candidates_20260615_092310.txt`
+    - `rejected_loop_candidate_count=120`
+    - `near_pass_count=1`
+    - `best_inliers=15/20`
+    - `best_matches=116`
+  - P3D/depth-pose ATE summary：
+    - `data/results/rtabmap_multilevel_slow_loop_trajectory_ate_20260615_092310/rtabmap_multilevel_slow_loop_trajectory_ate_20260615_092310.txt`
+    - `rtabmap_pose_count=174`
+    - `reference_sample_count=3418`
+    - `matched_pair_count=174`
+    - `rmse_m=0.000001113`
+    - `claims_slam_pass=false`
+  - PX4 local-position cross-check summary：
+    - `data/results/rtabmap_multilevel_slow_loop_px4_20260615_092310/rtabmap_multilevel_slow_loop_px4_20260615_092310.txt`
+    - `rtabmap_pose_count=174`
+    - `px4_reference_sample_count=42723`
+    - `matched_pair_count=174`
+    - `rmse_m=1.916133183`
+    - `p95_error_m=2.563201843`
+    - `max_error_m=3.546754362`
+    - `claims_ground_truth_accuracy=false`
+  - wind pose CSV summary：
+    - `data/results/wind_pose_from_multilevel_slow_loop_20260615_091712/wind_pose_from_px4_local_position_20260615_092317.txt`
+    - CSV：`data/results/wind_pose_from_multilevel_slow_loop_20260615_091712/wind_pose_from_px4_local_position_20260615_092317.csv`
+    - `sample_count=43611`
+    - `valid_pose_samples=43611`
+    - `duration_sec=348.991111`
+    - `mean_center_xy_radius_m=15.679166`
+    - `min_conservative_clearance_m=1.688958`
+  - dynamic coverage summary：
+    - `data/results/wind_dynamic_coverage_multilevel_slow_loop_20260615_091712/wind_dynamic_coverage_progression_20260615_092327.txt`
+    - `pose_stride=20`
+    - `pose_samples_used=2181`
+    - `final_frustum_coverage_ratio=1.000000`
+    - `final_normal_filtered_coverage_ratio=0.733899`
+    - `min_band_normal_coverage_ratio_observed=0.595682`
+  - very-fast occlusion summary：
+    - `data/results/wind_occlusion_coverage_multilevel_slow_loop_very_fast_20260615_091712/wind_occlusion_coverage_progression_20260615_092417.txt`
+    - `pose_stride=240`
+    - `face_stride=32`
+    - `pose_samples_used=182`
+    - `mesh_samples=292`
+    - `ray_tests=21439`
+    - `final_frustum_coverage_ratio=1.000000`
+    - `final_normal_filtered_coverage_ratio=0.736301`
+    - `final_occlusion_clear_normal_coverage_ratio=0.708904`
+    - `min_band_occlusion_clear_normal_ratio_observed=0.593750`
+- 结论：
+  - multi-level slow loop 是目前最强的 wind SLAM/coverage 组合候选：
+    - 官方 RTAB-Map task-level loop closure 存在
+    - 动态 normal-filtered coverage 高于单高度 slow loop orbit-only
+    - very-fast occlusion-clear coverage 高于此前单高度 slow loop orbit-only 和 15m multi-level orbit fast 结果
+  - 但第二次 capture 没有成功写出自动 RViz screenshot/summary，不能记为完整 GUI/RViz capture pass
+  - 该节点目前只能声明 motion + RTAB-Map DB + offline coverage audit partial evidence accepted
+  - P3D ATE 仍只是 odom-consistency，不是独立 SLAM 精度
+  - PX4 local-position cross-check 仍不是独立 ground truth
+- 下一步：
+  - 可重跑一个缩短版 multi-level slow loop GUI/RViz capture，只为补齐截图/summary，不必重新做长 coverage
+  - 或转向 cable offline geometry/tracking evidence
+- 阻塞项：
+  - Gazebo GUI 在第二次长 capture 后段退出，导致截图/summary 缺失
