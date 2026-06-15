@@ -8849,3 +8849,83 @@
   - 可增加一个裁剪起飞/过渡段的 orbit-only pose filter，再复跑 coverage
   - 或继续推进 cable 侧几何覆盖/跟踪 dry-run 证据
 - 阻塞项：无
+
+### 2026-06-15 09:01:30 CST
+
+- 节点：Slow loop orbit-only wind coverage 过滤与复审完成
+- 执行动作：
+  - 继续执行上次遗留的 wind coverage 严格化任务
+  - 查看 slow loop 转换后的 pose CSV
+    - 起飞初期半径约 `35m`
+    - 巡检段末尾半径约 `15m`
+    - 说明上次全轨迹 coverage 混入起飞/过渡段
+  - 新增 `scripts/filter_wind_orbit_pose_csv.sh`
+    - 只读过滤 wind pose CSV
+    - 默认条件：
+      - `TARGET_RADIUS_M=15.0`
+      - `MAX_RADIUS_ERROR_M=2.0`
+      - `MIN_Z_M=-25.0`
+      - `MAX_Z_M=-15.0`
+      - `MIN_VALID_SAMPLES=100`
+    - 不启动 ROS/PX4/Gazebo/RViz
+  - 更新 `scripts/README.md`
+  - 执行：
+    - `chmod +x scripts/filter_wind_orbit_pose_csv.sh`
+    - `bash -n scripts/filter_wind_orbit_pose_csv.sh`
+    - `POSE_CSV=data/results/wind_pose_from_slow_loop_20260612_143153/wind_pose_from_px4_local_position_20260612_144422.csv OUTPUT_DIR=data/results/wind_orbit_pose_filter_slow_loop_20260612_143153 MAX_RADIUS_ERROR_M=2.0 MIN_Z_M=-25 MAX_Z_M=-15 scripts/filter_wind_orbit_pose_csv.sh`
+  - 用 filtered orbit-only CSV 复跑 no-occlusion dynamic coverage：
+    - `POSE_CSV=data/results/wind_orbit_pose_filter_slow_loop_20260612_143153/wind_orbit_pose_filter_20260615_085937.csv OUTPUT_DIR=data/results/wind_dynamic_coverage_slow_loop_orbit_only_20260615_085937 POSE_STRIDE=20 scripts/audit_wind_dynamic_coverage_progression.sh`
+  - 用 filtered orbit-only CSV 复跑 fast occlusion coverage：
+    - `timeout 180s bash -lc 'POSE_CSV=data/results/wind_orbit_pose_filter_slow_loop_20260612_143153/wind_orbit_pose_filter_20260615_085937.csv OUTPUT_DIR=data/results/wind_occlusion_coverage_slow_loop_orbit_only_fast_20260615_085937 POSE_STRIDE=120 FACE_STRIDE=16 scripts/audit_wind_occlusion_coverage_progression.sh'`
+  - 检查无 Gazebo/PX4/RViz/RTAB-Map/coverage 残留进程
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - filter summary：
+    - `data/results/wind_orbit_pose_filter_slow_loop_20260612_143153/wind_orbit_pose_filter_20260615_085937.txt`
+  - filtered pose CSV：
+    - `data/results/wind_orbit_pose_filter_slow_loop_20260612_143153/wind_orbit_pose_filter_20260615_085937.csv`
+  - filter 关键字段：
+    - `decision=accepted_wind_orbit_pose_filter`
+    - `filtered_sample_count=28408`
+    - `filtered_duration_sec=227.338691`
+    - `first_t_sec=11.842410`
+    - `last_t_sec=239.181101`
+    - `mean_radius_m=15.032704`
+    - `max_filtered_radius_error_m=1.977353`
+    - `min_clearance_m=1.396764`
+    - `min_z_observed_m=-20.122456`
+    - `max_z_observed_m=-17.189833`
+  - dynamic coverage summary：
+    - `data/results/wind_dynamic_coverage_slow_loop_orbit_only_20260615_085937/wind_dynamic_coverage_progression_20260615_085947.txt`
+  - dynamic coverage 关键字段：
+    - `decision=accepted_wind_dynamic_coverage_progression_static_audit`
+    - `pose_stride=20`
+    - `pose_samples_used=1421`
+    - `mesh_samples=9316`
+    - `final_frustum_coverage_ratio=1.000000`
+    - `final_normal_filtered_coverage_ratio=0.674538`
+    - `min_band_normal_coverage_ratio_observed=0.512267`
+  - fast occlusion summary：
+    - `data/results/wind_occlusion_coverage_slow_loop_orbit_only_fast_20260615_085937/wind_occlusion_coverage_progression_20260615_085947.txt`
+  - fast occlusion 关键字段：
+    - `decision=accepted_wind_occlusion_coverage_progression_static_audit`
+    - `pose_stride=120`
+    - `face_stride=16`
+    - `pose_samples_used=237`
+    - `mesh_faces=9316`
+    - `mesh_samples=583`
+    - `ray_tests=55128`
+    - `ray_clear=43876`
+    - `final_frustum_coverage_ratio=1.000000`
+    - `final_normal_filtered_coverage_ratio=0.667238`
+    - `final_occlusion_clear_normal_coverage_ratio=0.598628`
+    - `min_band_occlusion_clear_normal_ratio_observed=0.507692`
+- 结论：
+  - orbit-only 复审去掉了起飞/过渡段影响
+  - slow loop orbit-only occlusion-clear coverage `0.598628` 低于此前 15m multi-level orbit fast occlusion `0.634335`
+  - slow loop 是更强的 SLAM loop-closure 轨迹，但不是更强的风机覆盖巡检 baseline
+  - 风机覆盖方向应继续保留 multi-level orbit，或设计 multi-level slow-loop 组合，而不是直接把 single-height slow loop 升级为默认 patrol
+- 下一步：
+  - 可设计 multi-level slow loop，把当前 GlobalClosure 能力与多层覆盖结合
+  - 或转向 cable 几何覆盖/跟踪 dry-run 证据
+- 阻塞项：无
