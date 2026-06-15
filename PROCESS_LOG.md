@@ -9074,3 +9074,91 @@
   - 或转向 cable offline geometry/tracking evidence
 - 阻塞项：
   - 无；但第二次 summary 的 `outputs_ok=false` 仍建议后续单独排查
+
+### 2026-06-15 09:32:28 CST
+
+- 节点：Multi-level slow loop final DB/output-boundary 复审完成
+- 执行动作：
+  - 继续排查 `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt` 中的 `outputs_ok=false`
+  - 读取 capture 主脚本逻辑，确认 `outputs_ok` 只检查 final `ros2 topic list` 是否同时包含：
+    - `/map`
+    - `/cloud_map`
+    - `/octomap_occupied_space`
+  - 读取 final topics log：
+    - `data/logs/rtabmap_depth_camera_rgbd_wind_rviz_topics_20260615_091712.log`
+    - 仅包含 `/parameter_events` 与 `/rosout`
+  - 检查 RTAB-Map log，确认后段有 map update / publish map 相关证据
+  - 新增只读脚本：
+    - `scripts/audit_rtabmap_wind_capture_output_boundary.sh`
+    - 用途：把 final topic-output gate 与 RTAB-Map log/DB mapping evidence 分开记录
+    - 不启动 ROS/PX4/Gazebo/RViz
+    - 不发布 `/fmu/in/*`
+  - 更新 `scripts/README.md`
+  - 执行：
+    - `chmod +x scripts/audit_rtabmap_wind_capture_output_boundary.sh`
+    - `bash -n scripts/audit_rtabmap_wind_capture_output_boundary.sh`
+    - `SOURCE_SUMMARY=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt scripts/audit_rtabmap_wind_capture_output_boundary.sh`
+  - 审计发现最终 DB 已完全落盘为 `205` 个节点；此前 09:23 左右的 DB 审计读到 `174` 节点，是在 capture wrapper 完全返回前过早读取的中间状态
+  - 因此重跑最终 DB 口径的审计：
+    - `DB_PATH=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_20260615_091712.db scripts/audit_rtabmap_loop_closure_evidence.sh`
+    - `SCENARIO=rtabmap_multilevel_slow_loop_final_db DB_PATH=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_20260615_091712.db REFERENCE_LOG=data/logs/rtabmap_depth_camera_rgbd_wind_rviz_depth_pose_trajectory_20260615_091712.log scripts/audit_rtabmap_trajectory_ate.sh`
+    - `SCENARIO=rtabmap_multilevel_slow_loop_px4_final_db DB_PATH=data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_20260615_091712.db PX4_LOCAL_POSITION_LOG=data/logs/rtabmap_depth_camera_rgbd_wind_rviz_vehicle_local_position_trajectory_20260615_091712.log scripts/audit_rtabmap_px4_local_position_crosscheck.sh`
+  - 更新 `docs/14_current_status_and_next_steps.md` 为最终 DB 口径
+- 结果：
+  - output-boundary summary：
+    - `data/results/rtabmap_wind_capture_output_boundary_20260615_093222/rtabmap_wind_capture_output_boundary_20260615_093222.txt`
+  - output-boundary 关键字段：
+    - `decision=accepted_rtabmap_wind_capture_output_boundary`
+    - `reason=summary_topic_gate_failed_but_rtabmap_log_and_db_show_mapping_evidence`
+    - `summary_outputs_ok=false`
+    - `topics_have_map=false`
+    - `topics_have_cloud_map=false`
+    - `topics_have_octomap_occupied_space=false`
+    - `map_update_count=205`
+    - `positive_map_update_count=47`
+    - `publish_maps_count=1`
+    - `did_not_receive_data_warning_count=76`
+    - `db_node_count=205`
+    - `db_link_count=178`
+    - `db_global_closure_count=9`
+    - `db_local_space_closure_count=2`
+    - `db_local_time_closure_count=15`
+    - `claims_topic_output_gate_pass=false`
+    - `claims_mapping_evidence_pass=true`
+  - final DB loop closure summary：
+    - `data/results/rtabmap_loop_closure_evidence_20260615_093152/rtabmap_loop_closure_evidence_20260615_093152.txt`
+    - `node_count=205`
+    - `link_count=178`
+    - `raw_neighbor_links=152`
+    - `raw_global_closure_links=9`
+    - `raw_local_space_closure_links=2`
+    - `raw_local_time_closure_links=15`
+    - `official_global_closure_links=6`
+    - `official_local_space_closure_links=2`
+    - `official_local_time_closure_links=15`
+    - `claims_task_level_loop_closure_pass=true`
+  - final DB P3D/depth-pose ATE summary：
+    - `data/results/rtabmap_multilevel_slow_loop_final_db_trajectory_ate_20260615_093152/rtabmap_multilevel_slow_loop_final_db_trajectory_ate_20260615_093152.txt`
+    - `rtabmap_pose_count=205`
+    - `reference_sample_count=3591`
+    - `matched_pair_count=186`
+    - `rmse_m=0.000001087`
+    - `claims_slam_pass=false`
+  - final DB PX4 local-position cross-check summary：
+    - `data/results/rtabmap_multilevel_slow_loop_px4_final_db_20260615_093152/rtabmap_multilevel_slow_loop_px4_final_db_20260615_093152.txt`
+    - `rtabmap_pose_count=205`
+    - `px4_reference_sample_count=44884`
+    - `matched_pair_count=187`
+    - `rmse_m=1.848594067`
+    - `p95_error_m=2.559375689`
+    - `max_error_m=3.555079064`
+    - `claims_ground_truth_accuracy=false`
+- 结论：
+  - `outputs_ok=false` 是 final topic-list gate 未通过，不应直接等同于 RTAB-Map 没有建图
+  - RTAB-Map log/DB 证据支持 mapping evidence pass
+  - final DB 口径比早期中间读取更强：官方 `GlobalClosure=6`，`LocalSpaceClosure=2`
+  - 后续引用 multi-level slow-loop SLAM 数据必须使用 09:31/09:32 final DB 审计结果，不再使用早期 174 节点口径
+- 下一步：
+  - 如需修 topic gate，可单独调整 capture 脚本在 RTAB-Map map publication 后立即采样 topic list，或延长 map publish settle；不必重跑完整 coverage
+  - 或转向 cable offline geometry/tracking evidence
+- 阻塞项：无
