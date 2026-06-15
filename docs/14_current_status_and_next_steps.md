@@ -64,7 +64,7 @@ Accepted evidence:
 - 15m occlusion-aware fast progression audit accepted using `trimesh`/`rtree` ray intersection, with `pose_stride=20`, `face_stride=8`, `ray_tests=28505`, `final_occlusion_clear_normal_coverage_ratio=0.634335`, weakest band `0.534884`.
 - Slow loop wind coverage audit accepted from the 2026-06-12 PX4 local-position trajectory: converted 29888 valid poses, dynamic normal-filtered coverage `0.729605`, weakest normal band `0.581943`, fast occlusion-clear normal coverage `0.680961`, weakest occlusion band `0.600000`.
 - Slow loop orbit-only coverage audit accepted after filtering out takeoff/transition poses: 28408 orbit poses, dynamic normal-filtered coverage `0.674538`, weakest normal band `0.512267`, fast occlusion-clear normal coverage `0.598628`, weakest occlusion band `0.507692`.
-- Multi-level slow-loop wind run produced usable motion/DB evidence on 2026-06-15 using `single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`: 15m radius, 3 height levels, 2 laps per level, 145 waypoint advancements, final waypoint hold, 43611 PX4 local-position pose samples, dynamic normal-filtered coverage `0.733899`, weakest normal band `0.595682`, and very-fast occlusion-clear normal coverage `0.708904`, weakest occlusion band `0.593750`.
+- Multi-level slow-loop wind run accepted on 2026-06-15 using `single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`: 15m radius, 3 height levels, 2 laps per level, 145 waypoint advancements, final waypoint hold, accepted RViz screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.png`, 43611 PX4 local-position pose samples used for coverage conversion, dynamic normal-filtered coverage `0.733899`, weakest normal band `0.595682`, and very-fast occlusion-clear normal coverage `0.708904`, weakest occlusion band `0.593750`.
 
 Important boundary:
 
@@ -74,7 +74,7 @@ Important boundary:
 - 15m is preferred for observation experiments, but not final coverage readiness.
 - Slow loop coverage uses PX4 local-position trajectory converted to the existing wind coverage CSV format. The fast occlusion audit is sampled for runtime control (`pose_stride=120`, `face_stride=16`), so it improves comparative evidence but still is not a dense final coverage certificate.
 - The stricter orbit-only slow-loop coverage is weaker than the earlier 15m multi-level orbit occlusion result (`0.598628` vs `0.634335`), because slow loop is single-height. Treat slow loop as a strong SLAM loop-closure trajectory, not as the best wind inspection coverage baseline.
-- The 2026-06-15 multi-level slow-loop wrapper did not produce an automatic RViz screenshot/summary file because Gazebo GUI exited during the capture tail; treat that run as motion + DB + offline coverage evidence, not as a complete RViz capture pass.
+- The 2026-06-15 multi-level slow-loop wrapper eventually produced an accepted automatic RViz screenshot/summary after a long tail. The summary still records `outputs_ok=false`, so `/map`/`cloud_map`/`octomap` topic publication should be interpreted through the DB/log audits rather than as a clean topic-output gate.
 
 Next wind work:
 
@@ -82,7 +82,7 @@ Next wind work:
 - Add image-level quality/defect-detection integration only through mature open-source models or clearly separated future work.
 - Define explicit wind inspection acceptance thresholds before claiming completion.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
-- Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion; multi-level slow-loop is now the best combined wind SLAM/coverage candidate, but still needs a clean GUI/RViz capture rerun before it replaces existing accepted baselines.
+- Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion; multi-level slow-loop is now the best combined wind SLAM/coverage candidate, but still needs explicit acceptance thresholds before it replaces existing accepted baselines.
 
 ## 4. SLAM Status
 
@@ -116,7 +116,8 @@ Accepted evidence:
 - Slow wind loop-closure smoke accepted on 2026-06-12 using `single_vehicle_wind_turbine_slow_loop_closure_smoke.launch.py`: 15m radius, 32 points per lap, 3 repeated laps, 97 waypoint advancements, 83 RTAB-Map nodes, 140 words, 64 neighbor links, official `GlobalClosure=4`, official `LocalTimeClosure=3`, and screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260612_143153.png`.
 - Slow loop closure audit has `claims_loop_closure_pass=true`, `claims_official_loop_evidence=true`, and `claims_task_level_loop_closure_pass=true`; slow loop ATE remains an odom-consistency metric with 83 RTAB-Map poses, 2391 P3D reference samples, 75 matched pairs, and rigid-aligned `rmse_m=0.000001033`.
 - PX4 local-position cross-check audit accepted for the slow loop: 83 RTAB-Map poses, 29888 PX4 local-position samples, 76 matched elapsed-time pairs, rigid-aligned `rmse_m=3.020397355`, `p95_error_m=3.177182157`, and `max_error_m=16.625628476`; this uses PX4 estimator output, not independent ground truth.
-- Multi-level slow-loop RTAB-Map DB audit accepted on 2026-06-15 from the partial capture DB: 174 nodes, 161 links, 148 neighbor links, raw `GlobalClosure=5`, raw `LocalSpaceClosure=2`, raw `LocalTimeClosure=6`, official `GlobalClosure=2`, official `LocalSpaceClosure=2`, official `LocalTimeClosure=6`, and `claims_task_level_loop_closure_pass=true`.
+- Multi-level slow-loop RTAB-Map RGB-D motion-backed RViz capture accepted on 2026-06-15: summary `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt`, screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.png`, `waypoint_advancements=145`, `rtabmap_ok=true`, `motion_ok=true`, `screenshot_ok=1`, while `outputs_ok=false`.
+- Multi-level slow-loop RTAB-Map DB audit accepted on 2026-06-15 from that capture DB: 174 nodes, 161 links, 148 neighbor links, raw `GlobalClosure=5`, raw `LocalSpaceClosure=2`, raw `LocalTimeClosure=6`, official `GlobalClosure=2`, official `LocalSpaceClosure=2`, official `LocalTimeClosure=6`, and `claims_task_level_loop_closure_pass=true`.
 - Multi-level slow-loop ATE remains an odom-consistency metric against P3D/depth-pose reference: 174 RTAB-Map poses, 3418 reference samples, 174 matched pairs, rigid-aligned `rmse_m=0.000001113`.
 - Multi-level slow-loop PX4 local-position cross-check accepted as estimator-consistency evidence, not ground truth: 174 RTAB-Map poses, 42723 PX4 local-position samples, 174 matched pairs, rigid-aligned `rmse_m=1.916133183`, `p95_error_m=2.563201843`, `max_error_m=3.546754362`.
 
@@ -130,7 +131,7 @@ Important boundary:
 - The cable loop-closure audit has no raw candidate and no official closure evidence.
 - The first deliberate loop smoke improved the evidence from `0 words` to a word-bearing RTAB-Map DB and one official local-time closure.
 - The slow loop smoke now provides official task-level loop-closure evidence through RTAB-Map `GlobalClosure=4`, but it still does not prove independent SLAM accuracy because Gazebo/P3D debug odometry is still the odometry input/reference.
-- The multi-level slow-loop DB has official task-level loop closure and stronger coverage evidence, but its capture lacks a successful automatic RViz screenshot/summary, so it is accepted only as partial motion/DB/offline-audit evidence.
+- The multi-level slow-loop DB has official task-level loop closure and stronger coverage evidence, and the motion-backed RViz screenshot was captured. Because the capture summary still has `outputs_ok=false`, treat DB/log audits as the authoritative SLAM evidence for this run.
 - The PX4 local-position cross-check is useful as an estimator-consistency warning: it is much larger than P3D ATE, but PX4 local position is still not an independent ground-truth system.
 
 Next SLAM work:

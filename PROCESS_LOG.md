@@ -8967,10 +8967,11 @@
   - 第二次 capture：
     - 启动真实 Gazebo/PX4/RTAB-Map/RViz wind capture
     - 用户观察到 Gazebo GUI 后段退掉
-    - 自动 wrapper 未写出 final summary/screenshot
-    - 但运动日志和 RTAB-Map DB 可用
+    - 自动 wrapper 尾段等待较久，后续最终写出 accepted summary 和 RViz screenshot
     - Offboard log 统计 `Advancing to waypoint` 为 `145`
     - final waypoint `145` 后持续 `Holding final waypoint 145`
+    - summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt`
+    - screenshot：`data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.png`
     - DB：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_20260615_091712.db`
   - 对第二次 partial capture 做离线审计：
     - RTAB-Map loop closure audit
@@ -8987,8 +8988,14 @@
   - 检查无 Gazebo/PX4/RViz/RTAB-Map/coverage 残留进程
   - 更新 `docs/14_current_status_and_next_steps.md`
 - 结果：
-  - 第二次 motion/DB 证据：
+  - 第二次 capture/motion/DB 证据：
+    - `decision=accepted_rtabmap_depth_camera_rgbd_wind_rviz_overlay`
+    - `reason=rtabmap_rgbd_wind_motion_backed_rviz_capture_completed`
     - `waypoint_advancements=145`
+    - `rtabmap_ok=true`
+    - `outputs_ok=false`
+    - `motion_ok=true`
+    - `screenshot_ok=1`
     - final hold 已出现
     - RTAB-Map DB 大小约 `48M`
   - loop closure summary：
@@ -9058,12 +9065,12 @@
     - 官方 RTAB-Map task-level loop closure 存在
     - 动态 normal-filtered coverage 高于单高度 slow loop orbit-only
     - very-fast occlusion-clear coverage 高于此前单高度 slow loop orbit-only 和 15m multi-level orbit fast 结果
-  - 但第二次 capture 没有成功写出自动 RViz screenshot/summary，不能记为完整 GUI/RViz capture pass
-  - 该节点目前只能声明 motion + RTAB-Map DB + offline coverage audit partial evidence accepted
+  - 第二次 capture 已写出 accepted summary 和 RViz screenshot，但 summary 仍记录 `outputs_ok=false`
+  - 该节点可声明 motion-backed RViz screenshot + RTAB-Map DB + offline coverage audit accepted；SLAM topic 输出完整性仍以 DB/log 审计为准
   - P3D ATE 仍只是 odom-consistency，不是独立 SLAM 精度
   - PX4 local-position cross-check 仍不是独立 ground truth
 - 下一步：
-  - 可重跑一个缩短版 multi-level slow loop GUI/RViz capture，只为补齐截图/summary，不必重新做长 coverage
+  - 可重跑一个缩短版 multi-level slow loop topic-output gate，只为排查 `outputs_ok=false`，不必重新做长 coverage
   - 或转向 cable offline geometry/tracking evidence
 - 阻塞项：
-  - Gazebo GUI 在第二次长 capture 后段退出，导致截图/summary 缺失
+  - 无；但第二次 summary 的 `outputs_ok=false` 仍建议后续单独排查
