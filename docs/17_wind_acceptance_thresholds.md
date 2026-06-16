@@ -50,7 +50,7 @@ Important distinction:
 
 Latest accepted aggregate:
 
-- `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
+- `data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt`
 
 ## 3. Default Thresholds
 
@@ -65,8 +65,8 @@ These values are the current default gate values in `scripts/audit_wind_rule_bas
 | Conservative clearance | `MIN_CLEARANCE_M` | `1.0m` | `1.688958000m` |
 | Dynamic normal-filtered coverage | `MIN_DYNAMIC_NORMAL_COVERAGE` | `0.70` | `0.733899000` |
 | Dynamic weakest height-band coverage | `MIN_DYNAMIC_BAND_COVERAGE` | `0.55` | `0.595682000` |
-| Occlusion-clear normal-filtered coverage | `MIN_OCCLUSION_CLEAR_COVERAGE` | `0.65` | `0.708904000` |
-| Occlusion-clear weakest height-band coverage | `MIN_OCCLUSION_BAND_COVERAGE` | `0.55` | `0.593750000` |
+| Occlusion-clear normal-filtered coverage | `MIN_OCCLUSION_CLEAR_COVERAGE` | `0.65` | `0.699828000` |
+| Occlusion-clear weakest height-band coverage | `MIN_OCCLUSION_BAND_COVERAGE` | `0.55` | `0.615385000` |
 | RTAB-Map DB nodes | `MIN_DB_NODES` | `180` | `205` |
 | Official global closures | `MIN_OFFICIAL_GLOBAL_CLOSURES` | `1` | `6` |
 | P3D-aligned ATE RMSE | `MAX_P3D_ATE_RMSE_M` | `0.01m` | `0.000001087m` |
@@ -81,7 +81,7 @@ The aggregate audit must consume all of these evidence groups:
 | Wind RGB-D RViz motion capture | real PX4/Gazebo/RViz source capture | `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt` |
 | PX4 local-position pose conversion | offline conversion from source capture log | `data/results/wind_pose_from_multilevel_slow_loop_20260615_091712/wind_pose_from_px4_local_position_20260615_092317.txt` |
 | Dynamic coverage progression | offline mesh/FOV/normal audit | `data/results/wind_dynamic_coverage_multilevel_slow_loop_20260615_091712/wind_dynamic_coverage_progression_20260615_092327.txt` |
-| Occlusion-aware coverage progression | offline `trimesh`/`rtree` ray audit | `data/results/wind_occlusion_coverage_multilevel_slow_loop_very_fast_20260615_091712/wind_occlusion_coverage_progression_20260615_092417.txt` |
+| Occlusion-aware coverage progression | offline `trimesh`/`rtree` ray audit | `data/results/wind_occlusion_coverage_multilevel_slow_loop_dense_20260616_000000/wind_occlusion_coverage_progression_20260616_094504.txt` |
 | RTAB-Map loop closure evidence | offline DB audit and official `rtabmap-info` counters | `data/results/rtabmap_loop_closure_evidence_20260615_093152/rtabmap_loop_closure_evidence_20260615_093152.txt` |
 | RTAB-Map output boundary | offline log/topic/DB boundary audit | `data/results/rtabmap_wind_capture_output_boundary_20260615_093222/rtabmap_wind_capture_output_boundary_20260615_093222.txt` |
 | P3D ATE consistency | offline RTAB-Map DB vs Gazebo/P3D reference check | `data/results/rtabmap_multilevel_slow_loop_final_db_trajectory_ate_20260615_093152/rtabmap_multilevel_slow_loop_final_db_trajectory_ate_20260615_093152.txt` |

@@ -499,10 +499,10 @@ scripts/audit_wind_rule_baseline_acceptance.sh
 
 Latest accepted result:
 
-- summary: `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
+- summary: `data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt`
 - source capture: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt`
 - dynamic coverage: `data/results/wind_dynamic_coverage_multilevel_slow_loop_20260615_091712/wind_dynamic_coverage_progression_20260615_092327.txt`
-- occlusion coverage: `data/results/wind_occlusion_coverage_multilevel_slow_loop_very_fast_20260615_091712/wind_occlusion_coverage_progression_20260615_092417.txt`
+- occlusion coverage: `data/results/wind_occlusion_coverage_multilevel_slow_loop_dense_20260616_000000/wind_occlusion_coverage_progression_20260616_094504.txt`
 - loop closure: `data/results/rtabmap_loop_closure_evidence_20260615_093152/rtabmap_loop_closure_evidence_20260615_093152.txt`
 - mapping boundary: `data/results/rtabmap_wind_capture_output_boundary_20260615_093222/rtabmap_wind_capture_output_boundary_20260615_093222.txt`
 

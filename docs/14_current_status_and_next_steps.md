@@ -12,7 +12,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Mature upstream components remain preferred. Current SLAM baseline is RTAB-Map RGB-D from ROS Humble packages.
 - Cable Phase B active bridge is still not implemented and not approved.
 - Cable lookahead/gate/coverage outputs are still dry-run only.
-- Project current acceptance audit accepted on 2026-06-16: latest summary `data/results/project_current_acceptance_20260616_090918/project_current_acceptance_20260616_090918.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
+- Project current acceptance audit accepted on 2026-06-16: latest summary `data/results/project_current_acceptance_20260616_095309/project_current_acceptance_20260616_095309.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
 
 ## 2. Cable Status
 
@@ -73,9 +73,9 @@ Accepted evidence:
 - Slow loop wind coverage audit accepted from the 2026-06-12 PX4 local-position trajectory: converted 29888 valid poses, dynamic normal-filtered coverage `0.729605`, weakest normal band `0.581943`, fast occlusion-clear normal coverage `0.680961`, weakest occlusion band `0.600000`.
 - Slow loop orbit-only coverage audit accepted after filtering out takeoff/transition poses: 28408 orbit poses, dynamic normal-filtered coverage `0.674538`, weakest normal band `0.512267`, fast occlusion-clear normal coverage `0.598628`, weakest occlusion band `0.507692`.
 - Multi-level slow-loop wind run accepted on 2026-06-15 using `single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`: 15m radius, 3 height levels, 2 laps per level, 145 waypoint advancements, final waypoint hold, accepted RViz screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.png`, 43611 PX4 local-position pose samples used for coverage conversion, dynamic normal-filtered coverage `0.733899`, weakest normal band `0.595682`, and very-fast occlusion-clear normal coverage `0.708904`, weakest occlusion band `0.593750`.
-- Wind rule-baseline acceptance audit accepted on 2026-06-16: summary `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`, with `capture_ok=true`, `pose_ok=true`, `dynamic_ok=true`, `occlusion_ok=true`, `loop_ok=true`, `mapping_boundary_ok=true`, `p3d_ate_ok=true`, `px4_crosscheck_ok=true`, `waypoint_advancements=145`, `rtabmap_node_count=205`, `official_global_closure_links=6`, and `claims_wind_rule_baseline_acceptance_pass=true`.
-- Wind acceptance threshold contract documented in `docs/17_wind_acceptance_thresholds.md` and accepted on 2026-06-16: summary `data/results/wind_acceptance_threshold_contract_20260616_094206/wind_acceptance_threshold_contract_20260616_094206.txt`, with `check_count=18`, `fail_count=0`, `boundary_count=5`, `claims_active_control_approval=false`, and `claims_final_inspection_coverage=false`.
-- Wind rule-baseline acceptance was re-run after threshold documentation on 2026-06-16: summary `data/results/wind_rule_baseline_acceptance_20260616_094206/wind_rule_baseline_acceptance_20260616_094206.txt`, still accepted with the same threshold observations and no new simulation startup by the aggregate audit.
+- Wind rule-baseline acceptance audit accepted on 2026-06-16: summary `data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt`, with `capture_ok=true`, `pose_ok=true`, `dynamic_ok=true`, `occlusion_ok=true`, `loop_ok=true`, `mapping_boundary_ok=true`, `p3d_ate_ok=true`, `px4_crosscheck_ok=true`, `waypoint_advancements=145`, `rtabmap_node_count=205`, `official_global_closure_links=6`, and `claims_wind_rule_baseline_acceptance_pass=true`.
+- Wind acceptance threshold contract documented in `docs/17_wind_acceptance_thresholds.md` and accepted on 2026-06-16: summary `data/results/wind_acceptance_threshold_contract_20260616_095148/wind_acceptance_threshold_contract_20260616_095148.txt`, with `check_count=18`, `fail_count=0`, `boundary_count=5`, `claims_active_control_approval=false`, and `claims_final_inspection_coverage=false`.
+- Wind rule-baseline acceptance was re-run after threshold documentation on 2026-06-16: summary `data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt`, still accepted with the same threshold observations and no new simulation startup by the aggregate audit.
 
 Important boundary:
 
@@ -83,14 +83,14 @@ Important boundary:
 - The newer quality coverage audit adds surface-normal/view-angle filtering and useful-depth linkage, but still does not model occlusion, actual visual defect recognition, or dynamic collision safety.
 - RTAB-Map screenshots are SLAM plumbing evidence, not inspection coverage certificates.
 - 15m is preferred for observation experiments, but not final coverage readiness.
-- Slow loop coverage uses PX4 local-position trajectory converted to the existing wind coverage CSV format. The fast occlusion audit is sampled for runtime control (`pose_stride=120`, `face_stride=16`), so it improves comparative evidence but still is not a dense final coverage certificate.
+- Slow loop coverage uses PX4 local-position trajectory converted to the existing wind coverage CSV format. The dense occlusion audit is still sampled rather than dense final certification, but it is stronger than the earlier very-fast version and now reaches `final_occlusion_clear_normal_coverage_ratio=0.699828`.
 - The stricter orbit-only slow-loop coverage is weaker than the earlier 15m multi-level orbit occlusion result (`0.598628` vs `0.634335`), because slow loop is single-height. Treat slow loop as a strong SLAM loop-closure trajectory, not as the best wind inspection coverage baseline.
 - The 2026-06-15 multi-level slow-loop wrapper eventually produced an accepted automatic RViz screenshot/summary after a long tail. The summary still records `outputs_ok=false`, so `/map`/`cloud_map`/`octomap` topic publication should be interpreted through the DB/log audits rather than as a clean topic-output gate.
 - Output-boundary audit accepted for that run: the final topic list did not contain `/map`, `/cloud_map` or `/octomap_occupied_space`, but RTAB-Map logs show 205 map-update cycles, 47 positive map updates and one `publishMaps()`/graph-regeneration event, while the final DB has a valid graph with 205 nodes and 178 links.
 
 Next wind work:
 
-- Add a denser occlusion-aware audit if runtime permits, or keep the fast audit as approximate method evidence.
+- The current occlusion evidence has been strengthened with a denser sampled audit, but it still is not dense final certification.
 - Add image-level quality/defect-detection integration only through mature open-source models or clearly separated future work.
 - Explicit wind inspection acceptance thresholds are now documented for the current rule-baseline evidence. Before stronger completion claims, add a denser occlusion audit, an inspection surface model, or a mature open-source image-quality/defect model.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
@@ -188,7 +188,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with denser wind occlusion coverage, denser cable visualization/coverage review, or an active-control review document; active cable bridge and active multi-vehicle Offboard remain forbidden.
+1. Continue with even denser wind occlusion coverage if runtime permits, denser cable visualization/coverage review, or an active-control review document; active cable bridge and active multi-vehicle Offboard remain forbidden.
 
 Reason:
 

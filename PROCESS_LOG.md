@@ -10050,3 +10050,121 @@
   - 或做更密集的 cable visualization/coverage review
   - 或写 active-control review 文档，但不实现 active bridge，除非用户明确批准
 - 阻塞项：无
+
+### 2026-06-16 09:51:48 CST
+
+- 节点：Wind occlusion 证据加密与阈值合同修正完成
+- 执行动作：
+  - 将风机规则基线默认 occlusion evidence 从 very-fast sampled 版本切换为 dense sampled 版本：
+    - `scripts/audit_wind_rule_baseline_acceptance.sh`
+    - 默认 occlusion summary 切换到 `data/results/wind_occlusion_coverage_multilevel_slow_loop_dense_20260616_000000/wind_occlusion_coverage_progression_20260616_094504.txt`
+  - 运行 dense occlusion audit：
+    - `POSE_CSV=data/results/wind_pose_from_multilevel_slow_loop_20260615_091712/wind_pose_from_px4_local_position_20260615_092317.csv OUTPUT_DIR=data/results/wind_occlusion_coverage_multilevel_slow_loop_dense_20260616_000000 POSE_STRIDE=80 FACE_STRIDE=16 timeout 240s scripts/audit_wind_occlusion_coverage_progression.sh`
+  - dense occlusion audit 首次结果：
+    - accepted summary：`data/results/wind_occlusion_coverage_multilevel_slow_loop_dense_20260616_000000/wind_occlusion_coverage_progression_20260616_094504.txt`
+    - progression CSV：`data/results/wind_occlusion_coverage_multilevel_slow_loop_dense_20260616_000000/wind_occlusion_coverage_progression_20260616_094504.csv`
+    - band CSV：`data/results/wind_occlusion_coverage_multilevel_slow_loop_dense_20260616_000000/wind_occlusion_coverage_progression_bands_20260616_094504.csv`
+  - dense occlusion 关键字段：
+    - `decision=accepted_wind_occlusion_coverage_progression_static_audit`
+    - `pose_stride=80`
+    - `face_stride=16`
+    - `pose_samples_used=546`
+    - `mesh_faces=9316`
+    - `mesh_samples=583`
+    - `ray_tests=125968`
+    - `final_occlusion_clear_normal_coverage_ratio=0.699828`
+    - `min_band_occlusion_clear_normal_ratio_observed=0.615385`
+    - `claims_final_coverage=false`
+  - 更新阈值文档：
+    - `docs/17_wind_acceptance_thresholds.md`
+    - 将 occlusion accepted observation 改为 dense 结果
+    - 将 latest accepted aggregate 改为最新 wind rule-baseline summary
+  - 更新风机/项目汇总默认值：
+    - `scripts/audit_wind_acceptance_threshold_contract.sh`
+    - `scripts/audit_project_current_acceptance.sh`
+  - 运行阈值合同审计：
+    - 首次运行拒绝，根因是脚本仍在比对旧 occlusion 数值
+    - 修复后重跑并接受
+  - 最终执行：
+    - `bash -n scripts/audit_wind_acceptance_threshold_contract.sh`
+    - `scripts/audit_wind_acceptance_threshold_contract.sh`
+    - `scripts/audit_wind_rule_baseline_acceptance.sh`
+    - `scripts/audit_project_current_acceptance.sh`
+  - 更新：
+    - `docs/10_evidence_inventory.md`
+    - `docs/11_wind_turbine_geometry_baseline.md`
+    - `docs/14_current_status_and_next_steps.md`
+    - `docs/17_wind_acceptance_thresholds.md`
+- 结果：
+  - refreshed wind rule-baseline acceptance summary：
+    - `data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt`
+  - refreshed wind rule-baseline 关键字段：
+    - `decision=accepted_wind_rule_baseline_acceptance`
+    - `capture_ok=true`
+    - `pose_ok=true`
+    - `dynamic_ok=true`
+    - `occlusion_ok=true`
+    - `loop_ok=true`
+    - `mapping_boundary_ok=true`
+    - `p3d_ate_ok=true`
+    - `px4_crosscheck_ok=true`
+    - `final_occlusion_clear_normal_coverage_ratio=0.699828000`
+    - `min_band_occlusion_clear_normal_ratio_observed=0.615385000`
+    - `claims_wind_rule_baseline_acceptance_pass=true`
+  - refreshed project current acceptance summary：
+    - `data/results/project_current_acceptance_20260616_095017/project_current_acceptance_20260616_095017.txt`
+  - refreshed project current accepted fields：
+    - `decision=accepted_project_current_acceptance`
+    - `cable_dry_run_ok=true`
+    - `wind_rule_baseline_ok=true`
+    - `four_vehicle_dry_run_ok=true`
+    - `claims_project_current_acceptance_pass=true`
+  - refreshed threshold contract summary：
+    - `data/results/wind_acceptance_threshold_contract_20260616_095148/wind_acceptance_threshold_contract_20260616_095148.txt`
+  - threshold contract accepted fields：
+    - `decision=accepted_wind_acceptance_threshold_contract`
+    - `check_count=18`
+    - `fail_count=0`
+    - `boundary_count=5`
+    - `claims_active_control_approval=false`
+    - `claims_final_inspection_coverage=false`
+- 结论：
+  - 风机 occlusion evidence 现在默认指向更强的 dense sampled 版本
+  - 风机阈值合同与脚本默认值重新对齐并接受
+  - project current acceptance 仍通过，且无需重新启动仿真
+- 下一步：
+  - 可继续更密集的 wind occlusion coverage，如果算力允许
+  - 或做更密集的 cable visualization/coverage review
+  - 或做 active-control review 文档，但不实现 active bridge，除非用户明确批准
+- 阻塞项：无
+
+### 2026-06-16 09:53:09 CST
+
+- 节点：Project current acceptance 与 wind default evidence 最终对齐完成
+- 执行动作：
+  - 将 `scripts/audit_project_current_acceptance.sh` 的默认 wind summary 切到最新 wind rule-baseline summary：
+    - `data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt`
+  - 重新运行 project current acceptance：
+    - `scripts/audit_project_current_acceptance.sh`
+  - 更新：
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+  - 该总览审计本身仍为只读，不启动 ROS/PX4/Gazebo/RViz
+- 结果：
+  - refreshed project current acceptance summary：
+    - `data/results/project_current_acceptance_20260616_095309/project_current_acceptance_20260616_095309.txt`
+  - refreshed project current accepted fields：
+    - `decision=accepted_project_current_acceptance`
+    - `cable_dry_run_ok=true`
+    - `wind_rule_baseline_ok=true`
+    - `four_vehicle_dry_run_ok=true`
+    - `claims_project_current_acceptance_pass=true`
+- 结论：
+  - 项目 current acceptance 与最新 wind rule-baseline summary 已对齐
+  - 当前项目总览继续保持三条主线 accepted
+  - 没有新增仿真启动，也没有改变 cable active bridge / multi-vehicle active 边界
+- 下一步：
+  - 若继续风机方向，可再做更密集的 occlusion 或 inspection-surface 证据
+  - 若继续线缆方向，可做更密集的 visualization/coverage review
+  - active-control review 仍然只能写文档，不实现 active bridge，除非用户明确批准
+- 阻塞项：无

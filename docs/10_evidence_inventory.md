@@ -109,7 +109,7 @@ Additional latest local cable coverage evidence:
 
 Additional latest local wind rule-baseline evidence:
 
-- wind rule-baseline acceptance summary: `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
+- wind rule-baseline acceptance summary: `data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt`
 - wind rule-baseline accepted fields: `decision=accepted_wind_rule_baseline_acceptance`, `capture_ok=true`, `dynamic_ok=true`, `occlusion_ok=true`, `loop_ok=true`, `mapping_boundary_ok=true`, `claims_wind_rule_baseline_acceptance_pass=true`
 
 Additional latest local four-vehicle dry-run evidence:
@@ -121,7 +121,7 @@ Additional latest local four-vehicle dry-run evidence:
 
 Additional latest local project aggregate evidence:
 
-- project current acceptance summary: `data/results/project_current_acceptance_20260616_090918/project_current_acceptance_20260616_090918.txt`
+- project current acceptance summary: `data/results/project_current_acceptance_20260616_095309/project_current_acceptance_20260616_095309.txt`
 - project current accepted fields: `decision=accepted_project_current_acceptance`, `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, `claims_project_current_acceptance_pass=true`
 
 ## 5. Regeneration Rule
