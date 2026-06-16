@@ -70,6 +70,7 @@
 - `audit_active_bridge_review_template.sh`：只读审计 active bridge 代码审查模板，并复用 Phase B preflight 与阈值审计确认当前仍没有 active bridge；不启动 ROS/PX4/Gazebo，不发布 `/fmu/in/*`。
 - `audit_dry_run_readiness.sh`：总 dry-run readiness 审计，串行运行 PX4 隔离、Phase B preflight、阈值和 review template 审计，并检查 ignored 产物目录；不启动 ROS/PX4/Gazebo，不发布 `/fmu/in/*`。
 - `audit_evidence_inventory.sh`：只读检查当前 dry-run 边界依赖的本地 ignored 证据文件是否存在、是否仍被 git 忽略，并输出再生成入口清单；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_project_current_acceptance.sh`：只读聚合当前电缆 dry-run、单机风机规则基线和四机 dry-run 三条主线的 aggregate summary，输出项目当前可用能力和禁止能力总览；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_multi_vehicle_upstream_readiness.sh`：只读检查 PX4 release/1.14 的 Gazebo Classic 多实例脚本、实例 MAVLink 端口、`MAV_SYS_ID`、`UXRCE_DDS_KEY` 和 DDS namespace 支持；不启动 ROS/PX4/Gazebo/RViz。
 - `verify_px4_gazebo_classic_multi_vehicle_readonly.sh`：按 PX4 官方 Gazebo Classic 多实例机制启动 `NUM_VEHICLES` 台 `iris`、Micro XRCE-DDS 和 Gazebo headless，默认两机，允许 `NUM_VEHICLES=4` 做四机 read-only namespace smoke；只验证 `/px4_i/fmu/out/*` 输出 topic 与 `/px4_i/fmu/in/*` publisher count 为 0；不启动 Offboard、不 arm。
 - `audit_two_vehicle_dry_run_contract.sh`：只读静态审计 two-vehicle dry-run planner 的源码、launch 和 CMake，确认只订阅 `/px4_1/fmu/out/*`、`/px4_2/fmu/out/*`，只发布 `/zcw/multi_vehicle/dry_run/*` goal/topology/safety/assignment 状态，没有 PX4 input topic、Offboard/arm 或 cable active 连接；不启动 ROS/PX4/Gazebo/RViz。

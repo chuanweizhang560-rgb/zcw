@@ -12,6 +12,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Mature upstream components remain preferred. Current SLAM baseline is RTAB-Map RGB-D from ROS Humble packages.
 - Cable Phase B active bridge is still not implemented and not approved.
 - Cable lookahead/gate/coverage outputs are still dry-run only.
+- Project current acceptance audit accepted on 2026-06-16: summary `data/results/project_current_acceptance_20260616_090127/project_current_acceptance_20260616_090127.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
 
 ## 2. Cable Status
 
@@ -182,7 +183,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with four-vehicle dry-run assignment/topology evidence, or return to cable/wind evidence; active multi-vehicle Offboard remains forbidden.
+1. Continue with richer four-vehicle assignment/topology boundary sweeps or all-groups cable RViz visualization refresh; active multi-vehicle Offboard remains forbidden.
 
 Reason:
 

@@ -9715,3 +9715,62 @@
   - 可继续做更丰富的四机 assignment/topology 边界 sweep
   - 或做 all-groups cable RViz 可视化刷新
 - 阻塞项：无
+
+### 2026-06-16 09:01:35 CST
+
+- 节点：Project current acceptance 总览审计完成
+- 执行动作：
+  - 新增离线总览审计脚本：
+    - `scripts/audit_project_current_acceptance.sh`
+  - 聚合输入：
+    - cable dry-run acceptance：`data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`
+    - wind rule-baseline acceptance：`data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
+    - four-vehicle dry-run acceptance：`data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt`
+  - 聚合检查：
+    - 电缆 dry-run tracking/frame/coverage/boundary 通过
+    - 单机风机规则基线 capture/dynamic/occlusion/loop/mapping 通过
+    - 四机 dry-run readonly/contract/smoke/samples/score 通过
+    - 仍禁止 cable Phase B active bridge
+    - 仍禁止 multi-vehicle active Offboard
+    - 仍禁止 RL policy control
+    - 仍禁止 image-level defect-detection claim
+  - 执行：
+    - `bash -n scripts/audit_project_current_acceptance.sh`
+    - `chmod +x scripts/audit_project_current_acceptance.sh`
+    - `scripts/audit_project_current_acceptance.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：
+    - `data/results/project_current_acceptance_20260616_090127/project_current_acceptance_20260616_090127.txt`
+  - 关键字段：
+    - `decision=accepted_project_current_acceptance`
+    - `reason=cable_wind_and_four_vehicle_current_aggregate_evidence_pass`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `cable_dry_run_ok=true`
+    - `wind_rule_baseline_ok=true`
+    - `four_vehicle_dry_run_ok=true`
+    - `allowed_current_capability=cable_geometry_tracking_coverage_dry_run`
+    - `allowed_current_capability=single_vehicle_wind_rule_baseline_evidence`
+    - `allowed_current_capability=four_vehicle_assignment_topology_scoring_dry_run`
+    - `forbidden_current_capability=cable_phase_b_active_bridge`
+    - `forbidden_current_capability=multi_vehicle_active_offboard`
+    - `forbidden_current_capability=rl_policy_control`
+    - `forbidden_current_capability=image_level_defect_detection_claim`
+    - `claims_project_current_acceptance_pass=true`
+- 结论：
+  - 当前项目已有三个聚合验收：电缆 dry-run、单机风机规则基线、四机 dry-run
+  - 该总览审计本身未启动 ROS/PX4/Gazebo/RViz
+  - 项目仍未进入 cable active bridge、multi-vehicle active、RL policy control 或缺陷检测模型声明阶段
+- 下一步：
+  - 可做 all-groups cable RViz 可视化刷新
+  - 或做更丰富的四机 assignment/topology 边界 sweep
+- 阻塞项：无
