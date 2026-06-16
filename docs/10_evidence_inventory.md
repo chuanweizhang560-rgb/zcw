@@ -52,6 +52,7 @@ The audit is not allowed to:
 | Cable dry-run coverage monitor | coverage monitor summary, topic list and coverage state echo | `scripts/verify_lookahead_coverage_monitor.sh`, `scripts/audit_lookahead_coverage_monitor_all_groups.sh` |
 | Cable all-groups RViz overlay | all accepted cable groups rendered as MarkerArray in RViz, with no PX4/Gazebo/Offboard path | `scripts/capture_cable_all_groups_rviz_overlay.sh` |
 | Cable visual acceptance audit | aggregate cable dry-run acceptance and all-groups RViz overlay summary | `scripts/audit_cable_visual_acceptance.sh` |
+| Cable acceptance threshold contract | threshold/non-claim documentation matched to the aggregate cable dry-run audit defaults | `scripts/audit_cable_acceptance_threshold_contract.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
@@ -66,9 +67,9 @@ The audit is not allowed to:
 
 Latest evidence:
 
-- summary: `data/results/evidence_inventory_20260616_094304/evidence_inventory_20260616_094304.txt`
-- inventory CSV: `data/results/evidence_inventory_20260616_094304/evidence_inventory_20260616_094304.csv`
-- regeneration list: `data/results/evidence_inventory_20260616_094304/evidence_regeneration_20260616_094304.txt`
+- summary: `data/results/evidence_inventory_20260616_152438/evidence_inventory_20260616_152438.txt`
+- inventory CSV: `data/results/evidence_inventory_20260616_152438/evidence_inventory_20260616_152438.csv`
+- regeneration list: `data/results/evidence_inventory_20260616_152438/evidence_regeneration_20260616_152438.txt`
 
 Expected accepted fields:
 
@@ -87,8 +88,8 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=24`
-- `present_count=24`
+- `required_evidence_count=25`
+- `present_count=25`
 - `missing_count=0`
 - `not_ignored_count=0`
 
@@ -104,8 +105,10 @@ Additional latest local cable coverage evidence:
 - frame-contract summary: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`
 - frame-contract CSV: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_groups_20260615_100822.csv`
 - frame-contract accepted fields: `decision=accepted_cable_frame_contract_audit`, `accepted_group_count=5`, `global_max_target_point_error_m=0.000000000`, `global_max_lookahead_error_m=0.001200000`
-- dry-run acceptance summary: `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`
+- dry-run acceptance summary: `data/results/cable_dry_run_acceptance_20260616_152304/cable_dry_run_acceptance_20260616_152304.txt`
 - dry-run acceptance fields: `decision=accepted_cable_dry_run_acceptance`, `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `boundary_ok=true`
+- cable threshold contract summary: `data/results/cable_acceptance_threshold_contract_20260616_152304/cable_acceptance_threshold_contract_20260616_152304.txt`
+- cable threshold contract fields: `decision=accepted_cable_acceptance_threshold_contract`, `check_count=11`, `fail_count=0`, `claims_active_control_approval=false`, `claims_final_inspection_coverage=false`
 
 Additional latest local wind rule-baseline evidence:
 
@@ -121,7 +124,7 @@ Additional latest local four-vehicle dry-run evidence:
 
 Additional latest local project aggregate evidence:
 
-- project current acceptance summary: `data/results/project_current_acceptance_20260616_095309/project_current_acceptance_20260616_095309.txt`
+- project current acceptance summary: `data/results/project_current_acceptance_20260616_152334/project_current_acceptance_20260616_152334.txt`
 - project current accepted fields: `decision=accepted_project_current_acceptance`, `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, `claims_project_current_acceptance_pass=true`
 
 ## 5. Regeneration Rule

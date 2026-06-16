@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 
-DEFAULT_CABLE_DRY_RUN_SUMMARY="data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt"
+DEFAULT_CABLE_DRY_RUN_SUMMARY="data/results/cable_dry_run_acceptance_20260616_152304/cable_dry_run_acceptance_20260616_152304.txt"
 DEFAULT_ALL_GROUPS_RVIZ_SUMMARY="data/results/cable_all_groups_rviz_overlay_20260616_093252/cable_all_groups_rviz_overlay_20260616_093252.txt"
 CABLE_DRY_RUN_SUMMARY="${CABLE_DRY_RUN_SUMMARY:-${DEFAULT_CABLE_DRY_RUN_SUMMARY}}"
 ALL_GROUPS_RVIZ_SUMMARY="${ALL_GROUPS_RVIZ_SUMMARY:-${DEFAULT_ALL_GROUPS_RVIZ_SUMMARY}}"

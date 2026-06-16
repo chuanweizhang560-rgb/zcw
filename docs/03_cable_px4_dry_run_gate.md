@@ -56,7 +56,7 @@ Current status:
   - source, offset and target-point errors are zero at the stored CSV precision
   - maximum lookahead distance error is `0.001200000m`
 - Latest dry-run acceptance evidence:
-  - summary: `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`
+  - summary: `data/results/cable_dry_run_acceptance_20260616_152304/cable_dry_run_acceptance_20260616_152304.txt`
   - `tracking_ok=true`
   - `frame_ok=true`
   - `coverage_ok=true`

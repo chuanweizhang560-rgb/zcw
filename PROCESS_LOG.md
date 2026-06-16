@@ -10168,3 +10168,92 @@
   - 若继续线缆方向，可做更密集的 visualization/coverage review
   - active-control review 仍然只能写文档，不实现 active bridge，除非用户明确批准
 - 阻塞项：无
+
+### 2026-06-16 15:24:38 CST
+
+- 节点：Cable acceptance thresholds 文档与 contract 审计完成
+- 执行动作：
+  - 新增线缆 dry-run 验收阈值文档：
+    - `docs/18_cable_acceptance_thresholds.md`
+  - 文档明确当前只覆盖：
+    - cable geometry dry-run baseline
+    - tracking envelope / frame contract / all-groups coverage monitor
+    - all-groups RViz visual evidence
+  - 文档明确不声明：
+    - cable Phase B active bridge approval
+    - PX4 `/fmu/in/*` setpoint publication
+    - automatic arming or Offboard mode switching
+    - final cable inspection coverage
+    - image-level defect detection
+    - learned policy/MARL control
+    - multi-vehicle active cable tracking
+  - 新增阈值合同审计脚本：
+    - `scripts/audit_cable_acceptance_threshold_contract.sh`
+  - 首次运行 contract 审计被拒绝：
+    - summary：`data/results/cable_acceptance_threshold_contract_20260616_152238/cable_acceptance_threshold_contract_20260616_152238.txt`
+    - 原因：边界匹配字符串包含反引号，Bash 将 `/fmu/in/*` 与 `0` 误当命令替换
+  - 修复：
+    - 将边界匹配改为不含反引号的稳定文本
+  - 最终执行：
+    - `bash -n scripts/audit_cable_acceptance_threshold_contract.sh`
+    - `scripts/audit_cable_acceptance_threshold_contract.sh`
+    - `scripts/audit_cable_dry_run_acceptance.sh`
+    - `scripts/audit_cable_visual_acceptance.sh`
+    - `scripts/audit_project_current_acceptance.sh`
+    - `scripts/audit_evidence_inventory.sh`
+  - 更新默认 summary 指针：
+    - `scripts/audit_cable_visual_acceptance.sh`
+    - `scripts/audit_project_current_acceptance.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `scripts/audit_evidence_inventory.sh`
+    - `docs/03_cable_px4_dry_run_gate.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - accepted cable threshold contract summary：
+    - `data/results/cable_acceptance_threshold_contract_20260616_152304/cable_acceptance_threshold_contract_20260616_152304.txt`
+  - cable threshold contract 关键字段：
+    - `decision=accepted_cable_acceptance_threshold_contract`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `check_count=11`
+    - `fail_count=0`
+    - `boundary_count=5`
+    - `claims_active_control_approval=false`
+    - `claims_final_inspection_coverage=false`
+  - refreshed cable dry-run acceptance summary：
+    - `data/results/cable_dry_run_acceptance_20260616_152304/cable_dry_run_acceptance_20260616_152304.txt`
+  - refreshed cable dry-run acceptance 关键字段：
+    - `decision=accepted_cable_dry_run_acceptance`
+    - `tracking_ok=true`
+    - `frame_ok=true`
+    - `coverage_ok=true`
+    - `boundary_ok=true`
+    - `coverage_min_ratio=0.840000000`
+    - `claims_cable_dry_run_acceptance_pass=true`
+  - refreshed cable visual acceptance summary：
+    - `data/results/cable_visual_acceptance_20260616_152334/cable_visual_acceptance_20260616_152334.txt`
+  - refreshed project current acceptance summary：
+    - `data/results/project_current_acceptance_20260616_152334/project_current_acceptance_20260616_152334.txt`
+  - refreshed evidence inventory summary：
+    - `data/results/evidence_inventory_20260616_152438/evidence_inventory_20260616_152438.txt`
+  - evidence inventory 关键字段：
+    - `required_evidence_count=25`
+    - `present_count=25`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - 线缆 `0.84` coverage readiness 的含义已文档化：它是 dry-run lookahead/path readiness，不是 final cable inspection coverage
+  - 线缆阈值文档、dry-run aggregate 默认值和当前证据已对齐
+  - 该节点未启动 PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 可做 denser cable line-segment coverage review
+  - 或做 wind/cable evidence aggregation
+  - 或写 active-control review 文档，但不实现 active bridge，除非用户明确批准
+- 阻塞项：无
