@@ -36,6 +36,8 @@ Accepted evidence:
 - Cable dry-run coverage monitor accepted on 2026-06-15 using the `y8_z20` offset/lookahead candidate: summary `data/results/lookahead_coverage_monitor_20260615_094950/lookahead_coverage_monitor_20260615_094950.txt`, ROS topics only under `/zcw/cable/*`, `path_points=25`, `covered_points=21`, `target_samples=66`, `coverage_ratio=0.84`, `tracking_ready=true`, `safety_gate=true`, `coverage_ready=true`, and no `/fmu/in/*` topics in the smoke topic list.
 - Cable dry-run coverage monitor all-groups audit accepted on 2026-06-15: summary `data/results/lookahead_coverage_monitor_all_groups_20260615_100351/lookahead_coverage_monitor_all_groups_20260615_100351.txt`, all 5 groups accepted (`y8_z20`, `y8_z21`, `y8_z23`, `y8_z25`, `y8_z26`), each with `path_points=25`, `covered_points=21`, `coverage_ratio=0.84`, `coverage_ok=true`, and isolated `ROS_DOMAIN_ID` values `80` through `84`.
 - Cable dry-run acceptance audit accepted on 2026-06-15: summary `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`, with `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `boundary_ok=true`, `coverage_min_ratio=0.840000000`, `tracking_global_max_clearance_error_m=0.000000000`, `frame_global_max_target_point_error_m=0.000000000`, and `claims_cable_dry_run_acceptance_pass=true`.
+- Cable all-groups RViz overlay accepted on 2026-06-16: summary `data/results/cable_all_groups_rviz_overlay_20260616_093252/cable_all_groups_rviz_overlay_20260616_093252.txt`, screenshot `data/screenshots/cable_all_groups_rviz_overlay_20260616_093252.png`, `group_count=5`, `target_group_count=5`, `marker_alive=true`, `screenshot_ok=true`, and no `/fmu/in/*` topics observed in the overlay topic list.
+- Cable visual acceptance audit accepted on 2026-06-16: summary `data/results/cable_visual_acceptance_20260616_093530/cable_visual_acceptance_20260616_093530.txt`, with `dry_run_ok=true`, `overlay_boundary_ok=true`, `overlay_content_ok=true`, `overlay_group_count=5`, and `claims_cable_visual_acceptance_pass=true`.
 
 Important boundary:
 
@@ -46,7 +48,7 @@ Important boundary:
 Next cable work:
 
 - Do not implement active bridge without explicit approval.
-- Useful safe next nodes are an all-groups RViz visualization refresh, wind acceptance-threshold documentation, or a documented active-control review. Do not implement active bridge without explicit approval.
+- Useful safe next nodes are wind acceptance-threshold documentation, denser cable visualization/coverage review, or a documented active-control review. Do not implement active bridge without explicit approval.
 
 ## 3. Wind Status
 
@@ -184,7 +186,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with richer four-vehicle assignment/topology boundary sweeps or all-groups cable RViz visualization refresh; active multi-vehicle Offboard remains forbidden.
+1. Continue with wind acceptance-threshold documentation or denser cable visualization/coverage review; active cable bridge and active multi-vehicle Offboard remain forbidden.
 
 Reason:
 
@@ -200,7 +202,9 @@ Reason:
 - Four-vehicle dry-run M7 aggregate acceptance is accepted.
 - Four-vehicle dry-run M8 assignment/topology boundary sweep is accepted and folded into the latest M7 aggregate.
 - M1, M2, M3, M4 and M5 are accepted for the two-vehicle dry-run baseline.
-- The next multi-vehicle gap is either richer assignment/topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
+- Cable all-groups RViz overlay is accepted with five groups visible from audited CSV evidence and no PX4/Gazebo/Offboard path.
+- Cable visual acceptance aggregate is accepted, tying dry-run acceptance to the all-groups RViz visual evidence.
+- The next gap is richer coverage/threshold documentation or a separate active-control review, not evidence that the dry-run node can publish.
 
 Safety boundary for that node:
 

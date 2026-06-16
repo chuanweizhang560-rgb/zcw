@@ -23,6 +23,7 @@ Current executable:
 RViz:
 
 - `rviz/lookahead_overlay.rviz`: displays `/zcw/cable/offset_path` and `/zcw/cable/lookahead_target` for read-only visual inspection.
+- `rviz/cable_all_groups_overlay.rviz`: displays `/zcw/cable/all_groups/markers` for read-only visualization of all accepted cable groups from audited CSV evidence.
 - `rviz/dry_run_overlay.rviz`: displays offset path, lookahead target, dry-run candidate setpoint, and dry-run candidate path.
 - `rviz/px4_bridge_dry_run_overlay.rviz`: displays the dry-run path/candidate plus `/zcw/cable/px4_bridge/ned_setpoint_dry_run` for Phase A bridge visual inspection. It is debug-only and does not imply closed-loop PX4 frame validation.
 - `rviz/rtabmap_depth_camera_overlay.rviz`: displays `/cloud_map`, `/octomap_occupied_space`, `/map`, and TF for read-only RTAB-Map depth-camera mapping inspection.

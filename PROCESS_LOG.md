@@ -9859,3 +9859,104 @@
   - 可做 all-groups cable RViz 可视化刷新
   - 或继续扩展多机任务分配边界，如任务目标移动、relay radius 参数化 sweep
 - 阻塞项：无
+
+### 2026-06-16 09:35:30 CST
+
+- 节点：Cable all-groups RViz overlay 与 visual acceptance 聚合完成
+- 执行动作：
+  - 新增全组线缆 MarkerArray 发布器：
+    - `scripts/publish_cable_all_groups_markers.py`
+  - 新增全组线缆 RViz 配置：
+    - `ros2_ws/src/zcw_cable_perception/rviz/cable_all_groups_overlay.rviz`
+  - 新增真实 RViz 截图脚本：
+    - `scripts/capture_cable_all_groups_rviz_overlay.sh`
+  - 该脚本只启动：
+    - ROS 2 marker publisher
+    - static TF
+    - RViz2
+  - 该脚本不启动：
+    - PX4
+    - Gazebo
+    - Offboard
+    - arming
+    - `/fmu/in/*` publisher
+  - 执行过程中的问题与修正：
+    - 第一次运行因脚本未加执行权限失败，未形成有效证据；已 `chmod +x` 修正
+    - 第二次运行一度形成假阳性 summary，但截图为空；根因是默认 miniconda Python 3.13 与 ROS Humble `rclpy` ABI 不兼容；已改为 `/usr/bin/python3` 并增加 `marker_alive` 检查
+    - 第三次运行被正确拒绝；根因是 `RcutilsLogger.info()` 调用参数错误；已改为 f-string
+    - 第四次运行截图可见但 marker 退出日志仍有空错误；已显式处理 `ExternalShutdownException`
+  - 最终执行：
+    - `scripts/capture_cable_all_groups_rviz_overlay.sh`
+    - `bash -n scripts/capture_cable_all_groups_rviz_overlay.sh`
+    - `/usr/bin/python3 -m py_compile scripts/publish_cable_all_groups_markers.py`
+  - 手工截图检查：
+    - 已用 `view_image` 检查 `data/screenshots/cable_all_groups_rviz_overlay_20260616_093252.png`
+    - 截图中 5 组线缆轨迹、目标点和组标签均可见，不是空图
+  - 新增 visual acceptance 聚合脚本：
+    - `scripts/audit_cable_visual_acceptance.sh`
+  - 执行：
+    - `bash -n scripts/audit_cable_visual_acceptance.sh`
+    - `scripts/audit_cable_visual_acceptance.sh`
+  - 更新证据 inventory：
+    - 将 all-groups RViz summary 与 screenshot 加入 `scripts/audit_evidence_inventory.sh`
+    - 执行 `scripts/audit_evidence_inventory.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `ros2_ws/src/zcw_cable_perception/README.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - all-groups RViz accepted summary：
+    - `data/results/cable_all_groups_rviz_overlay_20260616_093252/cable_all_groups_rviz_overlay_20260616_093252.txt`
+  - all-groups RViz screenshot：
+    - `data/screenshots/cable_all_groups_rviz_overlay_20260616_093252.png`
+  - all-groups RViz 关键字段：
+    - `decision=accepted_cable_all_groups_rviz_overlay`
+    - `reason=all_groups_marker_overlay_captured_without_px4_inputs`
+    - `starts_ros=true`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `group_count=5`
+    - `target_group_count=5`
+    - `marker_alive=true`
+    - `screenshot_ok=true`
+  - marker 日志：
+    - `data/logs/cable_all_groups_marker_publisher_20260616_093252.log`
+    - 仅记录 `Loaded 5 cable groups for RViz markers`
+  - 进程检查：
+    - 截图脚本结束后没有残留 `rviz2`、`publish_cable_all_groups`、`static_transform_publisher`、`gazebo`、`gzserver`、`px4` 或 `MicroXRCEAgent`
+  - visual acceptance accepted summary：
+    - `data/results/cable_visual_acceptance_20260616_093530/cable_visual_acceptance_20260616_093530.txt`
+  - visual acceptance 关键字段：
+    - `decision=accepted_cable_visual_acceptance`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `dry_run_ok=true`
+    - `overlay_boundary_ok=true`
+    - `overlay_content_ok=true`
+    - `overlay_group_count=5`
+    - `claims_cable_visual_acceptance_pass=true`
+  - evidence inventory accepted summary：
+    - `data/results/evidence_inventory_20260616_093430/evidence_inventory_20260616_093430.txt`
+  - evidence inventory 关键字段：
+    - `required_evidence_count=23`
+    - `present_count=23`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - 电缆全组几何轨迹现在有真实 RViz 截图证据
+  - 当前电缆 visual acceptance 将 dry-run acceptance 与 all-groups RViz 证据合并为一个离线可复核结论
+  - 该节点仍不批准 cable active bridge，不批准 `/fmu/in/*` 发布，不批准多机 active Offboard
+- 下一步：
+  - 可做 wind acceptance-threshold 文档
+  - 或做更密集的 cable visualization/coverage review
+  - 或做 active-control review 文档，但不实现 active bridge，除非用户明确批准
+- 阻塞项：无

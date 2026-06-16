@@ -50,6 +50,8 @@ The audit is not allowed to:
 | Cable dry-run acceptance audit | aggregate tracking, frame-contract and coverage threshold summary | `scripts/audit_cable_dry_run_acceptance.sh` |
 | Cable lookahead sweep | multi-lookahead summary and CSV | `scripts/audit_lookahead_distance_sweep.sh` |
 | Cable dry-run coverage monitor | coverage monitor summary, topic list and coverage state echo | `scripts/verify_lookahead_coverage_monitor.sh`, `scripts/audit_lookahead_coverage_monitor_all_groups.sh` |
+| Cable all-groups RViz overlay | all accepted cable groups rendered as MarkerArray in RViz, with no PX4/Gazebo/Offboard path | `scripts/capture_cable_all_groups_rviz_overlay.sh` |
+| Cable visual acceptance audit | aggregate cable dry-run acceptance and all-groups RViz overlay summary | `scripts/audit_cable_visual_acceptance.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
@@ -63,9 +65,9 @@ The audit is not allowed to:
 
 Latest evidence:
 
-- summary: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.txt`
-- inventory CSV: `data/results/evidence_inventory_20260604_140426/evidence_inventory_20260604_140426.csv`
-- regeneration list: `data/results/evidence_inventory_20260604_140426/evidence_regeneration_20260604_140426.txt`
+- summary: `data/results/evidence_inventory_20260616_093430/evidence_inventory_20260616_093430.txt`
+- inventory CSV: `data/results/evidence_inventory_20260616_093430/evidence_inventory_20260616_093430.csv`
+- regeneration list: `data/results/evidence_inventory_20260616_093430/evidence_regeneration_20260616_093430.txt`
 
 Expected accepted fields:
 
@@ -84,8 +86,8 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=21`
-- `present_count=21`
+- `required_evidence_count=23`
+- `present_count=23`
 - `missing_count=0`
 - `not_ignored_count=0`
 
