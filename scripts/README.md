@@ -23,6 +23,7 @@
 - `audit_wind_dynamic_coverage_progression.sh`：只读消费 `wind_dynamic_orbit_audit` 的真实 PX4 local position CSV，结合 AerialCore wind turbine mesh 三角面片/法向计算动态累计 frustum/normal-filtered 覆盖 progression 和高度分段结果；默认读取最新动态 pose CSV，可用 `POSE_CSV` 指定证据；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_wind_occlusion_coverage_progression.sh`：使用 `.venv/geometry` 中的成熟开源库 `trimesh`/`rtree`/`pycollada`，只读消费 longer 15m pose CSV 与 wind turbine mesh，执行抽样 ray intersection，输出 occlusion-clear normal-filtered coverage progression；默认 `POSE_STRIDE=20`、`FACE_STRIDE=8` 以控制运行时间，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_wind_rule_baseline_acceptance.sh`：只读聚合 wind multi-level slow-loop 的真实运动、覆盖、遮挡覆盖、RTAB-Map loop closure、mapping evidence 和 ATE/cross-check 证据，输出当前单机风机规则基线验收结论；不启动 ROS/PX4/Gazebo/RViz。
+- `audit_wind_acceptance_threshold_contract.sh`：只读检查 `docs/17_wind_acceptance_thresholds.md` 与 `audit_wind_rule_baseline_acceptance.sh` 的默认阈值和 non-claim 边界是否一致；不启动 ROS/PX4/Gazebo/RViz。
 - `convert_px4_local_position_log_to_wind_pose_csv.sh`：只读解析 PX4 `/fmu/out/vehicle_local_position` trajectory log，生成 wind coverage 审计可复用的 pose CSV；只做格式转换和半径/clearance 统计，不启动 ROS/PX4/Gazebo/RViz。
 - `filter_wind_orbit_pose_csv.sh`：只读过滤 wind pose CSV，按目标半径误差和高度窗口裁掉起飞/过渡段，输出 orbit-only pose CSV 供 coverage 审计复用；不启动 ROS/PX4/Gazebo/RViz。
 - `verify_wind_turbine_multilevel_orbit.sh`：加载 AerialCore 风机 world，并运行独立 multilevel orbit waypoint/yaw baseline；该脚本会启动 PX4 Offboard/arm，仅用于风机规则 baseline 验证，不属于电缆 Phase B active。

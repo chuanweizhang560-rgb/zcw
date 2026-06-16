@@ -9960,3 +9960,93 @@
   - 或做更密集的 cable visualization/coverage review
   - 或做 active-control review 文档，但不实现 active bridge，除非用户明确批准
 - 阻塞项：无
+
+### 2026-06-16 09:43:04 CST
+
+- 节点：Wind acceptance thresholds 文档与 contract 审计完成
+- 执行动作：
+  - 新增风机规则基线验收阈值文档：
+    - `docs/17_wind_acceptance_thresholds.md`
+  - 文档明确当前只覆盖：
+    - 单机风机规则基线
+    - AerialCore wind turbine world
+    - Gazebo 11 + ROS 2 Humble + PX4 SITL
+    - RTAB-Map RGB-D smoke/loop evidence
+  - 文档明确不声明：
+    - final 95% physical surface inspection coverage
+    - image-level defect detection
+    - independent SLAM localization accuracy
+    - SLAM-driven control
+    - multi-vehicle wind inspection
+    - cable active bridge approval
+    - learned policy/MARL control
+  - 新增阈值合同审计脚本：
+    - `scripts/audit_wind_acceptance_threshold_contract.sh`
+  - 该脚本只读检查：
+    - `docs/17_wind_acceptance_thresholds.md`
+    - `scripts/audit_wind_rule_baseline_acceptance.sh`
+    - 风机验收默认阈值
+    - non-claim / boundary 文档字段
+  - 首次运行 contract 审计被拒绝：
+    - summary：`data/results/wind_acceptance_threshold_contract_20260616_094144/wind_acceptance_threshold_contract_20260616_094144.txt`
+    - 原因：文档为 `do not claim:`，脚本检查 `Do not claim:`，大小写不一致
+  - 修复：
+    - 将 contract 脚本检查项改为 `do not claim:`
+  - 最终执行：
+    - `bash -n scripts/audit_wind_acceptance_threshold_contract.sh`
+    - `scripts/audit_wind_acceptance_threshold_contract.sh`
+    - `scripts/audit_wind_rule_baseline_acceptance.sh`
+  - 同步 evidence inventory：
+    - 将 wind acceptance threshold contract 加入 `scripts/audit_evidence_inventory.sh`
+    - 执行 `scripts/audit_evidence_inventory.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - accepted threshold contract summary：
+    - `data/results/wind_acceptance_threshold_contract_20260616_094206/wind_acceptance_threshold_contract_20260616_094206.txt`
+  - threshold contract 关键字段：
+    - `decision=accepted_wind_acceptance_threshold_contract`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `check_count=18`
+    - `fail_count=0`
+    - `boundary_count=5`
+    - `claims_active_control_approval=false`
+    - `claims_final_inspection_coverage=false`
+  - refreshed wind rule-baseline acceptance summary：
+    - `data/results/wind_rule_baseline_acceptance_20260616_094206/wind_rule_baseline_acceptance_20260616_094206.txt`
+  - refreshed wind acceptance 关键字段：
+    - `decision=accepted_wind_rule_baseline_acceptance`
+    - `capture_ok=true`
+    - `pose_ok=true`
+    - `dynamic_ok=true`
+    - `occlusion_ok=true`
+    - `loop_ok=true`
+    - `mapping_boundary_ok=true`
+    - `p3d_ate_ok=true`
+    - `px4_crosscheck_ok=true`
+    - `claims_wind_rule_baseline_acceptance_pass=true`
+    - `claims_final_inspection_coverage=false`
+  - refreshed evidence inventory summary：
+    - `data/results/evidence_inventory_20260616_094304/evidence_inventory_20260616_094304.txt`
+  - evidence inventory 关键字段：
+    - `required_evidence_count=24`
+    - `present_count=24`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - 当前风机 accepted 的含义已文档化：它是单机规则基线证据，不是最终巡检完成声明
+  - 风机阈值文档、aggregate 审计脚本默认值和当前证据已对齐
+  - 该节点未启动 ROS/PX4/Gazebo/RViz，没有 Offboard/arm，也没有 `/fmu/in/*`
+- 下一步：
+  - 可做更密集的 wind occlusion coverage
+  - 或做更密集的 cable visualization/coverage review
+  - 或写 active-control review 文档，但不实现 active bridge，除非用户明确批准
+- 阻塞项：无

@@ -74,6 +74,8 @@ Accepted evidence:
 - Slow loop orbit-only coverage audit accepted after filtering out takeoff/transition poses: 28408 orbit poses, dynamic normal-filtered coverage `0.674538`, weakest normal band `0.512267`, fast occlusion-clear normal coverage `0.598628`, weakest occlusion band `0.507692`.
 - Multi-level slow-loop wind run accepted on 2026-06-15 using `single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`: 15m radius, 3 height levels, 2 laps per level, 145 waypoint advancements, final waypoint hold, accepted RViz screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.png`, 43611 PX4 local-position pose samples used for coverage conversion, dynamic normal-filtered coverage `0.733899`, weakest normal band `0.595682`, and very-fast occlusion-clear normal coverage `0.708904`, weakest occlusion band `0.593750`.
 - Wind rule-baseline acceptance audit accepted on 2026-06-16: summary `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`, with `capture_ok=true`, `pose_ok=true`, `dynamic_ok=true`, `occlusion_ok=true`, `loop_ok=true`, `mapping_boundary_ok=true`, `p3d_ate_ok=true`, `px4_crosscheck_ok=true`, `waypoint_advancements=145`, `rtabmap_node_count=205`, `official_global_closure_links=6`, and `claims_wind_rule_baseline_acceptance_pass=true`.
+- Wind acceptance threshold contract documented in `docs/17_wind_acceptance_thresholds.md` and accepted on 2026-06-16: summary `data/results/wind_acceptance_threshold_contract_20260616_094206/wind_acceptance_threshold_contract_20260616_094206.txt`, with `check_count=18`, `fail_count=0`, `boundary_count=5`, `claims_active_control_approval=false`, and `claims_final_inspection_coverage=false`.
+- Wind rule-baseline acceptance was re-run after threshold documentation on 2026-06-16: summary `data/results/wind_rule_baseline_acceptance_20260616_094206/wind_rule_baseline_acceptance_20260616_094206.txt`, still accepted with the same threshold observations and no new simulation startup by the aggregate audit.
 
 Important boundary:
 
@@ -90,7 +92,7 @@ Next wind work:
 
 - Add a denser occlusion-aware audit if runtime permits, or keep the fast audit as approximate method evidence.
 - Add image-level quality/defect-detection integration only through mature open-source models or clearly separated future work.
-- Define explicit wind inspection acceptance thresholds before claiming completion.
+- Explicit wind inspection acceptance thresholds are now documented for the current rule-baseline evidence. Before stronger completion claims, add a denser occlusion audit, an inspection surface model, or a mature open-source image-quality/defect model.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
 - Keep 20m as the conservative simple baseline. The 15m multi-level slow-loop now has an accepted aggregate rule-baseline audit for single-vehicle wind evidence, but it still does not claim final defect inspection, cable active control, or multi-vehicle active approval.
 
@@ -186,7 +188,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with wind acceptance-threshold documentation or denser cable visualization/coverage review; active cable bridge and active multi-vehicle Offboard remain forbidden.
+1. Continue with denser wind occlusion coverage, denser cable visualization/coverage review, or an active-control review document; active cable bridge and active multi-vehicle Offboard remain forbidden.
 
 Reason:
 
@@ -204,7 +206,8 @@ Reason:
 - M1, M2, M3, M4 and M5 are accepted for the two-vehicle dry-run baseline.
 - Cable all-groups RViz overlay is accepted with five groups visible from audited CSV evidence and no PX4/Gazebo/Offboard path.
 - Cable visual acceptance aggregate is accepted, tying dry-run acceptance to the all-groups RViz visual evidence.
-- The next gap is richer coverage/threshold documentation or a separate active-control review, not evidence that the dry-run node can publish.
+- Wind acceptance thresholds are documented and matched to the aggregate audit defaults.
+- The next gap is denser coverage evidence or a separate active-control review, not evidence that the dry-run node can publish.
 
 Safety boundary for that node:
 

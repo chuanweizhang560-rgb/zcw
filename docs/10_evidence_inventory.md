@@ -57,6 +57,7 @@ The audit is not allowed to:
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
 | Wind turbine multilevel GUI motion evidence | Gazebo screenshot, window id, Offboard log, vehicle status and local position echo | `scripts/capture_wind_turbine_multilevel_orbit_gui.sh` |
 | Wind rule-baseline acceptance | aggregate multi-level slow-loop motion, coverage, SLAM and mapping evidence summary | `scripts/audit_wind_rule_baseline_acceptance.sh` |
+| Wind acceptance threshold contract | threshold/non-claim documentation matched to the aggregate wind audit defaults | `scripts/audit_wind_acceptance_threshold_contract.sh` |
 | Four-vehicle dry-run acceptance | aggregate read-only namespace, contract, smoke, samples and score-sweep summary | `scripts/audit_four_vehicle_dry_run_acceptance.sh` |
 | Four-vehicle assignment/topology sweep | offline topology and fixed-role boundary summary | `scripts/audit_four_vehicle_assignment_topology_sweep.sh` |
 | Project current acceptance | aggregate current cable, wind and four-vehicle acceptance summary | `scripts/audit_project_current_acceptance.sh` |
@@ -65,9 +66,9 @@ The audit is not allowed to:
 
 Latest evidence:
 
-- summary: `data/results/evidence_inventory_20260616_093430/evidence_inventory_20260616_093430.txt`
-- inventory CSV: `data/results/evidence_inventory_20260616_093430/evidence_inventory_20260616_093430.csv`
-- regeneration list: `data/results/evidence_inventory_20260616_093430/evidence_regeneration_20260616_093430.txt`
+- summary: `data/results/evidence_inventory_20260616_094304/evidence_inventory_20260616_094304.txt`
+- inventory CSV: `data/results/evidence_inventory_20260616_094304/evidence_inventory_20260616_094304.csv`
+- regeneration list: `data/results/evidence_inventory_20260616_094304/evidence_regeneration_20260616_094304.txt`
 
 Expected accepted fields:
 
@@ -86,8 +87,8 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=23`
-- `present_count=23`
+- `required_evidence_count=24`
+- `present_count=24`
 - `missing_count=0`
 - `not_ignored_count=0`
 

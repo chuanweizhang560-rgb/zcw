@@ -37,6 +37,7 @@ required_evidence=(
   "wind_multilevel_gui_offboard_log|data/logs/wind_multilevel_gui_offboard_20260604_134640.log|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
   "wind_multilevel_gui_status|data/logs/wind_multilevel_gui_vehicle_status_20260604_134640.log|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
   "wind_multilevel_gui_position|data/logs/wind_multilevel_gui_vehicle_local_position_20260604_134640.log|scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
+  "wind_acceptance_threshold_contract|data/results/wind_acceptance_threshold_contract_20260616_094206/wind_acceptance_threshold_contract_20260616_094206.txt|scripts/audit_wind_acceptance_threshold_contract.sh"
 )
 
 regeneration_commands=(
@@ -51,6 +52,7 @@ regeneration_commands=(
   "scripts/audit_active_bridge_review_template.sh"
   "scripts/audit_dry_run_readiness.sh"
   "scripts/audit_wind_turbine_multilevel_orbit_launch.sh"
+  "scripts/audit_wind_acceptance_threshold_contract.sh"
   "scripts/verify_wind_turbine_multilevel_orbit.sh"
   "scripts/capture_wind_turbine_multilevel_orbit_gui.sh"
 )
