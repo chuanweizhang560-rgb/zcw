@@ -163,6 +163,7 @@ Current status:
 - Four-vehicle dry-run M4 rule scoring is accepted; `/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state` publishes topology/state/task-distance/total rule scores while key `/px4_i/fmu/in/*` publisher counts remain `0`.
 - Four-vehicle dry-run M5 scoring marker overlay is accepted; `/zcw/multi_vehicle/four_vehicle_dry_run/score_markers` publishes RViz `MarkerArray` score/role text and screenshot evidence exists at `data/screenshots/four_vehicle_dry_run_overlay_20260611_150906.png`.
 - Four-vehicle dry-run M6 offline rule score sweep is accepted; `scripts/audit_four_vehicle_rule_score_sweep.sh` verifies nominal, exact-goal, task-far, chain-break, base-range-break, stale-status and missing-pose cases without starting ROS/PX4/Gazebo/RViz.
+- Four-vehicle dry-run M7 aggregate acceptance is accepted; summary `data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt` has `readonly_ok=true`, `contract_ok=true`, `smoke_ok=true`, `samples_ok=true`, `score_ok=true`, `claims_four_vehicle_dry_run_acceptance_pass=true`, and `claims_multi_vehicle_active_approval=false`.
 - Two-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Two-vehicle dry-run M2 read-only smoke is accepted; dry-run topics publish while key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` publisher counts remain `0`.
 - Two-vehicle dry-run M3 RViz overlay screenshot is accepted at `data/screenshots/two_vehicle_dry_run_overlay_20260609_105743.png`.
@@ -194,8 +195,9 @@ Reason:
 - Four-vehicle dry-run M4 rule scoring is accepted.
 - Four-vehicle dry-run M5 scoring marker overlay is accepted.
 - Four-vehicle dry-run M6 offline rule score sweep is accepted.
+- Four-vehicle dry-run M7 aggregate acceptance is accepted.
 - M1, M2, M3, M4 and M5 are accepted for the two-vehicle dry-run baseline.
-- The next multi-vehicle gap is richer assignment/topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
+- The next multi-vehicle gap is either richer assignment/topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
 
 Safety boundary for that node:
 

@@ -55,6 +55,7 @@ The audit is not allowed to:
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
 | Wind turbine multilevel GUI motion evidence | Gazebo screenshot, window id, Offboard log, vehicle status and local position echo | `scripts/capture_wind_turbine_multilevel_orbit_gui.sh` |
 | Wind rule-baseline acceptance | aggregate multi-level slow-loop motion, coverage, SLAM and mapping evidence summary | `scripts/audit_wind_rule_baseline_acceptance.sh` |
+| Four-vehicle dry-run acceptance | aggregate read-only namespace, contract, smoke, samples and score-sweep summary | `scripts/audit_four_vehicle_dry_run_acceptance.sh` |
 
 ## 4. Latest Result
 
@@ -105,6 +106,11 @@ Additional latest local wind rule-baseline evidence:
 
 - wind rule-baseline acceptance summary: `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
 - wind rule-baseline accepted fields: `decision=accepted_wind_rule_baseline_acceptance`, `capture_ok=true`, `dynamic_ok=true`, `occlusion_ok=true`, `loop_ok=true`, `mapping_boundary_ok=true`, `claims_wind_rule_baseline_acceptance_pass=true`
+
+Additional latest local four-vehicle dry-run evidence:
+
+- four-vehicle dry-run acceptance summary: `data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt`
+- four-vehicle dry-run accepted fields: `decision=accepted_four_vehicle_dry_run_acceptance`, `readonly_ok=true`, `contract_ok=true`, `smoke_ok=true`, `samples_ok=true`, `score_ok=true`, `claims_multi_vehicle_active_approval=false`
 
 ## 5. Regeneration Rule
 

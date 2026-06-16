@@ -9639,3 +9639,79 @@
   - 可转向 all-groups cable RViz 可视化刷新
   - 或推进多机 dry-run assignment/topology 证据
 - 阻塞项：无
+
+### 2026-06-16 08:58:42 CST
+
+- 节点：Four-vehicle dry-run acceptance 聚合审计完成
+- 执行动作：
+  - 新增离线聚合审计脚本：
+    - `scripts/audit_four_vehicle_dry_run_acceptance.sh`
+  - 聚合输入：
+    - four-vehicle read-only namespace summary：`data/results/multi_vehicle_readonly_20260609_111036/multi_vehicle_readonly_20260609_111036.txt`
+    - four-vehicle static contract summary：`data/results/four_vehicle_dry_run_contract_20260611_150804/four_vehicle_dry_run_contract_20260611_150804.txt`
+    - four-vehicle ROS graph/RViz smoke summary：`data/results/four_vehicle_dry_run_smoke_20260611_150906/four_vehicle_dry_run_smoke_20260611_150906.txt`
+    - four-vehicle sample audit summary：`data/results/four_vehicle_dry_run_samples_audit_20260611_150859/four_vehicle_dry_run_samples_audit_20260611_150859.txt`
+    - four-vehicle rule score sweep summary：`data/results/four_vehicle_rule_score_sweep_20260611_152204/four_vehicle_rule_score_sweep_20260611_152204.txt`
+  - 聚合检查：
+    - read-only namespace 必须是 4 车、无 Offboard、无 arm、无 PX4 input publisher
+    - static contract 必须只有允许的 `/fmu/out/*` 输入和 `/zcw/multi_vehicle/four_vehicle_dry_run/*` 输出
+    - smoke 必须有 dry-run topics、RViz screenshot 和 forbidden publisher zero
+    - samples 必须包含 topology/safety/assignment/scoring/roles/no-active/no-fmu-in
+    - score sweep 必须覆盖 8 个边界场景且不使用 learned policy
+  - 执行：
+    - `bash -n scripts/audit_four_vehicle_dry_run_acceptance.sh`
+    - `chmod +x scripts/audit_four_vehicle_dry_run_acceptance.sh`
+    - `scripts/audit_four_vehicle_dry_run_acceptance.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+    - `docs/16_four_vehicle_rule_baseline_design.md`
+- 结果：
+  - summary：
+    - `data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt`
+  - 关键字段：
+    - `decision=accepted_four_vehicle_dry_run_acceptance`
+    - `reason=four_vehicle_readonly_contract_smoke_samples_and_score_sweep_pass`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `source_smoke_started_ros=true`
+    - `source_smoke_started_px4=true`
+    - `source_smoke_started_gazebo=true`
+    - `source_smoke_started_rviz=true`
+    - `source_smoke_started_offboard=false`
+    - `source_smoke_armed=false`
+    - `source_smoke_published_fmu_in=false`
+    - `uses_learned_policy=false`
+    - `scope_boundary=four_vehicle_dry_run_readonly_only`
+    - `claims_multi_vehicle_active_approval=false`
+    - `claims_cable_active_bridge_approval=false`
+    - `readonly_ok=true`
+    - `contract_ok=true`
+    - `smoke_ok=true`
+    - `samples_ok=true`
+    - `score_ok=true`
+    - `num_vehicles=4`
+    - `dry_topics_ok=true`
+    - `forbidden_publishers_zero=true`
+    - `has_topology=true`
+    - `has_assignment=true`
+    - `has_scoring=true`
+    - `has_roles=true`
+    - `score_sweep_cases=8`
+    - `screenshot_ok=true`
+    - `claims_four_vehicle_dry_run_acceptance_pass=true`
+- 结论：
+  - 四机 dry-run/read-only 链路已有聚合验收证据
+  - 该聚合审计本身未启动 ROS/PX4/Gazebo/RViz
+  - 源 smoke 启动过 PX4/Gazebo/RViz，但没有 Offboard、没有 arm、没有项目 PX4 input publisher
+  - 不批准 multi-vehicle active control，不批准 cable active bridge
+- 下一步：
+  - 可继续做更丰富的四机 assignment/topology 边界 sweep
+  - 或做 all-groups cable RViz 可视化刷新
+- 阻塞项：无

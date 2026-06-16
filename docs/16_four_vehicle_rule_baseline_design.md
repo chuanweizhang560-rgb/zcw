@@ -326,7 +326,44 @@ pose_missing,false,false,...,rule_total_score=0.000000
 
 This is an offline scoring audit only. It does not drive PX4 and does not approve active four-vehicle role assignment.
 
-## 10. Promotion Criteria
+## 10. M7 Dry-Run Acceptance Aggregate
+
+M7 requirements:
+
+- Keep the same no-active boundary as M1-M6.
+- Do not start ROS, PX4, Gazebo, or RViz in the aggregate audit itself.
+- Aggregate the latest four-vehicle read-only namespace, static contract, ROS graph/RViz smoke, sample audit and rule score sweep evidence.
+- Explicitly reject any implication that dry-run acceptance approves active four-vehicle control.
+
+Latest M7 evidence:
+
+- script: `scripts/audit_four_vehicle_dry_run_acceptance.sh`
+- summary: `data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt`
+
+Observed M7 result:
+
+```text
+decision=accepted_four_vehicle_dry_run_acceptance
+reason=four_vehicle_readonly_contract_smoke_samples_and_score_sweep_pass
+starts_ros=false
+starts_px4=false
+starts_gazebo=false
+starts_rviz=false
+starts_offboard=false
+arms=false
+publishes_fmu_in=false
+readonly_ok=true
+contract_ok=true
+smoke_ok=true
+samples_ok=true
+score_ok=true
+claims_four_vehicle_dry_run_acceptance_pass=true
+claims_multi_vehicle_active_approval=false
+```
+
+This is the current aggregate dry-run/read-only acceptance for four vehicles. It does not approve active four-vehicle control.
+
+## 11. Promotion Criteria
 
 Four-vehicle active control may only be considered after all of these exist:
 
@@ -335,6 +372,7 @@ Four-vehicle active control may only be considered after all of these exist:
 - accepted four-vehicle dry-run ROS graph smoke.
 - accepted four-vehicle RViz overlay.
 - accepted four-vehicle offline score sweep.
+- accepted four-vehicle dry-run aggregate audit.
 - documented user approval for a four-vehicle active review.
 
 Until then, four-vehicle work remains dry-run/read-only.
