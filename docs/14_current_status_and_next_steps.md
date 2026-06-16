@@ -12,7 +12,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Mature upstream components remain preferred. Current SLAM baseline is RTAB-Map RGB-D from ROS Humble packages.
 - Cable Phase B active bridge is still not implemented and not approved.
 - Cable lookahead/gate/coverage outputs are still dry-run only.
-- Project current acceptance audit accepted on 2026-06-16: summary `data/results/project_current_acceptance_20260616_090127/project_current_acceptance_20260616_090127.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
+- Project current acceptance audit accepted on 2026-06-16: latest summary `data/results/project_current_acceptance_20260616_090918/project_current_acceptance_20260616_090918.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
 
 ## 2. Cable Status
 
@@ -164,7 +164,8 @@ Current status:
 - Four-vehicle dry-run M4 rule scoring is accepted; `/zcw/multi_vehicle/four_vehicle_dry_run/scoring_state` publishes topology/state/task-distance/total rule scores while key `/px4_i/fmu/in/*` publisher counts remain `0`.
 - Four-vehicle dry-run M5 scoring marker overlay is accepted; `/zcw/multi_vehicle/four_vehicle_dry_run/score_markers` publishes RViz `MarkerArray` score/role text and screenshot evidence exists at `data/screenshots/four_vehicle_dry_run_overlay_20260611_150906.png`.
 - Four-vehicle dry-run M6 offline rule score sweep is accepted; `scripts/audit_four_vehicle_rule_score_sweep.sh` verifies nominal, exact-goal, task-far, chain-break, base-range-break, stale-status and missing-pose cases without starting ROS/PX4/Gazebo/RViz.
-- Four-vehicle dry-run M7 aggregate acceptance is accepted; summary `data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt` has `readonly_ok=true`, `contract_ok=true`, `smoke_ok=true`, `samples_ok=true`, `score_ok=true`, `claims_four_vehicle_dry_run_acceptance_pass=true`, and `claims_multi_vehicle_active_approval=false`.
+- Four-vehicle dry-run M7 aggregate acceptance is accepted; latest summary `data/results/four_vehicle_dry_run_acceptance_20260616_090911/four_vehicle_dry_run_acceptance_20260616_090911.txt` has `readonly_ok=true`, `contract_ok=true`, `smoke_ok=true`, `samples_ok=true`, `score_ok=true`, `assignment_topology_ok=true`, `claims_four_vehicle_dry_run_acceptance_pass=true`, and `claims_multi_vehicle_active_approval=false`.
+- Four-vehicle dry-run M8 assignment/topology boundary sweep is accepted; summary `data/results/four_vehicle_assignment_topology_sweep_20260616_090752/four_vehicle_assignment_topology_sweep_20260616_090752.txt` has `cases=11`, `exact_limit_is_ready=true`, `chain_just_over_rejected=true`, `middle_chain_break_rejected=true`, `tail_chain_break_rejected=true`, `base_exact_limit_ready=true`, `base_just_over_rejected=true`, `status_stale_penalized=true`, `pose_missing_zeroed=true`, and `roles_fixed=true`.
 - Two-vehicle dry-run planner source/launch exists and M1 static contract audit is accepted.
 - Two-vehicle dry-run M2 read-only smoke is accepted; dry-run topics publish while key `/px4_1/fmu/in/*` and `/px4_2/fmu/in/*` publisher counts remain `0`.
 - Two-vehicle dry-run M3 RViz overlay screenshot is accepted at `data/screenshots/two_vehicle_dry_run_overlay_20260609_105743.png`.
@@ -197,6 +198,7 @@ Reason:
 - Four-vehicle dry-run M5 scoring marker overlay is accepted.
 - Four-vehicle dry-run M6 offline rule score sweep is accepted.
 - Four-vehicle dry-run M7 aggregate acceptance is accepted.
+- Four-vehicle dry-run M8 assignment/topology boundary sweep is accepted and folded into the latest M7 aggregate.
 - M1, M2, M3, M4 and M5 are accepted for the two-vehicle dry-run baseline.
 - The next multi-vehicle gap is either richer assignment/topology evidence or a separate active-control review, not evidence that the dry-run node can publish.
 

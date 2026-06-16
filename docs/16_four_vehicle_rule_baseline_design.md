@@ -363,7 +363,49 @@ claims_multi_vehicle_active_approval=false
 
 This is the current aggregate dry-run/read-only acceptance for four vehicles. It does not approve active four-vehicle control.
 
-## 11. Promotion Criteria
+## 11. M8 Assignment/Topology Boundary Sweep
+
+M8 requirements:
+
+- Keep the same no-active boundary as M1-M7.
+- Do not start ROS, PX4, Gazebo, or RViz.
+- Sweep the rule-baseline topology and assignment cases that are easy to miss in live smoke tests:
+  - exact relay-radius boundary.
+  - just-over relay-radius rejection.
+  - middle and tail chain breaks.
+  - exact and just-over base range.
+  - stale status.
+  - missing pose.
+  - fixed role labels for wind/cable/relay/relay.
+
+Latest M8 evidence:
+
+- script: `scripts/audit_four_vehicle_assignment_topology_sweep.sh`
+- accepted summary: `data/results/four_vehicle_assignment_topology_sweep_20260616_090752/four_vehicle_assignment_topology_sweep_20260616_090752.txt`
+- accepted CSV: `data/results/four_vehicle_assignment_topology_sweep_20260616_090752/four_vehicle_assignment_topology_sweep_20260616_090752.csv`
+- earlier rejected run: `data/results/four_vehicle_assignment_topology_sweep_20260616_090724/four_vehicle_assignment_topology_sweep_20260616_090724.txt`
+
+Observed M8 result:
+
+```text
+decision=accepted_four_vehicle_assignment_topology_sweep
+cases=11
+exact_goals_max_score=true
+exact_limit_is_ready=true
+chain_just_over_rejected=true
+middle_chain_break_rejected=true
+tail_chain_break_rejected=true
+base_exact_limit_ready=true
+base_just_over_rejected=true
+status_stale_penalized=true
+pose_missing_zeroed=true
+roles_fixed=true
+claims_assignment_topology_sweep_pass=true
+```
+
+The earlier rejected run was caused by a test-case design issue: the exact chain-limit case also placed downstream vehicles slightly outside the base radius. The accepted run fixes that by isolating the chain boundary.
+
+## 12. Promotion Criteria
 
 Four-vehicle active control may only be considered after all of these exist:
 
@@ -373,6 +415,7 @@ Four-vehicle active control may only be considered after all of these exist:
 - accepted four-vehicle RViz overlay.
 - accepted four-vehicle offline score sweep.
 - accepted four-vehicle dry-run aggregate audit.
+- accepted four-vehicle assignment/topology boundary sweep.
 - documented user approval for a four-vehicle active review.
 
 Until then, four-vehicle work remains dry-run/read-only.

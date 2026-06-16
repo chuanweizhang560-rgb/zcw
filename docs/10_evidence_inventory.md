@@ -56,6 +56,7 @@ The audit is not allowed to:
 | Wind turbine multilevel GUI motion evidence | Gazebo screenshot, window id, Offboard log, vehicle status and local position echo | `scripts/capture_wind_turbine_multilevel_orbit_gui.sh` |
 | Wind rule-baseline acceptance | aggregate multi-level slow-loop motion, coverage, SLAM and mapping evidence summary | `scripts/audit_wind_rule_baseline_acceptance.sh` |
 | Four-vehicle dry-run acceptance | aggregate read-only namespace, contract, smoke, samples and score-sweep summary | `scripts/audit_four_vehicle_dry_run_acceptance.sh` |
+| Four-vehicle assignment/topology sweep | offline topology and fixed-role boundary summary | `scripts/audit_four_vehicle_assignment_topology_sweep.sh` |
 | Project current acceptance | aggregate current cable, wind and four-vehicle acceptance summary | `scripts/audit_project_current_acceptance.sh` |
 
 ## 4. Latest Result
@@ -110,12 +111,14 @@ Additional latest local wind rule-baseline evidence:
 
 Additional latest local four-vehicle dry-run evidence:
 
-- four-vehicle dry-run acceptance summary: `data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt`
-- four-vehicle dry-run accepted fields: `decision=accepted_four_vehicle_dry_run_acceptance`, `readonly_ok=true`, `contract_ok=true`, `smoke_ok=true`, `samples_ok=true`, `score_ok=true`, `claims_multi_vehicle_active_approval=false`
+- four-vehicle dry-run acceptance summary: `data/results/four_vehicle_dry_run_acceptance_20260616_090911/four_vehicle_dry_run_acceptance_20260616_090911.txt`
+- four-vehicle dry-run accepted fields: `decision=accepted_four_vehicle_dry_run_acceptance`, `readonly_ok=true`, `contract_ok=true`, `smoke_ok=true`, `samples_ok=true`, `score_ok=true`, `assignment_topology_ok=true`, `claims_multi_vehicle_active_approval=false`
+- four-vehicle assignment/topology sweep summary: `data/results/four_vehicle_assignment_topology_sweep_20260616_090752/four_vehicle_assignment_topology_sweep_20260616_090752.txt`
+- four-vehicle assignment/topology accepted fields: `decision=accepted_four_vehicle_assignment_topology_sweep`, `cases=11`, `chain_just_over_rejected=true`, `base_just_over_rejected=true`, `roles_fixed=true`
 
 Additional latest local project aggregate evidence:
 
-- project current acceptance summary: `data/results/project_current_acceptance_20260616_090127/project_current_acceptance_20260616_090127.txt`
+- project current acceptance summary: `data/results/project_current_acceptance_20260616_090918/project_current_acceptance_20260616_090918.txt`
 - project current accepted fields: `decision=accepted_project_current_acceptance`, `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, `claims_project_current_acceptance_pass=true`
 
 ## 5. Regeneration Rule

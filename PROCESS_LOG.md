@@ -9774,3 +9774,88 @@
   - 可做 all-groups cable RViz 可视化刷新
   - 或做更丰富的四机 assignment/topology 边界 sweep
 - 阻塞项：无
+
+### 2026-06-16 09:09:30 CST
+
+- 节点：Four-vehicle assignment/topology boundary sweep 完成，并刷新四机/项目聚合验收
+- 执行动作：
+  - 新增离线边界 sweep 脚本：
+    - `scripts/audit_four_vehicle_assignment_topology_sweep.sh`
+  - 覆盖场景：
+    - exact goals
+    - nominal near base
+    - chain at exact relay limit
+    - chain just over relay limit
+    - middle chain break
+    - tail chain break
+    - base exact limit
+    - base just over limit
+    - far tasks but connected
+    - status stale while connected
+    - pose missing
+  - 初次执行：
+    - rejected summary：`data/results/four_vehicle_assignment_topology_sweep_20260616_090724/four_vehicle_assignment_topology_sweep_20260616_090724.txt`
+    - rejected 原因：`chain_at_exact_limit` 测例同时让下游 vehicle 的 base distance 超过 800m，导致它不是纯 chain-boundary 测例
+  - 修复：
+    - 将 `chain_at_exact_limit` 改为 `(0,0) -> (800,0) -> (799,0) -> (798,0)`
+    - 这样链路 exact limit 和 base exact limit 不再互相污染
+  - 最终执行：
+    - `bash -n scripts/audit_four_vehicle_assignment_topology_sweep.sh`
+    - `chmod +x scripts/audit_four_vehicle_assignment_topology_sweep.sh`
+    - `scripts/audit_four_vehicle_assignment_topology_sweep.sh`
+  - 更新四机 aggregate：
+    - 将 M8 sweep 作为 `scripts/audit_four_vehicle_dry_run_acceptance.sh` 的默认输入
+    - 重跑 `scripts/audit_four_vehicle_dry_run_acceptance.sh`
+  - 更新项目 aggregate：
+    - 使用最新四机 aggregate 重跑 `scripts/audit_project_current_acceptance.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/14_current_status_and_next_steps.md`
+    - `docs/16_four_vehicle_rule_baseline_design.md`
+- 结果：
+  - M8 accepted summary：
+    - `data/results/four_vehicle_assignment_topology_sweep_20260616_090752/four_vehicle_assignment_topology_sweep_20260616_090752.txt`
+  - M8 CSV：
+    - `data/results/four_vehicle_assignment_topology_sweep_20260616_090752/four_vehicle_assignment_topology_sweep_20260616_090752.csv`
+  - 刷新后的四机 aggregate：
+    - `data/results/four_vehicle_dry_run_acceptance_20260616_090911/four_vehicle_dry_run_acceptance_20260616_090911.txt`
+  - 刷新后的项目 aggregate：
+    - `data/results/project_current_acceptance_20260616_090918/project_current_acceptance_20260616_090918.txt`
+  - M8 关键字段：
+    - `decision=accepted_four_vehicle_assignment_topology_sweep`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `uses_learned_policy=false`
+    - `cases=11`
+    - `exact_goals_max_score=true`
+    - `exact_limit_is_ready=true`
+    - `chain_just_over_rejected=true`
+    - `middle_chain_break_rejected=true`
+    - `tail_chain_break_rejected=true`
+    - `base_exact_limit_ready=true`
+    - `base_just_over_rejected=true`
+    - `status_stale_penalized=true`
+    - `pose_missing_zeroed=true`
+    - `roles_fixed=true`
+    - `claims_assignment_topology_sweep_pass=true`
+  - 最新四机 aggregate 新增字段：
+    - `assignment_topology_ok=true`
+    - `assignment_topology_cases=11`
+  - 最新项目 aggregate 仍通过：
+    - `cable_dry_run_ok=true`
+    - `wind_rule_baseline_ok=true`
+    - `four_vehicle_dry_run_ok=true`
+- 结论：
+  - 四机 dry-run 的 topology/assignment 边界比 M6 更细，且当前与规则基线一致
+  - 该节点未启动 ROS/PX4/Gazebo/RViz
+  - 不批准 multi-vehicle active control，不批准 cable active bridge
+- 下一步：
+  - 可做 all-groups cable RViz 可视化刷新
+  - 或继续扩展多机任务分配边界，如任务目标移动、relay radius 参数化 sweep
+- 阻塞项：无

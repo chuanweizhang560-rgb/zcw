@@ -9,19 +9,21 @@ DEFAULT_CONTRACT_SUMMARY="data/results/four_vehicle_dry_run_contract_20260611_15
 DEFAULT_SMOKE_SUMMARY="data/results/four_vehicle_dry_run_smoke_20260611_150906/four_vehicle_dry_run_smoke_20260611_150906.txt"
 DEFAULT_SAMPLES_SUMMARY="data/results/four_vehicle_dry_run_samples_audit_20260611_150859/four_vehicle_dry_run_samples_audit_20260611_150859.txt"
 DEFAULT_SCORE_SWEEP_SUMMARY="data/results/four_vehicle_rule_score_sweep_20260611_152204/four_vehicle_rule_score_sweep_20260611_152204.txt"
+DEFAULT_ASSIGNMENT_TOPOLOGY_SWEEP_SUMMARY="data/results/four_vehicle_assignment_topology_sweep_20260616_090752/four_vehicle_assignment_topology_sweep_20260616_090752.txt"
 
 READONLY_SUMMARY="${READONLY_SUMMARY:-${DEFAULT_READONLY_SUMMARY}}"
 CONTRACT_SUMMARY="${CONTRACT_SUMMARY:-${DEFAULT_CONTRACT_SUMMARY}}"
 SMOKE_SUMMARY="${SMOKE_SUMMARY:-${DEFAULT_SMOKE_SUMMARY}}"
 SAMPLES_SUMMARY="${SAMPLES_SUMMARY:-${DEFAULT_SAMPLES_SUMMARY}}"
 SCORE_SWEEP_SUMMARY="${SCORE_SWEEP_SUMMARY:-${DEFAULT_SCORE_SWEEP_SUMMARY}}"
+ASSIGNMENT_TOPOLOGY_SWEEP_SUMMARY="${ASSIGNMENT_TOPOLOGY_SWEEP_SUMMARY:-${DEFAULT_ASSIGNMENT_TOPOLOGY_SWEEP_SUMMARY}}"
 MIN_SCORE_SWEEP_CASES="${MIN_SCORE_SWEEP_CASES:-8}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 RESULT_ROOT="${RESULT_ROOT:-data/results}"
 RESULT_DIR="${RESULT_ROOT}/four_vehicle_dry_run_acceptance_${STAMP}"
 SUMMARY_FILE="${RESULT_DIR}/four_vehicle_dry_run_acceptance_${STAMP}.txt"
 
-for file in "${READONLY_SUMMARY}" "${CONTRACT_SUMMARY}" "${SMOKE_SUMMARY}" "${SAMPLES_SUMMARY}" "${SCORE_SWEEP_SUMMARY}"; do
+for file in "${READONLY_SUMMARY}" "${CONTRACT_SUMMARY}" "${SMOKE_SUMMARY}" "${SAMPLES_SUMMARY}" "${SCORE_SWEEP_SUMMARY}" "${ASSIGNMENT_TOPOLOGY_SWEEP_SUMMARY}"; do
   if [[ ! -f "${file}" ]]; then
     echo "Required evidence file does not exist: ${file}" >&2
     exit 1
@@ -36,6 +38,7 @@ python3 - \
   "${SMOKE_SUMMARY}" \
   "${SAMPLES_SUMMARY}" \
   "${SCORE_SWEEP_SUMMARY}" \
+  "${ASSIGNMENT_TOPOLOGY_SWEEP_SUMMARY}" \
   "${MIN_SCORE_SWEEP_CASES}" >"${SUMMARY_FILE}" <<'PY'
 import os
 import sys
@@ -46,8 +49,9 @@ import sys
     smoke_summary,
     samples_summary,
     score_sweep_summary,
+    assignment_topology_sweep_summary,
     min_score_sweep_cases,
-) = sys.argv[1:7]
+) = sys.argv[1:8]
 min_score_sweep_cases = int(min_score_sweep_cases)
 
 
@@ -75,6 +79,7 @@ contract = load_kv(contract_summary)
 smoke = load_kv(smoke_summary)
 samples = load_kv(samples_summary)
 score = load_kv(score_sweep_summary)
+assignment_topology = load_kv(assignment_topology_sweep_summary)
 
 screenshot = smoke.get("screenshot", "")
 screenshot_path = screenshot if screenshot.startswith("/") else os.path.abspath(screenshot)
@@ -138,8 +143,24 @@ score_ok = (
     and score.get("publishes_fmu_in") == "false"
     and i(score, "cases") >= min_score_sweep_cases
 )
+assignment_topology_ok = (
+    assignment_topology.get("decision") == "accepted_four_vehicle_assignment_topology_sweep"
+    and assignment_topology.get("uses_learned_policy") == "false"
+    and assignment_topology.get("starts_offboard") == "false"
+    and assignment_topology.get("arms") == "false"
+    and assignment_topology.get("publishes_fmu_in") == "false"
+    and assignment_topology.get("exact_limit_is_ready") == "true"
+    and assignment_topology.get("chain_just_over_rejected") == "true"
+    and assignment_topology.get("middle_chain_break_rejected") == "true"
+    and assignment_topology.get("tail_chain_break_rejected") == "true"
+    and assignment_topology.get("base_exact_limit_ready") == "true"
+    and assignment_topology.get("base_just_over_rejected") == "true"
+    and assignment_topology.get("status_stale_penalized") == "true"
+    and assignment_topology.get("pose_missing_zeroed") == "true"
+    and assignment_topology.get("roles_fixed") == "true"
+)
 
-accepted = readonly_ok and contract_ok and smoke_ok and samples_ok and score_ok
+accepted = readonly_ok and contract_ok and smoke_ok and samples_ok and score_ok and assignment_topology_ok
 decision = "accepted_four_vehicle_dry_run_acceptance" if accepted else "rejected_four_vehicle_dry_run_acceptance"
 reason = "four_vehicle_readonly_contract_smoke_samples_and_score_sweep_pass" if accepted else "one_or_more_four_vehicle_dry_run_gates_failed"
 
@@ -169,11 +190,13 @@ print(f"contract_summary={contract_summary}")
 print(f"smoke_summary={smoke_summary}")
 print(f"samples_summary={samples_summary}")
 print(f"score_sweep_summary={score_sweep_summary}")
+print(f"assignment_topology_sweep_summary={assignment_topology_sweep_summary}")
 print(f"readonly_ok={str(readonly_ok).lower()}")
 print(f"contract_ok={str(contract_ok).lower()}")
 print(f"smoke_ok={str(smoke_ok).lower()}")
 print(f"samples_ok={str(samples_ok).lower()}")
 print(f"score_ok={str(score_ok).lower()}")
+print(f"assignment_topology_ok={str(assignment_topology_ok).lower()}")
 print(f"num_vehicles={smoke.get('num_vehicles', '')}")
 print(f"dry_topics_ok={smoke.get('dry_topics_ok', '')}")
 print(f"forbidden_publishers_zero={smoke.get('forbidden_publishers_zero', '')}")
@@ -182,6 +205,7 @@ print(f"has_assignment={samples.get('has_assignment', '')}")
 print(f"has_scoring={samples.get('has_scoring', '')}")
 print(f"has_roles={samples.get('has_roles', '')}")
 print(f"score_sweep_cases={i(score, 'cases')}")
+print(f"assignment_topology_cases={i(assignment_topology, 'cases')}")
 print(f"screenshot={screenshot_path}")
 print(f"screenshot_ok={str(screenshot_ok).lower()}")
 print(f"claims_four_vehicle_dry_run_acceptance_pass={str(accepted).lower()}")
