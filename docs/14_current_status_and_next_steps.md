@@ -70,6 +70,7 @@ Accepted evidence:
 - Slow loop wind coverage audit accepted from the 2026-06-12 PX4 local-position trajectory: converted 29888 valid poses, dynamic normal-filtered coverage `0.729605`, weakest normal band `0.581943`, fast occlusion-clear normal coverage `0.680961`, weakest occlusion band `0.600000`.
 - Slow loop orbit-only coverage audit accepted after filtering out takeoff/transition poses: 28408 orbit poses, dynamic normal-filtered coverage `0.674538`, weakest normal band `0.512267`, fast occlusion-clear normal coverage `0.598628`, weakest occlusion band `0.507692`.
 - Multi-level slow-loop wind run accepted on 2026-06-15 using `single_vehicle_wind_turbine_multilevel_slow_loop_closure_smoke.launch.py`: 15m radius, 3 height levels, 2 laps per level, 145 waypoint advancements, final waypoint hold, accepted RViz screenshot `data/screenshots/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.png`, 43611 PX4 local-position pose samples used for coverage conversion, dynamic normal-filtered coverage `0.733899`, weakest normal band `0.595682`, and very-fast occlusion-clear normal coverage `0.708904`, weakest occlusion band `0.593750`.
+- Wind rule-baseline acceptance audit accepted on 2026-06-16: summary `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`, with `capture_ok=true`, `pose_ok=true`, `dynamic_ok=true`, `occlusion_ok=true`, `loop_ok=true`, `mapping_boundary_ok=true`, `p3d_ate_ok=true`, `px4_crosscheck_ok=true`, `waypoint_advancements=145`, `rtabmap_node_count=205`, `official_global_closure_links=6`, and `claims_wind_rule_baseline_acceptance_pass=true`.
 
 Important boundary:
 
@@ -88,7 +89,7 @@ Next wind work:
 - Add image-level quality/defect-detection integration only through mature open-source models or clearly separated future work.
 - Define explicit wind inspection acceptance thresholds before claiming completion.
 - Capture a fresh wind dynamic RViz/Gazebo screenshot only if it adds new evidence beyond the existing motion/RViz screenshots.
-- Keep 20m as the conservative accepted rule baseline until dynamic safety and coverage evidence justify promotion; multi-level slow-loop is now the best combined wind SLAM/coverage candidate, but still needs explicit acceptance thresholds before it replaces existing accepted baselines.
+- Keep 20m as the conservative simple baseline. The 15m multi-level slow-loop now has an accepted aggregate rule-baseline audit for single-vehicle wind evidence, but it still does not claim final defect inspection, cable active control, or multi-vehicle active approval.
 
 ## 4. SLAM Status
 

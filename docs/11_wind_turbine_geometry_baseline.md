@@ -482,3 +482,56 @@ Decision:
 - The 15m candidate keeps the full-view upper bound and improves frame fill ratio over the 20m baseline.
 - This makes 15m the stronger wind observation candidate for later coverage or SLAM checks.
 - The result is still a static upper bound, not a proof of dynamic collision safety or full inspection coverage.
+
+## 11. Multi-Level Slow-Loop Rule-Baseline Acceptance
+
+Purpose:
+
+- Aggregate the latest single-vehicle wind evidence into one auditable rule-baseline decision.
+- Keep the boundary explicit: this is wind-only evidence. It does not approve cable active bridge, multi-vehicle active control, image-level defect detection, or final inspection coverage.
+- The audit itself is offline and does not start ROS, PX4, Gazebo, RViz, Offboard, arm, or publish PX4 input topics.
+
+Audit command:
+
+```bash
+scripts/audit_wind_rule_baseline_acceptance.sh
+```
+
+Latest accepted result:
+
+- summary: `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
+- source capture: `data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt`
+- dynamic coverage: `data/results/wind_dynamic_coverage_multilevel_slow_loop_20260615_091712/wind_dynamic_coverage_progression_20260615_092327.txt`
+- occlusion coverage: `data/results/wind_occlusion_coverage_multilevel_slow_loop_very_fast_20260615_091712/wind_occlusion_coverage_progression_20260615_092417.txt`
+- loop closure: `data/results/rtabmap_loop_closure_evidence_20260615_093152/rtabmap_loop_closure_evidence_20260615_093152.txt`
+- mapping boundary: `data/results/rtabmap_wind_capture_output_boundary_20260615_093222/rtabmap_wind_capture_output_boundary_20260615_093222.txt`
+
+Accepted fields:
+
+```text
+decision=accepted_wind_rule_baseline_acceptance
+capture_ok=true
+pose_ok=true
+dynamic_ok=true
+occlusion_ok=true
+loop_ok=true
+mapping_boundary_ok=true
+p3d_ate_ok=true
+px4_crosscheck_ok=true
+waypoint_advancements=145
+valid_pose_samples=43611
+min_conservative_clearance_m=1.688958000
+final_normal_filtered_coverage_ratio=0.733899000
+min_band_normal_coverage_ratio_observed=0.595682000
+final_occlusion_clear_normal_coverage_ratio=0.708904000
+min_band_occlusion_clear_normal_ratio_observed=0.593750000
+rtabmap_node_count=205
+official_global_closure_links=6
+claims_wind_rule_baseline_acceptance_pass=true
+```
+
+Decision:
+
+- The 15m multi-level slow-loop is now the strongest accepted single-vehicle wind rule-baseline candidate.
+- The older 20m orbit remains useful as a simple conservative baseline.
+- The accepted aggregate still does not claim final defect inspection or dense final coverage certification.

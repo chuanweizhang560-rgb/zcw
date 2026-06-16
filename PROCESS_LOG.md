@@ -9544,3 +9544,98 @@
   - 可做 all-groups RViz 可视化刷新
   - 或转向风机验收阈值定义
 - 阻塞项：无
+
+### 2026-06-16 08:54:55 CST
+
+- 节点：Wind rule-baseline acceptance 聚合审计完成
+- 执行动作：
+  - 新增离线聚合审计脚本：
+    - `scripts/audit_wind_rule_baseline_acceptance.sh`
+  - 聚合输入：
+    - wind RTAB-Map/RViz capture summary：`data/results/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712/rtabmap_depth_camera_rgbd_wind_rviz_overlay_20260615_091712.txt`
+    - PX4 local-position pose conversion summary：`data/results/wind_pose_from_multilevel_slow_loop_20260615_091712/wind_pose_from_px4_local_position_20260615_092317.txt`
+    - dynamic normal-filtered coverage summary：`data/results/wind_dynamic_coverage_multilevel_slow_loop_20260615_091712/wind_dynamic_coverage_progression_20260615_092327.txt`
+    - occlusion-aware coverage summary：`data/results/wind_occlusion_coverage_multilevel_slow_loop_very_fast_20260615_091712/wind_occlusion_coverage_progression_20260615_092417.txt`
+    - RTAB-Map loop closure summary：`data/results/rtabmap_loop_closure_evidence_20260615_093152/rtabmap_loop_closure_evidence_20260615_093152.txt`
+    - RTAB-Map output boundary summary：`data/results/rtabmap_wind_capture_output_boundary_20260615_093222/rtabmap_wind_capture_output_boundary_20260615_093222.txt`
+    - P3D ATE summary：`data/results/rtabmap_multilevel_slow_loop_final_db_trajectory_ate_20260615_093152/rtabmap_multilevel_slow_loop_final_db_trajectory_ate_20260615_093152.txt`
+    - PX4 local-position cross-check summary：`data/results/rtabmap_multilevel_slow_loop_px4_final_db_20260615_093152/rtabmap_multilevel_slow_loop_px4_final_db_20260615_093152.txt`
+  - 验收阈值：
+    - `MIN_WAYPOINT_ADVANCEMENTS=120`
+    - `MIN_LOCAL_POSITION_SAMPLES=40000`
+    - `MIN_VALID_POSE_SAMPLES=40000`
+    - `MIN_CAPTURE_DURATION_SEC=300`
+    - `MIN_CLEARANCE_M=1.0`
+    - `MIN_DYNAMIC_NORMAL_COVERAGE=0.70`
+    - `MIN_DYNAMIC_BAND_COVERAGE=0.55`
+    - `MIN_OCCLUSION_CLEAR_COVERAGE=0.65`
+    - `MIN_OCCLUSION_BAND_COVERAGE=0.55`
+    - `MIN_DB_NODES=180`
+    - `MIN_OFFICIAL_GLOBAL_CLOSURES=1`
+    - `MAX_P3D_ATE_RMSE_M=0.01`
+    - `MAX_PX4_CROSSCHECK_P95_M=4.0`
+  - 执行：
+    - `bash -n scripts/audit_wind_rule_baseline_acceptance.sh`
+    - `chmod +x scripts/audit_wind_rule_baseline_acceptance.sh`
+    - `scripts/audit_wind_rule_baseline_acceptance.sh`
+  - 更新：
+    - `scripts/README.md`
+    - `docs/10_evidence_inventory.md`
+    - `docs/11_wind_turbine_geometry_baseline.md`
+    - `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：
+    - `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
+  - 关键字段：
+    - `decision=accepted_wind_rule_baseline_acceptance`
+    - `reason=multilevel_slow_loop_rule_baseline_meets_current_wind_thresholds`
+    - `starts_ros=false`
+    - `starts_px4=false`
+    - `starts_gazebo=false`
+    - `starts_rviz=false`
+    - `starts_offboard=false`
+    - `arms=false`
+    - `publishes_fmu_in=false`
+    - `source_capture_started_px4=true`
+    - `source_capture_started_gazebo=true`
+    - `source_capture_started_rviz=true`
+    - `source_capture_started_offboard=true`
+    - `source_capture_armed=true`
+    - `source_capture_published_fmu_in=true`
+    - `scope_boundary=single_vehicle_wind_rule_baseline_only`
+    - `claims_cable_active_bridge_approval=false`
+    - `claims_multi_vehicle_active_approval=false`
+    - `claims_final_inspection_coverage=false`
+    - `capture_ok=true`
+    - `pose_ok=true`
+    - `dynamic_ok=true`
+    - `occlusion_ok=true`
+    - `loop_ok=true`
+    - `mapping_boundary_ok=true`
+    - `p3d_ate_ok=true`
+    - `px4_crosscheck_ok=true`
+    - `waypoint_advancements=145`
+    - `local_position_trajectory_samples=44884`
+    - `valid_pose_samples=43611`
+    - `duration_sec=348.991111000`
+    - `min_conservative_clearance_m=1.688958000`
+    - `final_normal_filtered_coverage_ratio=0.733899000`
+    - `min_band_normal_coverage_ratio_observed=0.595682000`
+    - `final_occlusion_clear_normal_coverage_ratio=0.708904000`
+    - `min_band_occlusion_clear_normal_ratio_observed=0.593750000`
+    - `rtabmap_node_count=205`
+    - `official_global_closure_links=6`
+    - `official_local_space_closure_links=2`
+    - `map_update_count=205`
+    - `p3d_ate_rmse_m=0.000001087`
+    - `px4_crosscheck_p95_error_m=2.559375689`
+    - `claims_wind_rule_baseline_acceptance_pass=true`
+- 结论：
+  - 15m multi-level slow-loop 是当前最强的单机风机规则基线候选，并已通过聚合验收审计
+  - 该聚合审计本身未启动 ROS/PX4/Gazebo/RViz
+  - 源证据来自单机风机 active capture，允许范围仅限风机规则 baseline
+  - 不批准 cable active bridge，不批准 multi-vehicle active control，不声明最终缺陷检测或最终巡检覆盖完成
+- 下一步：
+  - 可转向 all-groups cable RViz 可视化刷新
+  - 或推进多机 dry-run assignment/topology 证据
+- 阻塞项：无

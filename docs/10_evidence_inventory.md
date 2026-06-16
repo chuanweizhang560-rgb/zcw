@@ -54,6 +54,7 @@ The audit is not allowed to:
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
 | Wind turbine multilevel GUI motion evidence | Gazebo screenshot, window id, Offboard log, vehicle status and local position echo | `scripts/capture_wind_turbine_multilevel_orbit_gui.sh` |
+| Wind rule-baseline acceptance | aggregate multi-level slow-loop motion, coverage, SLAM and mapping evidence summary | `scripts/audit_wind_rule_baseline_acceptance.sh` |
 
 ## 4. Latest Result
 
@@ -99,6 +100,11 @@ Additional latest local cable coverage evidence:
 - frame-contract accepted fields: `decision=accepted_cable_frame_contract_audit`, `accepted_group_count=5`, `global_max_target_point_error_m=0.000000000`, `global_max_lookahead_error_m=0.001200000`
 - dry-run acceptance summary: `data/results/cable_dry_run_acceptance_20260615_101218/cable_dry_run_acceptance_20260615_101218.txt`
 - dry-run acceptance fields: `decision=accepted_cable_dry_run_acceptance`, `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `boundary_ok=true`
+
+Additional latest local wind rule-baseline evidence:
+
+- wind rule-baseline acceptance summary: `data/results/wind_rule_baseline_acceptance_20260616_085445/wind_rule_baseline_acceptance_20260616_085445.txt`
+- wind rule-baseline accepted fields: `decision=accepted_wind_rule_baseline_acceptance`, `capture_ok=true`, `dynamic_ok=true`, `occlusion_ok=true`, `loop_ok=true`, `mapping_boundary_ok=true`, `claims_wind_rule_baseline_acceptance_pass=true`
 
 ## 5. Regeneration Rule
 
