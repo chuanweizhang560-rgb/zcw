@@ -252,6 +252,31 @@ Interpretation:
 - Full surface coverage requires multi-view observation, a different metric, or a deliberately narrower accepted claim such as visible-side inspection.
 - The multiview upgrade path is documented in `docs/23_cable_multiview_surface_observation_plan.md`.
 
+The first offline visible-side claim node is now accepted:
+
+- summary: `data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_20260617_093538.txt`
+- group CSV: `data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_groups_20260617_093538.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_visible_side_surface_coverage_offline
+group_count=5
+accepted_group_count=5
+global_min_visible_side_ratio=1.000000000
+global_max_total_surface_ratio=0.437500000
+visible_side_ready=true
+full_surface_ready=false
+claims_visible_side_surface_coverage_offline_pass=true
+claims_final_cable_inspection_coverage=false
+```
+
+Interpretation:
+
+- The project can now claim a stable offline visible-side cable surface coverage milestone.
+- The same evidence still does not justify a full-surface cable inspection claim.
+- This is a project progression node, not an active-control approval.
+
 Expected behavior:
 
 - read accepted cable geometry CSVs.

@@ -134,4 +134,25 @@ multiview_candidate_implemented=false
 active_control_approved=false
 ```
 
-The next implementation step should be C1 or C2 offline, not active control.
+## 8. C1 Offline Progress
+
+The C1 offline visible-side milestone is now accepted.
+
+Accepted evidence:
+
+- summary: `data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_20260617_093538.txt`
+- group CSV: `data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_groups_20260617_093538.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_visible_side_surface_coverage_offline
+group_count=5
+accepted_group_count=5
+global_min_visible_side_ratio=1.000000000
+global_max_total_surface_ratio=0.437500000
+claims_visible_side_surface_coverage_offline_pass=true
+claims_final_cable_inspection_coverage=false
+```
+
+The next implementation step is still C2 offline, not active control.

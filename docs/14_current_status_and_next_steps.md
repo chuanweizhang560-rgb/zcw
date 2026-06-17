@@ -22,6 +22,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Cable surface-observation trajectory continuity accepted on 2026-06-17: summary `data/results/cable_surface_observation_trajectory_continuity_20260617_092314/cable_surface_observation_trajectory_continuity_20260617_092314.txt`, with 5 accepted groups, `global_max_step_m=5.000331765`, zero yaw/pitch step, and no active-control or final-coverage claim.
 - Cable surface FOV candidate upper-bound characterization accepted on 2026-06-17: summary `data/results/cable_surface_fov_candidate_upper_bound_20260617_092636/cable_surface_fov_candidate_upper_bound_20260617_092636.txt`, with `visible_side_upper_bound_ready=true`, `global_min_visible_side_coverage_upper_bound_ratio=1.000000000`, but `global_min_total_surface_coverage_upper_bound_ratio=0.437500000` and `meets_total_surface_target=false`.
 - Cable multiview surface observation plan exists at `docs/23_cable_multiview_surface_observation_plan.md`; current recommended near-term claim is visible-side cable surface observation, while full-surface coverage requires a future multiview offline candidate.
+- Cable visible-side surface coverage offline C1 accepted on 2026-06-17: summary `data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_20260617_093538.txt`, with `group_count=5`, `accepted_group_count=5`, `global_min_visible_side_ratio=1.000000000`, `global_max_total_surface_ratio=0.437500000`, `visible_side_ready=true`, `full_surface_ready=false`, and `claims_visible_side_surface_coverage_offline_pass=true`.
 
 ## 2. Cable Status
 
@@ -60,6 +61,7 @@ Next cable work:
 
 - Do not implement active bridge without explicit approval.
 - Useful safe next nodes are wind/cable evidence aggregation or a documented active-control review. Do not implement active bridge without explicit approval.
+- For cable progression, the next offline node should be multiview surface candidate C2; active control remains off-limits until explicitly approved.
 
 ## 3. Wind Status
 

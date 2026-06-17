@@ -56,6 +56,7 @@
 - `audit_cable_surface_observation_pose_candidate.sh`：只读解析当前 cable offset path 中的 camera/source 点，生成未来 surface coverage 需要的候选观察姿态 CSV，并检查 5m 观测距离、finite yaw/pitch 和全组点数；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`，不声明 active control 或最终覆盖。
 - `audit_cable_surface_observation_trajectory_continuity.sh`：只读检查 surface-observation pose candidate 是否形成每组连续轨迹，验证步长、yaw/pitch 连续性和 5m 观测距离稳定性；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_surface_fov_candidate_upper_bound.sh`：只读基于 surface-observation pose candidate 做理想 FOV/距离/法向可见性上界表征，区分可见侧覆盖和全圆柱表面覆盖；不计算遮挡，不使用真实轨迹，不声明最终覆盖。
+- `audit_cable_visible_side_surface_coverage_offline.sh`：只读消费 FOV 上界结果，收敛成可见侧 cable surface coverage offline C1 节点；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`，不声明全表面覆盖。
 - `audit_cable_dry_run_acceptance.sh`：只读聚合 tracking envelope、frame contract、all-groups coverage monitor 和 line-segment coverage 证据，验证电缆 dry-run 验收阈值；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_acceptance_threshold_contract.sh`：只读检查 `docs/18_cable_acceptance_thresholds.md` 与 `audit_cable_dry_run_acceptance.sh` 的默认阈值和 non-claim 边界是否一致；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_visual_acceptance.sh`：只读聚合电缆 dry-run acceptance 与 all-groups RViz overlay 证据，验证当前电缆几何/可视化证据链；不启动 ROS/PX4/Gazebo/RViz。

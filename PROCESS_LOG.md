@@ -10717,3 +10717,43 @@
   - 或做 C2 multiview candidate offline
   - 或补 active bridge static-contract 文档
 - 阻塞项：无
+
+- 时间：2026-06-17 09:34:27 CST
+- 项目推进节点：启动 visible-side cable surface coverage offline C1
+- 操作：
+  - 计划把当前单侧 5m offset 观测 candidate 收敛成 visible-side 近端 claim
+  - 只计算可见侧表面覆盖比，不计算遮挡，不扩展到 full-surface claim
+  - 目标是把当前 FOV 上界结论转成更清晰的项目验收节点
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不声明 final cable inspection coverage
+- 阻塞项：无
+
+- 时间：2026-06-17 09:35:38 CST
+- 项目推进节点：visible-side cable surface coverage offline C1 完成
+- 操作：
+  - 新增并执行 `scripts/audit_cable_visible_side_surface_coverage_offline.sh`
+  - 基于已接受的 FOV upper-bound 结果，将单侧 5m offset candidate 收敛成可见侧离线覆盖 claim
+  - 更新 `scripts/README.md`、`docs/22_cable_inspection_surface_coverage_model.md`、`docs/23_cable_multiview_surface_observation_plan.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_20260617_093538.txt`
+  - group CSV：`data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_groups_20260617_093538.csv`
+  - 关键字段：
+    - `decision=accepted_cable_visible_side_surface_coverage_offline`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `global_min_visible_side_ratio=1.000000000`
+    - `global_max_total_surface_ratio=0.437500000`
+    - `visible_side_ready=true`
+    - `full_surface_ready=false`
+    - `claims_visible_side_surface_coverage_offline_pass=true`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - 项目现在拥有一个稳定的 offline visible-side cable surface coverage 节点
+  - 该节点仍然不支持 full-surface cable inspection claim
+  - 该节点不涉及 ROS/PX4/Gazebo/RViz/Offboard/arm，也不发布 `/fmu/in/*`
+- 下一步：
+  - 做 C2 multiview surface candidate offline，或继续补 wind/cable evidence aggregation
+- 阻塞项：无
