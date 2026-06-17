@@ -188,6 +188,70 @@ Interpretation:
 - This candidate should be used as the intended camera trajectory source for future offline surface coverage, before any active bridge discussion.
 - It is still not active control and still not final coverage.
 
+The current trajectory-continuity check for that candidate is:
+
+```text
+scripts/audit_cable_surface_observation_trajectory_continuity.sh
+```
+
+Latest accepted continuity result:
+
+- summary: `data/results/cable_surface_observation_trajectory_continuity_20260617_092314/cable_surface_observation_trajectory_continuity_20260617_092314.txt`
+- group CSV: `data/results/cable_surface_observation_trajectory_continuity_20260617_092314/cable_surface_observation_trajectory_continuity_groups_20260617_092314.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_surface_observation_trajectory_continuity
+group_count=5
+accepted_group_count=5
+global_max_step_m=5.000331765
+global_max_yaw_step_deg=0.000000000
+global_max_pitch_step_deg=0.000000000
+global_max_target_distance_error_m=0.000000000
+claims_active_control_approval=false
+claims_final_cable_inspection_coverage=false
+```
+
+Interpretation:
+
+- The surface-observation candidate is continuous enough for offline coverage prototyping.
+- It is not yet a PX4 trajectory and must not be published as setpoints without a separate active-control approval path.
+
+The current ideal FOV upper-bound characterization is:
+
+```text
+scripts/audit_cable_surface_fov_candidate_upper_bound.sh
+```
+
+Latest accepted upper-bound characterization:
+
+- summary: `data/results/cable_surface_fov_candidate_upper_bound_20260617_092636/cable_surface_fov_candidate_upper_bound_20260617_092636.txt`
+- group CSV: `data/results/cable_surface_fov_candidate_upper_bound_20260617_092636/cable_surface_fov_candidate_upper_bound_groups_20260617_092636.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_surface_fov_candidate_upper_bound_characterization
+group_count=5
+accepted_group_count=5
+global_min_total_surface_coverage_upper_bound_ratio=0.437500000
+global_min_visible_side_coverage_upper_bound_ratio=1.000000000
+global_min_fov_ok_ratio=1.000000000
+visible_side_upper_bound_ready=true
+meets_total_surface_target=false
+occlusion_gate_implemented=false
+uses_real_camera_trajectory=false
+claims_final_cable_inspection_coverage=false
+```
+
+Interpretation:
+
+- The single-side 5m offset candidate is good for the visible side of each cable.
+- It cannot support a whole-circumference cable surface coverage claim.
+- Full surface coverage requires multi-view observation, a different metric, or a deliberately narrower accepted claim such as visible-side inspection.
+- The multiview upgrade path is documented in `docs/23_cable_multiview_surface_observation_plan.md`.
+
 Expected behavior:
 
 - read accepted cable geometry CSVs.

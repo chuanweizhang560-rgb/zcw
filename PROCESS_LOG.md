@@ -10588,3 +10588,132 @@
   - 可基于该 candidate 做离线 FOV/表面采样 coverage prototype
   - 或补 active bridge static-contract 文档
 - 阻塞项：无
+
+- 时间：2026-06-17 09:21:28 CST
+- 节点：启动 cable surface observation trajectory continuity 离线节点
+- 操作：
+  - 计划新增只读脚本，消费 `cable_surface_observation_pose_candidate` CSV
+  - 检查每组相机候选点的连续步长、yaw/pitch 连续性、距离稳定性和有限姿态
+  - 该节点只验证未来表面观测候选路径的几何连续性，不生成 PX4 setpoint
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不声明 final cable inspection coverage
+- 阻塞项：无
+
+- 时间：2026-06-17 09:23:14 CST
+- 项目推进节点：线缆表面观测候选轨迹连续性确认
+- 操作：
+  - 新增 `scripts/audit_cable_surface_observation_trajectory_continuity.sh` 作为验证手段
+  - 基于 `data/results/cable_surface_observation_pose_candidate_20260617_091638/cable_surface_observation_pose_candidate_20260617_091638.csv`
+  - 验证 5 条线缆观测候选轨迹的步长、yaw/pitch 连续性、5m 观测距离稳定性和姿态有限性
+  - 更新 `scripts/README.md`、`docs/22_cable_inspection_surface_coverage_model.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - continuity summary：
+    - `data/results/cable_surface_observation_trajectory_continuity_20260617_092314/cable_surface_observation_trajectory_continuity_20260617_092314.txt`
+  - continuity group CSV：
+    - `data/results/cable_surface_observation_trajectory_continuity_20260617_092314/cable_surface_observation_trajectory_continuity_groups_20260617_092314.csv`
+  - 关键字段：
+    - `decision=accepted_cable_surface_observation_trajectory_continuity`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `global_max_step_m=5.000331765`
+    - `global_max_yaw_step_deg=0.000000000`
+    - `global_max_pitch_step_deg=0.000000000`
+    - `global_max_target_distance_error_m=0.000000000`
+    - `claims_active_control_approval=false`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - 项目现在有一组连续的线缆表面观测候选轨迹，可用于后续离线 FOV/表面采样覆盖模型
+  - 它不是 PX4 setpoint，不是 active control，不是最终巡检覆盖
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 基于这组候选轨迹做离线 FOV/表面采样覆盖上界
+  - 或补 active bridge static-contract 文档
+- 阻塞项：无
+
+- 时间：2026-06-17 09:24:36 CST
+- 项目推进节点：启动线缆表面 FOV 覆盖上界离线模型
+- 操作：
+  - 计划基于线缆表面观测候选轨迹生成圆柱表面采样覆盖上界
+  - 只计算距离、FOV 和表面法向可见性，不计算遮挡，不声明最终巡检覆盖
+  - 目标是判断单侧 5m 观测轨迹对导线圆柱表面的理论覆盖上限
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不声明 final cable inspection coverage
+- 阻塞项：无
+
+- 时间：2026-06-17 09:26:36 CST
+- 项目推进节点：线缆表面 FOV 覆盖上界表征完成
+- 操作：
+  - 新增 `scripts/audit_cable_surface_fov_candidate_upper_bound.sh` 作为验证手段
+  - 基于 125 个 surface-observation pose candidate，对每个导线采样 16 个圆柱表面点
+  - 计算理想距离门、FOV 门和表面法向可见门
+  - 将可见侧覆盖和全圆柱表面覆盖分开记录
+  - 更新 `scripts/README.md`、`docs/22_cable_inspection_surface_coverage_model.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - FOV upper-bound summary：
+    - `data/results/cable_surface_fov_candidate_upper_bound_20260617_092636/cable_surface_fov_candidate_upper_bound_20260617_092636.txt`
+  - FOV upper-bound group CSV：
+    - `data/results/cable_surface_fov_candidate_upper_bound_20260617_092636/cable_surface_fov_candidate_upper_bound_groups_20260617_092636.csv`
+  - 关键字段：
+    - `decision=accepted_cable_surface_fov_candidate_upper_bound_characterization`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `global_min_total_surface_coverage_upper_bound_ratio=0.437500000`
+    - `global_min_visible_side_coverage_upper_bound_ratio=1.000000000`
+    - `global_min_fov_ok_ratio=1.000000000`
+    - `visible_side_upper_bound_ready=true`
+    - `meets_total_surface_target=false`
+    - `occlusion_gate_implemented=false`
+    - `uses_real_camera_trajectory=false`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - 当前单侧 5m offset 观测轨迹可以作为导线“可见侧”观测候选
+  - 它不能支撑整圈圆柱表面覆盖 claim；全表面覆盖需要多视角轨迹或收窄为 visible-side inspection
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 设计多视角线缆表面观测候选，或明确论文实验中只验收 visible-side coverage
+  - 或补 active bridge static-contract 文档
+- 阻塞项：无
+
+- 时间：2026-06-17 09:30:38 CST
+- 项目推进节点：启动多视角线缆表面观测方案设计
+- 操作：
+  - 基于 FOV 上界结论，规划下一阶段线缆覆盖路线
+  - 明确 visible-side coverage 与 full-surface coverage 两种实验 claim 的差异
+  - 只写方案，不创建 active control，不启动仿真
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不声明 final cable inspection coverage
+- 阻塞项：无
+
+- 时间：2026-06-17 09:30:38 CST
+- 项目推进节点：多视角线缆表面观测方案设计完成
+- 操作：
+  - 新增 `docs/23_cable_multiview_surface_observation_plan.md`
+  - 基于 FOV 上界结果，将线缆覆盖路线拆成 visible-side 近期目标和 multiview full-surface 远期目标
+  - 明确多视角候选需要 side A、side B、top/bottom 等视角，但 bottom/垂直视角需要额外安全和相机姿态审查
+  - 更新 `docs/22_cable_inspection_surface_coverage_model.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - multiview surface observation plan：
+    - `docs/23_cable_multiview_surface_observation_plan.md`
+  - 当前推荐路线：
+    - `recommended_next_claim=visible_side_cable_surface_observation`
+    - `full_surface_claim_ready=false`
+    - `multiview_candidate_implemented=false`
+    - `active_control_approved=false`
+- 结论：
+  - 项目线缆覆盖 claim 已收窄：近期做 visible-side cable surface observation 更合理
+  - 若要做 full-surface claim，必须先做 multiview offline candidate 和 union FOV surface coverage
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 可做 C1 visible-side offline coverage ratio
+  - 或做 C2 multiview candidate offline
+  - 或补 active bridge static-contract 文档
+- 阻塞项：无
