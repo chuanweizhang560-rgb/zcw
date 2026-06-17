@@ -79,6 +79,7 @@ The approval package must be able to cite:
 - `docs/24_cable_surface_current_acceptance.md`
 The readiness snapshot is documented in `docs/27_cable_active_readiness_snapshot.md`.
 The approval wording is defined in `docs/28_cable_active_approval_manifest.md`.
+The complete bundle is frozen in `docs/29_cable_active_handoff_bundle.md`.
 
 ## 7. Non-Goals
 

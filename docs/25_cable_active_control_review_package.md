@@ -21,6 +21,7 @@ The intended consumer is a future executor that must not invent a new controller
 
 The frozen scenario is defined separately in `docs/26_cable_single_vehicle_active_scenario.md`.
 The approval wording is defined separately in `docs/28_cable_active_approval_manifest.md`.
+The complete bundle is frozen in `docs/29_cable_active_handoff_bundle.md`.
 
 ## 2. Current Decision
 

@@ -208,3 +208,4 @@ The consolidated review entry that should be read first is `docs/25_cable_active
 The frozen first active scenario is `docs/26_cable_single_vehicle_active_scenario.md`.
 The latest readiness snapshot is documented in `docs/27_cable_active_readiness_snapshot.md`.
 The approval wording is frozen in `docs/28_cable_active_approval_manifest.md`.
+The complete bundle is frozen in `docs/29_cable_active_handoff_bundle.md`.

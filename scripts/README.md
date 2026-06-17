@@ -65,6 +65,7 @@
 - `audit_cable_single_vehicle_active_scenario.sh`：只读检查冻结的首个单机 cable active 场景是否引用 review package、边界文档和审批约束；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_active_readiness_snapshot.sh`：只读汇总 review package、冻结场景、刷新后的 RViz 证据和 inventory 约束，输出当前 cable active readiness snapshot；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_active_approval_manifest.sh`：只读检查 future approval wording 是否已冻结且未出现在 `PROCESS_LOG.md`；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_cable_active_handoff_bundle.sh`：只读检查 frozen active handoff bundle 是否引用 25-28 文档和 current evidence matrix / inventory；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_dry_run_acceptance.sh`：只读聚合 tracking envelope、frame contract、all-groups coverage monitor 和 line-segment coverage 证据，验证电缆 dry-run 验收阈值；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_acceptance_threshold_contract.sh`：只读检查 `docs/18_cable_acceptance_thresholds.md` 与 `audit_cable_dry_run_acceptance.sh` 的默认阈值和 non-claim 边界是否一致；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_visual_acceptance.sh`：只读聚合电缆 dry-run acceptance 与 all-groups RViz overlay 证据，验证当前电缆几何/可视化证据链；不启动 ROS/PX4/Gazebo/RViz。

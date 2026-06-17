@@ -26,6 +26,7 @@ This snapshot uses the following inputs:
 - `docs/25_cable_active_control_review_package.md`
 - `docs/26_cable_single_vehicle_active_scenario.md`
 - `docs/28_cable_active_approval_manifest.md`
+- `docs/29_cable_active_handoff_bundle.md`
 - `docs/10_evidence_inventory.md`
 - `docs/14_current_status_and_next_steps.md`
 - `docs/20_active_control_review_entry.md`
@@ -56,6 +57,7 @@ This snapshot does not claim:
 - SLAM-feedback control.
 
 The approval wording remains frozen in `docs/28_cable_active_approval_manifest.md` and is not present in `PROCESS_LOG.md`.
+The complete bundle is frozen in `docs/29_cable_active_handoff_bundle.md`.
 
 ## 5. Review Rule
 

@@ -48,6 +48,7 @@ Before the approval text is considered valid, the following prerequisites must a
 - `docs/25_cable_active_control_review_package.md`
 - `docs/26_cable_single_vehicle_active_scenario.md`
 - `docs/27_cable_active_readiness_snapshot.md`
+- `docs/29_cable_active_handoff_bundle.md`
 - `docs/19_current_evidence_matrix.md`
 - `docs/10_evidence_inventory.md`
 - `docs/21_future_cable_active_bridge_design.md`
@@ -71,3 +72,5 @@ This manifest does not:
 4. publish Offboard heartbeat,
 5. publish PX4 trajectory setpoints,
 6. claim that the drone can follow the cable.
+
+The complete bundle is frozen in `docs/29_cable_active_handoff_bundle.md`.

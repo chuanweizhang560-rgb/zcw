@@ -31,7 +31,8 @@ It does not approve cable Phase B active control. It records what is currently r
 - Cable single-vehicle active scenario now exists at `docs/26_cable_single_vehicle_active_scenario.md`; it freezes `single_vehicle_cable_short_active` as the first approved active-control candidate, but still keeps it inactive.
 - Cable active readiness snapshot now exists at `docs/27_cable_active_readiness_snapshot.md`; it confirms the frozen path remains packaged and dry-run/read-only while using the refreshed 2026-06-17 RViz overlay evidence.
 - Cable active approval manifest now exists at `docs/28_cable_active_approval_manifest.md`; it freezes the exact PROCESS_LOG wording that would be required for any future approval and keeps the active bridge blocked until that wording appears.
-- Evidence matrix refreshed on 2026-06-17 after the readiness snapshot: summary `data/results/current_evidence_matrix_20260617_172812/current_evidence_matrix_20260617_172812.txt`, with `positive_capability_count=7`, `accepted_positive_capability_count=7`, and `claims_current_evidence_matrix_pass=true`.
+- Cable active handoff bundle now exists at `docs/29_cable_active_handoff_bundle.md`; it ties together the package, scenario, readiness, approval wording, matrix, and inventory into one frozen inactive bundle.
+- Evidence matrix refreshed on 2026-06-17 after the handoff bundle: summary `data/results/current_evidence_matrix_20260617_174818/current_evidence_matrix_20260617_174818.txt`, with `positive_capability_count=9`, `accepted_positive_capability_count=9`, and `claims_current_evidence_matrix_pass=true`.
 - Evidence inventory refreshed on 2026-06-17 after the RViz overlay refresh and readiness snapshot: summary `data/results/evidence_inventory_20260617_172812/evidence_inventory_20260617_172812.txt`, with `required_evidence_count=33`, `present_count=33`, `missing_count=0`, and `not_ignored_count=0`.
 - Gazebo GUI scene-start evidence captured on 2026-06-17 for AerialCore `danube_wires`: screenshot `data/screenshots/px4_aerialcore_danube_wires_gui_20260617_162903.png`, log `data/logs/px4_aerialcore_danube_wires_gui_20260617_162903.log`; this is scene-load evidence, not cable coverage evidence.
 - Cable offboard gate dry-run RViz overlay recaptured on 2026-06-17: screenshot `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260617_171815.png`, summary `data/results/cable_offboard_gate_rviz_overlay_20260617_171815/cable_offboard_gate_rviz_overlay_20260617_171815.txt`; this remains debug overlay evidence with `phase_b_allowed=false` and `publishes_fmu_in=false`.
@@ -216,7 +217,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Use `docs/25_cable_active_control_review_package.md`, `docs/26_cable_single_vehicle_active_scenario.md`, `docs/27_cable_active_readiness_snapshot.md`, and `docs/28_cable_active_approval_manifest.md` as the handoff entries for any future active-control review, then continue with a cable surface-observation trajectory refinement or additional cable evidence if more dry-run proof is needed. Active cable bridge and active multi-vehicle Offboard remain forbidden until explicit user approval exists.
+1. Use `docs/25_cable_active_control_review_package.md`, `docs/26_cable_single_vehicle_active_scenario.md`, `docs/27_cable_active_readiness_snapshot.md`, `docs/28_cable_active_approval_manifest.md`, and `docs/29_cable_active_handoff_bundle.md` as the handoff entries for any future active-control review, then continue with a cable surface-observation trajectory refinement or additional cable evidence if more dry-run proof is needed. Active cable bridge and active multi-vehicle Offboard remain forbidden until explicit user approval exists.
 
 Reason:
 
