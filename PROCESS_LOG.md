@@ -10791,3 +10791,78 @@
 - 下一步：
   - 可继续做更强的 multiview 变体，或进入 wind/cable evidence aggregation
 - 阻塞项：无
+
+- 时间：2026-06-17 16:11:07 CST
+- 项目推进节点：cable surface current acceptance 聚合完成
+- 操作：
+  - 新增并执行 `scripts/audit_cable_surface_current_acceptance.sh`
+  - 聚合 C1 visible-side、C2 multiview candidate、C2 multiview union 和 cable dry-run acceptance
+  - 新增 `docs/24_cable_surface_current_acceptance.md`
+  - 更新 `scripts/README.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/cable_surface_current_acceptance_20260617_161107/cable_surface_current_acceptance_20260617_161107.txt`
+  - 关键字段：
+    - `decision=accepted_cable_surface_current_acceptance`
+    - `c1_visible_side_ok=true`
+    - `c2_candidate_ok=true`
+    - `c2_union_ok=true`
+    - `dry_run_ok=true`
+    - `final_claim_blocked=true`
+    - `c2_global_min_total_surface_coverage_upper_bound_ratio=0.875000000`
+    - `c2_global_min_visible_side_coverage_upper_bound_ratio=1.000000000`
+    - `claims_cable_surface_progression_current_acceptance_pass=true`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - 当前线缆表面覆盖推进状态有了单一聚合入口
+  - 该节点仍然明确阻断 final cable inspection coverage claim
+  - 该节点不启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也不发布 `/fmu/in/*`
+- 下一步：
+  - 将该状态接入 current evidence matrix 和 evidence inventory
+- 阻塞项：无
+
+- 时间：2026-06-17 16:12:25 CST
+- 项目推进节点：current evidence matrix 纳入 cable surface progression
+- 操作：
+  - 更新并执行 `scripts/audit_current_evidence_matrix.sh`
+  - 新增 `surface_progression_visible_side_and_multiview_offline` 正向能力行
+  - 更新 `docs/19_current_evidence_matrix.md` 和 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/current_evidence_matrix_20260617_161225/current_evidence_matrix_20260617_161225.txt`
+  - matrix CSV：`data/results/current_evidence_matrix_20260617_161225/current_evidence_matrix_20260617_161225.csv`
+  - 关键字段：
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=6`
+    - `accepted_positive_capability_count=6`
+    - `forbidden_capability_count=4`
+    - `forbidden_not_enabled=true`
+    - `claims_current_evidence_matrix_pass=true`
+- 结论：
+  - 项目状态矩阵现在包含线缆表面覆盖推进能力
+  - 禁止能力边界未放宽：active bridge、multi-vehicle active Offboard、RL policy control、image-level defect detection 仍未启用
+  - 该节点不启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也不发布 `/fmu/in/*`
+- 下一步：
+  - 更新 evidence inventory，使本机关键结果完整性检查覆盖新节点
+- 阻塞项：无
+
+- 时间：2026-06-17 16:15:38 CST
+- 项目推进节点：evidence inventory 纳入 cable surface progression
+- 操作：
+  - 更新并执行 `scripts/audit_evidence_inventory.sh`
+  - 将 `cable_surface_current_acceptance` 和刷新后的 `current_evidence_matrix` 纳入 required evidence
+  - 更新 `docs/10_evidence_inventory.md`
+- 结果：
+  - summary：`data/results/evidence_inventory_20260617_161538/evidence_inventory_20260617_161538.txt`
+  - inventory CSV：`data/results/evidence_inventory_20260617_161538/evidence_inventory_20260617_161538.csv`
+  - regeneration list：`data/results/evidence_inventory_20260617_161538/evidence_regeneration_20260617_161538.txt`
+  - 关键字段：
+    - `decision=accepted_evidence_inventory`
+    - `required_evidence_count=28`
+    - `present_count=28`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - 新的线缆表面覆盖推进结果已被纳入本机证据完整性检查
+  - 该节点不启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也不发布 `/fmu/in/*`
+- 下一步：
+  - 可继续做 occlusion-aware cable surface gate，或准备 active-control review 包但不实现 active bridge
+- 阻塞项：无

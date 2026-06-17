@@ -6,11 +6,13 @@ cd "${ROOT_DIR}"
 
 DEFAULT_CABLE_DRY_RUN_SUMMARY="data/results/cable_dry_run_acceptance_20260617_085648/cable_dry_run_acceptance_20260617_085648.txt"
 DEFAULT_CABLE_VISUAL_SUMMARY="data/results/cable_visual_acceptance_20260617_085710/cable_visual_acceptance_20260617_085710.txt"
+DEFAULT_CABLE_SURFACE_SUMMARY="data/results/cable_surface_current_acceptance_20260617_161107/cable_surface_current_acceptance_20260617_161107.txt"
 DEFAULT_WIND_SUMMARY="data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt"
 DEFAULT_FOUR_VEHICLE_SUMMARY="data/results/four_vehicle_dry_run_acceptance_20260616_090911/four_vehicle_dry_run_acceptance_20260616_090911.txt"
 DEFAULT_PROJECT_SUMMARY="data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt"
 CABLE_DRY_RUN_SUMMARY="${CABLE_DRY_RUN_SUMMARY:-${DEFAULT_CABLE_DRY_RUN_SUMMARY}}"
 CABLE_VISUAL_SUMMARY="${CABLE_VISUAL_SUMMARY:-${DEFAULT_CABLE_VISUAL_SUMMARY}}"
+CABLE_SURFACE_SUMMARY="${CABLE_SURFACE_SUMMARY:-${DEFAULT_CABLE_SURFACE_SUMMARY}}"
 WIND_SUMMARY="${WIND_SUMMARY:-${DEFAULT_WIND_SUMMARY}}"
 FOUR_VEHICLE_SUMMARY="${FOUR_VEHICLE_SUMMARY:-${DEFAULT_FOUR_VEHICLE_SUMMARY}}"
 PROJECT_SUMMARY="${PROJECT_SUMMARY:-${DEFAULT_PROJECT_SUMMARY}}"
@@ -20,7 +22,7 @@ RESULT_DIR="${RESULT_ROOT}/current_evidence_matrix_${STAMP}"
 SUMMARY_FILE="${RESULT_DIR}/current_evidence_matrix_${STAMP}.txt"
 MATRIX_CSV="${RESULT_DIR}/current_evidence_matrix_${STAMP}.csv"
 
-for file in "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${WIND_SUMMARY}" "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}"; do
+for file in "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}"; do
   if [[ ! -f "${file}" ]]; then
     echo "Required aggregate summary does not exist: ${file}" >&2
     exit 1
@@ -29,7 +31,7 @@ done
 
 mkdir -p "${RESULT_DIR}"
 
-python3 - "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${WIND_SUMMARY}" \
+python3 - "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" \
   "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}" "${MATRIX_CSV}" >"${SUMMARY_FILE}" <<'PY'
 import csv
 import sys
@@ -37,11 +39,12 @@ import sys
 (
     cable_dry_run_summary,
     cable_visual_summary,
+    cable_surface_summary,
     wind_summary,
     four_vehicle_summary,
     project_summary,
     matrix_csv,
-) = sys.argv[1:7]
+) = sys.argv[1:8]
 
 
 def load_kv(path):
@@ -58,6 +61,7 @@ def load_kv(path):
 
 cable = load_kv(cable_dry_run_summary)
 cable_visual = load_kv(cable_visual_summary)
+cable_surface = load_kv(cable_surface_summary)
 wind = load_kv(wind_summary)
 four = load_kv(four_vehicle_summary)
 project = load_kv(project_summary)
@@ -75,6 +79,15 @@ cable_visual_ok = (
     and cable_visual.get("dry_run_ok") == "true"
     and cable_visual.get("overlay_boundary_ok") == "true"
     and cable_visual.get("overlay_content_ok") == "true"
+)
+cable_surface_ok = (
+    cable_surface.get("decision") == "accepted_cable_surface_current_acceptance"
+    and cable_surface.get("c1_visible_side_ok") == "true"
+    and cable_surface.get("c2_candidate_ok") == "true"
+    and cable_surface.get("c2_union_ok") == "true"
+    and cable_surface.get("dry_run_ok") == "true"
+    and cable_surface.get("final_claim_blocked") == "true"
+    and cable_surface.get("claims_final_cable_inspection_coverage") == "false"
 )
 wind_ok = (
     wind.get("decision") == "accepted_wind_rule_baseline_acceptance"
@@ -123,6 +136,17 @@ rows = [
         "non_claim": "not Gazebo/PX4 execution evidence; not final inspection coverage",
         "starts_active_control": "false",
         "publishes_fmu_in": cable_visual.get("publishes_fmu_in", "unknown"),
+        "source_may_have_active_control": "false",
+    },
+    {
+        "area": "cable",
+        "capability": "surface_progression_visible_side_and_multiview_offline",
+        "status": "accepted" if cable_surface_ok else "rejected",
+        "evidence": cable_surface_summary,
+        "claim": "visible-side C1 and side-A/side-B multiview C2 surface progression are accepted",
+        "non_claim": "not active PX4 control; not final cable inspection coverage; not occlusion-certified",
+        "starts_active_control": "false",
+        "publishes_fmu_in": cable_surface.get("publishes_fmu_in", "unknown"),
         "source_may_have_active_control": "false",
     },
     {
@@ -244,6 +268,7 @@ print("publishes_fmu_in=false")
 print(f"matrix_csv={matrix_csv}")
 print(f"cable_dry_run_summary={cable_dry_run_summary}")
 print(f"cable_visual_summary={cable_visual_summary}")
+print(f"cable_surface_summary={cable_surface_summary}")
 print(f"wind_summary={wind_summary}")
 print(f"four_vehicle_summary={four_vehicle_summary}")
 print(f"project_summary={project_summary}")

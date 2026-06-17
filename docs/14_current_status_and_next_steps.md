@@ -25,6 +25,8 @@ It does not approve cable Phase B active control. It records what is currently r
 - Cable visible-side surface coverage offline C1 accepted on 2026-06-17: summary `data/results/cable_visible_side_surface_coverage_offline_20260617_093538/cable_visible_side_surface_coverage_offline_20260617_093538.txt`, with `group_count=5`, `accepted_group_count=5`, `global_min_visible_side_ratio=1.000000000`, `global_max_total_surface_ratio=0.437500000`, `visible_side_ready=true`, `full_surface_ready=false`, and `claims_visible_side_surface_coverage_offline_pass=true`.
 - Cable multiview surface candidate offline C2 accepted on 2026-06-17: summary `data/results/cable_multiview_surface_candidate_offline_20260617_094219/cable_multiview_surface_candidate_offline_20260617_094219.txt`, with `group_count=5`, `accepted_group_count=5`, `pose_count=250`, and `claims_multiview_surface_candidate_offline_pass=true`.
 - Cable multiview surface union offline characterization accepted on 2026-06-17: summary `data/results/cable_multiview_surface_union_offline_20260617_094233/cable_multiview_surface_union_offline_20260617_094233.txt`, with `group_count=5`, `accepted_group_count=5`, `global_min_total_surface_coverage_upper_bound_ratio=0.875000000`, `global_min_visible_side_coverage_upper_bound_ratio=1.000000000`, and `claims_multiview_surface_union_offline_pass=true`.
+- Cable surface current acceptance is documented at `docs/24_cable_surface_current_acceptance.md` and accepted on 2026-06-17: summary `data/results/cable_surface_current_acceptance_20260617_161107/cable_surface_current_acceptance_20260617_161107.txt`, with `c1_visible_side_ok=true`, `c2_candidate_ok=true`, `c2_union_ok=true`, `dry_run_ok=true`, `final_claim_blocked=true`, and `claims_cable_surface_progression_current_acceptance_pass=true`.
+- Current evidence matrix refreshed on 2026-06-17 after adding cable surface progression: summary `data/results/current_evidence_matrix_20260617_161225/current_evidence_matrix_20260617_161225.txt`, matrix CSV `data/results/current_evidence_matrix_20260617_161225/current_evidence_matrix_20260617_161225.csv`, with `positive_capability_count=6`, `accepted_positive_capability_count=6`, and the new `surface_progression_visible_side_and_multiview_offline` row accepted.
 
 ## 2. Cable Status
 
@@ -65,6 +67,7 @@ Next cable work:
 - Useful safe next nodes are wind/cable evidence aggregation or a documented active-control review. Do not implement active bridge without explicit approval.
 - For cable progression, the next offline node should be multiview surface candidate C2; active control remains off-limits until explicitly approved.
 - The next offline node after C2 should be a stronger multiview variant or a cable evidence aggregation step; active control remains off-limits until explicitly approved.
+- Cable surface progression is now aggregated; the next cable step should be either a stricter occlusion-aware offline surface gate or an explicit active-control review package, not immediate active bridge code.
 
 ## 3. Wind Status
 
