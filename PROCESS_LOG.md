@@ -10974,3 +10974,29 @@
 - 下一步：
   - 可以继续做更好的 Gazebo/RViz 同框可视化，或准备电缆 active-control review package
 - 阻塞项：无
+
+- 时间：2026-06-17 16:52:36 CST
+- 项目推进节点：cable active control review package 成型并通过静态审计
+- 操作：
+  - 新建 `docs/25_cable_active_control_review_package.md`
+  - 新建 `scripts/audit_cable_active_control_review_package.sh`
+  - 更新 `docs/20_active_control_review_entry.md`、`docs/21_future_cable_active_bridge_design.md`、`docs/14_current_status_and_next_steps.md`、`scripts/README.md`
+  - 执行 `scripts/audit_cable_active_control_review_package.sh`
+- 结果：
+  - package doc：`docs/25_cable_active_control_review_package.md`
+  - audit summary：`data/results/cable_active_control_review_package_20260617_165225/cable_active_control_review_package_20260617_165225.txt`
+  - static log：`data/results/cable_active_control_review_package_20260617_165225/static_checks_20260617_165225.log`
+  - 关键字段：
+    - `decision=accepted_cable_active_control_review_package`
+    - `package_prepared=true`
+    - `active_control_approved=false`
+    - `phase_b_user_approved=false`
+    - `publishes_fmu_in=false`
+    - `rate_hz=20`
+    - `single_vehicle_cable_only=true`
+- 结论：
+  - 已形成可供后续 agent 直接读取的 active-control review package
+  - 该 package 只是 review entry，不是 active bridge 实现
+- 下一步：
+  - 若继续推进 active control，先基于 package 做用户审批复核，再进入单机 cable active bridge 设计
+- 阻塞项：无
