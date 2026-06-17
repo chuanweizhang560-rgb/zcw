@@ -10418,3 +10418,42 @@
   - 若用户明确批准，可先写 future active bridge design diff，但仍先 dry-run
   - 若继续保持安全边界，可增强 wind occlusion 或 cable inspection-surface 证据
 - 阻塞项：无
+
+- 时间：2026-06-17 09:07:55 CST
+- 节点：启动 future cable active bridge design 文档节点
+- 操作：
+  - 计划新增未来单机线缆 active bridge 设计文档
+  - 只定义架构、topic、实时频率、安全门控、abort 条件和证据要求
+  - 不创建 active bridge 代码、不新增 launch、不新增 CMake target
+- 边界：
+  - 只写文档
+  - active bridge 仍未批准
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+- 阻塞项：无
+
+- 时间：2026-06-17 09:10:00 CST
+- 节点：完成 future cable active bridge design 文档节点
+- 操作：
+  - 新增 `docs/21_future_cable_active_bridge_design.md`
+  - 将未来 active bridge 设计限定为单机线缆、20Hz、默认 dry-run、显式批准后才允许 PX4 Offboard setpoint 输出
+  - 明确 active bridge 不做感知、拟合、路径生成、SLAM、角色分配或学习策略推理
+  - 明确不使用自研 Minimum Snap/PID 作为 active bridge 内部控制逻辑；如需轨迹平滑，后续必须单独引入成熟依赖或上游实现并审查
+  - 更新 `docs/20_active_control_review_entry.md` 和 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - future cable active bridge design：
+    - `docs/21_future_cable_active_bridge_design.md`
+  - 静态核查：
+    - 未发现 `active_control_approved=true`
+    - 未发现 `implementation_exists=true`
+    - 未发现 `phase_b_user_approved=true`
+    - 未发现 `publishes_fmu_in=true`
+- 结论：
+  - 未来 active bridge 的设计边界已明确，但仍没有实现 active bridge
+  - 当前仍不允许 `/fmu/in/*` 发布，不允许 Offboard/arm 主动控制
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 若继续文档路线，可补 future active bridge static contract 设计
+  - 若继续证据路线，可增强 wind occlusion 或 cable inspection-surface evidence
+- 阻塞项：无

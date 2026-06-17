@@ -15,6 +15,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Project current acceptance audit accepted on 2026-06-17: latest summary `data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
 - Current evidence matrix accepted on 2026-06-17: summary `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.txt`, matrix CSV `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.csv`, with 5 accepted positive capabilities and 4 forbidden/not-implemented capabilities explicitly recorded.
 - Active-control review entry exists at `docs/20_active_control_review_entry.md`; it keeps `active_control_approved=false`, requires explicit user approval before any `/fmu/in/*` publication, and defines the first active bridge as a future single-vehicle cable-only review item.
+- Future cable active bridge design exists at `docs/21_future_cable_active_bridge_design.md`; it is documentation only, keeps `implementation_exists=false`, and defines a future 20Hz single-vehicle cable bridge boundary without approving active control.
 
 ## 2. Cable Status
 

@@ -130,7 +130,7 @@ The next safe action is not to implement the active bridge yet.
 The next safe action is one of:
 
 - review this entry with the user.
-- create a future active bridge design document.
+- review `docs/21_future_cable_active_bridge_design.md`.
 - strengthen cable/wind evidence while remaining dry-run/read-only.
 
 The active bridge remains blocked until explicit user approval is recorded.
