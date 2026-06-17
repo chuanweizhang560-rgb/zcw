@@ -4,9 +4,9 @@ set -eo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 
-DEFAULT_CABLE_SUMMARY="data/results/cable_dry_run_acceptance_20260616_152304/cable_dry_run_acceptance_20260616_152304.txt"
+DEFAULT_CABLE_SUMMARY="data/results/cable_dry_run_acceptance_20260617_085648/cable_dry_run_acceptance_20260617_085648.txt"
 DEFAULT_WIND_SUMMARY="data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt"
-DEFAULT_FOUR_VEHICLE_SUMMARY="data/results/four_vehicle_dry_run_acceptance_20260616_085834/four_vehicle_dry_run_acceptance_20260616_085834.txt"
+DEFAULT_FOUR_VEHICLE_SUMMARY="data/results/four_vehicle_dry_run_acceptance_20260616_090911/four_vehicle_dry_run_acceptance_20260616_090911.txt"
 CABLE_SUMMARY="${CABLE_SUMMARY:-${DEFAULT_CABLE_SUMMARY}}"
 WIND_SUMMARY="${WIND_SUMMARY:-${DEFAULT_WIND_SUMMARY}}"
 FOUR_VEHICLE_SUMMARY="${FOUR_VEHICLE_SUMMARY:-${DEFAULT_FOUR_VEHICLE_SUMMARY}}"
@@ -51,6 +51,7 @@ cable_ok = (
     and cable.get("tracking_ok") == "true"
     and cable.get("frame_ok") == "true"
     and cable.get("coverage_ok") == "true"
+    and cable.get("line_segment_ok") == "true"
     and cable.get("boundary_ok") == "true"
 )
 wind_ok = (

@@ -47,7 +47,8 @@ The audit is not allowed to:
 | Cable path geometry audit | offset path and lookahead target consistency summary | `scripts/audit_cable_path_geometry.sh` |
 | Cable Frenet consistency audit | offset path and lookahead target Frenet consistency summary | `scripts/audit_cable_frenet_consistency.sh` |
 | Cable frame contract audit | centerline, offset path and lookahead target frame-contract summary | `scripts/audit_cable_frame_contract.sh` |
-| Cable dry-run acceptance audit | aggregate tracking, frame-contract and coverage threshold summary | `scripts/audit_cable_dry_run_acceptance.sh` |
+| Cable line-segment coverage audit | all-groups lookahead segment arc-coverage summary, current/target point error and forward-dot checks | `scripts/audit_cable_line_segment_coverage.sh` |
+| Cable dry-run acceptance audit | aggregate tracking, frame-contract, coverage-monitor and line-segment coverage threshold summary | `scripts/audit_cable_dry_run_acceptance.sh` |
 | Cable lookahead sweep | multi-lookahead summary and CSV | `scripts/audit_lookahead_distance_sweep.sh` |
 | Cable dry-run coverage monitor | coverage monitor summary, topic list and coverage state echo | `scripts/verify_lookahead_coverage_monitor.sh`, `scripts/audit_lookahead_coverage_monitor_all_groups.sh` |
 | Cable all-groups RViz overlay | all accepted cable groups rendered as MarkerArray in RViz, with no PX4/Gazebo/Offboard path | `scripts/capture_cable_all_groups_rviz_overlay.sh` |
@@ -67,9 +68,9 @@ The audit is not allowed to:
 
 Latest evidence:
 
-- summary: `data/results/evidence_inventory_20260616_152438/evidence_inventory_20260616_152438.txt`
-- inventory CSV: `data/results/evidence_inventory_20260616_152438/evidence_inventory_20260616_152438.csv`
-- regeneration list: `data/results/evidence_inventory_20260616_152438/evidence_regeneration_20260616_152438.txt`
+- summary: `data/results/evidence_inventory_20260617_085819/evidence_inventory_20260617_085819.txt`
+- inventory CSV: `data/results/evidence_inventory_20260617_085819/evidence_inventory_20260617_085819.csv`
+- regeneration list: `data/results/evidence_inventory_20260617_085819/evidence_regeneration_20260617_085819.txt`
 
 Expected accepted fields:
 
@@ -88,8 +89,8 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=25`
-- `present_count=25`
+- `required_evidence_count=26`
+- `present_count=26`
 - `missing_count=0`
 - `not_ignored_count=0`
 
@@ -105,8 +106,10 @@ Additional latest local cable coverage evidence:
 - frame-contract summary: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_20260615_100822.txt`
 - frame-contract CSV: `data/results/cable_frame_contract_20260615_100822/cable_frame_contract_groups_20260615_100822.csv`
 - frame-contract accepted fields: `decision=accepted_cable_frame_contract_audit`, `accepted_group_count=5`, `global_max_target_point_error_m=0.000000000`, `global_max_lookahead_error_m=0.001200000`
-- dry-run acceptance summary: `data/results/cable_dry_run_acceptance_20260616_152304/cable_dry_run_acceptance_20260616_152304.txt`
-- dry-run acceptance fields: `decision=accepted_cable_dry_run_acceptance`, `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `boundary_ok=true`
+- line-segment coverage summary: `data/results/cable_line_segment_coverage_20260617_085604/cable_line_segment_coverage_20260617_085604.txt`
+- line-segment coverage fields: `decision=accepted_cable_line_segment_coverage`, `accepted_group_count=5`, `total_path_length_m=600.011818322`, `global_min_arc_coverage_ratio=1.000000000`, `global_min_segment_forward_dot=0.999999495`, `claims_final_inspection_coverage=false`
+- dry-run acceptance summary: `data/results/cable_dry_run_acceptance_20260617_085648/cable_dry_run_acceptance_20260617_085648.txt`
+- dry-run acceptance fields: `decision=accepted_cable_dry_run_acceptance`, `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `line_segment_ok=true`, `boundary_ok=true`
 - cable threshold contract summary: `data/results/cable_acceptance_threshold_contract_20260616_152304/cable_acceptance_threshold_contract_20260616_152304.txt`
 - cable threshold contract fields: `decision=accepted_cable_acceptance_threshold_contract`, `check_count=11`, `fail_count=0`, `claims_active_control_approval=false`, `claims_final_inspection_coverage=false`
 
@@ -124,7 +127,7 @@ Additional latest local four-vehicle dry-run evidence:
 
 Additional latest local project aggregate evidence:
 
-- project current acceptance summary: `data/results/project_current_acceptance_20260616_152334/project_current_acceptance_20260616_152334.txt`
+- project current acceptance summary: `data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt`
 - project current accepted fields: `decision=accepted_project_current_acceptance`, `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, `claims_project_current_acceptance_pass=true`
 
 ## 5. Regeneration Rule

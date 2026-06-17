@@ -10257,3 +10257,69 @@
   - 或做 wind/cable evidence aggregation
   - 或写 active-control review 文档，但不实现 active bridge，除非用户明确批准
 - 阻塞项：无
+- 时间：2026-06-17 08:54:51 CST
+- 节点：启动 denser cable line-segment coverage 离线审计节点
+- 操作：
+  - 读取当前 offset path CSV 与 lookahead target CSV 表头
+  - 确认可基于现有 5 组导线路径点、前视目标和切向字段做线段级弧长覆盖审计
+  - 计划新增只读审计脚本，检查每组路径点数、前视目标数、target/current 落点误差、前向一致性和 lookahead segment 对路径弧长的覆盖比例
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不实现 cable Phase B active bridge
+  - 不声明 final cable inspection coverage
+- 阻塞项：无
+
+- 时间：2026-06-17 08:58:19 CST
+- 节点：完成 denser cable line-segment coverage 离线审计节点
+- 操作：
+  - 新增 `scripts/audit_cable_line_segment_coverage.sh`
+  - 只读解析当前全组 offset path CSV 与 lookahead target CSV
+  - 计算每组 lookahead segment 在路径弧长上的并集覆盖、current/target 落点误差、前向一致性和无效索引数量
+  - 将 line-segment coverage 接入 `scripts/audit_cable_dry_run_acceptance.sh`
+  - 刷新 cable visual acceptance、project current acceptance 和 evidence inventory
+  - 更新 `scripts/README.md`、`docs/10_evidence_inventory.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - line-segment coverage summary：
+    - `data/results/cable_line_segment_coverage_20260617_085604/cable_line_segment_coverage_20260617_085604.txt`
+  - line-segment coverage 关键字段：
+    - `decision=accepted_cable_line_segment_coverage`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `total_path_length_m=600.011818322`
+    - `total_covered_arc_length_m=600.011818322`
+    - `global_min_arc_coverage_ratio=1.000000000`
+    - `global_max_current_point_error_m=0.000000000`
+    - `global_max_target_point_error_m=0.000000000`
+    - `global_min_segment_forward_dot=0.999999495`
+    - `claims_final_inspection_coverage=false`
+  - refreshed cable dry-run acceptance summary：
+    - `data/results/cable_dry_run_acceptance_20260617_085648/cable_dry_run_acceptance_20260617_085648.txt`
+  - refreshed cable dry-run acceptance 关键字段：
+    - `decision=accepted_cable_dry_run_acceptance`
+    - `tracking_ok=true`
+    - `frame_ok=true`
+    - `coverage_ok=true`
+    - `line_segment_ok=true`
+    - `boundary_ok=true`
+    - `line_segment_global_min_arc_coverage_ratio=1.000000000`
+  - refreshed cable visual acceptance summary：
+    - `data/results/cable_visual_acceptance_20260617_085710/cable_visual_acceptance_20260617_085710.txt`
+  - refreshed project current acceptance summary：
+    - `data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt`
+  - refreshed evidence inventory summary：
+    - `data/results/evidence_inventory_20260617_085819/evidence_inventory_20260617_085819.txt`
+  - evidence inventory 关键字段：
+    - `required_evidence_count=26`
+    - `present_count=26`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - 当前电缆 dry-run 证据链已从“coverage monitor readiness”补强到“全组 lookahead segment 连续弧长覆盖”
+  - 该结果仍然只证明几何路径/前视目标 readiness，不证明最终电缆巡检覆盖率、缺陷识别或 active PX4 控制
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 可做 wind/cable evidence aggregation
+  - 或写 active-control review 文档，但不实现 active bridge，除非用户明确批准
+- 阻塞项：无
