@@ -52,6 +52,7 @@
 - `audit_cable_tracking_envelope.sh`：只读汇总 centerline、offset path 和 lookahead targets，审计每条导线的覆盖长度、5m offset clearance、lookahead 进度和高度跨度；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_frame_contract.sh`：只读验证 centerline、offset path 和 lookahead targets 的坐标契约，包括 source 点、-Y 5m offset、target index、lookahead 距离和前向切线一致性；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_line_segment_coverage.sh`：只读解析全组 offset path 和 lookahead target CSV，按组计算 lookahead segment 对路径弧长的并集覆盖、current/target 落点误差和前向一致性；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`，不声明最终电缆巡检覆盖率。
+- `audit_cable_surface_coverage_input_gap.sh`：只读解析当前 cable offset path 和既有 depth-camera pose trajectory，记录未来表面覆盖所需的输入可解析性与相机到导线距离缺口；不实现 FOV/遮挡/表面采样，不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`，不声明最终电缆巡检覆盖率。
 - `audit_cable_dry_run_acceptance.sh`：只读聚合 tracking envelope、frame contract、all-groups coverage monitor 和 line-segment coverage 证据，验证电缆 dry-run 验收阈值；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_acceptance_threshold_contract.sh`：只读检查 `docs/18_cable_acceptance_thresholds.md` 与 `audit_cable_dry_run_acceptance.sh` 的默认阈值和 non-claim 边界是否一致；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_visual_acceptance.sh`：只读聚合电缆 dry-run acceptance 与 all-groups RViz overlay 证据，验证当前电缆几何/可视化证据链；不启动 ROS/PX4/Gazebo/RViz。

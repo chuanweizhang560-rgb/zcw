@@ -120,6 +120,41 @@ When implemented later, keep it offline first:
 scripts/audit_cable_surface_coverage_offline.sh
 ```
 
+The current first input-gap prototype is:
+
+```text
+scripts/audit_cable_surface_coverage_input_gap.sh
+```
+
+Latest accepted input-gap result:
+
+- summary: `data/results/cable_surface_coverage_input_gap_20260617_091357/cable_surface_coverage_input_gap_20260617_091357.txt`
+- group CSV: `data/results/cable_surface_coverage_input_gap_20260617_091357/cable_surface_coverage_input_gap_groups_20260617_091357.csv`
+
+Key result:
+
+```text
+input_ok=true
+camera_pose_count=891
+path_point_count=125
+group_count=5
+distance_ready_group_count=0
+global_min_camera_distance_m=24.262620544
+global_max_nearest_camera_distance_m=79.730567700
+fov_gate_implemented=false
+occlusion_gate_implemented=false
+surface_sampling_implemented=false
+claims_final_cable_inspection_coverage=false
+coverage_claimable=false
+```
+
+Interpretation:
+
+- Existing cable motion pose evidence is parseable.
+- It is not sufficient for final cable surface coverage.
+- The camera trajectory and accepted offset path have a large distance/height/corridor mismatch for this purpose.
+- A future coverage run needs a trajectory intentionally designed for cable surface observation.
+
 Expected behavior:
 
 - read accepted cable geometry CSVs.

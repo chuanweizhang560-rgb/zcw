@@ -10496,3 +10496,50 @@
   - 可实现离线 cable surface coverage prototype，仍不启动 active control
   - 或增强 wind occlusion/inspection surface evidence
 - 阻塞项：无
+
+- 时间：2026-06-17 09:13:01 CST
+- 节点：启动 offline cable surface coverage input-gap prototype 节点
+- 操作：
+  - 计划新增只读离线脚本，消费当前 cable offset path 和既有 depth-camera pose trajectory
+  - 先检查输入可解析性、相机轨迹范围、线缆路径范围和相机到线缆最近距离
+  - 该 prototype 不计算最终 FOV/遮挡覆盖，只用于判断现有轨迹证据是否足够进入最终覆盖计算
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不声明 final cable inspection coverage
+- 阻塞项：无
+
+- 时间：2026-06-17 09:13:57 CST
+- 节点：完成 offline cable surface coverage input-gap prototype 节点
+- 操作：
+  - 新增 `scripts/audit_cable_surface_coverage_input_gap.sh`
+  - 只读解析当前 cable offset path CSV 和既有 cable RGB-D motion depth-camera pose trajectory
+  - 输出相机轨迹范围、线缆路径范围、每组导线最近相机距离和是否满足初始 inspection distance gate
+  - 更新 `scripts/README.md`、`docs/22_cable_inspection_surface_coverage_model.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - input-gap summary：
+    - `data/results/cable_surface_coverage_input_gap_20260617_091357/cable_surface_coverage_input_gap_20260617_091357.txt`
+  - input-gap group CSV：
+    - `data/results/cable_surface_coverage_input_gap_20260617_091357/cable_surface_coverage_input_gap_groups_20260617_091357.csv`
+  - 关键字段：
+    - `decision=accepted_cable_surface_coverage_input_gap`
+    - `camera_pose_count=891`
+    - `path_point_count=125`
+    - `group_count=5`
+    - `distance_ready_group_count=0`
+    - `global_min_camera_distance_m=24.262620544`
+    - `global_max_nearest_camera_distance_m=79.730567700`
+    - `fov_gate_implemented=false`
+    - `occlusion_gate_implemented=false`
+    - `surface_sampling_implemented=false`
+    - `claims_final_cable_inspection_coverage=false`
+    - `coverage_claimable=false`
+- 结论：
+  - 当前既有 cable motion 相机轨迹可解析，但不能用于声明最终线缆表面覆盖
+  - 需要专门设计 cable surface-observation 轨迹或重新采集证据，再谈 FOV/遮挡/表面采样覆盖
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 可设计 cable surface-observation trajectory，仍保持 offline/dry-run
+  - 或继续补 active bridge static-contract 文档
+- 阻塞项：无
