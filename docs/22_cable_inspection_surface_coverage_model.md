@@ -155,6 +155,39 @@ Interpretation:
 - The camera trajectory and accepted offset path have a large distance/height/corridor mismatch for this purpose.
 - A future coverage run needs a trajectory intentionally designed for cable surface observation.
 
+The current surface-observation pose candidate generator is:
+
+```text
+scripts/audit_cable_surface_observation_pose_candidate.sh
+```
+
+Latest accepted candidate:
+
+- summary: `data/results/cable_surface_observation_pose_candidate_20260617_091638/cable_surface_observation_pose_candidate_20260617_091638.txt`
+- pose CSV: `data/results/cable_surface_observation_pose_candidate_20260617_091638/cable_surface_observation_pose_candidate_20260617_091638.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_surface_observation_pose_candidate
+group_count=5
+accepted_group_count=5
+pose_count=125
+min_target_distance_m=5.000000000
+max_target_distance_m=5.000000000
+global_max_target_distance_error_m=0.000000000
+min_pitch_deg=0.000000000
+max_pitch_deg=0.000000000
+claims_active_control_approval=false
+claims_final_cable_inspection_coverage=false
+```
+
+Interpretation:
+
+- The accepted offset path already defines a plausible high-altitude observation pose candidate for each sampled cable point.
+- This candidate should be used as the intended camera trajectory source for future offline surface coverage, before any active bridge discussion.
+- It is still not active control and still not final coverage.
+
 Expected behavior:
 
 - read accepted cable geometry CSVs.

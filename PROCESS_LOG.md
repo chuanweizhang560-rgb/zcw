@@ -10543,3 +10543,48 @@
   - 可设计 cable surface-observation trajectory，仍保持 offline/dry-run
   - 或继续补 active bridge static-contract 文档
 - 阻塞项：无
+
+- 时间：2026-06-17 09:15:48 CST
+- 节点：启动 cable surface observation pose candidate 离线节点
+- 操作：
+  - 计划基于现有 offset path CSV 中的 camera candidate 点和 source cable 点，生成未来表面覆盖所需的观测姿态候选 CSV
+  - 只计算每个 offset path 点朝向对应导线 source 点的 yaw/pitch/distance，不启动仿真、不发布 setpoint
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不声明 final cable inspection coverage
+- 阻塞项：无
+
+- 时间：2026-06-17 09:16:38 CST
+- 节点：完成 cable surface observation pose candidate 离线节点
+- 操作：
+  - 新增 `scripts/audit_cable_surface_observation_pose_candidate.sh`
+  - 从当前 offset path CSV 的 `x/y/z` 和 `source_x/source_y/source_z` 生成未来线缆表面观测候选相机姿态 CSV
+  - 检查 5 组导线、每组 25 个观测姿态、5m camera-to-wire 距离、yaw/pitch 有限且距离误差为 0
+  - 更新 `scripts/README.md`、`docs/22_cable_inspection_surface_coverage_model.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - surface-observation pose candidate summary：
+    - `data/results/cable_surface_observation_pose_candidate_20260617_091638/cable_surface_observation_pose_candidate_20260617_091638.txt`
+  - surface-observation pose candidate CSV：
+    - `data/results/cable_surface_observation_pose_candidate_20260617_091638/cable_surface_observation_pose_candidate_20260617_091638.csv`
+  - 关键字段：
+    - `decision=accepted_cable_surface_observation_pose_candidate`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `pose_count=125`
+    - `min_target_distance_m=5.000000000`
+    - `max_target_distance_m=5.000000000`
+    - `global_max_target_distance_error_m=0.000000000`
+    - `min_pitch_deg=0.000000000`
+    - `max_pitch_deg=0.000000000`
+    - `claims_active_control_approval=false`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - 当前 offset path 可以直接作为未来线缆表面观测轨迹候选，而旧的 cable motion 相机轨迹不能支撑最终覆盖
+  - 该候选仍然只是离线姿态/几何候选，不是 active setpoint，不是最终覆盖
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 可基于该 candidate 做离线 FOV/表面采样 coverage prototype
+  - 或补 active bridge static-contract 文档
+- 阻塞项：无

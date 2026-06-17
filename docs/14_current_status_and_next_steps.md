@@ -18,6 +18,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Future cable active bridge design exists at `docs/21_future_cable_active_bridge_design.md`; it is documentation only, keeps `implementation_exists=false`, and defines a future 20Hz single-vehicle cable bridge boundary without approving active control.
 - Cable inspection surface coverage model is documented at `docs/22_cable_inspection_surface_coverage_model.md`; it explains why current line/path readiness is not final cable inspection coverage and defines the future camera/FOV/occlusion/surface-sample metric.
 - Cable surface coverage input-gap prototype accepted on 2026-06-17: summary `data/results/cable_surface_coverage_input_gap_20260617_091357/cable_surface_coverage_input_gap_20260617_091357.txt`, with parseable input (`camera_pose_count=891`, `path_point_count=125`) but `distance_ready_group_count=0`, `global_max_nearest_camera_distance_m=79.730567700`, and `coverage_claimable=false`.
+- Cable surface-observation pose candidate accepted on 2026-06-17: summary `data/results/cable_surface_observation_pose_candidate_20260617_091638/cable_surface_observation_pose_candidate_20260617_091638.txt`, pose CSV `data/results/cable_surface_observation_pose_candidate_20260617_091638/cable_surface_observation_pose_candidate_20260617_091638.csv`, with 125 finite 5m camera-to-wire observation poses across 5 groups and no active-control approval claim.
 
 ## 2. Cable Status
 
