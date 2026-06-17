@@ -11077,3 +11077,35 @@
 - 下一步：
   - 如果继续推进，只剩审批复核或更细的 dry-run 证据补强，不进入 active bridge
 - 阻塞项：无
+
+- 时间：2026-06-17 17:28:53 CST
+- 项目推进节点：current evidence matrix 与 evidence inventory 再次刷新，纳入 active readiness snapshot
+- 操作：
+  - 更新 `scripts/audit_current_evidence_matrix.sh`
+  - 更新 `scripts/audit_evidence_inventory.sh`
+  - 更新 `docs/19_current_evidence_matrix.md`、`docs/10_evidence_inventory.md`、`docs/14_current_status_and_next_steps.md`
+  - 执行 `scripts/audit_current_evidence_matrix.sh`
+  - 执行 `scripts/audit_evidence_inventory.sh`
+- 结果：
+  - matrix summary：`data/results/current_evidence_matrix_20260617_172812/current_evidence_matrix_20260617_172812.txt`
+  - matrix CSV：`data/results/current_evidence_matrix_20260617_172812/current_evidence_matrix_20260617_172812.csv`
+  - inventory summary：`data/results/evidence_inventory_20260617_172812/evidence_inventory_20260617_172812.txt`
+  - inventory CSV：`data/results/evidence_inventory_20260617_172812/evidence_inventory_20260617_172812.csv`
+  - 关键字段：
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=7`
+    - `accepted_positive_capability_count=7`
+    - `forbidden_capability_count=4`
+    - `forbidden_not_enabled=true`
+    - `claims_current_evidence_matrix_pass=true`
+    - `decision=accepted_evidence_inventory`
+    - `required_evidence_count=33`
+    - `present_count=33`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - cable active readiness snapshot 已进入机器可见 evidence matrix
+  - evidence inventory 也同步纳入新的 snapshot 证据和刷新后的 RViz overlay
+- 下一步：
+  - 如果继续推进，剩下的是审批复核和更细的 dry-run 证据补强，不进入 active bridge
+- 阻塞项：无

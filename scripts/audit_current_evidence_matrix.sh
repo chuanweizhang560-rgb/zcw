@@ -10,19 +10,21 @@ DEFAULT_CABLE_SURFACE_SUMMARY="data/results/cable_surface_current_acceptance_202
 DEFAULT_WIND_SUMMARY="data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt"
 DEFAULT_FOUR_VEHICLE_SUMMARY="data/results/four_vehicle_dry_run_acceptance_20260616_090911/four_vehicle_dry_run_acceptance_20260616_090911.txt"
 DEFAULT_PROJECT_SUMMARY="data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt"
+DEFAULT_READINESS_SUMMARY="data/results/cable_active_readiness_snapshot_20260617_172343/cable_active_readiness_snapshot_20260617_172343.txt"
 CABLE_DRY_RUN_SUMMARY="${CABLE_DRY_RUN_SUMMARY:-${DEFAULT_CABLE_DRY_RUN_SUMMARY}}"
 CABLE_VISUAL_SUMMARY="${CABLE_VISUAL_SUMMARY:-${DEFAULT_CABLE_VISUAL_SUMMARY}}"
 CABLE_SURFACE_SUMMARY="${CABLE_SURFACE_SUMMARY:-${DEFAULT_CABLE_SURFACE_SUMMARY}}"
 WIND_SUMMARY="${WIND_SUMMARY:-${DEFAULT_WIND_SUMMARY}}"
 FOUR_VEHICLE_SUMMARY="${FOUR_VEHICLE_SUMMARY:-${DEFAULT_FOUR_VEHICLE_SUMMARY}}"
 PROJECT_SUMMARY="${PROJECT_SUMMARY:-${DEFAULT_PROJECT_SUMMARY}}"
+READINESS_SUMMARY="${READINESS_SUMMARY:-${DEFAULT_READINESS_SUMMARY}}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 RESULT_ROOT="${RESULT_ROOT:-data/results}"
 RESULT_DIR="${RESULT_ROOT}/current_evidence_matrix_${STAMP}"
 SUMMARY_FILE="${RESULT_DIR}/current_evidence_matrix_${STAMP}.txt"
 MATRIX_CSV="${RESULT_DIR}/current_evidence_matrix_${STAMP}.csv"
 
-for file in "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}"; do
+for file in "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}" "${READINESS_SUMMARY}"; do
   if [[ ! -f "${file}" ]]; then
     echo "Required aggregate summary does not exist: ${file}" >&2
     exit 1
@@ -32,7 +34,7 @@ done
 mkdir -p "${RESULT_DIR}"
 
 python3 - "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" \
-  "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}" "${MATRIX_CSV}" >"${SUMMARY_FILE}" <<'PY'
+  "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}" "${READINESS_SUMMARY}" "${MATRIX_CSV}" >"${SUMMARY_FILE}" <<'PY'
 import csv
 import sys
 
@@ -43,8 +45,9 @@ import sys
     wind_summary,
     four_vehicle_summary,
     project_summary,
+    readiness_summary,
     matrix_csv,
-) = sys.argv[1:8]
+) = sys.argv[1:9]
 
 
 def load_kv(path):
@@ -65,6 +68,7 @@ cable_surface = load_kv(cable_surface_summary)
 wind = load_kv(wind_summary)
 four = load_kv(four_vehicle_summary)
 project = load_kv(project_summary)
+readiness = load_kv(readiness_summary)
 
 cable_ok = (
     cable.get("decision") == "accepted_cable_dry_run_acceptance"
@@ -182,6 +186,23 @@ rows = [
         "starts_active_control": "false",
         "publishes_fmu_in": project.get("publishes_fmu_in", "unknown"),
         "source_may_have_active_control": "mixed",
+    },
+    {
+        "area": "cable",
+        "capability": "active_readiness_snapshot_packaged",
+        "status": "accepted" if (
+            readiness.get("decision") == "accepted_cable_active_readiness_snapshot"
+            and readiness.get("ready_for_review") == "true"
+            and readiness.get("active_control_approved") == "false"
+            and readiness.get("phase_b_user_approved") == "false"
+            and readiness.get("publishes_fmu_in") == "false"
+        ) else "rejected",
+        "evidence": readiness_summary,
+        "claim": "single-vehicle cable active path is packaged, frozen, and explicitly inactive",
+        "non_claim": "not active PX4 control; not approval to publish /fmu/in/*; not final cable traversal",
+        "starts_active_control": "false",
+        "publishes_fmu_in": "false",
+        "source_may_have_active_control": "false",
     },
 ]
 
