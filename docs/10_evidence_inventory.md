@@ -43,6 +43,7 @@ The audit is not allowed to:
 | Phase A bridge dry-run | bridge state topic echo and RViz screenshot | `scripts/verify_px4_bridge_dry_run_isolation.sh`, `scripts/capture_px4_bridge_dry_run_rviz_overlay.sh` |
 | PX4/Gazebo read-only frame sample | frame alignment summary | `scripts/verify_px4_gazebo_readonly_frame_alignment.sh` |
 | Offboard gate dry-run | gate summary, forbidden publisher log, RViz summary, RViz screenshot | `scripts/verify_cable_offboard_gate_dry_run.sh`, `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
+| Offboard gate dry-run refreshed overlay | refreshed RViz summary and screenshot | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Cable path inputs | offset path CSV and lookahead target CSV | `scripts/audit_catenary_fit.sh`, `scripts/audit_offset_path.sh`, `scripts/audit_lookahead_target.sh` |
 | Cable path geometry audit | offset path and lookahead target consistency summary | `scripts/audit_cable_path_geometry.sh` |
 | Cable Frenet consistency audit | offset path and lookahead target Frenet consistency summary | `scripts/audit_cable_frenet_consistency.sh` |
@@ -93,10 +94,18 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=27`
-- `present_count=27`
+- `required_evidence_count=32`
+- `present_count=32`
 - `missing_count=0`
 - `not_ignored_count=0`
+
+Fresh local evidence since that accepted run:
+
+- summary: `data/results/cable_offboard_gate_rviz_overlay_20260617_171815/cable_offboard_gate_rviz_overlay_20260617_171815.txt`
+- screenshot: `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260617_171815.png`
+- accepted fields: `decision=accepted_cable_offboard_gate_rviz_overlay_capture`, `phase_b_allowed=false`, `publishes_fmu_in=false`
+- readiness snapshot: `data/results/cable_active_readiness_snapshot_20260617_172343/cable_active_readiness_snapshot_20260617_172343.txt`
+- readiness accepted fields: `decision=accepted_cable_active_readiness_snapshot`, `ready_for_review=true`, `active_control_approved=false`, `phase_b_user_approved=false`, `publishes_fmu_in=false`
 
 Additional latest local cable coverage evidence:
 

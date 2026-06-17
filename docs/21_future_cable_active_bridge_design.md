@@ -206,3 +206,4 @@ The next step is still a review step, not implementation.
 
 The consolidated review entry that should be read first is `docs/25_cable_active_control_review_package.md`.
 The frozen first active scenario is `docs/26_cable_single_vehicle_active_scenario.md`.
+The latest readiness snapshot is documented in `docs/27_cable_active_readiness_snapshot.md`.

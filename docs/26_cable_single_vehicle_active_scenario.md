@@ -77,6 +77,7 @@ The approval package must be able to cite:
 - `docs/06_cable_phase_b_active_bridge_preflight.md`
 - `docs/05_cable_phase_b_gate_plan.md`
 - `docs/24_cable_surface_current_acceptance.md`
+The readiness snapshot is documented in `docs/27_cable_active_readiness_snapshot.md`.
 
 ## 7. Non-Goals
 

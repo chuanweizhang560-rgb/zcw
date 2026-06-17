@@ -11047,3 +11047,33 @@
 - 下一步：
   - 如继续推进，可基于该 frozen scenario 进入用户审批复核或进一步 dry-run 证据补强
 - 阻塞项：无
+
+- 时间：2026-06-17 17:23:43 CST
+- 项目推进节点：evidence inventory 刷新到新一版 overlay 与 readiness snapshot
+- 操作：
+  - 更新 `scripts/audit_evidence_inventory.sh` 和 `docs/10_evidence_inventory.md`
+  - 执行 `scripts/audit_evidence_inventory.sh`
+  - 执行 `scripts/audit_cable_active_readiness_snapshot.sh`
+  - 更新 `docs/25_cable_active_control_review_package.md`、`docs/26_cable_single_vehicle_active_scenario.md`、`docs/27_cable_active_readiness_snapshot.md`、`docs/20_active_control_review_entry.md`、`docs/21_future_cable_active_bridge_design.md`、`docs/14_current_status_and_next_steps.md`、`scripts/README.md`
+- 结果：
+  - inventory summary：`data/results/evidence_inventory_20260617_172343/evidence_inventory_20260617_172343.txt`
+  - inventory CSV：`data/results/evidence_inventory_20260617_172343/evidence_inventory_20260617_172343.csv`
+  - readiness summary：`data/results/cable_active_readiness_snapshot_20260617_172343/cable_active_readiness_snapshot_20260617_172343.txt`
+  - readiness static log：`data/results/cable_active_readiness_snapshot_20260617_172343/static_checks_20260617_172343.log`
+  - 关键字段：
+    - `decision=accepted_evidence_inventory`
+    - `required_evidence_count=32`
+    - `present_count=32`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+    - `decision=accepted_cable_active_readiness_snapshot`
+    - `ready_for_review=true`
+    - `active_control_approved=false`
+    - `phase_b_user_approved=false`
+    - `publishes_fmu_in=false`
+- 结论：
+  - 新的 RViz overlay 截图已纳入 inventory
+  - frozen active path 的 review package、scenario freeze 和 readiness snapshot 都已形成可审计链路
+- 下一步：
+  - 如果继续推进，只剩审批复核或更细的 dry-run 证据补强，不进入 active bridge
+- 阻塞项：无
