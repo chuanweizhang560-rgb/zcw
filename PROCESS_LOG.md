@@ -10375,3 +10375,46 @@
   - 可写 active-control review 文档，明确未来从 dry-run 进入 active bridge 的审批和技术门槛
   - 或继续增强 wind occlusion/inspection surface 证据
 - 阻塞项：无
+
+- 时间：2026-06-17 09:06:13 CST
+- 节点：启动 active-control review 入口文档节点
+- 操作：
+  - 汇总已有 Phase B gate、active threshold review、active bridge code review、dry-run readiness 和 current evidence matrix
+  - 计划新增一个统一入口文档，明确未来 active bridge 的审批顺序、技术门槛、禁止事项和回滚条件
+- 边界：
+  - 只写文档
+  - 不创建 active bridge 源码、launch 或 CMake target
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+- 阻塞项：无
+
+- 时间：2026-06-17 09:08:00 CST
+- 节点：完成 active-control review 入口文档节点
+- 操作：
+  - 新增 `docs/20_active_control_review_entry.md`
+  - 文档明确当前状态：
+    - `active_control_approved=false`
+    - `cable_phase_b_active_bridge_approved=false`
+    - `multi_vehicle_active_offboard_approved=false`
+    - `rl_policy_control_approved=false`
+    - `slam_feedback_control_approved=false`
+  - 汇总已有 evidence matrix、Phase B gate、active threshold review、active bridge code review 和 dry-run readiness 作为未来 active bridge 的前置证据
+  - 明确未来 active bridge 必须先获得用户显式批准，并且首个范围只能是单机线缆 active bridge 评审
+  - 将实时性边界写入文档：active publisher 只消费 gate-approved setpoint，20Hz 固定发布，复杂规划/拟合/角色分配不得进入实时 PX4 发布循环
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - active-control 入口文档：
+    - `docs/20_active_control_review_entry.md`
+  - 静态核查：
+    - 新文档没有把任何 approval 字段设为 true
+    - 本节点没有新增 active bridge 源码、launch 或 CMake target
+    - `rg` 命中的 `publishes_fmu_in=true` 均来自既有风机/SLAM运动证据脚本或说明，不是本节点新增的线缆 active bridge
+- 结论：
+  - 未来从 dry-run 到 active bridge 的入口已集中到一个文档
+  - 当前仍不批准 active control，不允许 `/fmu/in/*` 发布
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 若用户明确批准，可先写 future active bridge design diff，但仍先 dry-run
+  - 若继续保持安全边界，可增强 wind occlusion 或 cable inspection-surface 证据
+- 阻塞项：无

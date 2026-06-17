@@ -14,6 +14,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Cable lookahead/gate/coverage outputs are still dry-run only.
 - Project current acceptance audit accepted on 2026-06-17: latest summary `data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
 - Current evidence matrix accepted on 2026-06-17: summary `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.txt`, matrix CSV `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.csv`, with 5 accepted positive capabilities and 4 forbidden/not-implemented capabilities explicitly recorded.
+- Active-control review entry exists at `docs/20_active_control_review_entry.md`; it keeps `active_control_approved=false`, requires explicit user approval before any `/fmu/in/*` publication, and defines the first active bridge as a future single-vehicle cable-only review item.
 
 ## 2. Cable Status
 
@@ -191,7 +192,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with an active-control review document, even denser wind occlusion coverage if runtime permits, or planning a minimal cable active bridge approval gate; active cable bridge and active multi-vehicle Offboard remain forbidden until that review exists.
+1. Continue with a future active bridge design document, even denser wind occlusion coverage if runtime permits, or additional cable evidence. Active cable bridge and active multi-vehicle Offboard remain forbidden until explicit user approval exists.
 
 Reason:
 
