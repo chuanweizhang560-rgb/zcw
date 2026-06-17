@@ -11000,3 +11000,29 @@
 - 下一步：
   - 若继续推进 active control，先基于 package 做用户审批复核，再进入单机 cable active bridge 设计
 - 阻塞项：无
+
+- 时间：2026-06-17 17:13:32 CST
+- 项目推进节点：cable single-vehicle active scenario 冻结并通过静态审计
+- 操作：
+  - 新建 `docs/26_cable_single_vehicle_active_scenario.md`
+  - 新建 `scripts/audit_cable_single_vehicle_active_scenario.sh`
+  - 更新 `docs/25_cable_active_control_review_package.md`、`docs/20_active_control_review_entry.md`、`docs/21_future_cable_active_bridge_design.md`、`docs/14_current_status_and_next_steps.md`、`scripts/README.md`
+  - 执行 `scripts/audit_cable_single_vehicle_active_scenario.sh`
+- 结果：
+  - scenario doc：`docs/26_cable_single_vehicle_active_scenario.md`
+  - audit summary：`data/results/cable_single_vehicle_active_scenario_20260617_171327/cable_single_vehicle_active_scenario_20260617_171327.txt`
+  - static log：`data/results/cable_single_vehicle_active_scenario_20260617_171327/static_checks_20260617_171327.log`
+  - 关键字段：
+    - `decision=accepted_cable_single_vehicle_active_scenario`
+    - `scenario_frozen=true`
+    - `active_control_approved=false`
+    - `phase_b_user_approved=false`
+    - `publishes_fmu_in=false`
+    - `rate_hz=20`
+    - `duration_sec=60`
+- 结论：
+  - 首个可批准的单机 cable active 场景已冻结为 `single_vehicle_cable_short_active`
+  - 该场景仍是 inactive freeze，不是 active bridge 实现
+- 下一步：
+  - 若继续推进 active control，先对该 frozen scenario 做用户审批复核，再进入 active bridge 设计
+- 阻塞项：无

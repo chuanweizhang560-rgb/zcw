@@ -19,6 +19,7 @@ slam_feedback_control_approved=false
 Any future active-control node must start from a new explicit user instruction that says active PX4 setpoint publication is approved for a named scenario.
 
 The consolidated handoff document for that decision point is `docs/25_cable_active_control_review_package.md`.
+The frozen first active scenario is defined in `docs/26_cable_single_vehicle_active_scenario.md`.
 
 ## 2. Scope
 
@@ -134,6 +135,7 @@ The next safe action is one of:
 - review this entry with the user.
 - review `docs/21_future_cable_active_bridge_design.md`.
 - review `docs/25_cable_active_control_review_package.md`.
+- review `docs/26_cable_single_vehicle_active_scenario.md`.
 - strengthen cable/wind evidence while remaining dry-run/read-only.
 
 The active bridge remains blocked until explicit user approval is recorded.

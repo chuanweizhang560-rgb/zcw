@@ -19,6 +19,8 @@ It collects:
 
 The intended consumer is a future executor that must not invent a new controller or a new task definition.
 
+The frozen scenario is defined separately in `docs/26_cable_single_vehicle_active_scenario.md`.
+
 ## 2. Current Decision
 
 Current decision:
@@ -71,6 +73,7 @@ If active control is ever approved, the first scenario must be frozen before imp
 - single vehicle only,
 - cable only,
 - one short approved AerialCore cable scenario,
+- frozen as `single_vehicle_cable_short_active` in `docs/26_cable_single_vehicle_active_scenario.md`,
 - one vehicle namespace,
 - one explicit active window,
 - no multi-vehicle relay,

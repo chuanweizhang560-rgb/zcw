@@ -62,6 +62,7 @@
 - `audit_cable_multiview_surface_occlusion_offline.sh`：只读消费 multiview candidate CSV 和 AerialCore 两塔导线 collision mesh，使用 `trimesh`/`rtree` ray intersection 计算 occlusion-clear surface ratio；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_surface_current_acceptance.sh`：只读聚合 C1/C2 surface coverage progression 与 cable dry-run acceptance，输出当前线缆表面覆盖推进口径；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`，不声明最终巡检覆盖。
 - `audit_cable_active_control_review_package.sh`：只读检查 cable active control review package 是否引用当前边界文档、已验收证据和禁行约束；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_cable_single_vehicle_active_scenario.sh`：只读检查冻结的首个单机 cable active 场景是否引用 review package、边界文档和审批约束；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_dry_run_acceptance.sh`：只读聚合 tracking envelope、frame contract、all-groups coverage monitor 和 line-segment coverage 证据，验证电缆 dry-run 验收阈值；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_acceptance_threshold_contract.sh`：只读检查 `docs/18_cable_acceptance_thresholds.md` 与 `audit_cable_dry_run_acceptance.sh` 的默认阈值和 non-claim 边界是否一致；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_visual_acceptance.sh`：只读聚合电缆 dry-run acceptance 与 all-groups RViz overlay 证据，验证当前电缆几何/可视化证据链；不启动 ROS/PX4/Gazebo/RViz。

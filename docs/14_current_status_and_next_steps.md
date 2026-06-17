@@ -28,6 +28,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Cable multiview surface occlusion offline gate accepted on 2026-06-17: summary `data/results/cable_multiview_surface_occlusion_offline_20260617_162441/cable_multiview_surface_occlusion_offline_20260617_162441.txt`, using AerialCore two-tower collision mesh, `trimesh=true`, `rtree=true`, `ray_tests=1750`, `global_min_occlusion_clear_total_surface_ratio=0.875000000`, and `claims_cable_multiview_surface_occlusion_offline_pass=true`.
 - Cable surface current acceptance is documented at `docs/24_cable_surface_current_acceptance.md` and accepted on 2026-06-17: summary `data/results/cable_surface_current_acceptance_20260617_163650/cable_surface_current_acceptance_20260617_163650.txt`, with `c1_visible_side_ok=true`, `c2_candidate_ok=true`, `c2_union_ok=true`, `occlusion_ok=true`, `dry_run_ok=true`, `final_claim_blocked=true`, and `claims_cable_surface_progression_current_acceptance_pass=true`.
 - Cable active control review package now exists at `docs/25_cable_active_control_review_package.md`; it consolidates the active-control boundary, required evidence, first active scenario shape, runtime policy, and stop conditions, but still keeps `active_control_approved=false`.
+- Cable single-vehicle active scenario now exists at `docs/26_cable_single_vehicle_active_scenario.md`; it freezes `single_vehicle_cable_short_active` as the first approved active-control candidate, but still keeps it inactive.
 - Gazebo GUI scene-start evidence captured on 2026-06-17 for AerialCore `danube_wires`: screenshot `data/screenshots/px4_aerialcore_danube_wires_gui_20260617_162903.png`, log `data/logs/px4_aerialcore_danube_wires_gui_20260617_162903.log`; this is scene-load evidence, not cable coverage evidence.
 - Current evidence matrix refreshed on 2026-06-17 after adding cable surface progression: summary `data/results/current_evidence_matrix_20260617_161225/current_evidence_matrix_20260617_161225.txt`, matrix CSV `data/results/current_evidence_matrix_20260617_161225/current_evidence_matrix_20260617_161225.csv`, with `positive_capability_count=6`, `accepted_positive_capability_count=6`, and the new `surface_progression_visible_side_and_multiview_offline` row accepted.
 
@@ -210,7 +211,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Use `docs/25_cable_active_control_review_package.md` as the handoff entry for any future active-control review, then continue with a cable surface-observation trajectory refinement or additional cable evidence if more dry-run proof is needed. Active cable bridge and active multi-vehicle Offboard remain forbidden until explicit user approval exists.
+1. Use `docs/25_cable_active_control_review_package.md` and `docs/26_cable_single_vehicle_active_scenario.md` as the handoff entries for any future active-control review, then continue with a cable surface-observation trajectory refinement or additional cable evidence if more dry-run proof is needed. Active cable bridge and active multi-vehicle Offboard remain forbidden until explicit user approval exists.
 
 Reason:
 
