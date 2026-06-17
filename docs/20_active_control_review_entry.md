@@ -21,6 +21,7 @@ Any future active-control node must start from a new explicit user instruction t
 The consolidated handoff document for that decision point is `docs/25_cable_active_control_review_package.md`.
 The frozen first active scenario is defined in `docs/26_cable_single_vehicle_active_scenario.md`.
 The latest readiness snapshot is documented in `docs/27_cable_active_readiness_snapshot.md`.
+The approval wording is frozen in `docs/28_cable_active_approval_manifest.md`.
 
 ## 2. Scope
 
@@ -138,6 +139,7 @@ The next safe action is one of:
 - review `docs/25_cable_active_control_review_package.md`.
 - review `docs/26_cable_single_vehicle_active_scenario.md`.
 - review `docs/27_cable_active_readiness_snapshot.md`.
+- review `docs/28_cable_active_approval_manifest.md`.
 - strengthen cable/wind evidence while remaining dry-run/read-only.
 
 The active bridge remains blocked until explicit user approval is recorded.

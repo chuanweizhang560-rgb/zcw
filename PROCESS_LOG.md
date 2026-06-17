@@ -11078,6 +11078,40 @@
   - 如果继续推进，只剩审批复核或更细的 dry-run 证据补强，不进入 active bridge
 - 阻塞项：无
 
+- 时间：2026-06-17 17:34:14 CST
+- 项目推进节点：cable active approval manifest 冻结并进入 current evidence matrix
+- 操作：
+  - 新建 `docs/28_cable_active_approval_manifest.md`
+  - 新建 `scripts/audit_cable_active_approval_manifest.sh`
+  - 更新 `docs/25_cable_active_control_review_package.md`、`docs/26_cable_single_vehicle_active_scenario.md`、`docs/27_cable_active_readiness_snapshot.md`、`docs/20_active_control_review_entry.md`、`docs/21_future_cable_active_bridge_design.md`、`docs/14_current_status_and_next_steps.md`、`docs/19_current_evidence_matrix.md`、`scripts/README.md`
+  - 更新 `scripts/audit_current_evidence_matrix.sh`
+  - 执行 `scripts/audit_cable_active_approval_manifest.sh`
+  - 执行 `scripts/audit_current_evidence_matrix.sh`
+- 结果：
+  - approval manifest summary：`data/results/cable_active_approval_manifest_20260617_173414/cable_active_approval_manifest_20260617_173414.txt`
+  - approval manifest static log：`data/results/cable_active_approval_manifest_20260617_173414/static_checks_20260617_173414.log`
+  - matrix summary：`data/results/current_evidence_matrix_20260617_173414/current_evidence_matrix_20260617_173414.txt`
+  - matrix CSV：`data/results/current_evidence_matrix_20260617_173414/current_evidence_matrix_20260617_173414.csv`
+  - 关键字段：
+    - `decision=accepted_cable_active_approval_manifest`
+    - `approval_manifest=present`
+    - `active_control_approved=false`
+    - `phase_b_user_approved=false`
+    - `cable_phase_b_active_bridge_approved=false`
+    - `publishes_fmu_in=false`
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=8`
+    - `accepted_positive_capability_count=8`
+    - `forbidden_capability_count=4`
+    - `forbidden_not_enabled=true`
+    - `claims_current_evidence_matrix_pass=true`
+- 结论：
+  - cable active approval manifest 已冻结审批口令，并被矩阵承认为第 8 个正向能力
+  - active bridge 仍然被明确阻断
+- 下一步：
+  - 如果继续推进，只剩审批复核或更细的 dry-run 证据补强，不进入 active bridge
+- 阻塞项：无
+
 - 时间：2026-06-17 17:28:53 CST
 - 项目推进节点：current evidence matrix 与 evidence inventory 再次刷新，纳入 active readiness snapshot
 - 操作：

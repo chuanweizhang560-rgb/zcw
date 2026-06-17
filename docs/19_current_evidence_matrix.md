@@ -35,13 +35,14 @@ Default inputs:
 - summary: `data/results/current_evidence_matrix_20260617_172812/current_evidence_matrix_20260617_172812.txt`
 - matrix CSV: `data/results/current_evidence_matrix_20260617_172812/current_evidence_matrix_20260617_172812.csv`
 - active readiness snapshot summary: `data/results/cable_active_readiness_snapshot_20260617_172343/cable_active_readiness_snapshot_20260617_172343.txt`
+- active approval manifest: `docs/28_cable_active_approval_manifest.md`
 
 Accepted fields:
 
 ```text
 decision=accepted_current_evidence_matrix
 positive_capability_count=7
-accepted_positive_capability_count=7
+accepted_positive_capability_count=8
 forbidden_capability_count=4
 forbidden_not_enabled=true
 claims_current_evidence_matrix_pass=true
@@ -55,6 +56,7 @@ claims_current_evidence_matrix_pass=true
 | cable | all-groups RViz visual evidence | accepted | visual overlay only, no final inspection coverage |
 | cable | surface progression visible-side, multiview and mesh occlusion offline | accepted | offline geometry only, no active control or final coverage claim |
 | cable | active readiness snapshot packaged | accepted | packaged frozen path only, no active control approval |
+| cable | active approval manifest frozen | accepted | approval wording documented, still blocked |
 | wind | single-vehicle rule-baseline motion, mapping and sampled occlusion coverage | accepted | rule baseline only, no final inspection coverage |
 | multi-vehicle | four-vehicle topology, assignment and scoring dry-run | accepted | read-only/dry-run only, no active Offboard |
 | project | integrated current status | accepted | current aggregate only, no RL or defect-detection claim |
