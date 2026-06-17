@@ -1,0 +1,158 @@
+# Cable Inspection Surface Coverage Model
+
+This document defines the future coverage model needed before claiming final cable inspection coverage.
+
+It does not implement the model. It does not approve active control. It does not claim final inspection completion.
+
+## 1. Current Gap
+
+Current accepted cable evidence proves dry-run readiness:
+
+- 5 wire groups exist in the audited geometry.
+- offset path and lookahead targets are frame-consistent.
+- line-segment lookahead coverage spans the current candidate path.
+- all groups have RViz visual overlay evidence.
+- no cable active bridge is approved.
+
+This is not final inspection coverage.
+
+The missing layer is a view-dependent inspection metric:
+
+```text
+cable surface samples + camera poses + distance gate + FOV gate + view-angle gate + occlusion gate
+```
+
+## 2. Coverage Unit
+
+The future model should represent each cable as a thin cylindrical inspection target.
+
+Recommended representation:
+
+- Use the accepted catenary/centerline CSV as the cable center curve.
+- Use an assumed or model-derived cable radius.
+- Sample each cable into surface points around the circumference and along arc length.
+- Store each sample with:
+  - `group_id`
+  - `arc_length_m`
+  - `surface_angle_rad`
+  - `x,y,z`
+  - outward normal
+  - coverage state
+
+This is a geometry surface model, not image-level defect recognition.
+
+## 3. Mature Library Boundary
+
+Use mature geometry libraries where possible:
+
+- `numpy` for vector math.
+- `scipy` for interpolation if needed.
+- `trimesh` or another mature geometry package for ray/mesh helpers if an explicit mesh is introduced.
+- ROS 2 camera info messages for intrinsics if the model is tied to real camera topics.
+
+Do not hand-write a large custom geometry engine.
+
+## 4. Required Inputs
+
+Minimum future inputs:
+
+| Input | Source |
+|---|---|
+| cable centerline | accepted catenary/centerline CSV |
+| offset inspection path | accepted offset path CSV |
+| camera trajectory | PX4/Gazebo/P3D or approved active run log |
+| camera intrinsics | ROS `CameraInfo` or fixed documented PX4 depth camera intrinsics |
+| camera extrinsics | vehicle-to-camera transform |
+| occlusion geometry | Gazebo world mesh, point cloud, or accepted occupancy map |
+
+Without camera trajectory and camera model, coverage must remain a path-readiness metric only.
+
+## 5. Coverage Gates
+
+A cable surface sample is covered only if all gates pass:
+
+| Gate | Meaning |
+|---|---|
+| distance | camera-to-sample distance inside accepted inspection window |
+| FOV | sample projects inside camera image bounds |
+| normal/view angle | camera observes the visible side of the cylindrical surface |
+| occlusion | ray from camera to sample is not blocked |
+| pose validity | camera pose is fresh and within accepted trajectory evidence |
+
+The final metric should report:
+
+```text
+covered_surface_sample_count / total_surface_sample_count
+```
+
+The metric should also report weakest group, weakest arc-length section, and weakest circumference sector.
+
+## 6. Suggested Initial Thresholds
+
+These are review targets, not current accepted thresholds:
+
+| Metric | Initial target |
+|---|---:|
+| per-group surface coverage | `>= 0.90` |
+| global surface coverage | `>= 0.95` |
+| weakest 20m arc section | `>= 0.80` |
+| max uncovered continuous arc length | `<= 10m` |
+| valid camera-pose ratio | `>= 0.95` |
+
+Do not enforce these as current acceptance until a real coverage implementation and evidence exist.
+
+## 7. Relationship To Current Evidence
+
+Current evidence can seed the model:
+
+- `data/results/catenary_offset_yz_zbin2_step5_20260608_000000/depth_camera_motion_catenary_offset_yz_zbin2_step5_offset_path_20260608_085655.csv`
+- `data/results/lookahead_target_step5_20m_strict_20260608_090000/depth_camera_motion_lookahead_step5_20m_strict_targets_20260608_085945.csv`
+- `data/results/cable_line_segment_coverage_20260617_085604/cable_line_segment_coverage_20260617_085604.txt`
+- `data/screenshots/cable_all_groups_rviz_overlay_20260616_093252.png`
+
+But these do not contain enough information to compute final view-dependent cable coverage.
+
+## 8. Future Implementation Shape
+
+When implemented later, keep it offline first:
+
+```text
+scripts/audit_cable_surface_coverage_offline.sh
+```
+
+Expected behavior:
+
+- read accepted cable geometry CSVs.
+- read a camera trajectory log.
+- read camera model/extrinsics.
+- sample cable surface.
+- compute coverage gates.
+- write summary CSV and per-group CSV.
+- never publish `/fmu/in/*`.
+- never start Offboard/arm.
+
+Only after offline coverage is stable should it be tied to active simulation evidence.
+
+## 9. Non-Claims
+
+Until this model exists and passes, do not claim:
+
+- final cable inspection coverage.
+- full cable traversal completion.
+- visible defect coverage.
+- defect detection or classification.
+- active cable tracking success.
+- multi-vehicle cable inspection completion.
+
+## 10. Current Status
+
+Current status:
+
+```text
+surface_coverage_model_documented=true
+surface_coverage_implementation_exists=false
+final_cable_inspection_coverage_claim=false
+active_control_approved=false
+```
+
+The next useful work is an offline prototype that consumes existing trajectory evidence, not an active bridge.

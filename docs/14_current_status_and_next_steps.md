@@ -16,6 +16,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Current evidence matrix accepted on 2026-06-17: summary `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.txt`, matrix CSV `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.csv`, with 5 accepted positive capabilities and 4 forbidden/not-implemented capabilities explicitly recorded.
 - Active-control review entry exists at `docs/20_active_control_review_entry.md`; it keeps `active_control_approved=false`, requires explicit user approval before any `/fmu/in/*` publication, and defines the first active bridge as a future single-vehicle cable-only review item.
 - Future cable active bridge design exists at `docs/21_future_cable_active_bridge_design.md`; it is documentation only, keeps `implementation_exists=false`, and defines a future 20Hz single-vehicle cable bridge boundary without approving active control.
+- Cable inspection surface coverage model is documented at `docs/22_cable_inspection_surface_coverage_model.md`; it explains why current line/path readiness is not final cable inspection coverage and defines the future camera/FOV/occlusion/surface-sample metric.
 
 ## 2. Cable Status
 
@@ -193,7 +194,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with a future active bridge design document, even denser wind occlusion coverage if runtime permits, or additional cable evidence. Active cable bridge and active multi-vehicle Offboard remain forbidden until explicit user approval exists.
+1. Continue with an offline cable surface coverage prototype, future active bridge static-contract design, even denser wind occlusion coverage if runtime permits, or additional cable evidence. Active cable bridge and active multi-vehicle Offboard remain forbidden until explicit user approval exists.
 
 Reason:
 

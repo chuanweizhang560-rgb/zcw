@@ -10457,3 +10457,42 @@
   - 若继续文档路线，可补 future active bridge static contract 设计
   - 若继续证据路线，可增强 wind occlusion 或 cable inspection-surface evidence
 - 阻塞项：无
+
+- 时间：2026-06-17 09:10:46 CST
+- 节点：启动 cable inspection-surface coverage model 文档节点
+- 操作：
+  - 计划新增线缆最终巡检覆盖模型设计文档
+  - 明确当前 dry-run path/readiness 与未来 final inspection coverage 的差距
+  - 只定义后续应如何基于导线表面采样、相机视锥、距离、视角和遮挡建立覆盖指标
+- 边界：
+  - 只写文档
+  - 不新增核心算法实现
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+- 阻塞项：无
+
+- 时间：2026-06-17 09:12:00 CST
+- 节点：完成 cable inspection-surface coverage model 文档节点
+- 操作：
+  - 新增 `docs/22_cable_inspection_surface_coverage_model.md`
+  - 明确当前线缆证据只证明 dry-run readiness，不证明最终巡检覆盖
+  - 定义未来最终线缆覆盖需要的表面采样、相机位姿、相机内外参、距离/FOV/视角/遮挡 gates
+  - 明确后续实现应优先离线、使用成熟几何库，不手写大型几何引擎
+  - 更新 `docs/14_current_status_and_next_steps.md`
+- 结果：
+  - cable inspection surface coverage model：
+    - `docs/22_cable_inspection_surface_coverage_model.md`
+  - 静态核查：
+    - 未发现 `surface_coverage_implementation_exists=true`
+    - 未发现 `final_cable_inspection_coverage_claim=true`
+    - 未发现 `active_control_approved=true`
+    - 未发现 `publishes_fmu_in=true`
+- 结论：
+  - “最终线缆巡检覆盖”和“当前 dry-run 几何 readiness”的边界已明确
+  - 当前仍不声明 final cable inspection coverage，不实现 active bridge
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 可实现离线 cable surface coverage prototype，仍不启动 active control
+  - 或增强 wind occlusion/inspection surface evidence
+- 阻塞项：无
