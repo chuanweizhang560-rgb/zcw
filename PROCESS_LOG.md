@@ -10323,3 +10323,55 @@
   - 可做 wind/cable evidence aggregation
   - 或写 active-control review 文档，但不实现 active bridge，除非用户明确批准
 - 阻塞项：无
+
+- 时间：2026-06-17 09:02:11 CST
+- 节点：启动 wind/cable evidence aggregation 节点
+- 操作：
+  - 计划新增当前证据矩阵脚本和文档
+  - 只读聚合 cable dry-run、cable visual、wind rule-baseline、four-vehicle dry-run 和 project current acceptance summary
+  - 输出当前可声明能力、禁止声明能力和证据路径，方便后续 agent 快速判断项目状态
+- 边界：
+  - 不启动 ROS/PX4/Gazebo/RViz
+  - 不启动 Offboard/arm
+  - 不发布 `/fmu/in/*`
+  - 不实现 cable Phase B active bridge
+  - 不新增学习策略或核心算法
+- 阻塞项：无
+
+- 时间：2026-06-17 09:04:29 CST
+- 节点：完成 wind/cable evidence aggregation 节点
+- 操作：
+  - 新增 `scripts/audit_current_evidence_matrix.sh`
+  - 新增 `docs/19_current_evidence_matrix.md`
+  - 只读聚合 cable dry-run、cable visual、wind rule-baseline、four-vehicle dry-run 和 project current acceptance summary
+  - 生成当前正向能力、non-claim 和 forbidden/not-implemented 能力矩阵
+  - 更新 `scripts/README.md`、`docs/10_evidence_inventory.md`、`docs/14_current_status_and_next_steps.md`
+  - 刷新 `scripts/audit_evidence_inventory.sh`
+- 结果：
+  - current evidence matrix summary：
+    - `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.txt`
+  - current evidence matrix CSV：
+    - `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.csv`
+  - current evidence matrix 关键字段：
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=5`
+    - `accepted_positive_capability_count=5`
+    - `forbidden_capability_count=4`
+    - `forbidden_not_enabled=true`
+    - `claims_current_evidence_matrix_pass=true`
+  - refreshed evidence inventory summary：
+    - `data/results/evidence_inventory_20260617_090429/evidence_inventory_20260617_090429.txt`
+  - evidence inventory 关键字段：
+    - `required_evidence_count=27`
+    - `present_count=27`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - 当前项目状态已有 compact evidence matrix，可直接回答“现在能做什么/不能做什么”
+  - 正向能力仍限定为：线缆 dry-run 几何/视觉证据、风机单机规则基线证据、四机 dry-run 拓扑/分配/评分证据、项目当前 aggregate 证据
+  - 禁止或未实现能力仍包括：cable Phase B active bridge、multi-vehicle active Offboard、RL policy control、image-level defect detection
+  - 该节点未启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也没有发布 `/fmu/in/*`
+- 下一步：
+  - 可写 active-control review 文档，明确未来从 dry-run 进入 active bridge 的审批和技术门槛
+  - 或继续增强 wind occlusion/inspection surface 证据
+- 阻塞项：无

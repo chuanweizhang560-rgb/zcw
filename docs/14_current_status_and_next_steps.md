@@ -13,6 +13,7 @@ It does not approve cable Phase B active control. It records what is currently r
 - Cable Phase B active bridge is still not implemented and not approved.
 - Cable lookahead/gate/coverage outputs are still dry-run only.
 - Project current acceptance audit accepted on 2026-06-17: latest summary `data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt`, with `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, and forbidden capabilities still including cable Phase B active bridge, multi-vehicle active Offboard, RL policy control, and image-level defect-detection claims.
+- Current evidence matrix accepted on 2026-06-17: summary `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.txt`, matrix CSV `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.csv`, with 5 accepted positive capabilities and 4 forbidden/not-implemented capabilities explicitly recorded.
 
 ## 2. Cable Status
 
@@ -190,7 +191,7 @@ Next multi-vehicle work:
 
 Recommended next node:
 
-1. Continue with wind/cable evidence aggregation, even denser wind occlusion coverage if runtime permits, or an active-control review document; active cable bridge and active multi-vehicle Offboard remain forbidden.
+1. Continue with an active-control review document, even denser wind occlusion coverage if runtime permits, or planning a minimal cable active bridge approval gate; active cable bridge and active multi-vehicle Offboard remain forbidden until that review exists.
 
 Reason:
 
@@ -209,6 +210,7 @@ Reason:
 - Cable all-groups RViz overlay is accepted with five groups visible from audited CSV evidence and no PX4/Gazebo/Offboard path.
 - Cable visual acceptance aggregate is accepted, tying dry-run acceptance to the all-groups RViz visual evidence.
 - Cable line-segment coverage is accepted as an offline dry-run path/readiness audit: all 5 groups have continuous lookahead segment arc coverage over the current 600.011818m candidate path, but this is still not final cable inspection coverage.
+- Current evidence matrix is accepted and gives future agents a compact capability/non-claim boundary before they start new work.
 - Cable acceptance thresholds are documented and matched to the aggregate dry-run audit defaults.
 - Wind acceptance thresholds are documented and matched to the aggregate audit defaults.
 - The next gap is denser coverage evidence or a separate active-control review, not evidence that the dry-run node can publish.

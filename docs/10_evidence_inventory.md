@@ -63,14 +63,15 @@ The audit is not allowed to:
 | Four-vehicle dry-run acceptance | aggregate read-only namespace, contract, smoke, samples and score-sweep summary | `scripts/audit_four_vehicle_dry_run_acceptance.sh` |
 | Four-vehicle assignment/topology sweep | offline topology and fixed-role boundary summary | `scripts/audit_four_vehicle_assignment_topology_sweep.sh` |
 | Project current acceptance | aggregate current cable, wind and four-vehicle acceptance summary | `scripts/audit_project_current_acceptance.sh` |
+| Current evidence matrix | machine-checkable positive claims, non-claims and forbidden capabilities | `scripts/audit_current_evidence_matrix.sh` |
 
 ## 4. Latest Result
 
 Latest evidence:
 
-- summary: `data/results/evidence_inventory_20260617_085819/evidence_inventory_20260617_085819.txt`
-- inventory CSV: `data/results/evidence_inventory_20260617_085819/evidence_inventory_20260617_085819.csv`
-- regeneration list: `data/results/evidence_inventory_20260617_085819/evidence_regeneration_20260617_085819.txt`
+- summary: `data/results/evidence_inventory_20260617_090429/evidence_inventory_20260617_090429.txt`
+- inventory CSV: `data/results/evidence_inventory_20260617_090429/evidence_inventory_20260617_090429.csv`
+- regeneration list: `data/results/evidence_inventory_20260617_090429/evidence_regeneration_20260617_090429.txt`
 
 Expected accepted fields:
 
@@ -89,8 +90,8 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=26`
-- `present_count=26`
+- `required_evidence_count=27`
+- `present_count=27`
 - `missing_count=0`
 - `not_ignored_count=0`
 
@@ -129,6 +130,8 @@ Additional latest local project aggregate evidence:
 
 - project current acceptance summary: `data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt`
 - project current accepted fields: `decision=accepted_project_current_acceptance`, `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, `claims_project_current_acceptance_pass=true`
+- current evidence matrix summary: `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.txt`
+- current evidence matrix fields: `decision=accepted_current_evidence_matrix`, `accepted_positive_capability_count=5`, `forbidden_capability_count=4`, `forbidden_not_enabled=true`, `claims_current_evidence_matrix_pass=true`
 
 ## 5. Regeneration Rule
 
