@@ -305,6 +305,32 @@ Interpretation:
 - This still is not a final cable inspection certificate.
 - It is a stronger C2 offline geometry milestone that can support later multiview work.
 
+The first AerialCore-mesh occlusion-aware cable surface gate is accepted:
+
+- summary: `data/results/cable_multiview_surface_occlusion_offline_20260617_162441/cable_multiview_surface_occlusion_offline_20260617_162441.txt`
+- group CSV: `data/results/cable_multiview_surface_occlusion_offline_20260617_162441/cable_multiview_surface_occlusion_offline_groups_20260617_162441.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_multiview_surface_occlusion_offline
+uses_trimesh=true
+uses_rtree=true
+uses_real_aerialcore_collision_mesh=true
+ray_tests=1750
+global_min_total_surface_coverage_upper_bound_ratio=0.875000000
+global_min_occlusion_clear_total_surface_ratio=0.875000000
+global_max_blocked_union_ratio=0.000000000
+claims_cable_multiview_surface_occlusion_offline_pass=true
+claims_final_cable_inspection_coverage=false
+```
+
+Interpretation:
+
+- The C2 multiview candidate now has an occlusion-aware offline gate using the real AerialCore two-tower collision mesh.
+- It still uses planned camera poses rather than a real PX4 trajectory.
+- It does not approve active cable tracking.
+
 Expected behavior:
 
 - read accepted cable geometry CSVs.

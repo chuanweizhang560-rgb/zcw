@@ -55,6 +55,8 @@ The audit is not allowed to:
 | Cable visual acceptance audit | aggregate cable dry-run acceptance and all-groups RViz overlay summary | `scripts/audit_cable_visual_acceptance.sh` |
 | Cable acceptance threshold contract | threshold/non-claim documentation matched to the aggregate cable dry-run audit defaults | `scripts/audit_cable_acceptance_threshold_contract.sh` |
 | Cable surface current acceptance | aggregate C1/C2 cable surface progression and dry-run boundary summary | `scripts/audit_cable_surface_current_acceptance.sh` |
+| Cable multiview surface occlusion | AerialCore two-tower collision-mesh ray intersection surface gate | `scripts/audit_cable_multiview_surface_occlusion_offline.sh` |
+| Cable AerialCore GUI screenshot | Gazebo GUI scene-start screenshot for the two-tower cable world | `scripts/capture_px4_aerialcore_world_gui.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
 | Wind turbine multilevel headless Offboard | control log, vehicle status and local position echo | `scripts/verify_wind_turbine_multilevel_orbit.sh` |
@@ -114,8 +116,11 @@ Additional latest local cable coverage evidence:
 - dry-run acceptance fields: `decision=accepted_cable_dry_run_acceptance`, `tracking_ok=true`, `frame_ok=true`, `coverage_ok=true`, `line_segment_ok=true`, `boundary_ok=true`
 - cable threshold contract summary: `data/results/cable_acceptance_threshold_contract_20260616_152304/cable_acceptance_threshold_contract_20260616_152304.txt`
 - cable threshold contract fields: `decision=accepted_cable_acceptance_threshold_contract`, `check_count=11`, `fail_count=0`, `claims_active_control_approval=false`, `claims_final_inspection_coverage=false`
-- cable surface current acceptance summary: `data/results/cable_surface_current_acceptance_20260617_161107/cable_surface_current_acceptance_20260617_161107.txt`
-- cable surface current acceptance fields: `decision=accepted_cable_surface_current_acceptance`, `c1_visible_side_ok=true`, `c2_candidate_ok=true`, `c2_union_ok=true`, `dry_run_ok=true`, `final_claim_blocked=true`, `claims_cable_surface_progression_current_acceptance_pass=true`
+- cable surface occlusion summary: `data/results/cable_multiview_surface_occlusion_offline_20260617_162441/cable_multiview_surface_occlusion_offline_20260617_162441.txt`
+- cable surface occlusion fields: `decision=accepted_cable_multiview_surface_occlusion_offline`, `uses_real_aerialcore_collision_mesh=true`, `ray_tests=1750`, `global_min_occlusion_clear_total_surface_ratio=0.875000000`, `claims_cable_multiview_surface_occlusion_offline_pass=true`
+- cable surface current acceptance summary: `data/results/cable_surface_current_acceptance_20260617_163650/cable_surface_current_acceptance_20260617_163650.txt`
+- cable surface current acceptance fields: `decision=accepted_cable_surface_current_acceptance`, `c1_visible_side_ok=true`, `c2_candidate_ok=true`, `c2_union_ok=true`, `occlusion_ok=true`, `dry_run_ok=true`, `final_claim_blocked=true`, `claims_cable_surface_progression_current_acceptance_pass=true`
+- cable AerialCore GUI screenshot: `data/screenshots/px4_aerialcore_danube_wires_gui_20260617_162903.png`
 
 Additional latest local wind rule-baseline evidence:
 
@@ -135,7 +140,8 @@ Additional latest local project aggregate evidence:
 - project current accepted fields: `decision=accepted_project_current_acceptance`, `cable_dry_run_ok=true`, `wind_rule_baseline_ok=true`, `four_vehicle_dry_run_ok=true`, `claims_project_current_acceptance_pass=true`
 - current evidence matrix summary: `data/results/current_evidence_matrix_20260617_090333/current_evidence_matrix_20260617_090333.txt`
 - current evidence matrix fields: `decision=accepted_current_evidence_matrix`, `accepted_positive_capability_count=6`, `forbidden_capability_count=4`, `forbidden_not_enabled=true`, `claims_current_evidence_matrix_pass=true`
-- refreshed current evidence matrix summary: `data/results/current_evidence_matrix_20260617_161225/current_evidence_matrix_20260617_161225.txt`
+- refreshed current evidence matrix summary: `data/results/current_evidence_matrix_20260617_163839/current_evidence_matrix_20260617_163839.txt`
+- refreshed evidence inventory summary: `data/results/evidence_inventory_20260617_163850/evidence_inventory_20260617_163850.txt`
 
 ## 5. Regeneration Rule
 

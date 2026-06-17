@@ -6,7 +6,7 @@ cd "${ROOT_DIR}"
 
 DEFAULT_CABLE_DRY_RUN_SUMMARY="data/results/cable_dry_run_acceptance_20260617_085648/cable_dry_run_acceptance_20260617_085648.txt"
 DEFAULT_CABLE_VISUAL_SUMMARY="data/results/cable_visual_acceptance_20260617_085710/cable_visual_acceptance_20260617_085710.txt"
-DEFAULT_CABLE_SURFACE_SUMMARY="data/results/cable_surface_current_acceptance_20260617_161107/cable_surface_current_acceptance_20260617_161107.txt"
+DEFAULT_CABLE_SURFACE_SUMMARY="data/results/cable_surface_current_acceptance_20260617_163650/cable_surface_current_acceptance_20260617_163650.txt"
 DEFAULT_WIND_SUMMARY="data/results/wind_rule_baseline_acceptance_20260616_095017/wind_rule_baseline_acceptance_20260616_095017.txt"
 DEFAULT_FOUR_VEHICLE_SUMMARY="data/results/four_vehicle_dry_run_acceptance_20260616_090911/four_vehicle_dry_run_acceptance_20260616_090911.txt"
 DEFAULT_PROJECT_SUMMARY="data/results/project_current_acceptance_20260617_085710/project_current_acceptance_20260617_085710.txt"
@@ -85,6 +85,7 @@ cable_surface_ok = (
     and cable_surface.get("c1_visible_side_ok") == "true"
     and cable_surface.get("c2_candidate_ok") == "true"
     and cable_surface.get("c2_union_ok") == "true"
+    and cable_surface.get("occlusion_ok") == "true"
     and cable_surface.get("dry_run_ok") == "true"
     and cable_surface.get("final_claim_blocked") == "true"
     and cable_surface.get("claims_final_cable_inspection_coverage") == "false"
@@ -143,8 +144,8 @@ rows = [
         "capability": "surface_progression_visible_side_and_multiview_offline",
         "status": "accepted" if cable_surface_ok else "rejected",
         "evidence": cable_surface_summary,
-        "claim": "visible-side C1 and side-A/side-B multiview C2 surface progression are accepted",
-        "non_claim": "not active PX4 control; not final cable inspection coverage; not occlusion-certified",
+        "claim": "visible-side C1, side-A/side-B multiview C2, and AerialCore-mesh occlusion gate are accepted",
+        "non_claim": "not active PX4 control; not final cable inspection coverage; not real trajectory certification",
         "starts_active_control": "false",
         "publishes_fmu_in": cable_surface.get("publishes_fmu_in", "unknown"),
         "source_may_have_active_control": "false",

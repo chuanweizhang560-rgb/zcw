@@ -10866,3 +10866,111 @@
 - 下一步：
   - 可继续做 occlusion-aware cable surface gate，或准备 active-control review 包但不实现 active bridge
 - 阻塞项：无
+
+- 时间：2026-06-17 16:24:41 CST
+- 项目推进节点：cable multiview surface occlusion gate 完成
+- 操作：
+  - 新增并执行 `scripts/audit_cable_multiview_surface_occlusion_offline.sh`
+  - 复用项目已有 `.venv/geometry` 中的 `trimesh`、`rtree` 和 `pycollada`
+  - 使用 AerialCore 两塔导线 collision mesh：`third_party/aerialcore_simulation/models/power_tower_danube_2towers_wires/meshes/power_tower_danube_2tower_and_wires.dae`
+  - 消费 C2 multiview candidate CSV，对 side A / side B 观测候选做 ray intersection occlusion-clear gate
+- 结果：
+  - summary：`data/results/cable_multiview_surface_occlusion_offline_20260617_162441/cable_multiview_surface_occlusion_offline_20260617_162441.txt`
+  - group CSV：`data/results/cable_multiview_surface_occlusion_offline_20260617_162441/cable_multiview_surface_occlusion_offline_groups_20260617_162441.csv`
+  - 关键字段：
+    - `decision=accepted_cable_multiview_surface_occlusion_offline`
+    - `uses_trimesh=true`
+    - `uses_rtree=true`
+    - `uses_real_aerialcore_collision_mesh=true`
+    - `mesh_faces=447980`
+    - `mesh_vertices=1229800`
+    - `ray_tests=1750`
+    - `ray_clear=1750`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `global_min_occlusion_clear_total_surface_ratio=0.875000000`
+    - `global_max_blocked_union_ratio=0.000000000`
+    - `claims_cable_multiview_surface_occlusion_offline_pass=true`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - 线缆 C2 multiview surface progression 已从 FOV 上界推进到 AerialCore collision-mesh 遮挡门
+  - 该节点仍使用规划候选姿态，不是 PX4 实际飞行轨迹认证
+  - 该节点不启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也不发布 `/fmu/in/*`
+- 下一步：
+  - 将 occlusion gate 纳入 surface current acceptance、current evidence matrix 和 evidence inventory
+- 阻塞项：无
+
+- 时间：2026-06-17 16:29:03 CST
+- 项目推进节点：AerialCore 导线场景 Gazebo GUI 截图完成
+- 操作：
+  - 按用户要求，不再避免仿真；启动当前项目的 AerialCore `danube_wires` Gazebo GUI 场景
+  - 首次启动失败原因：另一个工作区 `/home/travis/zcw/1.2` 的 PX4/Gazebo 残留进程占用 Gazebo master 端口
+  - 清理残留进程后重新启动并截图成功
+  - 截图后发现当前项目 `gzserver` 残留，已清理
+- 结果：
+  - screenshot：`data/screenshots/px4_aerialcore_danube_wires_gui_20260617_162903.png`
+  - log：`data/logs/px4_aerialcore_danube_wires_gui_20260617_162903.log`
+  - 截图属性：
+    - `size=5120x1600`
+    - `mean_rgb=107.760,90.344,83.735`
+    - `stddev_rgb=68.952,83.738,63.188`
+- 结论：
+  - 当前项目能启动 AerialCore 两塔导线 Gazebo GUI 场景并生成真实截图
+  - 截图视角没有充分对准导线，因此只作为 scene-start evidence，不作为电缆覆盖证明
+  - 该节点启动过 Gazebo/PX4 GUI 仿真，但没有执行 Offboard/arm，也没有进行电缆 active bridge 控制
+- 下一步：
+  - 后续需要覆盖可视化时，应使用 RViz/camera pose overlay 或调整 Gazebo 相机视角后截图
+- 阻塞项：无
+
+- 时间：2026-06-17 16:36:50 CST
+- 项目推进节点：surface current acceptance 纳入 occlusion gate
+- 操作：
+  - 更新并执行 `scripts/audit_cable_surface_current_acceptance.sh`
+  - 将 `cable_multiview_surface_occlusion_offline` 纳入当前线缆表面验收聚合
+  - 更新 `docs/24_cable_surface_current_acceptance.md`、`docs/22_cable_inspection_surface_coverage_model.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - summary：`data/results/cable_surface_current_acceptance_20260617_163650/cable_surface_current_acceptance_20260617_163650.txt`
+  - 关键字段：
+    - `decision=accepted_cable_surface_current_acceptance`
+    - `c1_visible_side_ok=true`
+    - `c2_candidate_ok=true`
+    - `c2_union_ok=true`
+    - `occlusion_ok=true`
+    - `dry_run_ok=true`
+    - `final_claim_blocked=true`
+    - `occlusion_global_min_clear_total_surface_ratio=0.875000000`
+    - `claims_cable_surface_progression_current_acceptance_pass=true`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - 当前线缆表面覆盖推进聚合已包含遮挡门
+  - final cable inspection coverage 仍被阻断
+- 下一步：
+  - 刷新 current evidence matrix 和 evidence inventory
+- 阻塞项：无
+
+- 时间：2026-06-17 16:38:50 CST
+- 项目推进节点：current evidence matrix 与 evidence inventory 刷新
+- 操作：
+  - 更新并执行 `scripts/audit_current_evidence_matrix.sh`
+  - 更新并执行 `scripts/audit_evidence_inventory.sh`
+  - 将 occlusion gate、Gazebo GUI screenshot 和新 surface acceptance 纳入证据链
+- 结果：
+  - matrix summary：`data/results/current_evidence_matrix_20260617_163839/current_evidence_matrix_20260617_163839.txt`
+  - matrix CSV：`data/results/current_evidence_matrix_20260617_163839/current_evidence_matrix_20260617_163839.csv`
+  - inventory summary：`data/results/evidence_inventory_20260617_163850/evidence_inventory_20260617_163850.txt`
+  - inventory CSV：`data/results/evidence_inventory_20260617_163850/evidence_inventory_20260617_163850.csv`
+  - 关键字段：
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=6`
+    - `accepted_positive_capability_count=6`
+    - `decision=accepted_evidence_inventory`
+    - `required_evidence_count=30`
+    - `present_count=30`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - 线缆表面推进能力现在包含 visible-side、multiview、AerialCore-mesh occlusion gate 和仿真场景截图证据
+  - 禁止能力边界仍未放宽：active bridge、multi-vehicle active Offboard、RL policy control、image-level defect detection 仍未启用
+- 下一步：
+  - 可以继续做更好的 Gazebo/RViz 同框可视化，或准备电缆 active-control review package
+- 阻塞项：无

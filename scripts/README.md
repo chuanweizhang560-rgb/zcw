@@ -59,6 +59,7 @@
 - `audit_cable_visible_side_surface_coverage_offline.sh`：只读消费 FOV 上界结果，收敛成可见侧 cable surface coverage offline C1 节点；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`，不声明全表面覆盖。
 - `audit_cable_multiview_surface_candidate_offline.sh`：只读由单侧 cable surface-observation pose candidate 派生 side A / side B 多视角候选 CSV，作为 C2 离线节点；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_multiview_surface_union_offline.sh`：只读消费 multiview candidate CSV，计算 side A / side B 的 union FOV 覆盖上界并输出总表面比率；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_cable_multiview_surface_occlusion_offline.sh`：只读消费 multiview candidate CSV 和 AerialCore 两塔导线 collision mesh，使用 `trimesh`/`rtree` ray intersection 计算 occlusion-clear surface ratio；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_surface_current_acceptance.sh`：只读聚合 C1/C2 surface coverage progression 与 cable dry-run acceptance，输出当前线缆表面覆盖推进口径；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`，不声明最终巡检覆盖。
 - `audit_cable_dry_run_acceptance.sh`：只读聚合 tracking envelope、frame contract、all-groups coverage monitor 和 line-segment coverage 证据，验证电缆 dry-run 验收阈值；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_acceptance_threshold_contract.sh`：只读检查 `docs/18_cable_acceptance_thresholds.md` 与 `audit_cable_dry_run_acceptance.sh` 的默认阈值和 non-claim 边界是否一致；不启动 ROS/PX4/Gazebo/RViz。
