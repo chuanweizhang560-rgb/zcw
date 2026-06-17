@@ -156,3 +156,30 @@ claims_final_cable_inspection_coverage=false
 ```
 
 The next implementation step is still C2 offline, not active control.
+
+## 9. C2 Offline Progress
+
+The C2 offline multiview candidate and union characterization are now accepted.
+
+Accepted evidence:
+
+- candidate summary: `data/results/cable_multiview_surface_candidate_offline_20260617_094219/cable_multiview_surface_candidate_offline_20260617_094219.txt`
+- candidate CSV: `data/results/cable_multiview_surface_candidate_offline_20260617_094219/cable_multiview_surface_candidate_offline_20260617_094219.csv`
+- union summary: `data/results/cable_multiview_surface_union_offline_20260617_094233/cable_multiview_surface_union_offline_20260617_094233.txt`
+- union group CSV: `data/results/cable_multiview_surface_union_offline_20260617_094233/cable_multiview_surface_union_offline_groups_20260617_094233.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_multiview_surface_union_offline
+group_count=5
+accepted_group_count=5
+global_min_total_surface_coverage_upper_bound_ratio=0.875000000
+global_min_visible_side_coverage_upper_bound_ratio=1.000000000
+global_min_side_a_coverage_upper_bound_ratio=0.437500000
+global_min_side_b_coverage_upper_bound_ratio=0.437500000
+claims_multiview_surface_union_offline_pass=true
+claims_final_cable_inspection_coverage=false
+```
+
+The next implementation step can now move to a stronger multiview offline variant or remain on the existing claim boundary. Active control is still off-limits.

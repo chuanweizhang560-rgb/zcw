@@ -10757,3 +10757,37 @@
 - 下一步：
   - 做 C2 multiview surface candidate offline，或继续补 wind/cable evidence aggregation
 - 阻塞项：无
+
+- 时间：2026-06-17 09:42:33 CST
+- 项目推进节点：visible-side multiview candidate offline C2 完成
+- 操作：
+  - 新增并执行 `scripts/audit_cable_multiview_surface_candidate_offline.sh`
+  - 由现有单侧 cable surface-observation candidate 派生 side A / side B 多视角候选 CSV
+  - 新增并执行 `scripts/audit_cable_multiview_surface_union_offline.sh`
+  - 基于 side A / side B 做 union FOV surface coverage upper bound characterization
+  - 更新 `scripts/README.md`、`docs/22_cable_inspection_surface_coverage_model.md`、`docs/23_cable_multiview_surface_observation_plan.md`、`docs/14_current_status_and_next_steps.md`
+- 结果：
+  - candidate summary：`data/results/cable_multiview_surface_candidate_offline_20260617_094219/cable_multiview_surface_candidate_offline_20260617_094219.txt`
+  - candidate CSV：`data/results/cable_multiview_surface_candidate_offline_20260617_094219/cable_multiview_surface_candidate_offline_20260617_094219.csv`
+  - union summary：`data/results/cable_multiview_surface_union_offline_20260617_094233/cable_multiview_surface_union_offline_20260617_094233.txt`
+  - union group CSV：`data/results/cable_multiview_surface_union_offline_20260617_094233/cable_multiview_surface_union_offline_groups_20260617_094233.csv`
+  - 关键字段：
+    - `decision=accepted_cable_multiview_surface_candidate_offline`
+    - `decision=accepted_cable_multiview_surface_union_offline`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `pose_count=250`
+    - `global_min_total_surface_coverage_upper_bound_ratio=0.875000000`
+    - `global_min_visible_side_coverage_upper_bound_ratio=1.000000000`
+    - `global_min_side_a_coverage_upper_bound_ratio=0.437500000`
+    - `global_min_side_b_coverage_upper_bound_ratio=0.437500000`
+    - `claims_multiview_surface_candidate_offline_pass=true`
+    - `claims_multiview_surface_union_offline_pass=true`
+    - `claims_final_cable_inspection_coverage=false`
+- 结论：
+  - side A / side B 的多视角离线候选已建立，且 union 覆盖比单侧节点更强
+  - 该节点仍然不支持 final cable inspection claim
+  - 该节点不涉及 ROS/PX4/Gazebo/RViz/Offboard/arm，也不发布 `/fmu/in/*`
+- 下一步：
+  - 可继续做更强的 multiview 变体，或进入 wind/cable evidence aggregation
+- 阻塞项：无

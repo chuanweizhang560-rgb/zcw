@@ -277,6 +277,34 @@ Interpretation:
 - The same evidence still does not justify a full-surface cable inspection claim.
 - This is a project progression node, not an active-control approval.
 
+The C2 offline multiview node is also accepted:
+
+- multiview candidate summary: `data/results/cable_multiview_surface_candidate_offline_20260617_094219/cable_multiview_surface_candidate_offline_20260617_094219.txt`
+- multiview candidate CSV: `data/results/cable_multiview_surface_candidate_offline_20260617_094219/cable_multiview_surface_candidate_offline_20260617_094219.csv`
+- union summary: `data/results/cable_multiview_surface_union_offline_20260617_094233/cable_multiview_surface_union_offline_20260617_094233.txt`
+- union group CSV: `data/results/cable_multiview_surface_union_offline_20260617_094233/cable_multiview_surface_union_offline_groups_20260617_094233.csv`
+
+Key result:
+
+```text
+decision=accepted_cable_multiview_surface_union_offline
+group_count=5
+accepted_group_count=5
+global_min_total_surface_coverage_upper_bound_ratio=0.875000000
+global_min_visible_side_coverage_upper_bound_ratio=1.000000000
+global_min_side_a_coverage_upper_bound_ratio=0.437500000
+global_min_side_b_coverage_upper_bound_ratio=0.437500000
+meets_total_surface_target=true
+claims_multiview_surface_union_offline_pass=true
+claims_final_cable_inspection_coverage=false
+```
+
+Interpretation:
+
+- Two opposite-side offline views materially improve the surface claim over the single-side node.
+- This still is not a final cable inspection certificate.
+- It is a stronger C2 offline geometry milestone that can support later multiview work.
+
 Expected behavior:
 
 - read accepted cable geometry CSVs.
