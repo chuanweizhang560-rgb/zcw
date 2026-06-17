@@ -11026,3 +11026,24 @@
 - 下一步：
   - 若继续推进 active control，先对该 frozen scenario 做用户审批复核，再进入 active bridge 设计
 - 阻塞项：无
+
+- 时间：2026-06-17 17:18:15 CST
+- 项目推进节点：cable offboard gate dry-run RViz overlay 重新捕获
+- 操作：
+  - 执行 `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh`
+  - 重新启动 PX4/Gazebo + Micro XRCE-DDS、只读 bridge debug pipeline、offboard gate dry-run、static TF 和 RViz2
+- 结果：
+  - summary：`data/results/cable_offboard_gate_rviz_overlay_20260617_171815/cable_offboard_gate_rviz_overlay_20260617_171815.txt`
+  - screenshot：`data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260617_171815.png`
+  - 关键字段：
+    - `decision=accepted_cable_offboard_gate_rviz_overlay_capture`
+    - `phase_b_allowed=false`
+    - `publishes_fmu_in=false`
+  - 备注：
+    - RViz 仍使用 identity map->px4_local_ned_dry_run static TF 作为 debug overlay
+- 结论：
+  - 当前 frozen cable active scenario 仍处于 dry-run/read-only 边界
+  - 这次 capture 只是更新可视化证据，不是 active 控制
+- 下一步：
+  - 如继续推进，可基于该 frozen scenario 进入用户审批复核或进一步 dry-run 证据补强
+- 阻塞项：无

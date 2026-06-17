@@ -65,6 +65,7 @@ The approved evidence chain that may justify a future active review is:
 | evidence inventory | `docs/10_evidence_inventory.md` |
 
 The latest accepted cable progression evidence is currently dry-run and offline. It is not final cable inspection coverage and not active control evidence.
+The current debug-overlay evidence was refreshed on 2026-06-17 at `data/screenshots/cable_offboard_gate_dry_run_rviz_overlay_20260617_171815.png` with `phase_b_allowed=false` and `publishes_fmu_in=false`.
 
 ## 5. Scenario Freeze
 
