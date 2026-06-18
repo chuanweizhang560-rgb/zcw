@@ -15,6 +15,7 @@ DEFAULT_APPROVAL_MANIFEST="docs/28_cable_active_approval_manifest.md"
 DEFAULT_HANDOFF_BUNDLE="docs/29_cable_active_handoff_bundle.md"
 DEFAULT_FOURVIEW_UNION_SUMMARY="data/results/cable_fourview_surface_union_offline_20260618_131943/cable_fourview_surface_union_offline_20260618_131943.txt"
 DEFAULT_FOURVIEW_ATTITUDE_SUMMARY="data/results/cable_fourview_attitude_feasibility_20260618_132059/cable_fourview_attitude_feasibility_20260618_132059.txt"
+DEFAULT_FOURVIEW_OCCLUSION_SUMMARY="data/results/cable_fourview_surface_occlusion_offline_20260618_132716/cable_fourview_surface_occlusion_offline_20260618_132716.txt"
 CABLE_DRY_RUN_SUMMARY="${CABLE_DRY_RUN_SUMMARY:-${DEFAULT_CABLE_DRY_RUN_SUMMARY}}"
 CABLE_VISUAL_SUMMARY="${CABLE_VISUAL_SUMMARY:-${DEFAULT_CABLE_VISUAL_SUMMARY}}"
 CABLE_SURFACE_SUMMARY="${CABLE_SURFACE_SUMMARY:-${DEFAULT_CABLE_SURFACE_SUMMARY}}"
@@ -26,13 +27,14 @@ APPROVAL_MANIFEST="${APPROVAL_MANIFEST:-${DEFAULT_APPROVAL_MANIFEST}}"
 HANDOFF_BUNDLE="${HANDOFF_BUNDLE:-${DEFAULT_HANDOFF_BUNDLE}}"
 FOURVIEW_UNION_SUMMARY="${FOURVIEW_UNION_SUMMARY:-${DEFAULT_FOURVIEW_UNION_SUMMARY}}"
 FOURVIEW_ATTITUDE_SUMMARY="${FOURVIEW_ATTITUDE_SUMMARY:-${DEFAULT_FOURVIEW_ATTITUDE_SUMMARY}}"
+FOURVIEW_OCCLUSION_SUMMARY="${FOURVIEW_OCCLUSION_SUMMARY:-${DEFAULT_FOURVIEW_OCCLUSION_SUMMARY}}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 RESULT_ROOT="${RESULT_ROOT:-data/results}"
 RESULT_DIR="${RESULT_ROOT}/current_evidence_matrix_${STAMP}"
 SUMMARY_FILE="${RESULT_DIR}/current_evidence_matrix_${STAMP}.txt"
 MATRIX_CSV="${RESULT_DIR}/current_evidence_matrix_${STAMP}.csv"
 
-for file in "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}" "${READINESS_SUMMARY}" "${APPROVAL_MANIFEST}" "${HANDOFF_BUNDLE}" "${FOURVIEW_UNION_SUMMARY}" "${FOURVIEW_ATTITUDE_SUMMARY}"; do
+for file in "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}" "${READINESS_SUMMARY}" "${APPROVAL_MANIFEST}" "${HANDOFF_BUNDLE}" "${FOURVIEW_UNION_SUMMARY}" "${FOURVIEW_ATTITUDE_SUMMARY}" "${FOURVIEW_OCCLUSION_SUMMARY}"; do
   if [[ ! -f "${file}" ]]; then
     echo "Required aggregate summary does not exist: ${file}" >&2
     exit 1
@@ -43,7 +45,7 @@ mkdir -p "${RESULT_DIR}"
 
 python3 - "${CABLE_DRY_RUN_SUMMARY}" "${CABLE_VISUAL_SUMMARY}" "${CABLE_SURFACE_SUMMARY}" "${WIND_SUMMARY}" \
   "${FOUR_VEHICLE_SUMMARY}" "${PROJECT_SUMMARY}" "${READINESS_SUMMARY}" "${APPROVAL_MANIFEST}" "${HANDOFF_BUNDLE}" \
-  "${FOURVIEW_UNION_SUMMARY}" "${FOURVIEW_ATTITUDE_SUMMARY}" "${MATRIX_CSV}" >"${SUMMARY_FILE}" <<'PY'
+  "${FOURVIEW_UNION_SUMMARY}" "${FOURVIEW_ATTITUDE_SUMMARY}" "${FOURVIEW_OCCLUSION_SUMMARY}" "${MATRIX_CSV}" >"${SUMMARY_FILE}" <<'PY'
 import csv
 import os
 import sys
@@ -60,8 +62,9 @@ import sys
     handoff_bundle,
     fourview_union_summary,
     fourview_attitude_summary,
+    fourview_occlusion_summary,
     matrix_csv,
-) = sys.argv[1:13]
+) = sys.argv[1:14]
 
 
 def load_kv(path):
@@ -85,6 +88,7 @@ project = load_kv(project_summary)
 readiness = load_kv(readiness_summary)
 fourview_union = load_kv(fourview_union_summary)
 fourview_attitude = load_kv(fourview_attitude_summary)
+fourview_occlusion = load_kv(fourview_occlusion_summary)
 
 cable_ok = (
     cable.get("decision") == "accepted_cable_dry_run_acceptance"
@@ -260,6 +264,23 @@ rows = [
         "non_claim": "not active PX4 control; not physical camera/gimbal approval; not final cable inspection coverage",
         "starts_active_control": "false",
         "publishes_fmu_in": "false",
+        "source_may_have_active_control": "false",
+    },
+    {
+        "area": "cable",
+        "capability": "fourview_surface_occlusion_offline",
+        "status": "accepted" if (
+            fourview_occlusion.get("decision") == "accepted_cable_fourview_surface_occlusion_offline"
+            and fourview_occlusion.get("uses_real_aerialcore_collision_mesh") == "true"
+            and fourview_occlusion.get("claims_fourview_surface_occlusion_offline_pass") == "true"
+            and fourview_occlusion.get("claims_active_control_approval") == "false"
+            and fourview_occlusion.get("claims_final_cable_inspection_coverage") == "false"
+        ) else "rejected",
+        "evidence": fourview_occlusion_summary,
+        "claim": "four-view offline surface candidate is occlusion-clear against the AerialCore collision mesh",
+        "non_claim": "not active PX4 control; not physical camera/gimbal approval; not final cable inspection coverage",
+        "starts_active_control": "false",
+        "publishes_fmu_in": fourview_occlusion.get("publishes_fmu_in", "unknown"),
         "source_may_have_active_control": "false",
     },
 ]

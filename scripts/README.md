@@ -69,6 +69,7 @@
 - `audit_cable_fourview_surface_candidate_offline.sh`：只读生成线缆四视角 C3 表面观测候选 CSV；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_fourview_surface_union_offline.sh`：只读计算 C3 四视角表面 union 覆盖上界；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_fourview_attitude_feasibility.sh`：只读检查 C3 四视角候选的 pitch 可行性边界；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
+- `audit_cable_fourview_surface_occlusion_offline.sh`：只读消费 C3 四视角候选 CSV 和 AerialCore 两塔导线 collision mesh，使用 `trimesh`/`rtree` ray intersection 计算四视角 occlusion-clear surface ratio；不启动 ROS/PX4/Gazebo/RViz，不发布 `/fmu/in/*`。
 - `audit_cable_dry_run_acceptance.sh`：只读聚合 tracking envelope、frame contract、all-groups coverage monitor 和 line-segment coverage 证据，验证电缆 dry-run 验收阈值；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_acceptance_threshold_contract.sh`：只读检查 `docs/18_cable_acceptance_thresholds.md` 与 `audit_cable_dry_run_acceptance.sh` 的默认阈值和 non-claim 边界是否一致；不启动 ROS/PX4/Gazebo/RViz。
 - `audit_cable_visual_acceptance.sh`：只读聚合电缆 dry-run acceptance 与 all-groups RViz overlay 证据，验证当前电缆几何/可视化证据链；不启动 ROS/PX4/Gazebo/RViz。

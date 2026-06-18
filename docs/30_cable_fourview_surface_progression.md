@@ -75,12 +75,39 @@ requires_gimbal_or_attitude_review=true
 claims_active_control_approval=false
 ```
 
-## 4. Current Interpretation
+## 4. Occlusion Gate
+
+The four-view candidate was also checked against the real AerialCore two-tower wire collision mesh with `trimesh`/`rtree` ray intersection.
+
+Accepted evidence:
+
+- summary: `data/results/cable_fourview_surface_occlusion_offline_20260618_132716/cable_fourview_surface_occlusion_offline_20260618_132716.txt`
+- group CSV: `data/results/cable_fourview_surface_occlusion_offline_20260618_132716/cable_fourview_surface_occlusion_offline_groups_20260618_132716.csv`
+
+Key fields:
+
+```text
+decision=accepted_cable_fourview_surface_occlusion_offline
+uses_real_aerialcore_collision_mesh=true
+group_count=5
+accepted_group_count=5
+ray_tests=7500
+ray_clear=7500
+global_min_occlusion_clear_total_surface_ratio=1.000000000
+global_max_blocked_union_ratio=0.000000000
+claims_active_control_approval=false
+claims_final_cable_inspection_coverage=false
+```
+
+This strengthens the C3 offline geometry evidence from a pure FOV union upper bound to an AerialCore-mesh occlusion-clear characterization.
+
+## 5. Current Interpretation
 
 C3 proves a stronger offline geometric candidate:
 
 ```text
 fourview_total_surface_upper_bound_ready=true
+fourview_occlusion_clear_offline=true
 active_flight_ready=false
 ```
 
@@ -88,5 +115,4 @@ It does not prove:
 
 - real PX4 trajectory execution,
 - physical camera/gimbal feasibility,
-- occlusion-clear four-view full-surface coverage,
 - final cable inspection coverage.

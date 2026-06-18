@@ -11218,3 +11218,54 @@
 - 下一步：
   - 如果继续推进，剩下的是审批复核和更细的 dry-run 证据补强，不进入 active bridge
 - 阻塞项：无
+
+- 时间：2026-06-18 13:27:41 CST
+- 项目推进节点：C3 four-view cable surface occlusion gate
+- 操作：
+  - 新建 `scripts/audit_cable_fourview_surface_occlusion_offline.sh`
+  - 使用 `.venv/geometry` 内的成熟开源库 `trimesh`/`rtree`，消费 C3 四视角候选 CSV 与 AerialCore 两塔导线 collision mesh
+  - 执行 `scripts/audit_cable_fourview_surface_occlusion_offline.sh`
+  - 更新 `docs/30_cable_fourview_surface_progression.md`
+  - 更新 `docs/23_cable_multiview_surface_observation_plan.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+  - 更新 `docs/19_current_evidence_matrix.md`
+  - 更新 `docs/10_evidence_inventory.md`
+  - 更新 `scripts/README.md`
+  - 更新 `scripts/audit_current_evidence_matrix.sh`
+  - 更新 `scripts/audit_evidence_inventory.sh`
+  - 执行 `scripts/audit_current_evidence_matrix.sh`
+  - 执行 `scripts/audit_evidence_inventory.sh`
+- 结果：
+  - four-view occlusion summary：`data/results/cable_fourview_surface_occlusion_offline_20260618_132716/cable_fourview_surface_occlusion_offline_20260618_132716.txt`
+  - four-view occlusion group CSV：`data/results/cable_fourview_surface_occlusion_offline_20260618_132716/cable_fourview_surface_occlusion_offline_groups_20260618_132716.csv`
+  - refreshed matrix summary：`data/results/current_evidence_matrix_20260618_132842/current_evidence_matrix_20260618_132842.txt`
+  - refreshed matrix CSV：`data/results/current_evidence_matrix_20260618_132842/current_evidence_matrix_20260618_132842.csv`
+  - refreshed inventory summary：`data/results/evidence_inventory_20260618_132842/evidence_inventory_20260618_132842.txt`
+  - refreshed inventory CSV：`data/results/evidence_inventory_20260618_132842/evidence_inventory_20260618_132842.csv`
+  - 关键字段：
+    - `decision=accepted_cable_fourview_surface_occlusion_offline`
+    - `uses_real_aerialcore_collision_mesh=true`
+    - `group_count=5`
+    - `accepted_group_count=5`
+    - `ray_tests=7500`
+    - `ray_clear=7500`
+    - `global_min_occlusion_clear_total_surface_ratio=1.000000000`
+    - `global_max_blocked_union_ratio=0.000000000`
+    - `claims_active_control_approval=false`
+    - `claims_final_cable_inspection_coverage=false`
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=11`
+    - `accepted_positive_capability_count=11`
+    - `decision=accepted_evidence_inventory`
+    - `required_evidence_count=36`
+    - `present_count=36`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - C3 四视角线缆表面候选已从 FOV union 上界推进到 AerialCore mesh ray intersection 遮挡门
+  - 当前离线几何结果达到全表面无遮挡上界，但仍不批准 active PX4 cable bridge
+  - direct body-camera active flight 仍被 attitude feasibility 阻断，需要 camera/gimbal/姿态方案复核
+- 下一步：
+  - 可继续做四视角 camera/gimbal 可执行性分离，或继续推进 wind/cable 证据聚合
+  - 在未出现明确审批口令前，不实现也不运行 cable active bridge，不发布 `/fmu/in/*`
+- 阻塞项：无

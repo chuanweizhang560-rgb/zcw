@@ -186,7 +186,7 @@ The next implementation step can now move to a stronger multiview offline varian
 
 ## 10. C3 Four-View Offline Progress
 
-The C3 four-view offline candidate and union characterization are accepted and documented in `docs/30_cable_fourview_surface_progression.md`.
+The C3 four-view offline candidate, union characterization, attitude feasibility check and AerialCore-mesh occlusion gate are accepted and documented in `docs/30_cable_fourview_surface_progression.md`.
 
 Key result:
 
@@ -196,6 +196,7 @@ group_count=5
 accepted_group_count=5
 global_min_total_surface_coverage_upper_bound_ratio=1.000000000
 meets_total_surface_target=true
+global_min_occlusion_clear_total_surface_ratio=1.000000000
 claims_final_cable_inspection_coverage=false
 ```
 
