@@ -108,6 +108,7 @@ C3 proves a stronger offline geometric candidate:
 ```text
 fourview_total_surface_upper_bound_ready=true
 fourview_occlusion_clear_offline=true
+mount_strategy_review_required=true
 active_flight_ready=false
 ```
 
@@ -116,3 +117,23 @@ It does not prove:
 - real PX4 trajectory execution,
 - physical camera/gimbal feasibility,
 - final cable inspection coverage.
+
+## 6. Mount Strategy Split
+
+The camera/mount split is documented separately at `docs/31_cable_fourview_camera_mount_strategy.md`.
+
+Accepted evidence:
+
+- summary: `data/results/cable_fourview_mount_strategy_20260618_133231/cable_fourview_mount_strategy_20260618_133231.txt`
+- view CSV: `data/results/cable_fourview_mount_strategy_20260618_133231/cable_fourview_mount_strategy_views_20260618_133231.csv`
+
+Key fields:
+
+```text
+body_fixed_ready_view_count=2
+gimbal_or_mount_review_view_count=2
+body_fixed_only_full_surface_ready=false
+full_surface_requires_mount_review=true
+recommended_active_track=body_fixed_side_views_only_until_mount_review
+claims_active_control_approval=false
+```

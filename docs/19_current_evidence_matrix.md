@@ -40,18 +40,19 @@ Default inputs:
 - four-view surface union summary: `data/results/cable_fourview_surface_union_offline_20260618_131943/cable_fourview_surface_union_offline_20260618_131943.txt`
 - four-view attitude feasibility summary: `data/results/cable_fourview_attitude_feasibility_20260618_132059/cable_fourview_attitude_feasibility_20260618_132059.txt`
 - four-view surface occlusion summary: `data/results/cable_fourview_surface_occlusion_offline_20260618_132716/cable_fourview_surface_occlusion_offline_20260618_132716.txt`
+- four-view camera/mount strategy summary: `data/results/cable_fourview_mount_strategy_20260618_133231/cable_fourview_mount_strategy_20260618_133231.txt`
 
-Latest refreshed result after the C3 four-view occlusion gate:
+Latest refreshed result after the C3 four-view camera/mount strategy gate:
 
-- summary: `data/results/current_evidence_matrix_20260618_132842/current_evidence_matrix_20260618_132842.txt`
-- matrix CSV: `data/results/current_evidence_matrix_20260618_132842/current_evidence_matrix_20260618_132842.csv`
+- summary: `data/results/current_evidence_matrix_20260618_133357/current_evidence_matrix_20260618_133357.txt`
+- matrix CSV: `data/results/current_evidence_matrix_20260618_133357/current_evidence_matrix_20260618_133357.csv`
 
 Accepted fields:
 
 ```text
 decision=accepted_current_evidence_matrix
-positive_capability_count=11
-accepted_positive_capability_count=11
+positive_capability_count=12
+accepted_positive_capability_count=12
 forbidden_capability_count=4
 forbidden_not_enabled=true
 claims_current_evidence_matrix_pass=true
@@ -69,6 +70,7 @@ claims_current_evidence_matrix_pass=true
 | cable | active handoff bundle frozen | accepted | review bundle documented, still blocked |
 | cable | four-view surface progression offline | accepted | full-surface upper-bound target met offline, active flight still gated |
 | cable | four-view surface occlusion offline | accepted | AerialCore-mesh occlusion-clear offline, active flight still gated |
+| cable | four-view camera/mount strategy | accepted | full-surface geometry remains mount-review gated |
 | wind | single-vehicle rule-baseline motion, mapping and sampled occlusion coverage | accepted | rule baseline only, no final inspection coverage |
 | multi-vehicle | four-vehicle topology, assignment and scoring dry-run | accepted | read-only/dry-run only, no active Offboard |
 | project | integrated current status | accepted | current aggregate only, no RL or defect-detection claim |

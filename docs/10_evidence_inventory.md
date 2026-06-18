@@ -60,6 +60,7 @@ The audit is not allowed to:
 | Cable multiview surface occlusion | AerialCore two-tower collision-mesh ray intersection surface gate | `scripts/audit_cable_multiview_surface_occlusion_offline.sh` |
 | Cable four-view surface progression | four-view union upper-bound and attitude feasibility summaries | `scripts/audit_cable_fourview_surface_union_offline.sh`, `scripts/audit_cable_fourview_attitude_feasibility.sh` |
 | Cable four-view surface occlusion | AerialCore two-tower collision-mesh ray intersection gate for the C3 four-view candidate | `scripts/audit_cable_fourview_surface_occlusion_offline.sh` |
+| Cable four-view camera/mount strategy | body-fixed side-view split and pitch-gimbal/mount-review boundary for C3 | `scripts/audit_cable_fourview_mount_strategy.sh` |
 | Cable AerialCore GUI screenshot | Gazebo GUI scene-start screenshot for the two-tower cable world | `scripts/capture_px4_aerialcore_world_gui.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
@@ -97,11 +98,11 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- summary: `data/results/evidence_inventory_20260618_132842/evidence_inventory_20260618_132842.txt`
-- inventory CSV: `data/results/evidence_inventory_20260618_132842/evidence_inventory_20260618_132842.csv`
-- regeneration list: `data/results/evidence_inventory_20260618_132842/evidence_regeneration_20260618_132842.txt`
-- `required_evidence_count=36`
-- `present_count=36`
+- summary: `data/results/evidence_inventory_20260618_133357/evidence_inventory_20260618_133357.txt`
+- inventory CSV: `data/results/evidence_inventory_20260618_133357/evidence_inventory_20260618_133357.csv`
+- regeneration list: `data/results/evidence_inventory_20260618_133357/evidence_regeneration_20260618_133357.txt`
+- `required_evidence_count=37`
+- `present_count=37`
 - `missing_count=0`
 - `not_ignored_count=0`
 
@@ -115,6 +116,7 @@ Fresh local evidence since that accepted run:
 - four-view union summary: `data/results/cable_fourview_surface_union_offline_20260618_131943/cable_fourview_surface_union_offline_20260618_131943.txt`
 - four-view attitude summary: `data/results/cable_fourview_attitude_feasibility_20260618_132059/cable_fourview_attitude_feasibility_20260618_132059.txt`
 - four-view occlusion summary: `data/results/cable_fourview_surface_occlusion_offline_20260618_132716/cable_fourview_surface_occlusion_offline_20260618_132716.txt`
+- four-view mount strategy summary: `data/results/cable_fourview_mount_strategy_20260618_133231/cable_fourview_mount_strategy_20260618_133231.txt`
 
 Additional latest local cable coverage evidence:
 

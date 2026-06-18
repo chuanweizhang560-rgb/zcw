@@ -209,3 +209,23 @@ active_control_approved=false
 ```
 
 The four-view candidate strengthens the offline geometry evidence, but it is not an active-flight plan.
+
+## 11. C3 Camera/Mount Split
+
+The C3 camera/mount strategy audit is accepted and documented in `docs/31_cable_fourview_camera_mount_strategy.md`.
+
+Key result:
+
+```text
+body_fixed_ready_view_count=2
+gimbal_or_mount_review_view_count=2
+body_fixed_only_full_surface_ready=false
+full_surface_requires_mount_review=true
+recommended_active_track=body_fixed_side_views_only_until_mount_review
+claims_active_control_approval=false
+```
+
+Current active-flight boundary:
+
+- side views may become the first body-fixed review candidate only after explicit active-control approval.
+- vertical views remain blocked until camera mount, gimbal, or attitude-control feasibility is reviewed.

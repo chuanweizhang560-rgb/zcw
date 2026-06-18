@@ -11269,3 +11269,59 @@
   - 可继续做四视角 camera/gimbal 可执行性分离，或继续推进 wind/cable 证据聚合
   - 在未出现明确审批口令前，不实现也不运行 cable active bridge，不发布 `/fmu/in/*`
 - 阻塞项：无
+
+- 时间：2026-06-18 13:34:03 CST
+- 项目推进节点：C3 four-view camera/mount strategy split
+- 操作：
+  - 新建 `scripts/audit_cable_fourview_mount_strategy.sh`
+  - 新建 `docs/31_cable_fourview_camera_mount_strategy.md`
+  - 消费 C3 四视角候选 CSV、four-view union summary 和 four-view occlusion summary
+  - 按 `MAX_ABS_PITCH_BODY_FIXED_DEG=45.0` 将四视角拆分为 body-fixed 候选与 mount/gimbal review 候选
+  - 执行 `scripts/audit_cable_fourview_mount_strategy.sh`
+  - 更新 `docs/30_cable_fourview_surface_progression.md`
+  - 更新 `docs/23_cable_multiview_surface_observation_plan.md`
+  - 更新 `docs/14_current_status_and_next_steps.md`
+  - 更新 `docs/19_current_evidence_matrix.md`
+  - 更新 `docs/10_evidence_inventory.md`
+  - 更新 `scripts/README.md`
+  - 更新 `scripts/audit_current_evidence_matrix.sh`
+  - 更新 `scripts/audit_evidence_inventory.sh`
+  - 执行 `scripts/audit_current_evidence_matrix.sh`
+  - 执行 `scripts/audit_evidence_inventory.sh`
+- 结果：
+  - mount strategy summary：`data/results/cable_fourview_mount_strategy_20260618_133231/cable_fourview_mount_strategy_20260618_133231.txt`
+  - mount strategy view CSV：`data/results/cable_fourview_mount_strategy_20260618_133231/cable_fourview_mount_strategy_views_20260618_133231.csv`
+  - refreshed matrix summary：`data/results/current_evidence_matrix_20260618_133357/current_evidence_matrix_20260618_133357.txt`
+  - refreshed matrix CSV：`data/results/current_evidence_matrix_20260618_133357/current_evidence_matrix_20260618_133357.csv`
+  - refreshed inventory summary：`data/results/evidence_inventory_20260618_133357/evidence_inventory_20260618_133357.txt`
+  - refreshed inventory CSV：`data/results/evidence_inventory_20260618_133357/evidence_inventory_20260618_133357.csv`
+  - 关键字段：
+    - `decision=accepted_cable_fourview_mount_strategy`
+    - `view_count=4`
+    - `body_fixed_ready_view_count=2`
+    - `gimbal_or_mount_review_view_count=2`
+    - `full_surface_ratio=1.000000000`
+    - `occlusion_clear_ratio=1.000000000`
+    - `fourview_geometry_ready=true`
+    - `body_fixed_only_full_surface_ready=false`
+    - `full_surface_requires_mount_review=true`
+    - `recommended_active_track=body_fixed_side_views_only_until_mount_review`
+    - `claims_active_control_approval=false`
+    - `claims_final_cable_inspection_coverage=false`
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=12`
+    - `accepted_positive_capability_count=12`
+    - `decision=accepted_evidence_inventory`
+    - `required_evidence_count=37`
+    - `present_count=37`
+    - `missing_count=0`
+    - `not_ignored_count=0`
+- 结论：
+  - C3 四视角 full-surface 离线几何仍然成立，但不能直接转换为 body-fixed active flight
+  - `y_negative` 和 `y_positive` 是 body-fixed side-view 候选
+  - `z_negative` 和 `z_positive` 需要 pitch gimbal、相机安装或姿态控制复核
+  - 推荐未来若进入 active review，先按 body-fixed side views 审批，不把四视角全表面结果直接用于 PX4 active bridge
+- 下一步：
+  - 可继续做 side-view-only active review package 补强，或转向 wind/multi-vehicle 证据推进
+  - 在未出现明确审批口令前，不实现也不运行 cable active bridge，不发布 `/fmu/in/*`
+- 阻塞项：无
