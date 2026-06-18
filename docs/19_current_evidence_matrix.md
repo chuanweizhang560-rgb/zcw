@@ -32,18 +32,20 @@ Default inputs:
 
 ## 3. Latest Accepted Result
 
-- summary: `data/results/current_evidence_matrix_20260617_174818/current_evidence_matrix_20260617_174818.txt`
-- matrix CSV: `data/results/current_evidence_matrix_20260617_174818/current_evidence_matrix_20260617_174818.csv`
+- summary: `data/results/current_evidence_matrix_20260618_132157/current_evidence_matrix_20260618_132157.txt`
+- matrix CSV: `data/results/current_evidence_matrix_20260618_132157/current_evidence_matrix_20260618_132157.csv`
 - active readiness snapshot summary: `data/results/cable_active_readiness_snapshot_20260617_172343/cable_active_readiness_snapshot_20260617_172343.txt`
 - active approval manifest: `docs/28_cable_active_approval_manifest.md`
 - active handoff bundle: `docs/29_cable_active_handoff_bundle.md`
+- four-view surface union summary: `data/results/cable_fourview_surface_union_offline_20260618_131943/cable_fourview_surface_union_offline_20260618_131943.txt`
+- four-view attitude feasibility summary: `data/results/cable_fourview_attitude_feasibility_20260618_132059/cable_fourview_attitude_feasibility_20260618_132059.txt`
 
 Accepted fields:
 
 ```text
 decision=accepted_current_evidence_matrix
-positive_capability_count=9
-accepted_positive_capability_count=9
+positive_capability_count=10
+accepted_positive_capability_count=10
 forbidden_capability_count=4
 forbidden_not_enabled=true
 claims_current_evidence_matrix_pass=true
@@ -59,6 +61,7 @@ claims_current_evidence_matrix_pass=true
 | cable | active readiness snapshot packaged | accepted | packaged frozen path only, no active control approval |
 | cable | active approval manifest frozen | accepted | approval wording documented, still blocked |
 | cable | active handoff bundle frozen | accepted | review bundle documented, still blocked |
+| cable | four-view surface progression offline | accepted | full-surface upper-bound target met offline, active flight still gated |
 | wind | single-vehicle rule-baseline motion, mapping and sampled occlusion coverage | accepted | rule baseline only, no final inspection coverage |
 | multi-vehicle | four-vehicle topology, assignment and scoring dry-run | accepted | read-only/dry-run only, no active Offboard |
 | project | integrated current status | accepted | current aggregate only, no RL or defect-detection claim |

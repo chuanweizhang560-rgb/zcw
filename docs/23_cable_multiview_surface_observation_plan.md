@@ -183,3 +183,28 @@ claims_final_cable_inspection_coverage=false
 ```
 
 The next implementation step can now move to a stronger multiview offline variant or remain on the existing claim boundary. Active control is still off-limits.
+
+## 10. C3 Four-View Offline Progress
+
+The C3 four-view offline candidate and union characterization are accepted and documented in `docs/30_cable_fourview_surface_progression.md`.
+
+Key result:
+
+```text
+decision=accepted_cable_fourview_surface_union_offline
+group_count=5
+accepted_group_count=5
+global_min_total_surface_coverage_upper_bound_ratio=1.000000000
+meets_total_surface_target=true
+claims_final_cable_inspection_coverage=false
+```
+
+Important boundary:
+
+```text
+direct_body_camera_ready=false
+requires_gimbal_or_attitude_review=true
+active_control_approved=false
+```
+
+The four-view candidate strengthens the offline geometry evidence, but it is not an active-flight plan.

@@ -11078,6 +11078,46 @@
   - 如果继续推进，只剩审批复核或更细的 dry-run 证据补强，不进入 active bridge
 - 阻塞项：无
 
+- 时间：2026-06-18 13:22:09 CST
+- 项目推进节点：C3 cable four-view surface progression 离线推进完成
+- 操作：
+  - 新建 `scripts/audit_cable_fourview_surface_candidate_offline.sh`
+  - 新建 `scripts/audit_cable_fourview_surface_union_offline.sh`
+  - 新建 `scripts/audit_cable_fourview_attitude_feasibility.sh`
+  - 新建 `docs/30_cable_fourview_surface_progression.md`
+  - 更新 `docs/23_cable_multiview_surface_observation_plan.md`、`docs/14_current_status_and_next_steps.md`、`docs/19_current_evidence_matrix.md`、`docs/10_evidence_inventory.md`、`scripts/README.md`
+  - 执行 C3 four-view candidate、union、attitude feasibility 三个离线审计
+  - 执行 `scripts/audit_current_evidence_matrix.sh`
+  - 执行 `scripts/audit_evidence_inventory.sh`
+- 结果：
+  - candidate summary：`data/results/cable_fourview_surface_candidate_offline_20260618_131942/cable_fourview_surface_candidate_offline_20260618_131942.txt`
+  - union summary：`data/results/cable_fourview_surface_union_offline_20260618_131943/cable_fourview_surface_union_offline_20260618_131943.txt`
+  - attitude summary：`data/results/cable_fourview_attitude_feasibility_20260618_132059/cable_fourview_attitude_feasibility_20260618_132059.txt`
+  - matrix summary：`data/results/current_evidence_matrix_20260618_132157/current_evidence_matrix_20260618_132157.txt`
+  - inventory summary：`data/results/evidence_inventory_20260618_132157/evidence_inventory_20260618_132157.txt`
+  - 关键字段：
+    - `decision=accepted_cable_fourview_surface_candidate_offline`
+    - `pose_count=500`
+    - `decision=accepted_cable_fourview_surface_union_offline`
+    - `global_min_total_surface_coverage_upper_bound_ratio=1.000000000`
+    - `meets_total_surface_target=true`
+    - `decision=accepted_cable_fourview_attitude_feasibility`
+    - `direct_body_camera_ready=false`
+    - `requires_gimbal_or_attitude_review=true`
+    - `decision=accepted_current_evidence_matrix`
+    - `positive_capability_count=10`
+    - `accepted_positive_capability_count=10`
+    - `decision=accepted_evidence_inventory`
+    - `required_evidence_count=35`
+    - `present_count=35`
+- 结论：
+  - C3 四视角离线几何候选将线缆全表面覆盖上界推进到 `1.0`
+  - 由于 top/bottom 视角需要 `90deg` pitch，直接 body-camera active flight 仍被阻断
+  - 该节点不启动 ROS/PX4/Gazebo/RViz/Offboard/arm，也不发布 `/fmu/in/*`
+- 下一步：
+  - 可继续做四视角遮挡门或相机/云台可行性分离，不进入 active bridge
+- 阻塞项：无
+
 - 时间：2026-06-17 17:49:28 CST
 - 项目推进节点：cable active handoff bundle 冻结并通过静态审计
 - 操作：

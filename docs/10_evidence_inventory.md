@@ -58,6 +58,7 @@ The audit is not allowed to:
 | Cable acceptance threshold contract | threshold/non-claim documentation matched to the aggregate cable dry-run audit defaults | `scripts/audit_cable_acceptance_threshold_contract.sh` |
 | Cable surface current acceptance | aggregate C1/C2 cable surface progression and dry-run boundary summary | `scripts/audit_cable_surface_current_acceptance.sh` |
 | Cable multiview surface occlusion | AerialCore two-tower collision-mesh ray intersection surface gate | `scripts/audit_cable_multiview_surface_occlusion_offline.sh` |
+| Cable four-view surface progression | four-view union upper-bound and attitude feasibility summaries | `scripts/audit_cable_fourview_surface_union_offline.sh`, `scripts/audit_cable_fourview_attitude_feasibility.sh` |
 | Cable AerialCore GUI screenshot | Gazebo GUI scene-start screenshot for the two-tower cable world | `scripts/capture_px4_aerialcore_world_gui.sh` |
 | Active threshold inputs | gate state echo and approved NED dry-run echo | `scripts/capture_cable_offboard_gate_dry_run_rviz_overlay.sh` |
 | Wind turbine multilevel static geometry | static summary and waypoint CSV | `scripts/audit_wind_turbine_multilevel_orbit_launch.sh` |
@@ -95,8 +96,8 @@ not_ignored_count=0
 
 Latest accepted result:
 
-- `required_evidence_count=33`
-- `present_count=33`
+- `required_evidence_count=35`
+- `present_count=35`
 - `missing_count=0`
 - `not_ignored_count=0`
 
@@ -107,6 +108,8 @@ Fresh local evidence since that accepted run:
 - accepted fields: `decision=accepted_cable_offboard_gate_rviz_overlay_capture`, `phase_b_allowed=false`, `publishes_fmu_in=false`
 - readiness snapshot: `data/results/cable_active_readiness_snapshot_20260617_172343/cable_active_readiness_snapshot_20260617_172343.txt`
 - readiness accepted fields: `decision=accepted_cable_active_readiness_snapshot`, `ready_for_review=true`, `active_control_approved=false`, `phase_b_user_approved=false`, `publishes_fmu_in=false`
+- four-view union summary: `data/results/cable_fourview_surface_union_offline_20260618_131943/cable_fourview_surface_union_offline_20260618_131943.txt`
+- four-view attitude summary: `data/results/cable_fourview_attitude_feasibility_20260618_132059/cable_fourview_attitude_feasibility_20260618_132059.txt`
 
 Additional latest local cable coverage evidence:
 
